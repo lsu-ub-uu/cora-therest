@@ -26,8 +26,6 @@ public class RecordEndpoint {
 				.get();
 		DataAtomic recordId = (DataAtomic) recordInfo.getChildren().stream()
 				.filter(p -> p.getDataId().equals("id")).findFirst().get();
-//		return "Hellllo woo0orld, recordInfo:" + recordInfo.getDataId()
-//				+ " recordId:" + recordId.getValue();
 		return recordId.getValue();
 	}
 

@@ -7,7 +7,7 @@
 	<packaging>war</packaging>
 	<version>0.1-SNAPSHOT</version>
 
-	<name>therest Maven Webapp</name>
+	<name>The Rest</name>
 	<url>http://maven.apache.org</url>
 
 	<build>
