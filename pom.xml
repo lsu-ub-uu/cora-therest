@@ -8,7 +8,6 @@
 	<version>0.1-SNAPSHOT</version>
 
 	<name>The Rest</name>
-	<url>http://maven.apache.org</url>
 
 	<build>
 		<finalName>therest</finalName>
@@ -20,7 +19,6 @@
 		<version>1.8-SNAPSHOT</version>
 	</parent>
 
-
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<testng.version>6.8.8</testng.version>
@@ -28,6 +26,12 @@
 		<javax.ws.rs.version>2.0.1</javax.ws.rs.version>
 		<jersey.version>2.16</jersey.version>
 	</properties>
+
+	<scm>
+		<connection>scm:git:https://git.epc.ub.uu.se/epc/therest.git</connection>
+		<developerConnection>scm:git:https://git.epc.ub.uu.se/epc/therest.git</developerConnection>
+		<url>https://git.epc.ub.uu.se/epc/therest.git</url>
+	</scm>
 
 	<repositories>
 		<repository>
