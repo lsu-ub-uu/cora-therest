@@ -65,16 +65,19 @@
 			<groupId>epc.systemone</groupId>
 			<artifactId>systemone</artifactId>
 			<version>${systemone.version}</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>javax.ws.rs</groupId>
 			<artifactId>javax.ws.rs-api</artifactId>
 			<version>${javax.ws.rs.version}</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.containers</groupId>
 			<artifactId>jersey-container-servlet</artifactId>
 			<version>${jersey.version}</version>
+			<scope>compile</scope>
 		</dependency>
 
 	</dependencies>
