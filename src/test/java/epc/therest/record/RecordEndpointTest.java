@@ -1,24 +1,41 @@
 package epc.therest.record;
 
 import org.testng.Assert;
-import org.testng.annotations.BeforeTest;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import epc.systemone.SystemBuilderForProduction;
+import epc.therest.SystemBuilderForTest;
+import epc.therest.data.DataAtomicRest;
+import epc.therest.data.DataGroupRest;
 
 public class RecordEndpointTest {
-	@BeforeTest
+	@BeforeMethod
 	public void beforeTest() {
 
-		SystemBuilderForProduction.createAllDependenciesInSystemHolder();
+		SystemBuilderForTest.createAllDependenciesInSystemHolder();
 	}
 
 	@Test
 	public void testCreateNew() {
 		RecordEndpoint recordEndpoint = new RecordEndpoint();
-		String result = recordEndpoint.createRecord();
+		// String result = recordEndpoint.createRecord();
+		DataGroupRest record = recordEndpoint.createRecord();
 		// TODO: test something better...
-		Assert.assertEquals(result.length(), 21, "Keylength should be 16");
+		DataGroupRest recordInfo = (DataGroupRest) record.getChildren()
+				.stream().filter(p -> p.getDataId().equals("recordInfo"))
+				.findFirst().get();
+		DataAtomicRest recordId = (DataAtomicRest) recordInfo.getChildren()
+				.stream().filter(p -> p.getDataId().equals("id")).findFirst()
+				.get();
+		Assert.assertEquals(recordId.getValue().length(), 21,
+				"Keylength should be 16");
 	}
-	
+
+	@Test
+	public void testReadRecord() {
+		RecordEndpoint recordEndpoint = new RecordEndpoint();
+		DataGroupRest record = recordEndpoint.readRecord("place", "place:0001");
+		Assert.assertNotNull(record, "A record should be returned");
+	}
+
 }
