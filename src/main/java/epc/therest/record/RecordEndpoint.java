@@ -19,26 +19,25 @@ public class RecordEndpoint {
 
 	@GET
 	@Path("001")
-//	@Produces(MediaType.TEXT_PLAIN)
+	// @Produces(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
 	public DataGroupRest createRecord() {
 		SystemOneRecordInputBoundary inputBoundary = new SystemOneRecordHandler();
 		DataGroup record = new DataGroup("authority");
-		DataGroup recordOut = inputBoundary.createRecord("userId", "type",
-				record);
+		DataGroup recordOut = inputBoundary.createRecord("userId", "type", record);
 
-//		DataGroup recordInfo = (DataGroup) recordOut.getChildren().stream()
-//				.filter(p -> p.getDataId().equals("recordInfo")).findFirst()
-//				.get();
-//		DataAtomic recordId = (DataAtomic) recordInfo.getChildren().stream()
-//				.filter(p -> p.getDataId().equals("id")).findFirst().get();
-//		return recordId.getValue();
-		
-//		return new DataGroupRest(recordOut);
-		
-		DataGroupRest dataGroupRest = new DataGroupRest(recordOut);
+		// DataGroup recordInfo = (DataGroup) recordOut.getChildren().stream()
+		// .filter(p -> p.getDataId().equals("recordInfo")).findFirst()
+		// .get();
+		// DataAtomic recordId = (DataAtomic) recordInfo.getChildren().stream()
+		// .filter(p -> p.getDataId().equals("id")).findFirst().get();
+		// return recordId.getValue();
+
+		// return new DataGroupRest(recordOut);
+
+		DataGroupRest dataGroupRest = DataGroupRest.fromDataGroup(recordOut);
 		return dataGroupRest;
-		
+
 	}
 
 	@GET
@@ -50,7 +49,7 @@ public class RecordEndpoint {
 			@PathParam("id") String id) {
 		SystemOneRecordInputBoundary inputBoundary = new SystemOneRecordHandler();
 		DataGroup record = inputBoundary.readRecord("userId", type, id);
-		return new DataGroupRest(record);
+		return DataGroupRest.fromDataGroup(record);
 		// return Response.status(Response.Status.OK).entity(record).build();
 	}
 

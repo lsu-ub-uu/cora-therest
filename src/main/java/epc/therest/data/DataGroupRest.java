@@ -19,11 +19,19 @@ public class DataGroupRest implements DataElementRest {
 		dataId = "this constructor is here to enable conversion to JSON";
 	}
 
-	public DataGroupRest(String dataId) {
+	public static DataGroupRest fromDataId(String dataId) {
+		return new DataGroupRest(dataId);
+	}
+
+	private DataGroupRest(String dataId) {
 		this.dataId = dataId;
 	}
 
-	public DataGroupRest(DataGroup dataGroup) {
+	public static DataGroupRest fromDataGroup(DataGroup dataGroup) {
+		return new DataGroupRest(dataGroup);
+	}
+
+	private DataGroupRest(DataGroup dataGroup) {
 		dataId = dataGroup.getDataId();
 		attributes.putAll(dataGroup.getAttributes());
 		convertAndSetChildren(dataGroup);
@@ -35,14 +43,14 @@ public class DataGroupRest implements DataElementRest {
 		}
 	}
 
-	private DataElementRest convertToRestEquivalentDataClass(
-			DataElement dataElement) {
+	private DataElementRest convertToRestEquivalentDataClass(DataElement dataElement) {
 		if (dataElement instanceof DataGroup) {
 			return new DataGroupRest((DataGroup) dataElement);
 		}
-		return new DataAtomicRest((DataAtomic) dataElement);
+		return DataAtomicRest.fromDataAtomic((DataAtomic) dataElement);
 	}
 
+	@Override
 	public String getDataId() {
 		return dataId;
 	}

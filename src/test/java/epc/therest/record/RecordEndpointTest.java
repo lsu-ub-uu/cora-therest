@@ -21,14 +21,11 @@ public class RecordEndpointTest {
 		// String result = recordEndpoint.createRecord();
 		DataGroupRest record = recordEndpoint.createRecord();
 		// TODO: test something better...
-		DataGroupRest recordInfo = (DataGroupRest) record.getChildren()
-				.stream().filter(p -> p.getDataId().equals("recordInfo"))
-				.findFirst().get();
-		DataAtomicRest recordId = (DataAtomicRest) recordInfo.getChildren()
-				.stream().filter(p -> p.getDataId().equals("id")).findFirst()
-				.get();
-		Assert.assertEquals(recordId.getValue().length(), 21,
-				"Keylength should be 16");
+		DataGroupRest recordInfo = (DataGroupRest) record.getChildren().stream()
+				.filter(p -> p.getDataId().equals("recordInfo")).findFirst().get();
+		DataAtomicRest recordId = (DataAtomicRest) recordInfo.getChildren().stream()
+				.filter(p -> p.getDataId().equals("id")).findFirst().get();
+		Assert.assertTrue(recordId.getValue().length() > 10, "Keylength should be longer than 10");
 	}
 
 	@Test
