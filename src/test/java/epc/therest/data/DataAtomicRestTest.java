@@ -8,7 +8,7 @@ import epc.metadataformat.data.DataAtomic;
 public class DataAtomicRestTest {
 	@Test
 	public void testInit() {
-		DataAtomicRest dataAtomicRest = DataAtomicRest.fromDataIdAndValue("dataId", "value");
+		DataAtomicRest dataAtomicRest = DataAtomicRest.withDataIdAndValue("dataId", "value");
 		Assert.assertEquals(dataAtomicRest.getDataId(), "dataId");
 		Assert.assertEquals(dataAtomicRest.getValue(), "value");
 	}

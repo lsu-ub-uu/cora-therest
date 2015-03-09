@@ -19,7 +19,7 @@ public class DataGroupRest implements DataElementRest {
 		dataId = "this constructor is here to enable conversion to JSON";
 	}
 
-	public static DataGroupRest fromDataId(String dataId) {
+	public static DataGroupRest withDataId(String dataId) {
 		return new DataGroupRest(dataId);
 	}
 

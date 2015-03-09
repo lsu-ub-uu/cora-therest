@@ -13,7 +13,7 @@ import epc.metadataformat.data.DataGroup;
 public class DataGroupRestTest {
 	@Test
 	public void testInit() {
-		DataGroupRest dataGroupRest = DataGroupRest.fromDataId("dataId");
+		DataGroupRest dataGroupRest = DataGroupRest.withDataId("dataId");
 		assertEquals(dataGroupRest.getDataId(), "dataId",
 				"DataId shold be the one set in the constructor");
 
@@ -28,7 +28,7 @@ public class DataGroupRestTest {
 		Assert.assertNotNull(dataGroupRest.getChildren(),
 				"Children should not be null for a new DataGroup");
 
-		DataElementRest dataElementRest = DataGroupRest.fromDataId("dataId2");
+		DataElementRest dataElementRest = DataGroupRest.withDataId("dataId2");
 		dataGroupRest.addChild(dataElementRest);
 		Assert.assertEquals(dataGroupRest.getChildren().stream().findAny().get(), dataElementRest,
 				"Child should be the same as the one we added");

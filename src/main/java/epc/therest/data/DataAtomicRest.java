@@ -11,7 +11,7 @@ public class DataAtomicRest implements DataElementRest {
 		dataId = "this constructor is here to enable conversion to JSON";
 	}
 
-	public static DataAtomicRest fromDataIdAndValue(String dataId, String value) {
+	public static DataAtomicRest withDataIdAndValue(String dataId, String value) {
 		return new DataAtomicRest(dataId, value);
 	}
 
