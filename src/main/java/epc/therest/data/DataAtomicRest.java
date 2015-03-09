@@ -4,8 +4,12 @@ import epc.metadataformat.data.DataAtomic;
 
 public class DataAtomicRest implements DataElementRest {
 
-	private String dataId;
-	private String value;
+	public String dataId;
+	public String value;
+
+	public DataAtomicRest() {
+		dataId = "this constructor is here to enable conversion to JSON";
+	}
 
 	public DataAtomicRest(String dataId, String value) {
 		this.dataId = dataId;

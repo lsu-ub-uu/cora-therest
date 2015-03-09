@@ -11,9 +11,13 @@ import epc.metadataformat.data.DataGroup;
 
 public class DataGroupRest implements DataElementRest {
 
-	private final String dataId;
-	private Map<String, String> attributes = new HashMap<>();
-	private List<DataElementRest> children = new ArrayList<>();
+	public final String dataId;
+	public Map<String, String> attributes = new HashMap<>();
+	public List<DataElementRest> children = new ArrayList<>();
+
+	public DataGroupRest() {
+		dataId = "this constructor is here to enable conversion to JSON";
+	}
 
 	public DataGroupRest(String dataId) {
 		this.dataId = dataId;
@@ -22,6 +26,10 @@ public class DataGroupRest implements DataElementRest {
 	public DataGroupRest(DataGroup dataGroup) {
 		dataId = dataGroup.getDataId();
 		attributes.putAll(dataGroup.getAttributes());
+		convertAndSetChildren(dataGroup);
+	}
+
+	private void convertAndSetChildren(DataGroup dataGroup) {
 		for (DataElement dataElement : dataGroup.getChildren()) {
 			children.add(convertToRestEquivalentDataClass(dataElement));
 		}
