@@ -15,7 +15,7 @@ public class DataAtomicRestTest {
 
 	@Test
 	public void testCreateFromDataAtomic() {
-		DataAtomic dataAtomic = new DataAtomic("dataId", "value");
+		DataAtomic dataAtomic = DataAtomic.withDataIdAndValue("dataId", "value");
 		DataAtomicRest dataAtomicRest = DataAtomicRest.fromDataAtomic(dataAtomic);
 		Assert.assertEquals(dataAtomicRest.getDataId(), "dataId");
 		Assert.assertEquals(dataAtomicRest.getValue(), "value");

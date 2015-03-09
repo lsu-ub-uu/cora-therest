@@ -10,8 +10,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import epc.metadataformat.data.DataGroup;
+import epc.systemone.record.SystemOneRecordHandlerImp;
 import epc.systemone.record.SystemOneRecordHandler;
-import epc.systemone.record.SystemOneRecordInputBoundary;
 import epc.therest.data.DataGroupRest;
 
 @Path("record")
@@ -22,9 +22,9 @@ public class RecordEndpoint {
 	// @Produces(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
 	public DataGroupRest createRecord() {
-		SystemOneRecordInputBoundary inputBoundary = new SystemOneRecordHandler();
-		DataGroup record = new DataGroup("authority");
-		DataGroup recordOut = inputBoundary.createRecord("userId", "type", record);
+		SystemOneRecordHandler recordHandler = new SystemOneRecordHandlerImp();
+		DataGroup record = DataGroup.withDataId("authority");
+		DataGroup recordOut = recordHandler.createRecord("userId", "type", record);
 
 		// DataGroup recordInfo = (DataGroup) recordOut.getChildren().stream()
 		// .filter(p -> p.getDataId().equals("recordInfo")).findFirst()
@@ -47,8 +47,8 @@ public class RecordEndpoint {
 	public DataGroupRest readRecord(@PathParam("type") String type,
 	// public String readRecord(@PathParam("type") String type,
 			@PathParam("id") String id) {
-		SystemOneRecordInputBoundary inputBoundary = new SystemOneRecordHandler();
-		DataGroup record = inputBoundary.readRecord("userId", type, id);
+		SystemOneRecordHandler recordHandler = new SystemOneRecordHandlerImp();
+		DataGroup record = recordHandler.readRecord("userId", type, id);
 		return DataGroupRest.fromDataGroup(record);
 		// return Response.status(Response.Status.OK).entity(record).build();
 	}
@@ -74,7 +74,7 @@ public class RecordEndpoint {
 	@Path("004")
 	@Produces(MediaType.APPLICATION_JSON)
 	public DataGroup readRecordDataGroup() {
-		DataGroup dataGroup = new DataGroup("dataId");
+		DataGroup dataGroup = DataGroup.withDataId("dataId");
 		return dataGroup;
 	}
 

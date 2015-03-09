@@ -37,13 +37,13 @@ public class DataGroupRestTest {
 
 	@Test
 	public void testCreateDataGroupRestFromDataGroup() {
-		DataGroupRest dataGroupRest = DataGroupRest.fromDataGroup(new DataGroup("dataGroup"));
+		DataGroupRest dataGroupRest = DataGroupRest.fromDataGroup(DataGroup.withDataId("dataGroup"));
 		Assert.assertEquals(dataGroupRest.getDataId(), "dataGroup");
 	}
 
 	@Test
 	public void testCreateDataGroupRestFromDataGroupWithAttribute() {
-		DataGroup dataGroup = new DataGroup("dataId");
+		DataGroup dataGroup = DataGroup.withDataId("dataId");
 		dataGroup.addAttributeByIdWithValue("attributeId", "attributeValue");
 		DataGroupRest dataGroupRest = DataGroupRest.fromDataGroup(dataGroup);
 		assertEquals(dataGroupRest.getAttributes().get("attributeId"), "attributeValue",
@@ -52,8 +52,8 @@ public class DataGroupRestTest {
 
 	@Test
 	public void testCreateDataGroupRestFromDataGroupWithDataGroupChild() {
-		DataGroup dataGroup = new DataGroup("dataId");
-		dataGroup.addChild(new DataGroup("childDataId"));
+		DataGroup dataGroup = DataGroup.withDataId("dataId");
+		dataGroup.addChild(DataGroup.withDataId("childDataId"));
 		DataGroupRest dataGroupRest = DataGroupRest.fromDataGroup(dataGroup);
 		Assert.assertEquals(dataGroupRest.getChildren().stream().findAny().get().getDataId(),
 				"childDataId");
@@ -61,8 +61,8 @@ public class DataGroupRestTest {
 
 	@Test
 	public void testCreateDataGroupRestFromDataGroupWithDataAtomicChild() {
-		DataGroup dataGroup = new DataGroup("dataId");
-		dataGroup.addChild(new DataAtomic("childDataId", "atomicValue"));
+		DataGroup dataGroup = DataGroup.withDataId("dataId");
+		dataGroup.addChild(DataAtomic.withDataIdAndValue("childDataId", "atomicValue"));
 		DataGroupRest dataGroupRest = DataGroupRest.fromDataGroup(dataGroup);
 		Assert.assertEquals(dataGroupRest.getChildren().stream().findAny().get().getDataId(),
 				"childDataId");
@@ -70,10 +70,10 @@ public class DataGroupRestTest {
 
 	@Test
 	public void testCreateDataGroupRestFromDataGroupLevelsOfChildren() {
-		DataGroup dataGroup = new DataGroup("dataId");
-		dataGroup.addChild(new DataAtomic("atomicDataId", "atomicValue"));
-		DataGroup dataGroup2 = new DataGroup("childDataId");
-		dataGroup2.addChild(new DataGroup("grandChildDataId"));
+		DataGroup dataGroup = DataGroup.withDataId("dataId");
+		dataGroup.addChild(DataAtomic.withDataIdAndValue("atomicDataId", "atomicValue"));
+		DataGroup dataGroup2 = DataGroup.withDataId("childDataId");
+		dataGroup2.addChild(DataGroup.withDataId("grandChildDataId"));
 		dataGroup.addChild(dataGroup2);
 		DataGroupRest dataGroupRest = DataGroupRest.fromDataGroup(dataGroup);
 		Iterator<DataElementRest> iterator = dataGroupRest.getChildren().iterator();

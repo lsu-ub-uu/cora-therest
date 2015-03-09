@@ -3,8 +3,8 @@ package epc.therest;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import epc.spider.record.RecordHandler;
-import epc.spider.record.RecordInputBoundary;
+import epc.spider.record.SpiderRecordHandlerImp;
+import epc.spider.record.SpiderRecordHandler;
 import epc.systemone.SystemHolder;
 
 public class SystemBuilderForTestTest {
@@ -12,13 +12,13 @@ public class SystemBuilderForTestTest {
 	public void testSystemInit() {
 		SystemBuilderForTest.createAllDependenciesInSystemHolder();
 		
-		RecordInputBoundary recordInputBoundary = SystemHolder
-				.getRecordInputBoundary();
+		SpiderRecordHandler spiderRecordHandler = SystemHolder
+				.getSpiderRecordHandler();
 
-		Assert.assertNotNull(recordInputBoundary,
+		Assert.assertNotNull(spiderRecordHandler,
 				"RecordInputBoundry should be instansiated");
 
-		Assert.assertEquals(recordInputBoundary.getClass(),RecordHandler.class,
+		Assert.assertEquals(spiderRecordHandler.getClass(),SpiderRecordHandlerImp.class,
 				"The returned recordInputBoundary should be the same");
 	}
 }
