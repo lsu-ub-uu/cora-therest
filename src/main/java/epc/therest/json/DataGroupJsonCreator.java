@@ -15,6 +15,8 @@ import epc.therest.data.DataGroupRest;
 public class DataGroupJsonCreator implements JsonCreator {
 
 	private DataGroupRest dataGroupRest;
+	private JsonBuilderFactory jsonBuilderFactory;
+	private JsonObjectBuilder groupChildren;
 
 	public static JsonCreator forDataGroupRest(DataGroupRest dataGroupRest) {
 		return new DataGroupJsonCreator(dataGroupRest);
@@ -22,6 +24,9 @@ public class DataGroupJsonCreator implements JsonCreator {
 
 	private DataGroupJsonCreator(DataGroupRest dataGroupRest) {
 		this.dataGroupRest = dataGroupRest;
+		Map<String, Object> config = new HashMap<>();
+		jsonBuilderFactory = Json.createBuilderFactory(config);
+		groupChildren = jsonBuilderFactory.createObjectBuilder();
 	}
 
 	@Override
@@ -32,34 +37,39 @@ public class DataGroupJsonCreator implements JsonCreator {
 
 	@Override
 	public JsonObjectBuilder toJsonObjectBuilder() {
-		Map<String, Object> config = new HashMap<>();
-		JsonBuilderFactory jsonBuilderFactory = Json.createBuilderFactory(config);
+		if (hasAttributes()) {
+			addAttributesToGroup();
+		}
+		if (hasChildren()) {
+			addChildrenToGroup();
+		}
 		JsonObjectBuilder group = jsonBuilderFactory.createObjectBuilder();
-		JsonObjectBuilder groupChildren = jsonBuilderFactory.createObjectBuilder();
+		group.add(dataGroupRest.getDataId(), groupChildren);
+		return group;
+	}
 
-		// attributes
+	private boolean hasChildren() {
+		return !dataGroupRest.getChildren().isEmpty();
+	}
+
+	private boolean hasAttributes() {
+		return !dataGroupRest.getAttributes().isEmpty();
+	}
+
+	private void addAttributesToGroup() {
 		JsonObjectBuilder attributes = jsonBuilderFactory.createObjectBuilder();
-		JsonCreatorFactory jsonCreatorFactory = new JsonCreatorFactoryImp();
-
 		for (Entry<String, String> attributeEntry : dataGroupRest.getAttributes().entrySet()) {
 			attributes.add(attributeEntry.getKey(), attributeEntry.getValue());
 		}
+		groupChildren.add("attributes", attributes);
+	}
 
-		if (!dataGroupRest.getAttributes().isEmpty()) {
-			groupChildren.add("attributes", attributes);
-		}
-
-		// children
+	private void addChildrenToGroup() {
+		JsonCreatorFactory jsonCreatorFactory = new JsonCreatorFactoryImp();
 		JsonArrayBuilder childrenArray = jsonBuilderFactory.createArrayBuilder();
 		for (DataElementRest dataElementRest : dataGroupRest.getChildren()) {
 			childrenArray.add(jsonCreatorFactory.factory(dataElementRest).toJsonObjectBuilder());
 		}
-
-		if (!dataGroupRest.getChildren().isEmpty()) {
-			groupChildren.add("children", childrenArray);
-		}
-
-		group.add(dataGroupRest.getDataId(), groupChildren);
-		return group;
+		groupChildren.add("children", childrenArray);
 	}
 }
