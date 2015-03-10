@@ -25,6 +25,8 @@
 		<systemone.version>0.1-SNAPSHOT</systemone.version>
 		<javax.ws.rs.version>2.0.1</javax.ws.rs.version>
 		<jersey.version>2.16</jersey.version>
+		<javax.json.api.version>1.0</javax.json.api.version>
+		<javax.json.version>1.0.2</javax.json.version>
 	</properties>
 
 	<scm>
@@ -88,6 +90,17 @@
 			<artifactId>jersey-media-moxy</artifactId>
 			<version>${jersey.version}</version>
 			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.json</groupId>
+			<artifactId>javax.json-api</artifactId>
+			<version>${javax.json.api.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish</groupId>
+			<artifactId>javax.json</artifactId>
+			<version>${javax.json.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>

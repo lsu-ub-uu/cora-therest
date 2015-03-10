@@ -37,7 +37,8 @@ public class DataGroupRestTest {
 
 	@Test
 	public void testCreateDataGroupRestFromDataGroup() {
-		DataGroupRest dataGroupRest = DataGroupRest.fromDataGroup(DataGroup.withDataId("dataGroup"));
+		DataGroupRest dataGroupRest = DataGroupRest
+				.fromDataGroup(DataGroup.withDataId("dataGroup"));
 		Assert.assertEquals(dataGroupRest.getDataId(), "dataGroup");
 	}
 

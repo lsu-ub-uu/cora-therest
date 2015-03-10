@@ -40,4 +40,10 @@ public class DataAtomicRest implements DataElementRest {
 		return value;
 	}
 
+	@Override
+	public void setDataId(String dataId) {
+		// TODO Auto-generated method stub
+
+	}
+
 }

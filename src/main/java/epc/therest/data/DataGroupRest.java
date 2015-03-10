@@ -16,7 +16,7 @@ public class DataGroupRest implements DataElementRest {
 	public List<DataElementRest> children = new ArrayList<>();
 
 	public DataGroupRest() {
-		dataId = "this constructor is here to enable conversion to JSON";
+		dataId = "this constructor is here to enable converting to JSON";
 	}
 
 	public static DataGroupRest withDataId(String dataId) {
@@ -69,6 +69,12 @@ public class DataGroupRest implements DataElementRest {
 
 	public List<DataElementRest> getChildren() {
 		return children;
+	}
+
+	@Override
+	public void setDataId(String dataId) {
+		// TODO Auto-generated method stub
+
 	}
 
 }
