@@ -2,14 +2,10 @@ package epc.therest.data;
 
 import epc.metadataformat.data.DataAtomic;
 
-public class DataAtomicRest implements DataElementRest {
+public final class DataAtomicRest implements DataElementRest {
 
-	public String dataId;
-	public String value;
-
-	public DataAtomicRest() {
-		dataId = "this constructor is here to enable conversion to JSON";
-	}
+	private String dataId;
+	private String value;
 
 	public static DataAtomicRest withDataIdAndValue(String dataId, String value) {
 		return new DataAtomicRest(dataId, value);
@@ -39,11 +35,4 @@ public class DataAtomicRest implements DataElementRest {
 	public String getValue() {
 		return value;
 	}
-
-	@Override
-	public void setDataId(String dataId) {
-		// TODO Auto-generated method stub
-
-	}
-
 }

@@ -9,7 +9,7 @@ import javax.json.JsonObjectBuilder;
 
 import epc.therest.data.DataAtomicRest;
 
-public class DataAtomicJsonCreator implements JsonCreator {
+public final class DataAtomicJsonCreator implements JsonCreator {
 
 	private DataAtomicRest dataAtomicRest;
 

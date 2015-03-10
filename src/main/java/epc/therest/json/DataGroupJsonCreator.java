@@ -12,7 +12,7 @@ import javax.json.JsonObjectBuilder;
 import epc.therest.data.DataElementRest;
 import epc.therest.data.DataGroupRest;
 
-public class DataGroupJsonCreator implements JsonCreator {
+public final class DataGroupJsonCreator implements JsonCreator {
 
 	private DataGroupRest dataGroupRest;
 	private JsonBuilderFactory jsonBuilderFactory;

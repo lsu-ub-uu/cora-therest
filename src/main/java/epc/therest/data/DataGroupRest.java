@@ -9,15 +9,11 @@ import epc.metadataformat.data.DataAtomic;
 import epc.metadataformat.data.DataElement;
 import epc.metadataformat.data.DataGroup;
 
-public class DataGroupRest implements DataElementRest {
+public final class DataGroupRest implements DataElementRest {
 
-	public final String dataId;
-	public Map<String, String> attributes = new HashMap<>();
-	public List<DataElementRest> children = new ArrayList<>();
-
-	public DataGroupRest() {
-		dataId = "this constructor is here to enable converting to JSON";
-	}
+	private final String dataId;
+	private Map<String, String> attributes = new HashMap<>();
+	private List<DataElementRest> children = new ArrayList<>();
 
 	public static DataGroupRest withDataId(String dataId) {
 		return new DataGroupRest(dataId);
@@ -70,11 +66,4 @@ public class DataGroupRest implements DataElementRest {
 	public List<DataElementRest> getChildren() {
 		return children;
 	}
-
-	@Override
-	public void setDataId(String dataId) {
-		// TODO Auto-generated method stub
-
-	}
-
 }
