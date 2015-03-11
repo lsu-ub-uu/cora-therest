@@ -13,6 +13,8 @@ import epc.therest.data.DataGroupRest;
 public final class DataGroupClassCreator implements ClassCreator {
 
 	private JsonObject jsonObject;
+	private DataGroupRest dataGroupRest;
+	private JsonObject dataGroupChildren;
 
 	public static DataGroupClassCreator forJsonObject(JsonObject jsonObject) {
 		return new DataGroupClassCreator(jsonObject);
@@ -24,30 +26,46 @@ public final class DataGroupClassCreator implements ClassCreator {
 
 	@Override
 	public DataElementRest toClass() {
-		String dataId = jsonObject.keySet().iterator().next();
-		DataGroupRest dataGroupRest = DataGroupRest.withDataId(dataId);
-		JsonObject dataGroupChildren = jsonObject.getJsonObject(dataId);
-
-		// attributes
-		JsonObject attributes = dataGroupChildren.getJsonObject("attributes");
-		if (null != attributes) {
-			for (Entry<String, JsonValue> attribute : attributes.entrySet()) {
-				String value = ((JsonString) attribute.getValue()).getString();
-				dataGroupRest.addAttribute(attribute.getKey(), value);
-			}
+		String dataId = getDataId();
+		dataGroupRest = DataGroupRest.withDataId(dataId);
+		dataGroupChildren = jsonObject.getJsonObject(dataId);
+		if (hasAttributes()) {
+			addAttributesToGroup();
 		}
-
-		// children
-		JsonArray children = dataGroupChildren.getJsonArray("children");
-		if (null != children) {
-			for (JsonValue jsonValue : children) {
-				JsonObject jsonChildObject = (JsonObject) jsonValue;
-				ClassCreator factorOnJsonObject = new ClassCreatorFactoryImp()
-						.factorOnJsonObject(jsonChildObject);
-				dataGroupRest.addChild(factorOnJsonObject.toClass());
-			}
+		if (hasChildren()) {
+			addChildrenToGroup();
 		}
 		return dataGroupRest;
 	}
 
+	private String getDataId() {
+		return jsonObject.keySet().iterator().next();
+	}
+
+	private boolean hasAttributes() {
+		return null != dataGroupChildren.getJsonObject("attributes");
+	}
+
+	private void addAttributesToGroup() {
+		JsonObject attributes = dataGroupChildren.getJsonObject("attributes");
+		for (Entry<String, JsonValue> attribute : attributes.entrySet()) {
+			String value = ((JsonString) attribute.getValue()).getString();
+			dataGroupRest.addAttribute(attribute.getKey(), value);
+		}
+	}
+
+	private boolean hasChildren() {
+		return null != dataGroupChildren.getJsonArray("children");
+	}
+
+	private void addChildrenToGroup() {
+		ClassCreatorFactoryImp classCreatorFactoryImp = new ClassCreatorFactoryImp();
+		JsonArray children = dataGroupChildren.getJsonArray("children");
+		for (JsonValue jsonValue : children) {
+			JsonObject jsonChildObject = (JsonObject) jsonValue;
+			ClassCreator factorOnJsonObject = classCreatorFactoryImp
+					.factorOnJsonObject(jsonChildObject);
+			dataGroupRest.addChild(factorOnJsonObject.toClass());
+		}
+	}
 }

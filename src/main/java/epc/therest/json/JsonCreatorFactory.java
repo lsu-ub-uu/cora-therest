@@ -4,6 +4,6 @@ import epc.therest.data.DataElementRest;
 
 public interface JsonCreatorFactory {
 
-	JsonCreator factory(DataElementRest dataElementRest);
+	JsonCreator factorOnDataElementRest(DataElementRest dataElementRest);
 
 }

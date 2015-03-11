@@ -16,7 +16,7 @@ public class JsonCreatorFactoryTest {
 		DataGroup dataGroup = DataGroup.withDataId("groupDataId");
 		DataElementRest dataElementRest = DataGroupRest.fromDataGroup(dataGroup);
 
-		JsonCreator jsonCreator = jsonCreatorFactory.factory(dataElementRest);
+		JsonCreator jsonCreator = jsonCreatorFactory.factorOnDataElementRest(dataElementRest);
 
 		Assert.assertTrue(jsonCreator instanceof DataGroupJsonCreator);
 	}
@@ -27,7 +27,7 @@ public class JsonCreatorFactoryTest {
 		DataAtomic dataAtomic = DataAtomic.withDataIdAndValue("atomicDataId", "atomicValue");
 		DataElementRest dataElementRest = DataAtomicRest.fromDataAtomic(dataAtomic);
 
-		JsonCreator jsonCreator = jsonCreatorFactory.factory(dataElementRest);
+		JsonCreator jsonCreator = jsonCreatorFactory.factorOnDataElementRest(dataElementRest);
 
 		Assert.assertTrue(jsonCreator instanceof DataAtomicJsonCreator);
 	}

@@ -14,13 +14,10 @@ public class ClassCreatorFactoryImp implements ClassCreatorFactory {
 
 	@Override
 	public ClassCreator factorOnJsonString(String json) {
-
 		Map<String, Object> config = new HashMap<>();
 		JsonReaderFactory jsonReaderFactory = Json.createReaderFactory(config);
 		JsonReader jsonReader = jsonReaderFactory.createReader(new StringReader(json));
-
 		JsonObject jsonObject = jsonReader.readObject();
-
 		return factorOnJsonObject(jsonObject);
 	}
 
@@ -32,5 +29,4 @@ public class ClassCreatorFactoryImp implements ClassCreatorFactory {
 		}
 		return DataAtomicClassCreator.forJsonObject(jsonObject);
 	}
-
 }

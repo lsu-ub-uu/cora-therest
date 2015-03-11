@@ -68,7 +68,8 @@ public final class DataGroupJsonCreator implements JsonCreator {
 		JsonCreatorFactory jsonCreatorFactory = new JsonCreatorFactoryImp();
 		JsonArrayBuilder childrenArray = jsonBuilderFactory.createArrayBuilder();
 		for (DataElementRest dataElementRest : dataGroupRest.getChildren()) {
-			childrenArray.add(jsonCreatorFactory.factory(dataElementRest).toJsonObjectBuilder());
+			childrenArray.add(jsonCreatorFactory.factorOnDataElementRest(dataElementRest)
+					.toJsonObjectBuilder());
 		}
 		groupChildren.add("children", childrenArray);
 	}
