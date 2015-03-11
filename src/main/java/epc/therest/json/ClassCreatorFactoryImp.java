@@ -14,15 +14,31 @@ public class ClassCreatorFactoryImp implements ClassCreatorFactory {
 
 	@Override
 	public ClassCreator factorOnJsonString(String json) {
+		try {
+			return tryToFactorOnJsonString(json);
+		} catch (Exception e) {
+			throw new JsonParseException("Error parsing json", e);
+		}
+	}
+
+	private ClassCreator tryToFactorOnJsonString(String json) {
 		Map<String, Object> config = new HashMap<>();
 		JsonReaderFactory jsonReaderFactory = Json.createReaderFactory(config);
 		JsonReader jsonReader = jsonReaderFactory.createReader(new StringReader(json));
 		JsonObject jsonObject = jsonReader.readObject();
-		return factorOnJsonObject(jsonObject);
+		return tryToFactorOnJsonObject(jsonObject);
 	}
 
 	@Override
 	public ClassCreator factorOnJsonObject(JsonObject jsonObject) {
+		try {
+			return tryToFactorOnJsonObject(jsonObject);
+		} catch (Exception e) {
+			throw new JsonParseException("Error parsing json", e);
+		}
+	}
+
+	private ClassCreator tryToFactorOnJsonObject(JsonObject jsonObject) {
 		JsonValue jsonValue = jsonObject.values().iterator().next();
 		if (JsonValue.ValueType.OBJECT.equals(jsonValue.getValueType())) {
 			return DataGroupClassCreator.forJsonObject(jsonObject);

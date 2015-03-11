@@ -37,4 +37,26 @@ public class DataAtomicClassCreatorTest {
 		DataAtomicRest dataAtomicRest = (DataAtomicRest) dataElementRest;
 		return dataAtomicRest;
 	}
+
+	@Test(expectedExceptions = JsonParseException.class)
+	public void testToClassWrongJson() {
+		String json = "{\"id\":[]}";
+		ClassCreator classCreator = classCreatorFactory.factorOnJsonString(json);
+		classCreator.toClass();
+	}
+
+	@Test(expectedExceptions = JsonParseException.class)
+	public void testToClassWrongJsonExtraKeyValuePair() {
+		String json = "{\"atomicDataId\":\"atomicValue\",\"id2\":\"value2\"}";
+		ClassCreator classCreator = classCreatorFactory.factorOnJsonString(json);
+		classCreator.toClass();
+	}
+
+	@Test(expectedExceptions = JsonParseException.class)
+	public void testToClassWrongJsonExtraArray() {
+		String json = "{\"atomicDataId\":\"atomicValue\",\"id2\":[]}";
+		ClassCreator classCreator = classCreatorFactory.factorOnJsonString(json);
+		classCreator.toClass();
+	}
+
 }

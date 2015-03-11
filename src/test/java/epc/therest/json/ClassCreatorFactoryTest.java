@@ -22,6 +22,30 @@ public class ClassCreatorFactoryTest {
 		classCreatorFactory = new ClassCreatorFactoryImp();
 	}
 
+	@Test(expectedExceptions = JsonParseException.class)
+	public void testFactorOnJsonStringNullJson() {
+		String json = null;
+		classCreatorFactory.factorOnJsonString(json);
+	}
+
+	@Test(expectedExceptions = JsonParseException.class)
+	public void testFactorOnJsonStringEmptyJson() {
+		String json = "";
+		classCreatorFactory.factorOnJsonString(json);
+	}
+
+	@Test(expectedExceptions = JsonParseException.class)
+	public void testFactorOnJsonStringWrongJson() {
+		String json = "[]";
+		classCreatorFactory.factorOnJsonString(json);
+	}
+
+	@Test(expectedExceptions = JsonParseException.class)
+	public void testFactorOnJsonStringBrokenJson() {
+		String json = "{";
+		classCreatorFactory.factorOnJsonString(json);
+	}
+
 	@Test
 	public void testFactorOnJsonStringDataGroup() {
 		String json = "{\"groupDataId\":{}}";
@@ -34,6 +58,11 @@ public class ClassCreatorFactoryTest {
 		String json = "{\"atomicDataId\":\"atomicValue\"}";
 		ClassCreator classCreator = classCreatorFactory.factorOnJsonString(json);
 		assertTrue(classCreator instanceof DataAtomicClassCreator);
+	}
+
+	@Test(expectedExceptions = JsonParseException.class)
+	public void testFactorOnJsonObjectNullJson() {
+		classCreatorFactory.factorOnJsonObject(null);
 	}
 
 	@Test

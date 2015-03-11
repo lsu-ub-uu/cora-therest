@@ -26,6 +26,41 @@ public final class DataGroupClassCreator implements ClassCreator {
 
 	@Override
 	public DataElementRest toClass() {
+		try {
+			validateData();
+			return tryToClass();
+		} catch (Exception e) {
+			throw new JsonParseException("Error parsing jsonObject", e);
+		}
+	}
+
+	private void validateData() {
+		validateOnlyOneKeyValuePairAtTopLevel();
+		validateGroupOnlyContainsAttributesOrChildren();
+	}
+
+	private void validateOnlyOneKeyValuePairAtTopLevel() {
+		if (jsonObject.size() != 1) {
+			throw new JsonParseException("Group data can only contain one key value pair");
+		}
+	}
+
+	private void validateGroupOnlyContainsAttributesOrChildren() {
+		String dataId = getDataId();
+		JsonObject dataGroupChildren2 = jsonObject.getJsonObject(dataId);
+		for (Entry<String, JsonValue> childEntry : dataGroupChildren2.entrySet()) {
+			validateChildEntryIsAttributesOrChildren(childEntry);
+		}
+	}
+
+	private void validateChildEntryIsAttributesOrChildren(Entry<String, JsonValue> childEntry) {
+		String key = childEntry.getKey();
+		if (!"attributes".equals(key) && !"children".equals(key)) {
+			throw new JsonParseException("Group data can only contain attributes or children");
+		}
+	}
+
+	private DataElementRest tryToClass() {
 		String dataId = getDataId();
 		dataGroupRest = DataGroupRest.withDataId(dataId);
 		dataGroupChildren = jsonObject.getJsonObject(dataId);
@@ -48,10 +83,14 @@ public final class DataGroupClassCreator implements ClassCreator {
 
 	private void addAttributesToGroup() {
 		JsonObject attributes = dataGroupChildren.getJsonObject("attributes");
-		for (Entry<String, JsonValue> attribute : attributes.entrySet()) {
-			String value = ((JsonString) attribute.getValue()).getString();
-			dataGroupRest.addAttribute(attribute.getKey(), value);
+		for (Entry<String, JsonValue> attributeEntry : attributes.entrySet()) {
+			addAttributeToGroup(attributeEntry);
 		}
+	}
+
+	private void addAttributeToGroup(Entry<String, JsonValue> attributeEntry) {
+		String value = ((JsonString) attributeEntry.getValue()).getString();
+		dataGroupRest.addAttribute(attributeEntry.getKey(), value);
 	}
 
 	private boolean hasChildren() {
@@ -59,13 +98,16 @@ public final class DataGroupClassCreator implements ClassCreator {
 	}
 
 	private void addChildrenToGroup() {
-		ClassCreatorFactoryImp classCreatorFactoryImp = new ClassCreatorFactoryImp();
 		JsonArray children = dataGroupChildren.getJsonArray("children");
-		for (JsonValue jsonValue : children) {
-			JsonObject jsonChildObject = (JsonObject) jsonValue;
-			ClassCreator factorOnJsonObject = classCreatorFactoryImp
-					.factorOnJsonObject(jsonChildObject);
-			dataGroupRest.addChild(factorOnJsonObject.toClass());
+		for (JsonValue child : children) {
+			addChildToGroup(child);
 		}
+	}
+
+	private void addChildToGroup(JsonValue child) {
+		ClassCreatorFactoryImp classCreatorFactoryImp = new ClassCreatorFactoryImp();
+		JsonObject jsonChildObject = (JsonObject) child;
+		ClassCreator childClassCreator = classCreatorFactoryImp.factorOnJsonObject(jsonChildObject);
+		dataGroupRest.addChild(childClassCreator.toClass());
 	}
 }
