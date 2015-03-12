@@ -8,7 +8,7 @@ import epc.therest.data.DataElementRest;
 public final class DataAtomicClassCreator implements ClassCreator {
 	private JsonObject jsonObject;
 
-	public static DataAtomicClassCreator forJsonObject(JsonObject jsonObject) {
+	static DataAtomicClassCreator forJsonObject(JsonObject jsonObject) {
 		return new DataAtomicClassCreator(jsonObject);
 	}
 

@@ -25,57 +25,57 @@ public class ClassCreatorFactoryTest {
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testFactorOnJsonStringNullJson() {
 		String json = null;
-		classCreatorFactory.factorOnJsonString(json);
+		classCreatorFactory.createForJsonString(json);
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testFactorOnJsonStringEmptyJson() {
 		String json = "";
-		classCreatorFactory.factorOnJsonString(json);
+		classCreatorFactory.createForJsonString(json);
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testFactorOnJsonStringWrongJson() {
 		String json = "[]";
-		classCreatorFactory.factorOnJsonString(json);
+		classCreatorFactory.createForJsonString(json);
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testFactorOnJsonStringBrokenJson() {
 		String json = "{";
-		classCreatorFactory.factorOnJsonString(json);
+		classCreatorFactory.createForJsonString(json);
 	}
 
 	@Test
 	public void testFactorOnJsonStringDataGroup() {
 		String json = "{\"groupDataId\":{}}";
-		ClassCreator classCreator = classCreatorFactory.factorOnJsonString(json);
+		ClassCreator classCreator = classCreatorFactory.createForJsonString(json);
 		assertTrue(classCreator instanceof DataGroupClassCreator);
 	}
 
 	@Test
 	public void testFactorOnJsonStringDataAtomic() {
 		String json = "{\"atomicDataId\":\"atomicValue\"}";
-		ClassCreator classCreator = classCreatorFactory.factorOnJsonString(json);
+		ClassCreator classCreator = classCreatorFactory.createForJsonString(json);
 		assertTrue(classCreator instanceof DataAtomicClassCreator);
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testFactorOnJsonObjectNullJson() {
-		classCreatorFactory.factorOnJsonObject(null);
+		classCreatorFactory.createForJsonObject(null);
 	}
 
 	@Test
 	public void testFactorOnJsonObjectDataGroup() {
 		JsonObject jsonObject = createJsonObjectForJsonString("{\"groupDataId\":{}}");
-		ClassCreator classCreator = classCreatorFactory.factorOnJsonObject(jsonObject);
+		ClassCreator classCreator = classCreatorFactory.createForJsonObject(jsonObject);
 		assertTrue(classCreator instanceof DataGroupClassCreator);
 	}
 
 	@Test
 	public void testFactorOnJsonObjectDataAtomic() {
 		JsonObject jsonObject = createJsonObjectForJsonString("{\"atomicDataId\":\"atomicValue\"}");
-		ClassCreator classCreator = classCreatorFactory.factorOnJsonObject(jsonObject);
+		ClassCreator classCreator = classCreatorFactory.createForJsonObject(jsonObject);
 		assertTrue(classCreator instanceof DataAtomicClassCreator);
 	}
 

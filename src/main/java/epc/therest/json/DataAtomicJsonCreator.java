@@ -9,7 +9,7 @@ import javax.json.JsonObjectBuilder;
 
 import epc.therest.data.DataAtomicRest;
 
-public final class DataAtomicJsonCreator implements JsonCreator {
+public final class DataAtomicJsonCreator extends JsonCreator {
 
 	private DataAtomicRest dataAtomicRest;
 
@@ -28,7 +28,7 @@ public final class DataAtomicJsonCreator implements JsonCreator {
 	}
 
 	@Override
-	public JsonObjectBuilder toJsonObjectBuilder() {
+	JsonObjectBuilder toJsonObjectBuilder() {
 		Map<String, Object> config = new HashMap<>();
 		JsonBuilderFactory factory = Json.createBuilderFactory(config);
 		JsonObjectBuilder atomic = factory.createObjectBuilder();

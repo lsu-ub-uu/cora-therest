@@ -15,7 +15,7 @@ public class DataGroupJsonCreatorTest {
 		DataGroup dataGroup = DataGroup.withDataId("groupDataId");
 		DataElementRest dataElementRest = DataGroupRest.fromDataGroup(dataGroup);
 
-		JsonCreator jsonCreator = jsonCreatorFactory.factorOnDataElementRest(dataElementRest);
+		JsonCreator jsonCreator = jsonCreatorFactory.createForDataElementRest(dataElementRest);
 		String json = jsonCreator.toJson();
 
 		Assert.assertEquals(json, "{\"groupDataId\":{}}");
@@ -29,7 +29,7 @@ public class DataGroupJsonCreatorTest {
 
 		DataElementRest dataElementRest = DataGroupRest.fromDataGroup(dataGroup);
 
-		JsonCreator jsonCreator = jsonCreatorFactory.factorOnDataElementRest(dataElementRest);
+		JsonCreator jsonCreator = jsonCreatorFactory.createForDataElementRest(dataElementRest);
 		String json = jsonCreator.toJson();
 
 		Assert.assertEquals(json,
@@ -45,7 +45,7 @@ public class DataGroupJsonCreatorTest {
 
 		DataElementRest dataElementRest = DataGroupRest.fromDataGroup(dataGroup);
 
-		JsonCreator jsonCreator = jsonCreatorFactory.factorOnDataElementRest(dataElementRest);
+		JsonCreator jsonCreator = jsonCreatorFactory.createForDataElementRest(dataElementRest);
 		String json = jsonCreator.toJson();
 
 		Assert.assertEquals(json, "{\"groupDataId\":{\"attributes\":{"
@@ -63,7 +63,7 @@ public class DataGroupJsonCreatorTest {
 
 		DataElementRest dataElementRest = DataGroupRest.fromDataGroup(dataGroup);
 
-		JsonCreator jsonCreator = jsonCreatorFactory.factorOnDataElementRest(dataElementRest);
+		JsonCreator jsonCreator = jsonCreatorFactory.createForDataElementRest(dataElementRest);
 		String json = jsonCreator.toJson();
 
 		Assert.assertEquals(json,
@@ -86,7 +86,7 @@ public class DataGroupJsonCreatorTest {
 
 		DataElementRest dataElementRest = DataGroupRest.fromDataGroup(dataGroup);
 
-		JsonCreator jsonCreator = jsonCreatorFactory.factorOnDataElementRest(dataElementRest);
+		JsonCreator jsonCreator = jsonCreatorFactory.createForDataElementRest(dataElementRest);
 		String json = jsonCreator.toJson();
 
 		String expectedJson = "{";
@@ -120,7 +120,7 @@ public class DataGroupJsonCreatorTest {
 
 		DataElementRest dataElementRest = DataGroupRest.fromDataGroup(dataGroup);
 
-		JsonCreator jsonCreator = jsonCreatorFactory.factorOnDataElementRest(dataElementRest);
+		JsonCreator jsonCreator = jsonCreatorFactory.createForDataElementRest(dataElementRest);
 		String json = jsonCreator.toJson();
 		String expectedJson = "{";
 		expectedJson += "\"groupDataId\":{";

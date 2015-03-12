@@ -4,8 +4,8 @@ import javax.json.JsonObject;
 
 public interface ClassCreatorFactory {
 
-	ClassCreator factorOnJsonString(String json);
+	ClassCreator createForJsonString(String json);
 
-	ClassCreator factorOnJsonObject(JsonObject jsonObject);
+	ClassCreator createForJsonObject(JsonObject jsonObject);
 
 }

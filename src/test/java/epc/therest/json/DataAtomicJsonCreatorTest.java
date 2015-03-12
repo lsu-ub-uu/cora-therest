@@ -14,7 +14,7 @@ public class DataAtomicJsonCreatorTest {
 		DataAtomic dataAtomic = DataAtomic.withDataIdAndValue("atomicDataId", "atomicValue");
 		DataElementRest dataElementRest = DataAtomicRest.fromDataAtomic(dataAtomic);
 
-		JsonCreator jsonCreator = jsonCreatorFactory.factorOnDataElementRest(dataElementRest);
+		JsonCreator jsonCreator = jsonCreatorFactory.createForDataElementRest(dataElementRest);
 		String json = jsonCreator.toJson();
 
 		Assert.assertEquals(json, "{\"atomicDataId\":\"atomicValue\"}");
@@ -26,7 +26,7 @@ public class DataAtomicJsonCreatorTest {
 		DataAtomic dataAtomic = DataAtomic.withDataIdAndValue("atomicDataId", "");
 		DataElementRest dataElementRest = DataAtomicRest.fromDataAtomic(dataAtomic);
 
-		JsonCreator jsonCreator = jsonCreatorFactory.factorOnDataElementRest(dataElementRest);
+		JsonCreator jsonCreator = jsonCreatorFactory.createForDataElementRest(dataElementRest);
 		String json = jsonCreator.toJson();
 
 		Assert.assertEquals(json, "{\"atomicDataId\":\"\"}");

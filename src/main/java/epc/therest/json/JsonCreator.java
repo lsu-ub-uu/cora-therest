@@ -2,9 +2,9 @@ package epc.therest.json;
 
 import javax.json.JsonObjectBuilder;
 
-public interface JsonCreator {
+public abstract class JsonCreator {
 
-	String toJson();
+	public abstract String toJson();
 
-	JsonObjectBuilder toJsonObjectBuilder();
+	abstract JsonObjectBuilder toJsonObjectBuilder();
 }

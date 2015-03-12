@@ -121,7 +121,7 @@ public class DataGroupClassCreatorTest {
 	}
 
 	private DataGroupRest createDataGroupRestForJsonString(String json) {
-		ClassCreator classCreator = classCreatorFactory.factorOnJsonString(json);
+		ClassCreator classCreator = classCreatorFactory.createForJsonString(json);
 		DataElementRest dataElementRest = classCreator.toClass();
 		DataGroupRest dataGroupRest = (DataGroupRest) dataElementRest;
 		return dataGroupRest;
@@ -130,42 +130,42 @@ public class DataGroupClassCreatorTest {
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testToClassWrongJsonExtraKeyValuePair() {
 		String json = "{\"id\":{},\"id2\":\"value2\"}";
-		ClassCreator classCreator = classCreatorFactory.factorOnJsonString(json);
+		ClassCreator classCreator = classCreatorFactory.createForJsonString(json);
 		classCreator.toClass();
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testToClassWrongJsonOnlyKeyValuePairInsideGroup() {
 		String json = "{\"id\":{\"id2\":\"value2\"}}";
-		ClassCreator classCreator = classCreatorFactory.factorOnJsonString(json);
+		ClassCreator classCreator = classCreatorFactory.createForJsonString(json);
 		classCreator.toClass();
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testToClassWrongJsonAttributesIsGroup() {
 		String json = "{\"groupDataId\":{\"attributes\":{\"attributeDataId\":\"attributeValue\",\"bla\":{} }}}";
-		ClassCreator classCreator = classCreatorFactory.factorOnJsonString(json);
+		ClassCreator classCreator = classCreatorFactory.createForJsonString(json);
 		classCreator.toClass();
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testToClassWrongJsonAttributesIsArray() {
 		String json = "{\"groupDataId\":{\"attributes\":{\"attributeDataId\":\"attributeValue\",\"bla\":[true] }}}";
-		ClassCreator classCreator = classCreatorFactory.factorOnJsonString(json);
+		ClassCreator classCreator = classCreatorFactory.createForJsonString(json);
 		classCreator.toClass();
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testToClassWrongJsonChildrenIsArray() {
 		String json = "{\"groupDataId\":{\"children\":[{\"atomicDataId\":\"atomicValue\"},[]]}}";
-		ClassCreator classCreator = classCreatorFactory.factorOnJsonString(json);
+		ClassCreator classCreator = classCreatorFactory.createForJsonString(json);
 		classCreator.toClass();
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testToClassWrongJsonChildrenIsString() {
 		String json = "{\"groupDataId\":{\"children\":[{\"atomicDataId\":\"atomicValue\"},\"string\"]}}";
-		ClassCreator classCreator = classCreatorFactory.factorOnJsonString(json);
+		ClassCreator classCreator = classCreatorFactory.createForJsonString(json);
 		classCreator.toClass();
 	}
 }

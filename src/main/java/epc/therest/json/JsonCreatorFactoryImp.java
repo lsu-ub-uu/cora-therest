@@ -7,7 +7,7 @@ import epc.therest.data.DataGroupRest;
 public class JsonCreatorFactoryImp implements JsonCreatorFactory {
 
 	@Override
-	public JsonCreator factorOnDataElementRest(DataElementRest dataElementRest) {
+	public JsonCreator createForDataElementRest(DataElementRest dataElementRest) {
 
 		if (dataElementRest instanceof DataGroupRest) {
 			return DataGroupJsonCreator.forDataGroupRest((DataGroupRest) dataElementRest);

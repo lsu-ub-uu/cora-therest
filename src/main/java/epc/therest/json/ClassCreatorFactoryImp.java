@@ -13,32 +13,32 @@ import javax.json.JsonValue;
 public class ClassCreatorFactoryImp implements ClassCreatorFactory {
 
 	@Override
-	public ClassCreator factorOnJsonString(String json) {
+	public ClassCreator createForJsonString(String json) {
 		try {
-			return tryToFactorOnJsonString(json);
+			return tryToCreateForJsonString(json);
 		} catch (Exception e) {
 			throw new JsonParseException("Error parsing json", e);
 		}
 	}
 
-	private ClassCreator tryToFactorOnJsonString(String json) {
+	private ClassCreator tryToCreateForJsonString(String json) {
 		Map<String, Object> config = new HashMap<>();
 		JsonReaderFactory jsonReaderFactory = Json.createReaderFactory(config);
 		JsonReader jsonReader = jsonReaderFactory.createReader(new StringReader(json));
 		JsonObject jsonObject = jsonReader.readObject();
-		return tryToFactorOnJsonObject(jsonObject);
+		return tryToCreateForJsonObject(jsonObject);
 	}
 
 	@Override
-	public ClassCreator factorOnJsonObject(JsonObject jsonObject) {
+	public ClassCreator createForJsonObject(JsonObject jsonObject) {
 		try {
-			return tryToFactorOnJsonObject(jsonObject);
+			return tryToCreateForJsonObject(jsonObject);
 		} catch (Exception e) {
 			throw new JsonParseException("Error parsing json", e);
 		}
 	}
 
-	private ClassCreator tryToFactorOnJsonObject(JsonObject jsonObject) {
+	private ClassCreator tryToCreateForJsonObject(JsonObject jsonObject) {
 		JsonValue jsonValue = jsonObject.values().iterator().next();
 		if (JsonValue.ValueType.OBJECT.equals(jsonValue.getValueType())) {
 			return DataGroupClassCreator.forJsonObject(jsonObject);

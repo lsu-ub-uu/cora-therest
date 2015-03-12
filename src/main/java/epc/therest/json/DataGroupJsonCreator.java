@@ -12,7 +12,7 @@ import javax.json.JsonObjectBuilder;
 import epc.therest.data.DataElementRest;
 import epc.therest.data.DataGroupRest;
 
-public final class DataGroupJsonCreator implements JsonCreator {
+public final class DataGroupJsonCreator extends JsonCreator {
 
 	private DataGroupRest dataGroupRest;
 	private JsonBuilderFactory jsonBuilderFactory;
@@ -36,7 +36,7 @@ public final class DataGroupJsonCreator implements JsonCreator {
 	}
 
 	@Override
-	public JsonObjectBuilder toJsonObjectBuilder() {
+	JsonObjectBuilder toJsonObjectBuilder() {
 		if (hasAttributes()) {
 			addAttributesToGroup();
 		}
@@ -68,7 +68,7 @@ public final class DataGroupJsonCreator implements JsonCreator {
 		JsonCreatorFactory jsonCreatorFactory = new JsonCreatorFactoryImp();
 		JsonArrayBuilder childrenArray = jsonBuilderFactory.createArrayBuilder();
 		for (DataElementRest dataElementRest : dataGroupRest.getChildren()) {
-			childrenArray.add(jsonCreatorFactory.factorOnDataElementRest(dataElementRest)
+			childrenArray.add(jsonCreatorFactory.createForDataElementRest(dataElementRest)
 					.toJsonObjectBuilder());
 		}
 		groupChildren.add("children", childrenArray);

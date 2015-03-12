@@ -32,7 +32,7 @@ public class DataAtomicClassCreatorTest {
 	}
 
 	private DataAtomicRest createDataAtomicRestForJsonString(String json) {
-		ClassCreator classCreator = classCreatorFactory.factorOnJsonString(json);
+		ClassCreator classCreator = classCreatorFactory.createForJsonString(json);
 		DataElementRest dataElementRest = classCreator.toClass();
 		DataAtomicRest dataAtomicRest = (DataAtomicRest) dataElementRest;
 		return dataAtomicRest;
@@ -41,21 +41,21 @@ public class DataAtomicClassCreatorTest {
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testToClassWrongJson() {
 		String json = "{\"id\":[]}";
-		ClassCreator classCreator = classCreatorFactory.factorOnJsonString(json);
+		ClassCreator classCreator = classCreatorFactory.createForJsonString(json);
 		classCreator.toClass();
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testToClassWrongJsonExtraKeyValuePair() {
 		String json = "{\"atomicDataId\":\"atomicValue\",\"id2\":\"value2\"}";
-		ClassCreator classCreator = classCreatorFactory.factorOnJsonString(json);
+		ClassCreator classCreator = classCreatorFactory.createForJsonString(json);
 		classCreator.toClass();
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testToClassWrongJsonExtraArray() {
 		String json = "{\"atomicDataId\":\"atomicValue\",\"id2\":[]}";
-		ClassCreator classCreator = classCreatorFactory.factorOnJsonString(json);
+		ClassCreator classCreator = classCreatorFactory.createForJsonString(json);
 		classCreator.toClass();
 	}
 

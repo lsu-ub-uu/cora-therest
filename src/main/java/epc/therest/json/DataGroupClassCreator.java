@@ -16,7 +16,7 @@ public final class DataGroupClassCreator implements ClassCreator {
 	private DataGroupRest dataGroupRest;
 	private JsonObject dataGroupChildren;
 
-	public static DataGroupClassCreator forJsonObject(JsonObject jsonObject) {
+	static DataGroupClassCreator forJsonObject(JsonObject jsonObject) {
 		return new DataGroupClassCreator(jsonObject);
 	}
 
@@ -107,7 +107,7 @@ public final class DataGroupClassCreator implements ClassCreator {
 	private void addChildToGroup(JsonValue child) {
 		ClassCreatorFactoryImp classCreatorFactoryImp = new ClassCreatorFactoryImp();
 		JsonObject jsonChildObject = (JsonObject) child;
-		ClassCreator childClassCreator = classCreatorFactoryImp.factorOnJsonObject(jsonChildObject);
+		ClassCreator childClassCreator = classCreatorFactoryImp.createForJsonObject(jsonChildObject);
 		dataGroupRest.addChild(childClassCreator.toClass());
 	}
 }
