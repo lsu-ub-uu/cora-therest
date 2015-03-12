@@ -6,14 +6,14 @@ import org.testng.annotations.Test;
 import epc.metadataformat.data.DataAtomic;
 import epc.metadataformat.data.DataGroup;
 import epc.therest.data.DataElementRest;
-import epc.therest.data.DataGroupRest;
+import epc.therest.data.RestDataGroup;
 
 public class DataGroupJsonCreatorTest {
 	@Test
 	public void testToJson() {
 		JsonCreatorFactory jsonCreatorFactory = new JsonCreatorFactoryImp();
 		DataGroup dataGroup = DataGroup.withDataId("groupDataId");
-		DataElementRest dataElementRest = DataGroupRest.fromDataGroup(dataGroup);
+		DataElementRest dataElementRest = RestDataGroup.fromDataGroup(dataGroup);
 
 		JsonCreator jsonCreator = jsonCreatorFactory.createForDataElementRest(dataElementRest);
 		String json = jsonCreator.toJson();
@@ -27,7 +27,7 @@ public class DataGroupJsonCreatorTest {
 		DataGroup dataGroup = DataGroup.withDataId("groupDataId");
 		dataGroup.addAttributeByIdWithValue("attributeDataId", "attributeValue");
 
-		DataElementRest dataElementRest = DataGroupRest.fromDataGroup(dataGroup);
+		DataElementRest dataElementRest = RestDataGroup.fromDataGroup(dataGroup);
 
 		JsonCreator jsonCreator = jsonCreatorFactory.createForDataElementRest(dataElementRest);
 		String json = jsonCreator.toJson();
@@ -43,7 +43,7 @@ public class DataGroupJsonCreatorTest {
 		dataGroup.addAttributeByIdWithValue("attributeDataId", "attributeValue");
 		dataGroup.addAttributeByIdWithValue("attributeDataId2", "attributeValue2");
 
-		DataElementRest dataElementRest = DataGroupRest.fromDataGroup(dataGroup);
+		DataElementRest dataElementRest = RestDataGroup.fromDataGroup(dataGroup);
 
 		JsonCreator jsonCreator = jsonCreatorFactory.createForDataElementRest(dataElementRest);
 		String json = jsonCreator.toJson();
@@ -61,7 +61,7 @@ public class DataGroupJsonCreatorTest {
 		DataAtomic dataAtomic = DataAtomic.withDataIdAndValue("atomicDataId", "atomicValue");
 		dataGroup.addChild(dataAtomic);
 
-		DataElementRest dataElementRest = DataGroupRest.fromDataGroup(dataGroup);
+		DataElementRest dataElementRest = RestDataGroup.fromDataGroup(dataGroup);
 
 		JsonCreator jsonCreator = jsonCreatorFactory.createForDataElementRest(dataElementRest);
 		String json = jsonCreator.toJson();
@@ -84,7 +84,7 @@ public class DataGroupJsonCreatorTest {
 		DataAtomic dataAtomic2 = DataAtomic.withDataIdAndValue("atomicDataId2", "atomicValue2");
 		dataGroup2.addChild(dataAtomic2);
 
-		DataElementRest dataElementRest = DataGroupRest.fromDataGroup(dataGroup);
+		DataElementRest dataElementRest = RestDataGroup.fromDataGroup(dataGroup);
 
 		JsonCreator jsonCreator = jsonCreatorFactory.createForDataElementRest(dataElementRest);
 		String json = jsonCreator.toJson();
@@ -118,7 +118,7 @@ public class DataGroupJsonCreatorTest {
 		DataAtomic dataAtomic2 = DataAtomic.withDataIdAndValue("atomicDataId2", "atomicValue2");
 		dataGroup2.addChild(dataAtomic2);
 
-		DataElementRest dataElementRest = DataGroupRest.fromDataGroup(dataGroup);
+		DataElementRest dataElementRest = RestDataGroup.fromDataGroup(dataGroup);
 
 		JsonCreator jsonCreator = jsonCreatorFactory.createForDataElementRest(dataElementRest);
 		String json = jsonCreator.toJson();

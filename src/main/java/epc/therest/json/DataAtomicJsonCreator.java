@@ -7,18 +7,18 @@ import javax.json.Json;
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 
-import epc.therest.data.DataAtomicRest;
+import epc.therest.data.RestDataAtomic;
 
 public final class DataAtomicJsonCreator extends JsonCreator {
 
-	private DataAtomicRest dataAtomicRest;
+	private RestDataAtomic restDataAtomic;
 
-	public static JsonCreator forDataAtomicRest(DataAtomicRest dataAtomic) {
+	public static JsonCreator forRestDataAtomic(RestDataAtomic dataAtomic) {
 		return new DataAtomicJsonCreator(dataAtomic);
 	}
 
-	private DataAtomicJsonCreator(DataAtomicRest dataAtomic) {
-		this.dataAtomicRest = dataAtomic;
+	private DataAtomicJsonCreator(RestDataAtomic dataAtomic) {
+		this.restDataAtomic = dataAtomic;
 	}
 
 	@Override
@@ -32,7 +32,7 @@ public final class DataAtomicJsonCreator extends JsonCreator {
 		Map<String, Object> config = new HashMap<>();
 		JsonBuilderFactory factory = Json.createBuilderFactory(config);
 		JsonObjectBuilder atomic = factory.createObjectBuilder();
-		atomic.add(dataAtomicRest.getDataId(), dataAtomicRest.getValue());
+		atomic.add(restDataAtomic.getDataId(), restDataAtomic.getValue());
 		return atomic;
 	}
 }

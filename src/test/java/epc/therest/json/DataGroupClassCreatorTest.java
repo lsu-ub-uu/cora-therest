@@ -7,9 +7,9 @@ import java.util.Iterator;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import epc.therest.data.DataAtomicRest;
+import epc.therest.data.RestDataAtomic;
 import epc.therest.data.DataElementRest;
-import epc.therest.data.DataGroupRest;
+import epc.therest.data.RestDataGroup;
 
 public class DataGroupClassCreatorTest {
 	private ClassCreatorFactory classCreatorFactory;
@@ -23,16 +23,16 @@ public class DataGroupClassCreatorTest {
 	@Test
 	public void testToClass() {
 		String json = "{\"groupDataId\":{}}";
-		DataGroupRest dataGroupRest = createDataGroupRestForJsonString(json);
-		assertEquals(dataGroupRest.getDataId(), "groupDataId");
+		RestDataGroup restDataGroup = createRestDataGroupForJsonString(json);
+		assertEquals(restDataGroup.getDataId(), "groupDataId");
 	}
 
 	@Test
 	public void testToClassWithAttribute() {
 		String json = "{\"groupDataId\":{\"attributes\":{\"attributeDataId\":\"attributeValue\"}}}";
-		DataGroupRest dataGroupRest = createDataGroupRestForJsonString(json);
-		assertEquals(dataGroupRest.getDataId(), "groupDataId");
-		String attributeValue = dataGroupRest.getAttributes().get("attributeDataId");
+		RestDataGroup restDataGroup = createRestDataGroupForJsonString(json);
+		assertEquals(restDataGroup.getDataId(), "groupDataId");
+		String attributeValue = restDataGroup.getAttributes().get("attributeDataId");
 		assertEquals(attributeValue, "attributeValue");
 	}
 
@@ -42,11 +42,11 @@ public class DataGroupClassCreatorTest {
 				+ "\"attributeDataId\":\"attributeValue\","
 				+ "\"attributeDataId2\":\"attributeValue2\"" + "}}}";
 
-		DataGroupRest dataGroupRest = createDataGroupRestForJsonString(json);
-		assertEquals(dataGroupRest.getDataId(), "groupDataId");
-		String attributeValue = dataGroupRest.getAttributes().get("attributeDataId");
+		RestDataGroup restDataGroup = createRestDataGroupForJsonString(json);
+		assertEquals(restDataGroup.getDataId(), "groupDataId");
+		String attributeValue = restDataGroup.getAttributes().get("attributeDataId");
 		assertEquals(attributeValue, "attributeValue");
-		String attributeValue2 = dataGroupRest.getAttributes().get("attributeDataId2");
+		String attributeValue2 = restDataGroup.getAttributes().get("attributeDataId2");
 		assertEquals(attributeValue2, "attributeValue2");
 	}
 
@@ -54,9 +54,9 @@ public class DataGroupClassCreatorTest {
 	public void testToClassWithAtomicChild() {
 		String json = "{\"groupDataId\":{\"children\":[{\"atomicDataId\":\"atomicValue\"}]}}";
 
-		DataGroupRest dataGroupRest = createDataGroupRestForJsonString(json);
-		assertEquals(dataGroupRest.getDataId(), "groupDataId");
-		DataAtomicRest child = (DataAtomicRest) dataGroupRest.getChildren().iterator().next();
+		RestDataGroup restDataGroup = createRestDataGroupForJsonString(json);
+		assertEquals(restDataGroup.getDataId(), "groupDataId");
+		RestDataAtomic child = (RestDataAtomic) restDataGroup.getChildren().iterator().next();
 		assertEquals(child.getDataId(), "atomicDataId");
 		assertEquals(child.getValue(), "atomicValue");
 	}
@@ -72,15 +72,15 @@ public class DataGroupClassCreatorTest {
 		json += "}";
 		json += "}";
 
-		DataGroupRest dataGroupRest = createDataGroupRestForJsonString(json);
-		assertEquals(dataGroupRest.getDataId(), "groupDataId");
-		Iterator<DataElementRest> iterator = dataGroupRest.getChildren().iterator();
-		DataAtomicRest child = (DataAtomicRest) iterator.next();
+		RestDataGroup restDataGroup = createRestDataGroupForJsonString(json);
+		assertEquals(restDataGroup.getDataId(), "groupDataId");
+		Iterator<DataElementRest> iterator = restDataGroup.getChildren().iterator();
+		RestDataAtomic child = (RestDataAtomic) iterator.next();
 		assertEquals(child.getDataId(), "atomicDataId");
 		assertEquals(child.getValue(), "atomicValue");
-		DataGroupRest child2 = (DataGroupRest) iterator.next();
+		RestDataGroup child2 = (RestDataGroup) iterator.next();
 		assertEquals(child2.getDataId(), "groupDataId2");
-		DataAtomicRest subChild = (DataAtomicRest) child2.getChildren().iterator().next();
+		RestDataAtomic subChild = (RestDataAtomic) child2.getChildren().iterator().next();
 		assertEquals(subChild.getDataId(), "atomicDataId2");
 		assertEquals(subChild.getValue(), "atomicValue2");
 	}
@@ -100,19 +100,19 @@ public class DataGroupClassCreatorTest {
 		json += "}";
 		json += "}";
 
-		DataGroupRest dataGroupRest = createDataGroupRestForJsonString(json);
-		assertEquals(dataGroupRest.getDataId(), "groupDataId");
+		RestDataGroup restDataGroup = createRestDataGroupForJsonString(json);
+		assertEquals(restDataGroup.getDataId(), "groupDataId");
 
-		String attributeValue2 = dataGroupRest.getAttributes().get("attributeDataId");
+		String attributeValue2 = restDataGroup.getAttributes().get("attributeDataId");
 		assertEquals(attributeValue2, "attributeValue");
 
-		Iterator<DataElementRest> iterator = dataGroupRest.getChildren().iterator();
-		DataAtomicRest child = (DataAtomicRest) iterator.next();
+		Iterator<DataElementRest> iterator = restDataGroup.getChildren().iterator();
+		RestDataAtomic child = (RestDataAtomic) iterator.next();
 		assertEquals(child.getDataId(), "atomicDataId");
 		assertEquals(child.getValue(), "atomicValue");
-		DataGroupRest child2 = (DataGroupRest) iterator.next();
+		RestDataGroup child2 = (RestDataGroup) iterator.next();
 		assertEquals(child2.getDataId(), "groupDataId2");
-		DataAtomicRest subChild = (DataAtomicRest) child2.getChildren().iterator().next();
+		RestDataAtomic subChild = (RestDataAtomic) child2.getChildren().iterator().next();
 		assertEquals(subChild.getDataId(), "atomicDataId2");
 		assertEquals(subChild.getValue(), "atomicValue2");
 
@@ -120,11 +120,11 @@ public class DataGroupClassCreatorTest {
 		assertEquals(attributeValue, "g2AttributeValue");
 	}
 
-	private DataGroupRest createDataGroupRestForJsonString(String json) {
+	private RestDataGroup createRestDataGroupForJsonString(String json) {
 		ClassCreator classCreator = classCreatorFactory.createForJsonString(json);
 		DataElementRest dataElementRest = classCreator.toClass();
-		DataGroupRest dataGroupRest = (DataGroupRest) dataElementRest;
-		return dataGroupRest;
+		RestDataGroup restDataGroup = (RestDataGroup) dataElementRest;
+		return restDataGroup;
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)

@@ -10,53 +10,53 @@ import org.testng.annotations.Test;
 import epc.metadataformat.data.DataAtomic;
 import epc.metadataformat.data.DataGroup;
 
-public class DataGroupRestTest {
+public class RestDataGroupTest {
 	@Test
 	public void testInit() {
-		DataGroupRest dataGroupRest = DataGroupRest.withDataId("dataId");
-		assertEquals(dataGroupRest.getDataId(), "dataId",
+		RestDataGroup restDataGroup = RestDataGroup.withDataId("dataId");
+		assertEquals(restDataGroup.getDataId(), "dataId",
 				"DataId shold be the one set in the constructor");
 
-		Assert.assertNotNull(dataGroupRest.getAttributes(),
+		Assert.assertNotNull(restDataGroup.getAttributes(),
 				"Attributes should not be null for a new DataGroup");
 
-		dataGroupRest.addAttribute("dataId", "Value");
+		restDataGroup.addAttribute("dataId", "Value");
 
-		Assert.assertEquals(dataGroupRest.getAttributes().get("dataId"), "Value",
+		Assert.assertEquals(restDataGroup.getAttributes().get("dataId"), "Value",
 				"Attribute with dataId dataId should have value Value");
 
-		Assert.assertNotNull(dataGroupRest.getChildren(),
+		Assert.assertNotNull(restDataGroup.getChildren(),
 				"Children should not be null for a new DataGroup");
 
-		DataElementRest dataElementRest = DataGroupRest.withDataId("dataId2");
-		dataGroupRest.addChild(dataElementRest);
-		Assert.assertEquals(dataGroupRest.getChildren().stream().findAny().get(), dataElementRest,
+		DataElementRest dataElementRest = RestDataGroup.withDataId("dataId2");
+		restDataGroup.addChild(dataElementRest);
+		Assert.assertEquals(restDataGroup.getChildren().stream().findAny().get(), dataElementRest,
 				"Child should be the same as the one we added");
 
 	}
 
 	@Test
 	public void testCreateDataGroupRestFromDataGroup() {
-		DataGroupRest dataGroupRest = DataGroupRest
+		RestDataGroup restDataGroup = RestDataGroup
 				.fromDataGroup(DataGroup.withDataId("dataGroup"));
-		Assert.assertEquals(dataGroupRest.getDataId(), "dataGroup");
+		Assert.assertEquals(restDataGroup.getDataId(), "dataGroup");
 	}
 
 	@Test
 	public void testCreateDataGroupRestFromDataGroupWithAttribute() {
 		DataGroup dataGroup = DataGroup.withDataId("dataId");
 		dataGroup.addAttributeByIdWithValue("attributeId", "attributeValue");
-		DataGroupRest dataGroupRest = DataGroupRest.fromDataGroup(dataGroup);
-		assertEquals(dataGroupRest.getAttributes().get("attributeId"), "attributeValue",
-				"Attribute value in DataGroupRest should be the same as in the DataGroup");
+		RestDataGroup restDataGroup = RestDataGroup.fromDataGroup(dataGroup);
+		assertEquals(restDataGroup.getAttributes().get("attributeId"), "attributeValue",
+				"Attribute value in RestDataGroup should be the same as in the DataGroup");
 	}
 
 	@Test
 	public void testCreateDataGroupRestFromDataGroupWithDataGroupChild() {
 		DataGroup dataGroup = DataGroup.withDataId("dataId");
 		dataGroup.addChild(DataGroup.withDataId("childDataId"));
-		DataGroupRest dataGroupRest = DataGroupRest.fromDataGroup(dataGroup);
-		Assert.assertEquals(dataGroupRest.getChildren().stream().findAny().get().getDataId(),
+		RestDataGroup restDataGroup = RestDataGroup.fromDataGroup(dataGroup);
+		Assert.assertEquals(restDataGroup.getChildren().stream().findAny().get().getDataId(),
 				"childDataId");
 	}
 
@@ -64,8 +64,8 @@ public class DataGroupRestTest {
 	public void testCreateDataGroupRestFromDataGroupWithDataAtomicChild() {
 		DataGroup dataGroup = DataGroup.withDataId("dataId");
 		dataGroup.addChild(DataAtomic.withDataIdAndValue("childDataId", "atomicValue"));
-		DataGroupRest dataGroupRest = DataGroupRest.fromDataGroup(dataGroup);
-		Assert.assertEquals(dataGroupRest.getChildren().stream().findAny().get().getDataId(),
+		RestDataGroup restDataGroup = RestDataGroup.fromDataGroup(dataGroup);
+		Assert.assertEquals(restDataGroup.getChildren().stream().findAny().get().getDataId(),
 				"childDataId");
 	}
 
@@ -76,15 +76,15 @@ public class DataGroupRestTest {
 		DataGroup dataGroup2 = DataGroup.withDataId("childDataId");
 		dataGroup2.addChild(DataGroup.withDataId("grandChildDataId"));
 		dataGroup.addChild(dataGroup2);
-		DataGroupRest dataGroupRest = DataGroupRest.fromDataGroup(dataGroup);
-		Iterator<DataElementRest> iterator = dataGroupRest.getChildren().iterator();
+		RestDataGroup restDataGroup = RestDataGroup.fromDataGroup(dataGroup);
+		Iterator<DataElementRest> iterator = restDataGroup.getChildren().iterator();
 		Assert.assertTrue(iterator.hasNext(), "dataGroupRest should have at least one child");
 
-		DataAtomicRest dataAtomicChild = (DataAtomicRest) iterator.next();
+		RestDataAtomic dataAtomicChild = (RestDataAtomic) iterator.next();
 		Assert.assertEquals(dataAtomicChild.getDataId(), "atomicDataId",
 				"DataId should be the one set in the DataAtomic, first child of dataGroup");
 
-		DataGroupRest dataGroupChild = (DataGroupRest) iterator.next();
+		RestDataGroup dataGroupChild = (RestDataGroup) iterator.next();
 		Assert.assertEquals(dataGroupChild.getDataId(), "childDataId",
 				"DataId should be the one set in dataGroup2");
 

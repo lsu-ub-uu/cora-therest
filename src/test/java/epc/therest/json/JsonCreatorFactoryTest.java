@@ -5,16 +5,16 @@ import org.testng.annotations.Test;
 
 import epc.metadataformat.data.DataAtomic;
 import epc.metadataformat.data.DataGroup;
-import epc.therest.data.DataAtomicRest;
+import epc.therest.data.RestDataAtomic;
 import epc.therest.data.DataElementRest;
-import epc.therest.data.DataGroupRest;
+import epc.therest.data.RestDataGroup;
 
 public class JsonCreatorFactoryTest {
 	@Test
 	public void testJsonCreatorFactoryDataGroup() {
 		JsonCreatorFactory jsonCreatorFactory = new JsonCreatorFactoryImp();
 		DataGroup dataGroup = DataGroup.withDataId("groupDataId");
-		DataElementRest dataElementRest = DataGroupRest.fromDataGroup(dataGroup);
+		DataElementRest dataElementRest = RestDataGroup.fromDataGroup(dataGroup);
 
 		JsonCreator jsonCreator = jsonCreatorFactory.createForDataElementRest(dataElementRest);
 
@@ -25,7 +25,7 @@ public class JsonCreatorFactoryTest {
 	public void testJsonCreatorFactoryDataAtomic() {
 		JsonCreatorFactory jsonCreatorFactory = new JsonCreatorFactoryImp();
 		DataAtomic dataAtomic = DataAtomic.withDataIdAndValue("atomicDataId", "atomicValue");
-		DataElementRest dataElementRest = DataAtomicRest.fromDataAtomic(dataAtomic);
+		DataElementRest dataElementRest = RestDataAtomic.fromDataAtomic(dataAtomic);
 
 		JsonCreator jsonCreator = jsonCreatorFactory.createForDataElementRest(dataElementRest);
 

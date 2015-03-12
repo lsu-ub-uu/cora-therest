@@ -4,7 +4,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import epc.therest.data.DataAtomicRest;
+import epc.therest.data.RestDataAtomic;
 import epc.therest.data.DataElementRest;
 
 public class DataAtomicClassCreatorTest {
@@ -18,24 +18,24 @@ public class DataAtomicClassCreatorTest {
 	@Test
 	public void testToClass() {
 		String json = "{\"atomicDataId\":\"atomicValue\"}";
-		DataAtomicRest dataAtomicRest = createDataAtomicRestForJsonString(json);
-		Assert.assertEquals(dataAtomicRest.getDataId(), "atomicDataId");
-		Assert.assertEquals(dataAtomicRest.getValue(), "atomicValue");
+		RestDataAtomic restDataAtomic = createRestDataAtomicForJsonString(json);
+		Assert.assertEquals(restDataAtomic.getDataId(), "atomicDataId");
+		Assert.assertEquals(restDataAtomic.getValue(), "atomicValue");
 	}
 
 	@Test
 	public void testToClassEmptyValue() {
 		String json = "{\"atomicDataId\":\"\"}";
-		DataAtomicRest dataAtomicRest = createDataAtomicRestForJsonString(json);
-		Assert.assertEquals(dataAtomicRest.getDataId(), "atomicDataId");
-		Assert.assertEquals(dataAtomicRest.getValue(), "");
+		RestDataAtomic restDataAtomic = createRestDataAtomicForJsonString(json);
+		Assert.assertEquals(restDataAtomic.getDataId(), "atomicDataId");
+		Assert.assertEquals(restDataAtomic.getValue(), "");
 	}
 
-	private DataAtomicRest createDataAtomicRestForJsonString(String json) {
+	private RestDataAtomic createRestDataAtomicForJsonString(String json) {
 		ClassCreator classCreator = classCreatorFactory.createForJsonString(json);
 		DataElementRest dataElementRest = classCreator.toClass();
-		DataAtomicRest dataAtomicRest = (DataAtomicRest) dataElementRest;
-		return dataAtomicRest;
+		RestDataAtomic restDataAtomic = (RestDataAtomic) dataElementRest;
+		return restDataAtomic;
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)

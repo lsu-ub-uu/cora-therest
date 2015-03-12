@@ -9,7 +9,7 @@ import javax.ws.rs.core.MediaType;
 import epc.metadataformat.data.DataGroup;
 import epc.systemone.record.SystemOneRecordHandler;
 import epc.systemone.record.SystemOneRecordHandlerImp;
-import epc.therest.data.DataGroupRest;
+import epc.therest.data.RestDataGroup;
 import epc.therest.json.DataGroupJsonCreator;
 import epc.therest.json.JsonCreator;
 
@@ -28,8 +28,8 @@ public class RecordEndpoint {
 		record.addAttributeByIdWithValue("type", "place");
 		DataGroup recordOut = recordHandler.createRecord("userId", "place", record);
 
-		DataGroupRest dataGroupRest = DataGroupRest.fromDataGroup(recordOut);
-		JsonCreator jsonCreator = DataGroupJsonCreator.forDataGroupRest(dataGroupRest);
+		RestDataGroup restDataGroup = RestDataGroup.fromDataGroup(recordOut);
+		JsonCreator jsonCreator = DataGroupJsonCreator.forRestDataGroup(restDataGroup);
 
 		return jsonCreator.toJson();
 
@@ -41,8 +41,8 @@ public class RecordEndpoint {
 	public String readRecord(@PathParam("type") String type, @PathParam("id") String id) {
 		SystemOneRecordHandler recordHandler = new SystemOneRecordHandlerImp();
 		DataGroup record = recordHandler.readRecord("userId", type, id);
-		DataGroupRest dataGroupRest = DataGroupRest.fromDataGroup(record);
-		JsonCreator jsonCreator = DataGroupJsonCreator.forDataGroupRest(dataGroupRest);
+		RestDataGroup restDataGroup = RestDataGroup.fromDataGroup(record);
+		JsonCreator jsonCreator = DataGroupJsonCreator.forRestDataGroup(restDataGroup);
 
 		return jsonCreator.toJson();
 	}

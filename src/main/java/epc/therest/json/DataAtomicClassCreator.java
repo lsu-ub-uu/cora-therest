@@ -2,7 +2,7 @@ package epc.therest.json;
 
 import javax.json.JsonObject;
 
-import epc.therest.data.DataAtomicRest;
+import epc.therest.data.RestDataAtomic;
 import epc.therest.data.DataElementRest;
 
 public final class DataAtomicClassCreator implements ClassCreator {
@@ -35,6 +35,6 @@ public final class DataAtomicClassCreator implements ClassCreator {
 	private DataElementRest tryToClass() {
 		String dataId = jsonObject.keySet().iterator().next();
 		String value = jsonObject.getString(dataId);
-		return DataAtomicRest.withDataIdAndValue(dataId, value);
+		return RestDataAtomic.withDataIdAndValue(dataId, value);
 	}
 }

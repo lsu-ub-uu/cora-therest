@@ -9,25 +9,25 @@ import epc.metadataformat.data.DataAtomic;
 import epc.metadataformat.data.DataElement;
 import epc.metadataformat.data.DataGroup;
 
-public final class DataGroupRest implements DataElementRest {
+public final class RestDataGroup implements DataElementRest {
 
 	private final String dataId;
 	private Map<String, String> attributes = new HashMap<>();
 	private List<DataElementRest> children = new ArrayList<>();
 
-	public static DataGroupRest withDataId(String dataId) {
-		return new DataGroupRest(dataId);
+	public static RestDataGroup withDataId(String dataId) {
+		return new RestDataGroup(dataId);
 	}
 
-	private DataGroupRest(String dataId) {
+	private RestDataGroup(String dataId) {
 		this.dataId = dataId;
 	}
 
-	public static DataGroupRest fromDataGroup(DataGroup dataGroup) {
-		return new DataGroupRest(dataGroup);
+	public static RestDataGroup fromDataGroup(DataGroup dataGroup) {
+		return new RestDataGroup(dataGroup);
 	}
 
-	private DataGroupRest(DataGroup dataGroup) {
+	private RestDataGroup(DataGroup dataGroup) {
 		dataId = dataGroup.getDataId();
 		attributes.putAll(dataGroup.getAttributes());
 		convertAndSetChildren(dataGroup);
@@ -41,9 +41,9 @@ public final class DataGroupRest implements DataElementRest {
 
 	private DataElementRest convertToRestEquivalentDataClass(DataElement dataElement) {
 		if (dataElement instanceof DataGroup) {
-			return new DataGroupRest((DataGroup) dataElement);
+			return new RestDataGroup((DataGroup) dataElement);
 		}
-		return DataAtomicRest.fromDataAtomic((DataAtomic) dataElement);
+		return RestDataAtomic.fromDataAtomic((DataAtomic) dataElement);
 	}
 
 	@Override

@@ -10,20 +10,20 @@ import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 
 import epc.therest.data.DataElementRest;
-import epc.therest.data.DataGroupRest;
+import epc.therest.data.RestDataGroup;
 
 public final class DataGroupJsonCreator extends JsonCreator {
 
-	private DataGroupRest dataGroupRest;
+	private RestDataGroup restDataGroup;
 	private JsonBuilderFactory jsonBuilderFactory;
 	private JsonObjectBuilder groupChildren;
 
-	public static JsonCreator forDataGroupRest(DataGroupRest dataGroupRest) {
-		return new DataGroupJsonCreator(dataGroupRest);
+	public static JsonCreator forRestDataGroup(RestDataGroup restDataGroup) {
+		return new DataGroupJsonCreator(restDataGroup);
 	}
 
-	private DataGroupJsonCreator(DataGroupRest dataGroupRest) {
-		this.dataGroupRest = dataGroupRest;
+	private DataGroupJsonCreator(RestDataGroup restDataGroup) {
+		this.restDataGroup = restDataGroup;
 		Map<String, Object> config = new HashMap<>();
 		jsonBuilderFactory = Json.createBuilderFactory(config);
 		groupChildren = jsonBuilderFactory.createObjectBuilder();
@@ -44,21 +44,21 @@ public final class DataGroupJsonCreator extends JsonCreator {
 			addChildrenToGroup();
 		}
 		JsonObjectBuilder group = jsonBuilderFactory.createObjectBuilder();
-		group.add(dataGroupRest.getDataId(), groupChildren);
+		group.add(restDataGroup.getDataId(), groupChildren);
 		return group;
 	}
 
 	private boolean hasChildren() {
-		return !dataGroupRest.getChildren().isEmpty();
+		return !restDataGroup.getChildren().isEmpty();
 	}
 
 	private boolean hasAttributes() {
-		return !dataGroupRest.getAttributes().isEmpty();
+		return !restDataGroup.getAttributes().isEmpty();
 	}
 
 	private void addAttributesToGroup() {
 		JsonObjectBuilder attributes = jsonBuilderFactory.createObjectBuilder();
-		for (Entry<String, String> attributeEntry : dataGroupRest.getAttributes().entrySet()) {
+		for (Entry<String, String> attributeEntry : restDataGroup.getAttributes().entrySet()) {
 			attributes.add(attributeEntry.getKey(), attributeEntry.getValue());
 		}
 		groupChildren.add("attributes", attributes);
@@ -67,7 +67,7 @@ public final class DataGroupJsonCreator extends JsonCreator {
 	private void addChildrenToGroup() {
 		JsonCreatorFactory jsonCreatorFactory = new JsonCreatorFactoryImp();
 		JsonArrayBuilder childrenArray = jsonBuilderFactory.createArrayBuilder();
-		for (DataElementRest dataElementRest : dataGroupRest.getChildren()) {
+		for (DataElementRest dataElementRest : restDataGroup.getChildren()) {
 			childrenArray.add(jsonCreatorFactory.createForDataElementRest(dataElementRest)
 					.toJsonObjectBuilder());
 		}

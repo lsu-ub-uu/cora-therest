@@ -8,12 +8,12 @@ import javax.json.JsonString;
 import javax.json.JsonValue;
 
 import epc.therest.data.DataElementRest;
-import epc.therest.data.DataGroupRest;
+import epc.therest.data.RestDataGroup;
 
 public final class DataGroupClassCreator implements ClassCreator {
 
 	private JsonObject jsonObject;
-	private DataGroupRest dataGroupRest;
+	private RestDataGroup restDataGroup;
 	private JsonObject dataGroupChildren;
 
 	static DataGroupClassCreator forJsonObject(JsonObject jsonObject) {
@@ -62,7 +62,7 @@ public final class DataGroupClassCreator implements ClassCreator {
 
 	private DataElementRest tryToClass() {
 		String dataId = getDataId();
-		dataGroupRest = DataGroupRest.withDataId(dataId);
+		restDataGroup = RestDataGroup.withDataId(dataId);
 		dataGroupChildren = jsonObject.getJsonObject(dataId);
 		if (hasAttributes()) {
 			addAttributesToGroup();
@@ -70,7 +70,7 @@ public final class DataGroupClassCreator implements ClassCreator {
 		if (hasChildren()) {
 			addChildrenToGroup();
 		}
-		return dataGroupRest;
+		return restDataGroup;
 	}
 
 	private String getDataId() {
@@ -90,7 +90,7 @@ public final class DataGroupClassCreator implements ClassCreator {
 
 	private void addAttributeToGroup(Entry<String, JsonValue> attributeEntry) {
 		String value = ((JsonString) attributeEntry.getValue()).getString();
-		dataGroupRest.addAttribute(attributeEntry.getKey(), value);
+		restDataGroup.addAttribute(attributeEntry.getKey(), value);
 	}
 
 	private boolean hasChildren() {
@@ -108,6 +108,6 @@ public final class DataGroupClassCreator implements ClassCreator {
 		ClassCreatorFactoryImp classCreatorFactoryImp = new ClassCreatorFactoryImp();
 		JsonObject jsonChildObject = (JsonObject) child;
 		ClassCreator childClassCreator = classCreatorFactoryImp.createForJsonObject(jsonChildObject);
-		dataGroupRest.addChild(childClassCreator.toClass());
+		restDataGroup.addChild(childClassCreator.toClass());
 	}
 }
