@@ -3,8 +3,8 @@ package epc.therest.json;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import epc.metadataformat.data.DataAtomic;
-import epc.metadataformat.data.DataGroup;
+import epc.spider.data.SpiderDataAtomic;
+import epc.spider.data.SpiderDataGroup;
 import epc.therest.data.DataElementRest;
 import epc.therest.data.RestDataGroup;
 
@@ -12,7 +12,7 @@ public class DataGroupJsonCreatorTest {
 	@Test
 	public void testToJson() {
 		JsonCreatorFactory jsonCreatorFactory = new JsonCreatorFactoryImp();
-		DataGroup dataGroup = DataGroup.withDataId("groupDataId");
+		SpiderDataGroup dataGroup = SpiderDataGroup.withDataId("groupDataId");
 		DataElementRest dataElementRest = RestDataGroup.fromDataGroup(dataGroup);
 
 		JsonCreator jsonCreator = jsonCreatorFactory.createForDataElementRest(dataElementRest);
@@ -24,7 +24,7 @@ public class DataGroupJsonCreatorTest {
 	@Test
 	public void testToJsonGroupWithAttribute() {
 		JsonCreatorFactory jsonCreatorFactory = new JsonCreatorFactoryImp();
-		DataGroup dataGroup = DataGroup.withDataId("groupDataId");
+		SpiderDataGroup dataGroup = SpiderDataGroup.withDataId("groupDataId");
 		dataGroup.addAttributeByIdWithValue("attributeDataId", "attributeValue");
 
 		DataElementRest dataElementRest = RestDataGroup.fromDataGroup(dataGroup);
@@ -39,7 +39,7 @@ public class DataGroupJsonCreatorTest {
 	@Test
 	public void testToJsonGroupWithAttributes() {
 		JsonCreatorFactory jsonCreatorFactory = new JsonCreatorFactoryImp();
-		DataGroup dataGroup = DataGroup.withDataId("groupDataId");
+		SpiderDataGroup dataGroup = SpiderDataGroup.withDataId("groupDataId");
 		dataGroup.addAttributeByIdWithValue("attributeDataId", "attributeValue");
 		dataGroup.addAttributeByIdWithValue("attributeDataId2", "attributeValue2");
 
@@ -56,9 +56,10 @@ public class DataGroupJsonCreatorTest {
 	@Test
 	public void testToJsonGroupWithAtomicChild() {
 		JsonCreatorFactory jsonCreatorFactory = new JsonCreatorFactoryImp();
-		DataGroup dataGroup = DataGroup.withDataId("groupDataId");
+		SpiderDataGroup dataGroup = SpiderDataGroup.withDataId("groupDataId");
 
-		DataAtomic dataAtomic = DataAtomic.withDataIdAndValue("atomicDataId", "atomicValue");
+		SpiderDataAtomic dataAtomic = SpiderDataAtomic.withDataIdAndValue("atomicDataId",
+				"atomicValue");
 		dataGroup.addChild(dataAtomic);
 
 		DataElementRest dataElementRest = RestDataGroup.fromDataGroup(dataGroup);
@@ -73,15 +74,17 @@ public class DataGroupJsonCreatorTest {
 	@Test
 	public void testToJsonGroupWithAtomicChildAndGroupChildWithAtomicChild() {
 		JsonCreatorFactory jsonCreatorFactory = new JsonCreatorFactoryImp();
-		DataGroup dataGroup = DataGroup.withDataId("groupDataId");
+		SpiderDataGroup dataGroup = SpiderDataGroup.withDataId("groupDataId");
 
-		DataAtomic dataAtomic = DataAtomic.withDataIdAndValue("atomicDataId", "atomicValue");
+		SpiderDataAtomic dataAtomic = SpiderDataAtomic.withDataIdAndValue("atomicDataId",
+				"atomicValue");
 		dataGroup.addChild(dataAtomic);
 
-		DataGroup dataGroup2 = DataGroup.withDataId("groupDataId2");
+		SpiderDataGroup dataGroup2 = SpiderDataGroup.withDataId("groupDataId2");
 		dataGroup.addChild(dataGroup2);
 
-		DataAtomic dataAtomic2 = DataAtomic.withDataIdAndValue("atomicDataId2", "atomicValue2");
+		SpiderDataAtomic dataAtomic2 = SpiderDataAtomic.withDataIdAndValue("atomicDataId2",
+				"atomicValue2");
 		dataGroup2.addChild(dataAtomic2);
 
 		DataElementRest dataElementRest = RestDataGroup.fromDataGroup(dataGroup);
@@ -104,18 +107,20 @@ public class DataGroupJsonCreatorTest {
 	@Test
 	public void testToJsonGroupWithAttributesAndAtomicChildAndGroupChildWithAtomicChild() {
 		JsonCreatorFactory jsonCreatorFactory = new JsonCreatorFactoryImp();
-		DataGroup dataGroup = DataGroup.withDataId("groupDataId");
+		SpiderDataGroup dataGroup = SpiderDataGroup.withDataId("groupDataId");
 		dataGroup.addAttributeByIdWithValue("attributeDataId", "attributeValue");
 		dataGroup.addAttributeByIdWithValue("attributeDataId2", "attributeValue2");
 
-		DataAtomic dataAtomic = DataAtomic.withDataIdAndValue("atomicDataId", "atomicValue");
+		SpiderDataAtomic dataAtomic = SpiderDataAtomic.withDataIdAndValue("atomicDataId",
+				"atomicValue");
 		dataGroup.addChild(dataAtomic);
 
-		DataGroup dataGroup2 = DataGroup.withDataId("groupDataId2");
+		SpiderDataGroup dataGroup2 = SpiderDataGroup.withDataId("groupDataId2");
 		dataGroup2.addAttributeByIdWithValue("g2AttributeDataId", "g2AttributeValue");
 		dataGroup.addChild(dataGroup2);
 
-		DataAtomic dataAtomic2 = DataAtomic.withDataIdAndValue("atomicDataId2", "atomicValue2");
+		SpiderDataAtomic dataAtomic2 = SpiderDataAtomic.withDataIdAndValue("atomicDataId2",
+				"atomicValue2");
 		dataGroup2.addChild(dataAtomic2);
 
 		DataElementRest dataElementRest = RestDataGroup.fromDataGroup(dataGroup);

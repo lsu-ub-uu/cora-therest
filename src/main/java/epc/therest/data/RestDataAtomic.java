@@ -1,6 +1,6 @@
 package epc.therest.data;
 
-import epc.metadataformat.data.DataAtomic;
+import epc.spider.data.SpiderDataAtomic;
 
 public final class RestDataAtomic implements DataElementRest {
 
@@ -17,13 +17,13 @@ public final class RestDataAtomic implements DataElementRest {
 
 	}
 
-	public static RestDataAtomic fromDataAtomic(DataAtomic dataAtomic) {
-		return new RestDataAtomic(dataAtomic);
+	public static RestDataAtomic fromSpiderDataAtomic(SpiderDataAtomic spiderDataAtomic) {
+		return new RestDataAtomic(spiderDataAtomic);
 	}
 
-	private RestDataAtomic(DataAtomic dataAtomic) {
-		this.dataId = dataAtomic.getDataId();
-		this.value = dataAtomic.getValue();
+	private RestDataAtomic(SpiderDataAtomic spiderDataAtomic) {
+		this.dataId = spiderDataAtomic.getDataId();
+		this.value = spiderDataAtomic.getValue();
 	}
 
 	@Override

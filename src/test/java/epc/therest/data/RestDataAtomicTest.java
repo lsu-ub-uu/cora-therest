@@ -3,7 +3,7 @@ package epc.therest.data;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import epc.metadataformat.data.DataAtomic;
+import epc.spider.data.SpiderDataAtomic;
 
 public class RestDataAtomicTest {
 	@Test
@@ -14,9 +14,9 @@ public class RestDataAtomicTest {
 	}
 
 	@Test
-	public void testCreateFromDataAtomic() {
-		DataAtomic dataAtomic = DataAtomic.withDataIdAndValue("dataId", "value");
-		RestDataAtomic restDataAtomic = RestDataAtomic.fromDataAtomic(dataAtomic);
+	public void testCreateFromSpiderDataAtomic() {
+		SpiderDataAtomic spiderDataAtomic = SpiderDataAtomic.withDataIdAndValue("dataId", "value");
+		RestDataAtomic restDataAtomic = RestDataAtomic.fromSpiderDataAtomic(spiderDataAtomic);
 		Assert.assertEquals(restDataAtomic.getDataId(), "dataId");
 		Assert.assertEquals(restDataAtomic.getValue(), "value");
 	}

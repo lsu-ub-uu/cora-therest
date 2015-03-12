@@ -7,8 +7,8 @@ import java.util.Iterator;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import epc.metadataformat.data.DataAtomic;
-import epc.metadataformat.data.DataGroup;
+import epc.spider.data.SpiderDataAtomic;
+import epc.spider.data.SpiderDataGroup;
 
 public class RestDataGroupTest {
 	@Test
@@ -37,14 +37,14 @@ public class RestDataGroupTest {
 
 	@Test
 	public void testCreateDataGroupRestFromDataGroup() {
-		RestDataGroup restDataGroup = RestDataGroup
-				.fromDataGroup(DataGroup.withDataId("dataGroup"));
+		RestDataGroup restDataGroup = RestDataGroup.fromDataGroup(SpiderDataGroup
+				.withDataId("dataGroup"));
 		Assert.assertEquals(restDataGroup.getDataId(), "dataGroup");
 	}
 
 	@Test
 	public void testCreateDataGroupRestFromDataGroupWithAttribute() {
-		DataGroup dataGroup = DataGroup.withDataId("dataId");
+		SpiderDataGroup dataGroup = SpiderDataGroup.withDataId("dataId");
 		dataGroup.addAttributeByIdWithValue("attributeId", "attributeValue");
 		RestDataGroup restDataGroup = RestDataGroup.fromDataGroup(dataGroup);
 		assertEquals(restDataGroup.getAttributes().get("attributeId"), "attributeValue",
@@ -53,8 +53,8 @@ public class RestDataGroupTest {
 
 	@Test
 	public void testCreateDataGroupRestFromDataGroupWithDataGroupChild() {
-		DataGroup dataGroup = DataGroup.withDataId("dataId");
-		dataGroup.addChild(DataGroup.withDataId("childDataId"));
+		SpiderDataGroup dataGroup = SpiderDataGroup.withDataId("dataId");
+		dataGroup.addChild(SpiderDataGroup.withDataId("childDataId"));
 		RestDataGroup restDataGroup = RestDataGroup.fromDataGroup(dataGroup);
 		Assert.assertEquals(restDataGroup.getChildren().stream().findAny().get().getDataId(),
 				"childDataId");
@@ -62,8 +62,8 @@ public class RestDataGroupTest {
 
 	@Test
 	public void testCreateDataGroupRestFromDataGroupWithDataAtomicChild() {
-		DataGroup dataGroup = DataGroup.withDataId("dataId");
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("childDataId", "atomicValue"));
+		SpiderDataGroup dataGroup = SpiderDataGroup.withDataId("dataId");
+		dataGroup.addChild(SpiderDataAtomic.withDataIdAndValue("childDataId", "atomicValue"));
 		RestDataGroup restDataGroup = RestDataGroup.fromDataGroup(dataGroup);
 		Assert.assertEquals(restDataGroup.getChildren().stream().findAny().get().getDataId(),
 				"childDataId");
@@ -71,10 +71,10 @@ public class RestDataGroupTest {
 
 	@Test
 	public void testCreateDataGroupRestFromDataGroupLevelsOfChildren() {
-		DataGroup dataGroup = DataGroup.withDataId("dataId");
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("atomicDataId", "atomicValue"));
-		DataGroup dataGroup2 = DataGroup.withDataId("childDataId");
-		dataGroup2.addChild(DataGroup.withDataId("grandChildDataId"));
+		SpiderDataGroup dataGroup = SpiderDataGroup.withDataId("dataId");
+		dataGroup.addChild(SpiderDataAtomic.withDataIdAndValue("atomicDataId", "atomicValue"));
+		SpiderDataGroup dataGroup2 = SpiderDataGroup.withDataId("childDataId");
+		dataGroup2.addChild(SpiderDataGroup.withDataId("grandChildDataId"));
 		dataGroup.addChild(dataGroup2);
 		RestDataGroup restDataGroup = RestDataGroup.fromDataGroup(dataGroup);
 		Iterator<DataElementRest> iterator = restDataGroup.getChildren().iterator();

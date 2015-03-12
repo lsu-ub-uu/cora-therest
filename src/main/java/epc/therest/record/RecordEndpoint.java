@@ -6,7 +6,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import epc.metadataformat.data.DataGroup;
+import epc.spider.data.SpiderDataGroup;
 import epc.systemone.record.SystemOneRecordHandler;
 import epc.systemone.record.SystemOneRecordHandlerImp;
 import epc.therest.data.RestDataGroup;
@@ -24,9 +24,9 @@ public class RecordEndpoint {
 		SystemOneRecordHandler recordHandler = new SystemOneRecordHandlerImp();
 
 		// this is temporary, it should take a record in containing this info
-		DataGroup record = DataGroup.withDataId("authority");
+		SpiderDataGroup record = SpiderDataGroup.withDataId("authority");
 		record.addAttributeByIdWithValue("type", "place");
-		DataGroup recordOut = recordHandler.createRecord("userId", "place", record);
+		SpiderDataGroup recordOut = recordHandler.createRecord("userId", "place", record);
 
 		RestDataGroup restDataGroup = RestDataGroup.fromDataGroup(recordOut);
 		JsonCreator jsonCreator = DataGroupJsonCreator.forRestDataGroup(restDataGroup);
@@ -40,7 +40,7 @@ public class RecordEndpoint {
 	@Produces(MediaType.APPLICATION_JSON)
 	public String readRecord(@PathParam("type") String type, @PathParam("id") String id) {
 		SystemOneRecordHandler recordHandler = new SystemOneRecordHandlerImp();
-		DataGroup record = recordHandler.readRecord("userId", type, id);
+		SpiderDataGroup record = recordHandler.readRecord("userId", type, id);
 		RestDataGroup restDataGroup = RestDataGroup.fromDataGroup(record);
 		JsonCreator jsonCreator = DataGroupJsonCreator.forRestDataGroup(restDataGroup);
 

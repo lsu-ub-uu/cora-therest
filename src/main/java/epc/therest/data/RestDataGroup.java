@@ -5,9 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import epc.metadataformat.data.DataAtomic;
-import epc.metadataformat.data.DataElement;
-import epc.metadataformat.data.DataGroup;
+import epc.spider.data.SpiderDataAtomic;
+import epc.spider.data.SpiderDataElement;
+import epc.spider.data.SpiderDataGroup;
 
 public final class RestDataGroup implements DataElementRest {
 
@@ -23,27 +23,27 @@ public final class RestDataGroup implements DataElementRest {
 		this.dataId = dataId;
 	}
 
-	public static RestDataGroup fromDataGroup(DataGroup dataGroup) {
-		return new RestDataGroup(dataGroup);
+	public static RestDataGroup fromDataGroup(SpiderDataGroup spiderDataGroup) {
+		return new RestDataGroup(spiderDataGroup);
 	}
 
-	private RestDataGroup(DataGroup dataGroup) {
-		dataId = dataGroup.getDataId();
-		attributes.putAll(dataGroup.getAttributes());
-		convertAndSetChildren(dataGroup);
+	private RestDataGroup(SpiderDataGroup spiderDataGroup) {
+		dataId = spiderDataGroup.getDataId();
+		attributes.putAll(spiderDataGroup.getAttributes());
+		convertAndSetChildren(spiderDataGroup);
 	}
 
-	private void convertAndSetChildren(DataGroup dataGroup) {
-		for (DataElement dataElement : dataGroup.getChildren()) {
-			children.add(convertToRestEquivalentDataClass(dataElement));
+	private void convertAndSetChildren(SpiderDataGroup spiderDataGroup) {
+		for (SpiderDataElement spiderDataElement : spiderDataGroup.getChildren()) {
+			children.add(convertToRestEquivalentDataClass(spiderDataElement));
 		}
 	}
 
-	private DataElementRest convertToRestEquivalentDataClass(DataElement dataElement) {
-		if (dataElement instanceof DataGroup) {
-			return new RestDataGroup((DataGroup) dataElement);
+	private DataElementRest convertToRestEquivalentDataClass(SpiderDataElement spiderDataElement) {
+		if (spiderDataElement instanceof SpiderDataGroup) {
+			return new RestDataGroup((SpiderDataGroup) spiderDataElement);
 		}
-		return RestDataAtomic.fromDataAtomic((DataAtomic) dataElement);
+		return RestDataAtomic.fromSpiderDataAtomic((SpiderDataAtomic) spiderDataElement);
 	}
 
 	@Override
