@@ -47,8 +47,8 @@ public final class DataGroupClassCreator implements ClassCreator {
 
 	private void validateGroupOnlyContainsAttributesOrChildren() {
 		String dataId = getDataId();
-		JsonObject dataGroupChildren2 = jsonObject.getJsonObject(dataId);
-		for (Entry<String, JsonValue> childEntry : dataGroupChildren2.entrySet()) {
+		JsonObject dataGroupChildren = jsonObject.getJsonObject(dataId);
+		for (Entry<String, JsonValue> childEntry : dataGroupChildren.entrySet()) {
 			validateChildEntryIsAttributesOrChildren(childEntry);
 		}
 	}

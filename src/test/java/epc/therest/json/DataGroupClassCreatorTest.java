@@ -1,14 +1,15 @@
 package epc.therest.json;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
 
 import java.util.Iterator;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import epc.therest.data.RestDataAtomic;
 import epc.therest.data.DataElementRest;
+import epc.therest.data.RestDataAtomic;
 import epc.therest.data.RestDataGroup;
 
 public class DataGroupClassCreatorTest {
@@ -146,6 +147,16 @@ public class DataGroupClassCreatorTest {
 		String json = "{\"groupDataId\":{\"attributes\":{\"attributeDataId\":\"attributeValue\",\"bla\":{} }}}";
 		ClassCreator classCreator = classCreatorFactory.createForJsonString(json);
 		classCreator.toClass();
+	}
+
+	@Test(expectedExceptions = JsonParseException.class, enabled = false)
+	// test disabled as this is currently not supported :(
+	public void testToClassWrongJsonTwoAttributes() {
+		String json = "{\"groupDataId\":{\"attributes\":{\"attributeDataId\":\"attributeValue\"}"
+				+ ",\"attributes\":{\"attributeDataId2\":\"attributeValue2\"}}}";
+		ClassCreator classCreator = classCreatorFactory.createForJsonString(json);
+		DataElementRest class1 = classCreator.toClass();
+		assertNotNull(class1);
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)
