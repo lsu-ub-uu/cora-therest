@@ -1,4 +1,4 @@
-package epc.therest.json;
+package epc.therest.jsonparser;
 
 public class JsonParseException extends RuntimeException {
 

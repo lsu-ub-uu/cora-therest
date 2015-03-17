@@ -2,61 +2,44 @@ package epc.therest.json;
 
 import static org.testng.Assert.assertTrue;
 
-import java.io.StringReader;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
-import javax.json.JsonReaderFactory;
-
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import epc.therest.jsonparser.JsonParseException;
+import epc.therest.jsonparser.JsonParser;
+import epc.therest.jsonparser.JsonValue;
+import epc.therest.jsonparser.javax.JavaxJsonParser;
+
 public class ClassCreatorFactoryTest {
+	// @Test(expectedExceptions = JsonParseException.class)
+	// public void testFactorOnJsonStringWrongJson() {
+	// String json = "[]";
+	// jsonParser.parseString(json);
+	// }
+
 	private ClassCreatorFactory classCreatorFactory;
+	private JsonParser jsonParser;
 
 	@BeforeMethod
 	public void beforeMethod() {
 		classCreatorFactory = new ClassCreatorFactoryImp();
-	}
+		jsonParser = new JavaxJsonParser();
 
-	@Test(expectedExceptions = JsonParseException.class)
-	public void testFactorOnJsonStringNullJson() {
-		String json = null;
-		classCreatorFactory.createForJsonString(json);
-	}
-
-	@Test(expectedExceptions = JsonParseException.class)
-	public void testFactorOnJsonStringEmptyJson() {
-		String json = "";
-		classCreatorFactory.createForJsonString(json);
-	}
-
-	@Test(expectedExceptions = JsonParseException.class)
-	public void testFactorOnJsonStringWrongJson() {
-		String json = "[]";
-		classCreatorFactory.createForJsonString(json);
-	}
-
-	@Test(expectedExceptions = JsonParseException.class)
-	public void testFactorOnJsonStringBrokenJson() {
-		String json = "{";
-		classCreatorFactory.createForJsonString(json);
 	}
 
 	@Test
 	public void testFactorOnJsonStringDataGroup() {
 		String json = "{\"groupDataId\":{}}";
-		ClassCreator classCreator = classCreatorFactory.createForJsonString(json);
+		JsonValue jsonValue = jsonParser.parseString(json);
+		ClassCreator classCreator = classCreatorFactory.createForJsonObject(jsonValue);
 		assertTrue(classCreator instanceof DataGroupClassCreator);
 	}
 
 	@Test
 	public void testFactorOnJsonStringDataAtomic() {
 		String json = "{\"atomicDataId\":\"atomicValue\"}";
-		ClassCreator classCreator = classCreatorFactory.createForJsonString(json);
+		JsonValue jsonValue = jsonParser.parseString(json);
+		ClassCreator classCreator = classCreatorFactory.createForJsonObject(jsonValue);
 		assertTrue(classCreator instanceof DataAtomicClassCreator);
 	}
 
@@ -66,25 +49,33 @@ public class ClassCreatorFactoryTest {
 	}
 
 	@Test
-	public void testFactorOnJsonObjectDataGroup() {
-		JsonObject jsonObject = createJsonObjectForJsonString("{\"groupDataId\":{}}");
-		ClassCreator classCreator = classCreatorFactory.createForJsonObject(jsonObject);
-		assertTrue(classCreator instanceof DataGroupClassCreator);
-	}
-
-	@Test
-	public void testFactorOnJsonObjectDataAtomic() {
-		JsonObject jsonObject = createJsonObjectForJsonString("{\"atomicDataId\":\"atomicValue\"}");
-		ClassCreator classCreator = classCreatorFactory.createForJsonObject(jsonObject);
+	public void testClassCreatorAtomic() {
+		String json = "{\"id\":\"value\"}";
+		JsonValue jsonValue = jsonParser.parseString(json);
+		ClassCreator classCreator = classCreatorFactory.createForJsonObject(jsonValue);
 		assertTrue(classCreator instanceof DataAtomicClassCreator);
 	}
 
-	private JsonObject createJsonObjectForJsonString(String json) {
-		Map<String, Object> config = new HashMap<>();
-		JsonReaderFactory jsonReaderFactory = Json.createReaderFactory(config);
-		JsonReader jsonReader = jsonReaderFactory.createReader(new StringReader(json));
-		JsonObject jsonObject = jsonReader.readObject();
-		return jsonObject;
+	@Test
+	public void testClassCreatorGroup() {
+		String json = "{\"id\":{\"id2\":\"value\"}}";
+		JsonValue jsonValue = jsonParser.parseString(json);
+		ClassCreator classCreator = classCreatorFactory.createForJsonObject(jsonValue);
+		assertTrue(classCreator instanceof DataGroupClassCreator);
 	}
 
+	@Test(expectedExceptions = JsonParseException.class)
+	public void testClassCreatorGroupNotAGroup() {
+		String json = "[{\"id\":{\"id2\":\"value\"}}]";
+		JsonValue jsonValue = jsonParser.parseString(json);
+		classCreatorFactory.createForJsonObject(jsonValue);
+	}
+
+	@Test(expectedExceptions = JsonParseException.class)
+	public void testClassCreatorGroupWithTwoTopLevel() {
+		String json = "{\"id\":{\"id2\":\"value\"},\"id4\":{\"id3\":\"value\"}}";
+		JsonValue jsonValue = jsonParser.parseString(json);
+		ClassCreator classCreator = classCreatorFactory.createForJsonObject(jsonValue);
+		classCreator.toInstance();
+	}
 }

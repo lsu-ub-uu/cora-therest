@@ -4,15 +4,21 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import epc.therest.data.RestDataAtomic;
 import epc.therest.data.DataElementRest;
+import epc.therest.data.RestDataAtomic;
+import epc.therest.jsonparser.JsonParseException;
+import epc.therest.jsonparser.JsonParser;
+import epc.therest.jsonparser.JsonValue;
+import epc.therest.jsonparser.javax.JavaxJsonParser;
 
 public class DataAtomicClassCreatorTest {
 	private ClassCreatorFactory classCreatorFactory;
+	private JsonParser jsonParser;
 
 	@BeforeMethod
 	public void beforeMethod() {
 		classCreatorFactory = new ClassCreatorFactoryImp();
+		jsonParser = new JavaxJsonParser();
 	}
 
 	@Test
@@ -32,8 +38,9 @@ public class DataAtomicClassCreatorTest {
 	}
 
 	private RestDataAtomic createRestDataAtomicForJsonString(String json) {
-		ClassCreator classCreator = classCreatorFactory.createForJsonString(json);
-		DataElementRest dataElementRest = classCreator.toClass();
+		JsonValue jsonValue = jsonParser.parseString(json);
+		ClassCreator classCreator = classCreatorFactory.createForJsonObject(jsonValue);
+		DataElementRest dataElementRest = classCreator.toInstance();
 		RestDataAtomic restDataAtomic = (RestDataAtomic) dataElementRest;
 		return restDataAtomic;
 	}
@@ -41,22 +48,26 @@ public class DataAtomicClassCreatorTest {
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testToClassWrongJson() {
 		String json = "{\"id\":[]}";
-		ClassCreator classCreator = classCreatorFactory.createForJsonString(json);
-		classCreator.toClass();
+
+		JsonValue jsonValue = jsonParser.parseString(json);
+		ClassCreator classCreator = classCreatorFactory.createForJsonObject(jsonValue);
+		classCreator.toInstance();
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testToClassWrongJsonExtraKeyValuePair() {
 		String json = "{\"atomicDataId\":\"atomicValue\",\"id2\":\"value2\"}";
-		ClassCreator classCreator = classCreatorFactory.createForJsonString(json);
-		classCreator.toClass();
+		JsonValue jsonValue = jsonParser.parseString(json);
+		ClassCreator classCreator = classCreatorFactory.createForJsonObject(jsonValue);
+		classCreator.toInstance();
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testToClassWrongJsonExtraArray() {
 		String json = "{\"atomicDataId\":\"atomicValue\",\"id2\":[]}";
-		ClassCreator classCreator = classCreatorFactory.createForJsonString(json);
-		classCreator.toClass();
+		JsonValue jsonValue = jsonParser.parseString(json);
+		ClassCreator classCreator = classCreatorFactory.createForJsonObject(jsonValue);
+		classCreator.toInstance();
 	}
 
 }

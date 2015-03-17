@@ -1,11 +1,9 @@
 package epc.therest.json;
 
-import javax.json.JsonObject;
+import epc.therest.jsonparser.JsonValue;
 
 public interface ClassCreatorFactory {
 
-	ClassCreator createForJsonString(String json);
-
-	ClassCreator createForJsonObject(JsonObject jsonObject);
+	ClassCreator createForJsonObject(JsonValue jsonValue);
 
 }

@@ -1,9 +1,10 @@
 package epc.therest.json;
 
-import javax.json.JsonObject;
-
-import epc.therest.data.RestDataAtomic;
 import epc.therest.data.DataElementRest;
+import epc.therest.data.RestDataAtomic;
+import epc.therest.jsonparser.JsonObject;
+import epc.therest.jsonparser.JsonParseException;
+import epc.therest.jsonparser.JsonString;
 
 public final class DataAtomicClassCreator implements ClassCreator {
 	private JsonObject jsonObject;
@@ -17,24 +18,32 @@ public final class DataAtomicClassCreator implements ClassCreator {
 	}
 
 	@Override
-	public DataElementRest toClass() {
+	public DataElementRest toInstance() {
 		try {
-			validateData();
-			return tryToClass();
+			return tryToInstanciate();
 		} catch (Exception e) {
 			throw new JsonParseException("Error parsing jsonObject", e);
 		}
 	}
 
-	private void validateData() {
+	private DataElementRest tryToInstanciate() {
+		validateJsonData();
+		String dataId = getDataIdFromJsonObject();
+		JsonString value = (JsonString) jsonObject.getValue(dataId);
+		return RestDataAtomic.withDataIdAndValue(dataId, value.getStringValue());
+	}
+
+	private String getDataIdFromJsonObject() {
+		return jsonObject.keySet().iterator().next();
+	}
+
+	private void validateJsonData() {
+		validateOnlyOneKeyValuePairAtTopLevel();
+	}
+
+	private void validateOnlyOneKeyValuePairAtTopLevel() {
 		if (jsonObject.size() != 1) {
 			throw new JsonParseException("Atomic data can only contain one key value pair");
 		}
-	}
-
-	private DataElementRest tryToClass() {
-		String dataId = jsonObject.keySet().iterator().next();
-		String value = jsonObject.getString(dataId);
-		return RestDataAtomic.withDataIdAndValue(dataId, value);
 	}
 }

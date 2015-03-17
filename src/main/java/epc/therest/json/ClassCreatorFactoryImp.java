@@ -1,46 +1,22 @@
 package epc.therest.json;
 
-import java.io.StringReader;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Map.Entry;
 
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
-import javax.json.JsonReaderFactory;
-import javax.json.JsonValue;
+import epc.therest.jsonparser.JsonObject;
+import epc.therest.jsonparser.JsonParseException;
+import epc.therest.jsonparser.JsonValue;
+import epc.therest.jsonparser.JsonValueType;
 
 public class ClassCreatorFactoryImp implements ClassCreatorFactory {
 
 	@Override
-	public ClassCreator createForJsonString(String json) {
-		try {
-			return tryToCreateForJsonString(json);
-		} catch (Exception e) {
-			throw new JsonParseException("Error parsing json", e);
+	public ClassCreator createForJsonObject(JsonValue jsonValue) {
+		if (!(jsonValue instanceof JsonObject)) {
+			throw new JsonParseException("Json value is not an object, can not convert");
 		}
-	}
-
-	private ClassCreator tryToCreateForJsonString(String json) {
-		Map<String, Object> config = new HashMap<>();
-		JsonReaderFactory jsonReaderFactory = Json.createReaderFactory(config);
-		JsonReader jsonReader = jsonReaderFactory.createReader(new StringReader(json));
-		JsonObject jsonObject = jsonReader.readObject();
-		return tryToCreateForJsonObject(jsonObject);
-	}
-
-	@Override
-	public ClassCreator createForJsonObject(JsonObject jsonObject) {
-		try {
-			return tryToCreateForJsonObject(jsonObject);
-		} catch (Exception e) {
-			throw new JsonParseException("Error parsing json", e);
-		}
-	}
-
-	private ClassCreator tryToCreateForJsonObject(JsonObject jsonObject) {
-		JsonValue jsonValue = jsonObject.values().iterator().next();
-		if (JsonValue.ValueType.OBJECT.equals(jsonValue.getValueType())) {
+		JsonObject jsonObject = (JsonObject) jsonValue;
+		Entry<String, JsonValue> entry = jsonObject.entrySet().iterator().next();
+		if (JsonValueType.OBJECT.equals(entry.getValue().getValueType())) {
 			return DataGroupClassCreator.forJsonObject(jsonObject);
 		}
 		return DataAtomicClassCreator.forJsonObject(jsonObject);

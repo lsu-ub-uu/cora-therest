@@ -11,14 +11,19 @@ import org.testng.annotations.Test;
 import epc.therest.data.DataElementRest;
 import epc.therest.data.RestDataAtomic;
 import epc.therest.data.RestDataGroup;
+import epc.therest.jsonparser.JsonParseException;
+import epc.therest.jsonparser.JsonParser;
+import epc.therest.jsonparser.JsonValue;
+import epc.therest.jsonparser.javax.JavaxJsonParser;
 
 public class DataGroupClassCreatorTest {
 	private ClassCreatorFactory classCreatorFactory;
+	private JsonParser jsonParser;
 
 	@BeforeMethod
 	public void beforeMethod() {
 		classCreatorFactory = new ClassCreatorFactoryImp();
-
+		jsonParser = new JavaxJsonParser();
 	}
 
 	@Test
@@ -122,31 +127,44 @@ public class DataGroupClassCreatorTest {
 	}
 
 	private RestDataGroup createRestDataGroupForJsonString(String json) {
-		ClassCreator classCreator = classCreatorFactory.createForJsonString(json);
-		DataElementRest dataElementRest = classCreator.toClass();
+		JsonValue jsonValue = jsonParser.parseString(json);
+		ClassCreator classCreator = classCreatorFactory.createForJsonObject(jsonValue);
+		DataElementRest dataElementRest = classCreator.toInstance();
 		RestDataGroup restDataGroup = (RestDataGroup) dataElementRest;
 		return restDataGroup;
+	}
+
+	@Test(expectedExceptions = JsonParseException.class, enabled = false)
+	// test disabled as this is currently not supported :(
+	public void testToClassWrongJsonExtraKeyValuePairTopLevel() {
+		String json = "{\"id\":{}},{\"id2\":\"value2\"}";
+		JsonValue jsonValue = jsonParser.parseString(json);
+		ClassCreator classCreator = classCreatorFactory.createForJsonObject(jsonValue);
+		classCreator.toInstance();
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testToClassWrongJsonExtraKeyValuePair() {
 		String json = "{\"id\":{},\"id2\":\"value2\"}";
-		ClassCreator classCreator = classCreatorFactory.createForJsonString(json);
-		classCreator.toClass();
+		JsonValue jsonValue = jsonParser.parseString(json);
+		ClassCreator classCreator = classCreatorFactory.createForJsonObject(jsonValue);
+		classCreator.toInstance();
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testToClassWrongJsonOnlyKeyValuePairInsideGroup() {
 		String json = "{\"id\":{\"id2\":\"value2\"}}";
-		ClassCreator classCreator = classCreatorFactory.createForJsonString(json);
-		classCreator.toClass();
+		JsonValue jsonValue = jsonParser.parseString(json);
+		ClassCreator classCreator = classCreatorFactory.createForJsonObject(jsonValue);
+		classCreator.toInstance();
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testToClassWrongJsonAttributesIsGroup() {
 		String json = "{\"groupDataId\":{\"attributes\":{\"attributeDataId\":\"attributeValue\",\"bla\":{} }}}";
-		ClassCreator classCreator = classCreatorFactory.createForJsonString(json);
-		classCreator.toClass();
+		JsonValue jsonValue = jsonParser.parseString(json);
+		ClassCreator classCreator = classCreatorFactory.createForJsonObject(jsonValue);
+		classCreator.toInstance();
 	}
 
 	@Test(expectedExceptions = JsonParseException.class, enabled = false)
@@ -154,29 +172,33 @@ public class DataGroupClassCreatorTest {
 	public void testToClassWrongJsonTwoAttributes() {
 		String json = "{\"groupDataId\":{\"attributes\":{\"attributeDataId\":\"attributeValue\"}"
 				+ ",\"attributes\":{\"attributeDataId2\":\"attributeValue2\"}}}";
-		ClassCreator classCreator = classCreatorFactory.createForJsonString(json);
-		DataElementRest class1 = classCreator.toClass();
+		JsonValue jsonValue = jsonParser.parseString(json);
+		ClassCreator classCreator = classCreatorFactory.createForJsonObject(jsonValue);
+		DataElementRest class1 = classCreator.toInstance();
 		assertNotNull(class1);
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testToClassWrongJsonAttributesIsArray() {
 		String json = "{\"groupDataId\":{\"attributes\":{\"attributeDataId\":\"attributeValue\",\"bla\":[true] }}}";
-		ClassCreator classCreator = classCreatorFactory.createForJsonString(json);
-		classCreator.toClass();
+		JsonValue jsonValue = jsonParser.parseString(json);
+		ClassCreator classCreator = classCreatorFactory.createForJsonObject(jsonValue);
+		classCreator.toInstance();
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testToClassWrongJsonChildrenIsArray() {
 		String json = "{\"groupDataId\":{\"children\":[{\"atomicDataId\":\"atomicValue\"},[]]}}";
-		ClassCreator classCreator = classCreatorFactory.createForJsonString(json);
-		classCreator.toClass();
+		JsonValue jsonValue = jsonParser.parseString(json);
+		ClassCreator classCreator = classCreatorFactory.createForJsonObject(jsonValue);
+		classCreator.toInstance();
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testToClassWrongJsonChildrenIsString() {
 		String json = "{\"groupDataId\":{\"children\":[{\"atomicDataId\":\"atomicValue\"},\"string\"]}}";
-		ClassCreator classCreator = classCreatorFactory.createForJsonString(json);
-		classCreator.toClass();
+		JsonValue jsonValue = jsonParser.parseString(json);
+		ClassCreator classCreator = classCreatorFactory.createForJsonObject(jsonValue);
+		classCreator.toInstance();
 	}
 }

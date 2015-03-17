@@ -4,6 +4,6 @@ import epc.therest.data.DataElementRest;
 
 public interface ClassCreator {
 
-	DataElementRest toClass();
+	DataElementRest toInstance();
 
 }

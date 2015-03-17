@@ -2,19 +2,19 @@ package epc.therest.json;
 
 import java.util.Map.Entry;
 
-import javax.json.JsonArray;
-import javax.json.JsonObject;
-import javax.json.JsonString;
-import javax.json.JsonValue;
-
 import epc.therest.data.DataElementRest;
 import epc.therest.data.RestDataGroup;
+import epc.therest.jsonparser.JsonArray;
+import epc.therest.jsonparser.JsonObject;
+import epc.therest.jsonparser.JsonParseException;
+import epc.therest.jsonparser.JsonString;
+import epc.therest.jsonparser.JsonValue;
 
 public final class DataGroupClassCreator implements ClassCreator {
 
 	private JsonObject jsonObject;
 	private RestDataGroup restDataGroup;
-	private JsonObject dataGroupChildren;
+	private JsonObject jsonGroupChildren;
 
 	static DataGroupClassCreator forJsonObject(JsonObject jsonObject) {
 		return new DataGroupClassCreator(jsonObject);
@@ -25,16 +25,26 @@ public final class DataGroupClassCreator implements ClassCreator {
 	}
 
 	@Override
-	public DataElementRest toClass() {
+	public DataElementRest toInstance() {
 		try {
-			validateData();
-			return tryToClass();
+			return tryToInstanciate();
 		} catch (Exception e) {
 			throw new JsonParseException("Error parsing jsonObject", e);
 		}
 	}
 
-	private void validateData() {
+	private DataElementRest tryToInstanciate() {
+		String dataId = getDataIdFromJsonObject();
+		jsonGroupChildren = jsonObject.getObject(dataId);
+		validateJsonData();
+		return createDataGroupInstance();
+	}
+
+	private String getDataIdFromJsonObject() {
+		return jsonObject.keySet().iterator().next();
+	}
+
+	private void validateJsonData() {
 		validateOnlyOneKeyValuePairAtTopLevel();
 		validateGroupOnlyContainsAttributesOrChildren();
 	}
@@ -46,9 +56,7 @@ public final class DataGroupClassCreator implements ClassCreator {
 	}
 
 	private void validateGroupOnlyContainsAttributesOrChildren() {
-		String dataId = getDataId();
-		JsonObject dataGroupChildren = jsonObject.getJsonObject(dataId);
-		for (Entry<String, JsonValue> childEntry : dataGroupChildren.entrySet()) {
+		for (Entry<String, JsonValue> childEntry : jsonGroupChildren.entrySet()) {
 			validateChildEntryIsAttributesOrChildren(childEntry);
 		}
 	}
@@ -60,10 +68,9 @@ public final class DataGroupClassCreator implements ClassCreator {
 		}
 	}
 
-	private DataElementRest tryToClass() {
-		String dataId = getDataId();
-		restDataGroup = RestDataGroup.withDataId(dataId);
-		dataGroupChildren = jsonObject.getJsonObject(dataId);
+	private DataElementRest createDataGroupInstance() {
+		String dataId2 = getDataIdFromJsonObject();
+		restDataGroup = RestDataGroup.withDataId(dataId2);
 		if (hasAttributes()) {
 			addAttributesToGroup();
 		}
@@ -73,32 +80,28 @@ public final class DataGroupClassCreator implements ClassCreator {
 		return restDataGroup;
 	}
 
-	private String getDataId() {
-		return jsonObject.keySet().iterator().next();
-	}
-
 	private boolean hasAttributes() {
-		return null != dataGroupChildren.getJsonObject("attributes");
+		return jsonGroupChildren.containsKey("attributes");
 	}
 
 	private void addAttributesToGroup() {
-		JsonObject attributes = dataGroupChildren.getJsonObject("attributes");
+		JsonObject attributes = jsonGroupChildren.getObject("attributes");
 		for (Entry<String, JsonValue> attributeEntry : attributes.entrySet()) {
 			addAttributeToGroup(attributeEntry);
 		}
 	}
 
 	private void addAttributeToGroup(Entry<String, JsonValue> attributeEntry) {
-		String value = ((JsonString) attributeEntry.getValue()).getString();
+		String value = ((JsonString) attributeEntry.getValue()).getStringValue();
 		restDataGroup.addAttribute(attributeEntry.getKey(), value);
 	}
 
 	private boolean hasChildren() {
-		return null != dataGroupChildren.getJsonArray("children");
+		return jsonGroupChildren.containsKey("children");
 	}
 
 	private void addChildrenToGroup() {
-		JsonArray children = dataGroupChildren.getJsonArray("children");
+		JsonArray children = jsonGroupChildren.getArray("children");
 		for (JsonValue child : children) {
 			addChildToGroup(child);
 		}
@@ -107,7 +110,8 @@ public final class DataGroupClassCreator implements ClassCreator {
 	private void addChildToGroup(JsonValue child) {
 		ClassCreatorFactoryImp classCreatorFactoryImp = new ClassCreatorFactoryImp();
 		JsonObject jsonChildObject = (JsonObject) child;
-		ClassCreator childClassCreator = classCreatorFactoryImp.createForJsonObject(jsonChildObject);
-		restDataGroup.addChild(childClassCreator.toClass());
+		ClassCreator childClassCreator = classCreatorFactoryImp
+				.createForJsonObject(jsonChildObject);
+		restDataGroup.addChild(childClassCreator.toInstance());
 	}
 }
