@@ -1,4 +1,4 @@
-package epc.therest.json;
+package epc.therest.data.converter;
 
 import static org.testng.Assert.assertTrue;
 
@@ -17,7 +17,7 @@ import epc.therest.jsonparser.javax.JavaxJsonClassFactory;
 import epc.therest.jsonparser.javax.JavaxJsonClassFactoryImp;
 import epc.therest.jsonparser.javax.JavaxJsonParser;
 
-public class ClassCreatorFactoryTest {
+public class JsonToDataConverterFactoryTest {
 	private JsonToDataConverterFactory jsonToDataConverterFactory;
 	private JsonParser jsonParser;
 

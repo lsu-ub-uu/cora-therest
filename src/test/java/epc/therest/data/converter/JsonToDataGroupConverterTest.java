@@ -1,4 +1,4 @@
-package epc.therest.json;
+package epc.therest.data.converter;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
@@ -21,7 +21,7 @@ import epc.therest.jsonparser.javax.JavaxJsonClassFactory;
 import epc.therest.jsonparser.javax.JavaxJsonClassFactoryImp;
 import epc.therest.jsonparser.javax.JavaxJsonParser;
 
-public class DataGroupClassCreatorTest {
+public class JsonToDataGroupConverterTest {
 	private JsonToDataConverterFactory jsonToDataConverterFactory;
 	private JsonParser jsonParser;
 

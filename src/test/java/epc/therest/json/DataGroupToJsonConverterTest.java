@@ -8,29 +8,29 @@ import epc.spider.data.SpiderDataGroup;
 import epc.therest.data.RestDataElement;
 import epc.therest.data.RestDataGroup;
 
-public class DataGroupJsonCreatorTest {
+public class DataGroupToJsonConverterTest {
 	@Test
 	public void testToJson() {
-		JsonCreatorFactory jsonCreatorFactory = new JsonCreatorFactoryImp();
+		DataToJsonConverterFactory dataToJsonConverterFactory = new DataToJsonConverterFactoryImp();
 		SpiderDataGroup dataGroup = SpiderDataGroup.withDataId("groupDataId");
 		RestDataElement restDataElement = RestDataGroup.fromDataGroup(dataGroup);
 
-		JsonCreator jsonCreator = jsonCreatorFactory.createForRestDataElement(restDataElement);
-		String json = jsonCreator.toJson();
+		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory.createForRestDataElement(restDataElement);
+		String json = dataToJsonConverter.toJson();
 
 		Assert.assertEquals(json, "{\"groupDataId\":{}}");
 	}
 
 	@Test
 	public void testToJsonGroupWithAttribute() {
-		JsonCreatorFactory jsonCreatorFactory = new JsonCreatorFactoryImp();
+		DataToJsonConverterFactory dataToJsonConverterFactory = new DataToJsonConverterFactoryImp();
 		SpiderDataGroup dataGroup = SpiderDataGroup.withDataId("groupDataId");
 		dataGroup.addAttributeByIdWithValue("attributeDataId", "attributeValue");
 
 		RestDataElement restDataElement = RestDataGroup.fromDataGroup(dataGroup);
 
-		JsonCreator jsonCreator = jsonCreatorFactory.createForRestDataElement(restDataElement);
-		String json = jsonCreator.toJson();
+		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory.createForRestDataElement(restDataElement);
+		String json = dataToJsonConverter.toJson();
 
 		Assert.assertEquals(json,
 				"{\"groupDataId\":{\"attributes\":{\"attributeDataId\":\"attributeValue\"}}}");
@@ -38,15 +38,15 @@ public class DataGroupJsonCreatorTest {
 
 	@Test
 	public void testToJsonGroupWithAttributes() {
-		JsonCreatorFactory jsonCreatorFactory = new JsonCreatorFactoryImp();
+		DataToJsonConverterFactory dataToJsonConverterFactory = new DataToJsonConverterFactoryImp();
 		SpiderDataGroup dataGroup = SpiderDataGroup.withDataId("groupDataId");
 		dataGroup.addAttributeByIdWithValue("attributeDataId", "attributeValue");
 		dataGroup.addAttributeByIdWithValue("attributeDataId2", "attributeValue2");
 
 		RestDataElement restDataElement = RestDataGroup.fromDataGroup(dataGroup);
 
-		JsonCreator jsonCreator = jsonCreatorFactory.createForRestDataElement(restDataElement);
-		String json = jsonCreator.toJson();
+		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory.createForRestDataElement(restDataElement);
+		String json = dataToJsonConverter.toJson();
 
 		Assert.assertEquals(json, "{\"groupDataId\":{\"attributes\":{"
 				+ "\"attributeDataId\":\"attributeValue\","
@@ -55,7 +55,7 @@ public class DataGroupJsonCreatorTest {
 
 	@Test
 	public void testToJsonGroupWithAtomicChild() {
-		JsonCreatorFactory jsonCreatorFactory = new JsonCreatorFactoryImp();
+		DataToJsonConverterFactory dataToJsonConverterFactory = new DataToJsonConverterFactoryImp();
 		SpiderDataGroup dataGroup = SpiderDataGroup.withDataId("groupDataId");
 
 		SpiderDataAtomic dataAtomic = SpiderDataAtomic.withDataIdAndValue("atomicDataId",
@@ -64,8 +64,8 @@ public class DataGroupJsonCreatorTest {
 
 		RestDataElement restDataElement = RestDataGroup.fromDataGroup(dataGroup);
 
-		JsonCreator jsonCreator = jsonCreatorFactory.createForRestDataElement(restDataElement);
-		String json = jsonCreator.toJson();
+		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory.createForRestDataElement(restDataElement);
+		String json = dataToJsonConverter.toJson();
 
 		Assert.assertEquals(json,
 				"{\"groupDataId\":{\"children\":[{\"atomicDataId\":\"atomicValue\"}]}}");
@@ -73,7 +73,7 @@ public class DataGroupJsonCreatorTest {
 
 	@Test
 	public void testToJsonGroupWithAtomicChildAndGroupChildWithAtomicChild() {
-		JsonCreatorFactory jsonCreatorFactory = new JsonCreatorFactoryImp();
+		DataToJsonConverterFactory dataToJsonConverterFactory = new DataToJsonConverterFactoryImp();
 		SpiderDataGroup dataGroup = SpiderDataGroup.withDataId("groupDataId");
 
 		SpiderDataAtomic dataAtomic = SpiderDataAtomic.withDataIdAndValue("atomicDataId",
@@ -89,8 +89,8 @@ public class DataGroupJsonCreatorTest {
 
 		RestDataElement restDataElement = RestDataGroup.fromDataGroup(dataGroup);
 
-		JsonCreator jsonCreator = jsonCreatorFactory.createForRestDataElement(restDataElement);
-		String json = jsonCreator.toJson();
+		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory.createForRestDataElement(restDataElement);
+		String json = dataToJsonConverter.toJson();
 
 		String expectedJson = "{";
 		expectedJson += "\"groupDataId\":{";
@@ -106,7 +106,7 @@ public class DataGroupJsonCreatorTest {
 
 	@Test
 	public void testToJsonGroupWithAttributesAndAtomicChildAndGroupChildWithAtomicChild() {
-		JsonCreatorFactory jsonCreatorFactory = new JsonCreatorFactoryImp();
+		DataToJsonConverterFactory dataToJsonConverterFactory = new DataToJsonConverterFactoryImp();
 		SpiderDataGroup dataGroup = SpiderDataGroup.withDataId("groupDataId");
 		dataGroup.addAttributeByIdWithValue("attributeDataId", "attributeValue");
 		dataGroup.addAttributeByIdWithValue("attributeDataId2", "attributeValue2");
@@ -125,8 +125,8 @@ public class DataGroupJsonCreatorTest {
 
 		RestDataElement restDataElement = RestDataGroup.fromDataGroup(dataGroup);
 
-		JsonCreator jsonCreator = jsonCreatorFactory.createForRestDataElement(restDataElement);
-		String json = jsonCreator.toJson();
+		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory.createForRestDataElement(restDataElement);
+		String json = dataToJsonConverter.toJson();
 		String expectedJson = "{";
 		expectedJson += "\"groupDataId\":{";
 

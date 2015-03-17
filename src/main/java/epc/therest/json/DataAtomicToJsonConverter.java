@@ -9,15 +9,15 @@ import javax.json.JsonObjectBuilder;
 
 import epc.therest.data.RestDataAtomic;
 
-public final class DataAtomicJsonCreator extends JsonCreator {
+public final class DataAtomicToJsonConverter extends DataToJsonConverter {
 
 	private RestDataAtomic restDataAtomic;
 
-	public static JsonCreator forRestDataAtomic(RestDataAtomic dataAtomic) {
-		return new DataAtomicJsonCreator(dataAtomic);
+	public static DataToJsonConverter forRestDataAtomic(RestDataAtomic dataAtomic) {
+		return new DataAtomicToJsonConverter(dataAtomic);
 	}
 
-	private DataAtomicJsonCreator(RestDataAtomic dataAtomic) {
+	private DataAtomicToJsonConverter(RestDataAtomic dataAtomic) {
 		this.restDataAtomic = dataAtomic;
 	}
 

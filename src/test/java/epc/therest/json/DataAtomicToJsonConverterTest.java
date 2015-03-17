@@ -7,28 +7,28 @@ import epc.spider.data.SpiderDataAtomic;
 import epc.therest.data.RestDataElement;
 import epc.therest.data.RestDataAtomic;
 
-public class DataAtomicJsonCreatorTest {
+public class DataAtomicToJsonConverterTest {
 	@Test
 	public void testToJson() {
-		JsonCreatorFactory jsonCreatorFactory = new JsonCreatorFactoryImp();
+		DataToJsonConverterFactory dataToJsonConverterFactory = new DataToJsonConverterFactoryImp();
 		SpiderDataAtomic dataAtomic = SpiderDataAtomic.withDataIdAndValue("atomicDataId",
 				"atomicValue");
 		RestDataElement restDataElement = RestDataAtomic.fromSpiderDataAtomic(dataAtomic);
 
-		JsonCreator jsonCreator = jsonCreatorFactory.createForRestDataElement(restDataElement);
-		String json = jsonCreator.toJson();
+		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory.createForRestDataElement(restDataElement);
+		String json = dataToJsonConverter.toJson();
 
 		Assert.assertEquals(json, "{\"atomicDataId\":\"atomicValue\"}");
 	}
 
 	@Test
 	public void testToJsonEmptyValue() {
-		JsonCreatorFactory jsonCreatorFactory = new JsonCreatorFactoryImp();
+		DataToJsonConverterFactory dataToJsonConverterFactory = new DataToJsonConverterFactoryImp();
 		SpiderDataAtomic dataAtomic = SpiderDataAtomic.withDataIdAndValue("atomicDataId", "");
 		RestDataElement restDataElement = RestDataAtomic.fromSpiderDataAtomic(dataAtomic);
 
-		JsonCreator jsonCreator = jsonCreatorFactory.createForRestDataElement(restDataElement);
-		String json = jsonCreator.toJson();
+		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory.createForRestDataElement(restDataElement);
+		String json = dataToJsonConverter.toJson();
 
 		Assert.assertEquals(json, "{\"atomicDataId\":\"\"}");
 	}

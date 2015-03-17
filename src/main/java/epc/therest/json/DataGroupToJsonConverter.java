@@ -12,17 +12,17 @@ import javax.json.JsonObjectBuilder;
 import epc.therest.data.RestDataElement;
 import epc.therest.data.RestDataGroup;
 
-public final class DataGroupJsonCreator extends JsonCreator {
+public final class DataGroupToJsonConverter extends DataToJsonConverter {
 
 	private RestDataGroup restDataGroup;
 	private JsonBuilderFactory jsonBuilderFactory;
 	private JsonObjectBuilder groupChildren;
 
-	public static JsonCreator forRestDataGroup(RestDataGroup restDataGroup) {
-		return new DataGroupJsonCreator(restDataGroup);
+	public static DataToJsonConverter forRestDataGroup(RestDataGroup restDataGroup) {
+		return new DataGroupToJsonConverter(restDataGroup);
 	}
 
-	private DataGroupJsonCreator(RestDataGroup restDataGroup) {
+	private DataGroupToJsonConverter(RestDataGroup restDataGroup) {
 		this.restDataGroup = restDataGroup;
 		Map<String, Object> config = new HashMap<>();
 		jsonBuilderFactory = Json.createBuilderFactory(config);
@@ -65,10 +65,10 @@ public final class DataGroupJsonCreator extends JsonCreator {
 	}
 
 	private void addChildrenToGroup() {
-		JsonCreatorFactory jsonCreatorFactory = new JsonCreatorFactoryImp();
+		DataToJsonConverterFactory dataToJsonConverterFactory = new DataToJsonConverterFactoryImp();
 		JsonArrayBuilder childrenArray = jsonBuilderFactory.createArrayBuilder();
 		for (RestDataElement restDataElement : restDataGroup.getChildren()) {
-			childrenArray.add(jsonCreatorFactory.createForRestDataElement(restDataElement)
+			childrenArray.add(dataToJsonConverterFactory.createForRestDataElement(restDataElement)
 					.toJsonObjectBuilder());
 		}
 		groupChildren.add("children", childrenArray);

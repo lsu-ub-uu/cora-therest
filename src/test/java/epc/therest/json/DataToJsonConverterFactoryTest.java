@@ -9,27 +9,27 @@ import epc.therest.data.RestDataElement;
 import epc.therest.data.RestDataAtomic;
 import epc.therest.data.RestDataGroup;
 
-public class JsonCreatorFactoryTest {
+public class DataToJsonConverterFactoryTest {
 	@Test
 	public void testJsonCreatorFactoryDataGroup() {
-		JsonCreatorFactory jsonCreatorFactory = new JsonCreatorFactoryImp();
+		DataToJsonConverterFactory dataToJsonConverterFactory = new DataToJsonConverterFactoryImp();
 		SpiderDataGroup dataGroup = SpiderDataGroup.withDataId("groupDataId");
 		RestDataElement restDataElement = RestDataGroup.fromDataGroup(dataGroup);
 
-		JsonCreator jsonCreator = jsonCreatorFactory.createForRestDataElement(restDataElement);
+		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory.createForRestDataElement(restDataElement);
 
-		Assert.assertTrue(jsonCreator instanceof DataGroupJsonCreator);
+		Assert.assertTrue(dataToJsonConverter instanceof DataGroupToJsonConverter);
 	}
 
 	@Test
 	public void testJsonCreatorFactoryDataAtomic() {
-		JsonCreatorFactory jsonCreatorFactory = new JsonCreatorFactoryImp();
+		DataToJsonConverterFactory dataToJsonConverterFactory = new DataToJsonConverterFactoryImp();
 		SpiderDataAtomic dataAtomic = SpiderDataAtomic.withDataIdAndValue("atomicDataId",
 				"atomicValue");
 		RestDataElement restDataElement = RestDataAtomic.fromSpiderDataAtomic(dataAtomic);
 
-		JsonCreator jsonCreator = jsonCreatorFactory.createForRestDataElement(restDataElement);
+		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory.createForRestDataElement(restDataElement);
 
-		Assert.assertTrue(jsonCreator instanceof DataAtomicJsonCreator);
+		Assert.assertTrue(dataToJsonConverter instanceof DataAtomicToJsonConverter);
 	}
 }

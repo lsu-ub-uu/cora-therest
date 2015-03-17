@@ -10,8 +10,8 @@ import epc.spider.data.SpiderDataGroup;
 import epc.systemone.record.SystemOneRecordHandler;
 import epc.systemone.record.SystemOneRecordHandlerImp;
 import epc.therest.data.RestDataGroup;
-import epc.therest.json.DataGroupJsonCreator;
-import epc.therest.json.JsonCreator;
+import epc.therest.json.DataGroupToJsonConverter;
+import epc.therest.json.DataToJsonConverter;
 
 @Path("record")
 public class RecordEndpoint {
@@ -29,9 +29,9 @@ public class RecordEndpoint {
 		SpiderDataGroup recordOut = recordHandler.createRecord("userId", "place", record);
 
 		RestDataGroup restDataGroup = RestDataGroup.fromDataGroup(recordOut);
-		JsonCreator jsonCreator = DataGroupJsonCreator.forRestDataGroup(restDataGroup);
+		DataToJsonConverter dataToJsonConverter = DataGroupToJsonConverter.forRestDataGroup(restDataGroup);
 
-		return jsonCreator.toJson();
+		return dataToJsonConverter.toJson();
 
 	}
 
@@ -42,8 +42,8 @@ public class RecordEndpoint {
 		SystemOneRecordHandler recordHandler = new SystemOneRecordHandlerImp();
 		SpiderDataGroup record = recordHandler.readRecord("userId", type, id);
 		RestDataGroup restDataGroup = RestDataGroup.fromDataGroup(record);
-		JsonCreator jsonCreator = DataGroupJsonCreator.forRestDataGroup(restDataGroup);
+		DataToJsonConverter dataToJsonConverter = DataGroupToJsonConverter.forRestDataGroup(restDataGroup);
 
-		return jsonCreator.toJson();
+		return dataToJsonConverter.toJson();
 	}
 }
