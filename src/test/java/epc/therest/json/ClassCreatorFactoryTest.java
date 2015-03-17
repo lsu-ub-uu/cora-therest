@@ -5,6 +5,11 @@ import static org.testng.Assert.assertTrue;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import epc.therest.data.converter.JsonToDataConverter;
+import epc.therest.data.converter.JsonToDataConverterFactory;
+import epc.therest.data.converter.JsonToDataConverterFactoryImp;
+import epc.therest.data.converter.JsonToDataAtomicConverter;
+import epc.therest.data.converter.JsonToDataGroupConverter;
 import epc.therest.jsonparser.JsonParseException;
 import epc.therest.jsonparser.JsonParser;
 import epc.therest.jsonparser.JsonValue;
@@ -17,12 +22,12 @@ public class ClassCreatorFactoryTest {
 	// jsonParser.parseString(json);
 	// }
 
-	private ClassCreatorFactory classCreatorFactory;
+	private JsonToDataConverterFactory jsonToDataConverterFactory;
 	private JsonParser jsonParser;
 
 	@BeforeMethod
 	public void beforeMethod() {
-		classCreatorFactory = new ClassCreatorFactoryImp();
+		jsonToDataConverterFactory = new JsonToDataConverterFactoryImp();
 		jsonParser = new JavaxJsonParser();
 
 	}
@@ -31,51 +36,51 @@ public class ClassCreatorFactoryTest {
 	public void testFactorOnJsonStringDataGroup() {
 		String json = "{\"groupDataId\":{}}";
 		JsonValue jsonValue = jsonParser.parseString(json);
-		ClassCreator classCreator = classCreatorFactory.createForJsonObject(jsonValue);
-		assertTrue(classCreator instanceof DataGroupClassCreator);
+		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory.createForJsonObject(jsonValue);
+		assertTrue(jsonToDataConverter instanceof JsonToDataGroupConverter);
 	}
 
 	@Test
 	public void testFactorOnJsonStringDataAtomic() {
 		String json = "{\"atomicDataId\":\"atomicValue\"}";
 		JsonValue jsonValue = jsonParser.parseString(json);
-		ClassCreator classCreator = classCreatorFactory.createForJsonObject(jsonValue);
-		assertTrue(classCreator instanceof DataAtomicClassCreator);
+		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory.createForJsonObject(jsonValue);
+		assertTrue(jsonToDataConverter instanceof JsonToDataAtomicConverter);
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testFactorOnJsonObjectNullJson() {
-		classCreatorFactory.createForJsonObject(null);
+		jsonToDataConverterFactory.createForJsonObject(null);
 	}
 
 	@Test
 	public void testClassCreatorAtomic() {
 		String json = "{\"id\":\"value\"}";
 		JsonValue jsonValue = jsonParser.parseString(json);
-		ClassCreator classCreator = classCreatorFactory.createForJsonObject(jsonValue);
-		assertTrue(classCreator instanceof DataAtomicClassCreator);
+		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory.createForJsonObject(jsonValue);
+		assertTrue(jsonToDataConverter instanceof JsonToDataAtomicConverter);
 	}
 
 	@Test
 	public void testClassCreatorGroup() {
 		String json = "{\"id\":{\"id2\":\"value\"}}";
 		JsonValue jsonValue = jsonParser.parseString(json);
-		ClassCreator classCreator = classCreatorFactory.createForJsonObject(jsonValue);
-		assertTrue(classCreator instanceof DataGroupClassCreator);
+		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory.createForJsonObject(jsonValue);
+		assertTrue(jsonToDataConverter instanceof JsonToDataGroupConverter);
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testClassCreatorGroupNotAGroup() {
 		String json = "[{\"id\":{\"id2\":\"value\"}}]";
 		JsonValue jsonValue = jsonParser.parseString(json);
-		classCreatorFactory.createForJsonObject(jsonValue);
+		jsonToDataConverterFactory.createForJsonObject(jsonValue);
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testClassCreatorGroupWithTwoTopLevel() {
 		String json = "{\"id\":{\"id2\":\"value\"},\"id4\":{\"id3\":\"value\"}}";
 		JsonValue jsonValue = jsonParser.parseString(json);
-		ClassCreator classCreator = classCreatorFactory.createForJsonObject(jsonValue);
-		classCreator.toInstance();
+		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory.createForJsonObject(jsonValue);
+		jsonToDataConverter.toInstance();
 	}
 }

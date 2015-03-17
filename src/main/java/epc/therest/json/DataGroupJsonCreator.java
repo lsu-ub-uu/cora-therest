@@ -9,7 +9,7 @@ import javax.json.JsonArrayBuilder;
 import javax.json.JsonBuilderFactory;
 import javax.json.JsonObjectBuilder;
 
-import epc.therest.data.DataElementRest;
+import epc.therest.data.RestDataElement;
 import epc.therest.data.RestDataGroup;
 
 public final class DataGroupJsonCreator extends JsonCreator {
@@ -67,8 +67,8 @@ public final class DataGroupJsonCreator extends JsonCreator {
 	private void addChildrenToGroup() {
 		JsonCreatorFactory jsonCreatorFactory = new JsonCreatorFactoryImp();
 		JsonArrayBuilder childrenArray = jsonBuilderFactory.createArrayBuilder();
-		for (DataElementRest dataElementRest : restDataGroup.getChildren()) {
-			childrenArray.add(jsonCreatorFactory.createForDataElementRest(dataElementRest)
+		for (RestDataElement restDataElement : restDataGroup.getChildren()) {
+			childrenArray.add(jsonCreatorFactory.createForRestDataElement(restDataElement)
 					.toJsonObjectBuilder());
 		}
 		groupChildren.add("children", childrenArray);

@@ -1,18 +1,18 @@
 package epc.therest.json;
 
 import epc.therest.data.RestDataAtomic;
-import epc.therest.data.DataElementRest;
+import epc.therest.data.RestDataElement;
 import epc.therest.data.RestDataGroup;
 
 public class JsonCreatorFactoryImp implements JsonCreatorFactory {
 
 	@Override
-	public JsonCreator createForDataElementRest(DataElementRest dataElementRest) {
+	public JsonCreator createForRestDataElement(RestDataElement restDataElement) {
 
-		if (dataElementRest instanceof RestDataGroup) {
-			return DataGroupJsonCreator.forRestDataGroup((RestDataGroup) dataElementRest);
+		if (restDataElement instanceof RestDataGroup) {
+			return DataGroupJsonCreator.forRestDataGroup((RestDataGroup) restDataElement);
 		}
-		return DataAtomicJsonCreator.forRestDataAtomic((RestDataAtomic) dataElementRest);
+		return DataAtomicJsonCreator.forRestDataAtomic((RestDataAtomic) restDataElement);
 	}
 
 }

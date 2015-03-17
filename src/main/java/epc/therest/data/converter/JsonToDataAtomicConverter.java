@@ -1,24 +1,24 @@
-package epc.therest.json;
+package epc.therest.data.converter;
 
-import epc.therest.data.DataElementRest;
+import epc.therest.data.RestDataElement;
 import epc.therest.data.RestDataAtomic;
 import epc.therest.jsonparser.JsonObject;
 import epc.therest.jsonparser.JsonParseException;
 import epc.therest.jsonparser.JsonString;
 
-public final class DataAtomicClassCreator implements ClassCreator {
+public final class JsonToDataAtomicConverter implements JsonToDataConverter {
 	private JsonObject jsonObject;
 
-	static DataAtomicClassCreator forJsonObject(JsonObject jsonObject) {
-		return new DataAtomicClassCreator(jsonObject);
+	static JsonToDataAtomicConverter forJsonObject(JsonObject jsonObject) {
+		return new JsonToDataAtomicConverter(jsonObject);
 	}
 
-	private DataAtomicClassCreator(JsonObject jsonObject) {
+	private JsonToDataAtomicConverter(JsonObject jsonObject) {
 		this.jsonObject = jsonObject;
 	}
 
 	@Override
-	public DataElementRest toInstance() {
+	public RestDataElement toInstance() {
 		try {
 			return tryToInstanciate();
 		} catch (Exception e) {
@@ -26,7 +26,7 @@ public final class DataAtomicClassCreator implements ClassCreator {
 		}
 	}
 
-	private DataElementRest tryToInstanciate() {
+	private RestDataElement tryToInstanciate() {
 		validateJsonData();
 		String dataId = getDataIdFromJsonObject();
 		JsonString value = (JsonString) jsonObject.getValue(dataId);

@@ -9,11 +9,11 @@ import epc.spider.data.SpiderDataAtomic;
 import epc.spider.data.SpiderDataElement;
 import epc.spider.data.SpiderDataGroup;
 
-public final class RestDataGroup implements DataElementRest {
+public final class RestDataGroup implements RestDataElement {
 
 	private final String dataId;
 	private Map<String, String> attributes = new HashMap<>();
-	private List<DataElementRest> children = new ArrayList<>();
+	private List<RestDataElement> children = new ArrayList<>();
 
 	public static RestDataGroup withDataId(String dataId) {
 		return new RestDataGroup(dataId);
@@ -35,11 +35,11 @@ public final class RestDataGroup implements DataElementRest {
 
 	private void convertAndSetChildren(SpiderDataGroup spiderDataGroup) {
 		for (SpiderDataElement spiderDataElement : spiderDataGroup.getChildren()) {
-			children.add(convertToRestEquivalentDataClass(spiderDataElement));
+			children.add(convertToElementEquivalentDataClass(spiderDataElement));
 		}
 	}
 
-	private DataElementRest convertToRestEquivalentDataClass(SpiderDataElement spiderDataElement) {
+	private RestDataElement convertToElementEquivalentDataClass(SpiderDataElement spiderDataElement) {
 		if (spiderDataElement instanceof SpiderDataGroup) {
 			return new RestDataGroup((SpiderDataGroup) spiderDataElement);
 		}
@@ -59,11 +59,11 @@ public final class RestDataGroup implements DataElementRest {
 		attributes.put(dataId, value);
 	}
 
-	public void addChild(DataElementRest dataElementRest) {
-		children.add(dataElementRest);
+	public void addChild(RestDataElement restDataElement) {
+		children.add(restDataElement);
 	}
 
-	public List<DataElementRest> getChildren() {
+	public List<RestDataElement> getChildren() {
 		return children;
 	}
 }

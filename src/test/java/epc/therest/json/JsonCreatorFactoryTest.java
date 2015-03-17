@@ -5,7 +5,7 @@ import org.testng.annotations.Test;
 
 import epc.spider.data.SpiderDataAtomic;
 import epc.spider.data.SpiderDataGroup;
-import epc.therest.data.DataElementRest;
+import epc.therest.data.RestDataElement;
 import epc.therest.data.RestDataAtomic;
 import epc.therest.data.RestDataGroup;
 
@@ -14,9 +14,9 @@ public class JsonCreatorFactoryTest {
 	public void testJsonCreatorFactoryDataGroup() {
 		JsonCreatorFactory jsonCreatorFactory = new JsonCreatorFactoryImp();
 		SpiderDataGroup dataGroup = SpiderDataGroup.withDataId("groupDataId");
-		DataElementRest dataElementRest = RestDataGroup.fromDataGroup(dataGroup);
+		RestDataElement restDataElement = RestDataGroup.fromDataGroup(dataGroup);
 
-		JsonCreator jsonCreator = jsonCreatorFactory.createForDataElementRest(dataElementRest);
+		JsonCreator jsonCreator = jsonCreatorFactory.createForRestDataElement(restDataElement);
 
 		Assert.assertTrue(jsonCreator instanceof DataGroupJsonCreator);
 	}
@@ -26,9 +26,9 @@ public class JsonCreatorFactoryTest {
 		JsonCreatorFactory jsonCreatorFactory = new JsonCreatorFactoryImp();
 		SpiderDataAtomic dataAtomic = SpiderDataAtomic.withDataIdAndValue("atomicDataId",
 				"atomicValue");
-		DataElementRest dataElementRest = RestDataAtomic.fromSpiderDataAtomic(dataAtomic);
+		RestDataElement restDataElement = RestDataAtomic.fromSpiderDataAtomic(dataAtomic);
 
-		JsonCreator jsonCreator = jsonCreatorFactory.createForDataElementRest(dataElementRest);
+		JsonCreator jsonCreator = jsonCreatorFactory.createForRestDataElement(restDataElement);
 
 		Assert.assertTrue(jsonCreator instanceof DataAtomicJsonCreator);
 	}

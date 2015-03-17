@@ -1,4 +1,4 @@
-package epc.therest.json;
+package epc.therest.data.converter;
 
 import java.util.Map.Entry;
 
@@ -7,18 +7,18 @@ import epc.therest.jsonparser.JsonParseException;
 import epc.therest.jsonparser.JsonValue;
 import epc.therest.jsonparser.JsonValueType;
 
-public class ClassCreatorFactoryImp implements ClassCreatorFactory {
+public class JsonToDataConverterFactoryImp implements JsonToDataConverterFactory {
 
 	@Override
-	public ClassCreator createForJsonObject(JsonValue jsonValue) {
+	public JsonToDataConverter createForJsonObject(JsonValue jsonValue) {
 		if (!(jsonValue instanceof JsonObject)) {
 			throw new JsonParseException("Json value is not an object, can not convert");
 		}
 		JsonObject jsonObject = (JsonObject) jsonValue;
 		Entry<String, JsonValue> entry = jsonObject.entrySet().iterator().next();
 		if (JsonValueType.OBJECT.equals(entry.getValue().getValueType())) {
-			return DataGroupClassCreator.forJsonObject(jsonObject);
+			return JsonToDataGroupConverter.forJsonObject(jsonObject);
 		}
-		return DataAtomicClassCreator.forJsonObject(jsonObject);
+		return JsonToDataAtomicConverter.forJsonObject(jsonObject);
 	}
 }

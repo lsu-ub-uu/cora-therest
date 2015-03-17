@@ -5,7 +5,7 @@ import org.testng.annotations.Test;
 
 import epc.spider.data.SpiderDataAtomic;
 import epc.spider.data.SpiderDataGroup;
-import epc.therest.data.DataElementRest;
+import epc.therest.data.RestDataElement;
 import epc.therest.data.RestDataGroup;
 
 public class DataGroupJsonCreatorTest {
@@ -13,9 +13,9 @@ public class DataGroupJsonCreatorTest {
 	public void testToJson() {
 		JsonCreatorFactory jsonCreatorFactory = new JsonCreatorFactoryImp();
 		SpiderDataGroup dataGroup = SpiderDataGroup.withDataId("groupDataId");
-		DataElementRest dataElementRest = RestDataGroup.fromDataGroup(dataGroup);
+		RestDataElement restDataElement = RestDataGroup.fromDataGroup(dataGroup);
 
-		JsonCreator jsonCreator = jsonCreatorFactory.createForDataElementRest(dataElementRest);
+		JsonCreator jsonCreator = jsonCreatorFactory.createForRestDataElement(restDataElement);
 		String json = jsonCreator.toJson();
 
 		Assert.assertEquals(json, "{\"groupDataId\":{}}");
@@ -27,9 +27,9 @@ public class DataGroupJsonCreatorTest {
 		SpiderDataGroup dataGroup = SpiderDataGroup.withDataId("groupDataId");
 		dataGroup.addAttributeByIdWithValue("attributeDataId", "attributeValue");
 
-		DataElementRest dataElementRest = RestDataGroup.fromDataGroup(dataGroup);
+		RestDataElement restDataElement = RestDataGroup.fromDataGroup(dataGroup);
 
-		JsonCreator jsonCreator = jsonCreatorFactory.createForDataElementRest(dataElementRest);
+		JsonCreator jsonCreator = jsonCreatorFactory.createForRestDataElement(restDataElement);
 		String json = jsonCreator.toJson();
 
 		Assert.assertEquals(json,
@@ -43,9 +43,9 @@ public class DataGroupJsonCreatorTest {
 		dataGroup.addAttributeByIdWithValue("attributeDataId", "attributeValue");
 		dataGroup.addAttributeByIdWithValue("attributeDataId2", "attributeValue2");
 
-		DataElementRest dataElementRest = RestDataGroup.fromDataGroup(dataGroup);
+		RestDataElement restDataElement = RestDataGroup.fromDataGroup(dataGroup);
 
-		JsonCreator jsonCreator = jsonCreatorFactory.createForDataElementRest(dataElementRest);
+		JsonCreator jsonCreator = jsonCreatorFactory.createForRestDataElement(restDataElement);
 		String json = jsonCreator.toJson();
 
 		Assert.assertEquals(json, "{\"groupDataId\":{\"attributes\":{"
@@ -62,9 +62,9 @@ public class DataGroupJsonCreatorTest {
 				"atomicValue");
 		dataGroup.addChild(dataAtomic);
 
-		DataElementRest dataElementRest = RestDataGroup.fromDataGroup(dataGroup);
+		RestDataElement restDataElement = RestDataGroup.fromDataGroup(dataGroup);
 
-		JsonCreator jsonCreator = jsonCreatorFactory.createForDataElementRest(dataElementRest);
+		JsonCreator jsonCreator = jsonCreatorFactory.createForRestDataElement(restDataElement);
 		String json = jsonCreator.toJson();
 
 		Assert.assertEquals(json,
@@ -87,9 +87,9 @@ public class DataGroupJsonCreatorTest {
 				"atomicValue2");
 		dataGroup2.addChild(dataAtomic2);
 
-		DataElementRest dataElementRest = RestDataGroup.fromDataGroup(dataGroup);
+		RestDataElement restDataElement = RestDataGroup.fromDataGroup(dataGroup);
 
-		JsonCreator jsonCreator = jsonCreatorFactory.createForDataElementRest(dataElementRest);
+		JsonCreator jsonCreator = jsonCreatorFactory.createForRestDataElement(restDataElement);
 		String json = jsonCreator.toJson();
 
 		String expectedJson = "{";
@@ -123,9 +123,9 @@ public class DataGroupJsonCreatorTest {
 				"atomicValue2");
 		dataGroup2.addChild(dataAtomic2);
 
-		DataElementRest dataElementRest = RestDataGroup.fromDataGroup(dataGroup);
+		RestDataElement restDataElement = RestDataGroup.fromDataGroup(dataGroup);
 
-		JsonCreator jsonCreator = jsonCreatorFactory.createForDataElementRest(dataElementRest);
+		JsonCreator jsonCreator = jsonCreatorFactory.createForRestDataElement(restDataElement);
 		String json = jsonCreator.toJson();
 		String expectedJson = "{";
 		expectedJson += "\"groupDataId\":{";

@@ -8,21 +8,24 @@ import java.util.Iterator;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import epc.therest.data.DataElementRest;
+import epc.therest.data.RestDataElement;
 import epc.therest.data.RestDataAtomic;
 import epc.therest.data.RestDataGroup;
+import epc.therest.data.converter.JsonToDataConverter;
+import epc.therest.data.converter.JsonToDataConverterFactory;
+import epc.therest.data.converter.JsonToDataConverterFactoryImp;
 import epc.therest.jsonparser.JsonParseException;
 import epc.therest.jsonparser.JsonParser;
 import epc.therest.jsonparser.JsonValue;
 import epc.therest.jsonparser.javax.JavaxJsonParser;
 
 public class DataGroupClassCreatorTest {
-	private ClassCreatorFactory classCreatorFactory;
+	private JsonToDataConverterFactory jsonToDataConverterFactory;
 	private JsonParser jsonParser;
 
 	@BeforeMethod
 	public void beforeMethod() {
-		classCreatorFactory = new ClassCreatorFactoryImp();
+		jsonToDataConverterFactory = new JsonToDataConverterFactoryImp();
 		jsonParser = new JavaxJsonParser();
 	}
 
@@ -80,7 +83,7 @@ public class DataGroupClassCreatorTest {
 
 		RestDataGroup restDataGroup = createRestDataGroupForJsonString(json);
 		assertEquals(restDataGroup.getDataId(), "groupDataId");
-		Iterator<DataElementRest> iterator = restDataGroup.getChildren().iterator();
+		Iterator<RestDataElement> iterator = restDataGroup.getChildren().iterator();
 		RestDataAtomic child = (RestDataAtomic) iterator.next();
 		assertEquals(child.getDataId(), "atomicDataId");
 		assertEquals(child.getValue(), "atomicValue");
@@ -112,7 +115,7 @@ public class DataGroupClassCreatorTest {
 		String attributeValue2 = restDataGroup.getAttributes().get("attributeDataId");
 		assertEquals(attributeValue2, "attributeValue");
 
-		Iterator<DataElementRest> iterator = restDataGroup.getChildren().iterator();
+		Iterator<RestDataElement> iterator = restDataGroup.getChildren().iterator();
 		RestDataAtomic child = (RestDataAtomic) iterator.next();
 		assertEquals(child.getDataId(), "atomicDataId");
 		assertEquals(child.getValue(), "atomicValue");
@@ -128,9 +131,9 @@ public class DataGroupClassCreatorTest {
 
 	private RestDataGroup createRestDataGroupForJsonString(String json) {
 		JsonValue jsonValue = jsonParser.parseString(json);
-		ClassCreator classCreator = classCreatorFactory.createForJsonObject(jsonValue);
-		DataElementRest dataElementRest = classCreator.toInstance();
-		RestDataGroup restDataGroup = (RestDataGroup) dataElementRest;
+		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory.createForJsonObject(jsonValue);
+		RestDataElement restDataElement = jsonToDataConverter.toInstance();
+		RestDataGroup restDataGroup = (RestDataGroup) restDataElement;
 		return restDataGroup;
 	}
 
@@ -139,32 +142,32 @@ public class DataGroupClassCreatorTest {
 	public void testToClassWrongJsonExtraKeyValuePairTopLevel() {
 		String json = "{\"id\":{}},{\"id2\":\"value2\"}";
 		JsonValue jsonValue = jsonParser.parseString(json);
-		ClassCreator classCreator = classCreatorFactory.createForJsonObject(jsonValue);
-		classCreator.toInstance();
+		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory.createForJsonObject(jsonValue);
+		jsonToDataConverter.toInstance();
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testToClassWrongJsonExtraKeyValuePair() {
 		String json = "{\"id\":{},\"id2\":\"value2\"}";
 		JsonValue jsonValue = jsonParser.parseString(json);
-		ClassCreator classCreator = classCreatorFactory.createForJsonObject(jsonValue);
-		classCreator.toInstance();
+		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory.createForJsonObject(jsonValue);
+		jsonToDataConverter.toInstance();
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testToClassWrongJsonOnlyKeyValuePairInsideGroup() {
 		String json = "{\"id\":{\"id2\":\"value2\"}}";
 		JsonValue jsonValue = jsonParser.parseString(json);
-		ClassCreator classCreator = classCreatorFactory.createForJsonObject(jsonValue);
-		classCreator.toInstance();
+		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory.createForJsonObject(jsonValue);
+		jsonToDataConverter.toInstance();
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testToClassWrongJsonAttributesIsGroup() {
 		String json = "{\"groupDataId\":{\"attributes\":{\"attributeDataId\":\"attributeValue\",\"bla\":{} }}}";
 		JsonValue jsonValue = jsonParser.parseString(json);
-		ClassCreator classCreator = classCreatorFactory.createForJsonObject(jsonValue);
-		classCreator.toInstance();
+		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory.createForJsonObject(jsonValue);
+		jsonToDataConverter.toInstance();
 	}
 
 	@Test(expectedExceptions = JsonParseException.class, enabled = false)
@@ -173,8 +176,8 @@ public class DataGroupClassCreatorTest {
 		String json = "{\"groupDataId\":{\"attributes\":{\"attributeDataId\":\"attributeValue\"}"
 				+ ",\"attributes\":{\"attributeDataId2\":\"attributeValue2\"}}}";
 		JsonValue jsonValue = jsonParser.parseString(json);
-		ClassCreator classCreator = classCreatorFactory.createForJsonObject(jsonValue);
-		DataElementRest class1 = classCreator.toInstance();
+		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory.createForJsonObject(jsonValue);
+		RestDataElement class1 = jsonToDataConverter.toInstance();
 		assertNotNull(class1);
 	}
 
@@ -182,23 +185,23 @@ public class DataGroupClassCreatorTest {
 	public void testToClassWrongJsonAttributesIsArray() {
 		String json = "{\"groupDataId\":{\"attributes\":{\"attributeDataId\":\"attributeValue\",\"bla\":[true] }}}";
 		JsonValue jsonValue = jsonParser.parseString(json);
-		ClassCreator classCreator = classCreatorFactory.createForJsonObject(jsonValue);
-		classCreator.toInstance();
+		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory.createForJsonObject(jsonValue);
+		jsonToDataConverter.toInstance();
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testToClassWrongJsonChildrenIsArray() {
 		String json = "{\"groupDataId\":{\"children\":[{\"atomicDataId\":\"atomicValue\"},[]]}}";
 		JsonValue jsonValue = jsonParser.parseString(json);
-		ClassCreator classCreator = classCreatorFactory.createForJsonObject(jsonValue);
-		classCreator.toInstance();
+		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory.createForJsonObject(jsonValue);
+		jsonToDataConverter.toInstance();
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testToClassWrongJsonChildrenIsString() {
 		String json = "{\"groupDataId\":{\"children\":[{\"atomicDataId\":\"atomicValue\"},\"string\"]}}";
 		JsonValue jsonValue = jsonParser.parseString(json);
-		ClassCreator classCreator = classCreatorFactory.createForJsonObject(jsonValue);
-		classCreator.toInstance();
+		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory.createForJsonObject(jsonValue);
+		jsonToDataConverter.toInstance();
 	}
 }

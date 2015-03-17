@@ -1,9 +1,9 @@
 package epc.therest.json;
 
-import epc.therest.data.DataElementRest;
+import epc.therest.data.RestDataElement;
 
 public interface JsonCreatorFactory {
 
-	JsonCreator createForDataElementRest(DataElementRest dataElementRest);
+	JsonCreator createForRestDataElement(RestDataElement restDataElement);
 
 }

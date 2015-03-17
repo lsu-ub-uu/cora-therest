@@ -2,7 +2,7 @@ package epc.therest.data;
 
 import epc.spider.data.SpiderDataAtomic;
 
-public final class RestDataAtomic implements DataElementRest {
+public final class RestDataAtomic implements RestDataElement {
 
 	private String dataId;
 	private String value;

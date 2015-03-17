@@ -1,5 +1,5 @@
 package epc.therest.data;
 
-public interface DataElementRest {
+public interface RestDataElement {
 	String getDataId();
 }

@@ -1,8 +1,8 @@
-package epc.therest.json;
+package epc.therest.data.converter;
 
 import java.util.Map.Entry;
 
-import epc.therest.data.DataElementRest;
+import epc.therest.data.RestDataElement;
 import epc.therest.data.RestDataGroup;
 import epc.therest.jsonparser.JsonArray;
 import epc.therest.jsonparser.JsonObject;
@@ -10,22 +10,22 @@ import epc.therest.jsonparser.JsonParseException;
 import epc.therest.jsonparser.JsonString;
 import epc.therest.jsonparser.JsonValue;
 
-public final class DataGroupClassCreator implements ClassCreator {
+public final class JsonToDataGroupConverter implements JsonToDataConverter {
 
 	private JsonObject jsonObject;
 	private RestDataGroup restDataGroup;
 	private JsonObject jsonGroupChildren;
 
-	static DataGroupClassCreator forJsonObject(JsonObject jsonObject) {
-		return new DataGroupClassCreator(jsonObject);
+	static JsonToDataGroupConverter forJsonObject(JsonObject jsonObject) {
+		return new JsonToDataGroupConverter(jsonObject);
 	}
 
-	private DataGroupClassCreator(JsonObject jsonObject) {
+	private JsonToDataGroupConverter(JsonObject jsonObject) {
 		this.jsonObject = jsonObject;
 	}
 
 	@Override
-	public DataElementRest toInstance() {
+	public RestDataElement toInstance() {
 		try {
 			return tryToInstanciate();
 		} catch (Exception e) {
@@ -33,7 +33,7 @@ public final class DataGroupClassCreator implements ClassCreator {
 		}
 	}
 
-	private DataElementRest tryToInstanciate() {
+	private RestDataElement tryToInstanciate() {
 		String dataId = getDataIdFromJsonObject();
 		jsonGroupChildren = jsonObject.getObject(dataId);
 		validateJsonData();
@@ -68,7 +68,7 @@ public final class DataGroupClassCreator implements ClassCreator {
 		}
 	}
 
-	private DataElementRest createDataGroupInstance() {
+	private RestDataElement createDataGroupInstance() {
 		String dataId2 = getDataIdFromJsonObject();
 		restDataGroup = RestDataGroup.withDataId(dataId2);
 		if (hasAttributes()) {
@@ -108,10 +108,10 @@ public final class DataGroupClassCreator implements ClassCreator {
 	}
 
 	private void addChildToGroup(JsonValue child) {
-		ClassCreatorFactoryImp classCreatorFactoryImp = new ClassCreatorFactoryImp();
+		JsonToDataConverterFactoryImp jsonToDataConverterFactoryImp = new JsonToDataConverterFactoryImp();
 		JsonObject jsonChildObject = (JsonObject) child;
-		ClassCreator childClassCreator = classCreatorFactoryImp
+		JsonToDataConverter childJsonToDataConverter = jsonToDataConverterFactoryImp
 				.createForJsonObject(jsonChildObject);
-		restDataGroup.addChild(childClassCreator.toInstance());
+		restDataGroup.addChild(childJsonToDataConverter.toInstance());
 	}
 }

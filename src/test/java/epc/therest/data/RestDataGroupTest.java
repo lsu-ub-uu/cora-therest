@@ -28,9 +28,9 @@ public class RestDataGroupTest {
 		Assert.assertNotNull(restDataGroup.getChildren(),
 				"Children should not be null for a new DataGroup");
 
-		DataElementRest dataElementRest = RestDataGroup.withDataId("dataId2");
-		restDataGroup.addChild(dataElementRest);
-		Assert.assertEquals(restDataGroup.getChildren().stream().findAny().get(), dataElementRest,
+		RestDataElement restDataElement = RestDataGroup.withDataId("dataId2");
+		restDataGroup.addChild(restDataElement);
+		Assert.assertEquals(restDataGroup.getChildren().stream().findAny().get(), restDataElement,
 				"Child should be the same as the one we added");
 
 	}
@@ -77,7 +77,7 @@ public class RestDataGroupTest {
 		dataGroup2.addChild(SpiderDataGroup.withDataId("grandChildDataId"));
 		dataGroup.addChild(dataGroup2);
 		RestDataGroup restDataGroup = RestDataGroup.fromDataGroup(dataGroup);
-		Iterator<DataElementRest> iterator = restDataGroup.getChildren().iterator();
+		Iterator<RestDataElement> iterator = restDataGroup.getChildren().iterator();
 		Assert.assertTrue(iterator.hasNext(), "dataGroupRest should have at least one child");
 
 		RestDataAtomic dataAtomicChild = (RestDataAtomic) iterator.next();
