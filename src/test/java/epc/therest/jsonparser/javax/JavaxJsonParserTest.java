@@ -17,7 +17,8 @@ public class JavaxJsonParserTest {
 
 	@BeforeMethod
 	public void beforeMethod() {
-		jsonParser = new JavaxJsonParser();
+		JavaxJsonClassFactory javaxJsonClassFactory = new JavaxJsonClassFactoryImp();
+		jsonParser = new JavaxJsonParser(javaxJsonClassFactory);
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)
@@ -40,55 +41,47 @@ public class JavaxJsonParserTest {
 
 	@Test
 	public void testObjectCreate() {
-		JsonParser jsonParser = new JavaxJsonParser();
 		JsonValue jsonValue = jsonParser.parseString("{\"id\":\"value\"}");
 		assertTrue(jsonValue instanceof JsonObject);
 	}
 
 	@Test
 	public void testObjectGetValueType() {
-		JsonParser jsonParser = new JavaxJsonParser();
 		JsonValue jsonValue = jsonParser.parseString("{\"id\":\"value\"}");
 		assertTrue(JsonValueType.OBJECT.equals(jsonValue.getValueType()));
 	}
 
 	@Test
 	public void testAsObjectGetValueType() {
-		JsonParser jsonParser = new JavaxJsonParser();
 		JsonValue jsonValue = jsonParser.parseStringAsObject("{\"id\":\"value\"}");
 		assertTrue(JsonValueType.OBJECT.equals(jsonValue.getValueType()));
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testWrongAsObjectGetValueType() {
-		JsonParser jsonParser = new JavaxJsonParser();
 		jsonParser.parseStringAsObject("[\"id\",\"value\"]");
 	}
 
 	@Test
 	public void testArrayCreate() {
-		JsonParser jsonParser = new JavaxJsonParser();
 		JsonValue jsonValue = jsonParser.parseString("[\"id\",\"value\"]");
 		assertTrue(jsonValue instanceof JsonArray);
 	}
 
 	@Test
 	public void testArrayGetValueType() {
-		JsonParser jsonParser = new JavaxJsonParser();
 		JsonValue jsonValue = jsonParser.parseString("[\"id\",\"value\"]");
 		assertTrue(JsonValueType.ARRAY.equals(jsonValue.getValueType()));
 	}
 
 	@Test
 	public void testAsArrayGetValueType() {
-		JsonParser jsonParser = new JavaxJsonParser();
 		JsonValue jsonValue = jsonParser.parseStringAsArray("[\"id\",\"value\"]");
 		assertTrue(JsonValueType.ARRAY.equals(jsonValue.getValueType()));
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testWrongAsArrayGetValueType() {
-		JsonParser jsonParser = new JavaxJsonParser();
 		JsonValue jsonValue = jsonParser.parseStringAsArray("{\"id\":\"value\"}");
 		assertTrue(JsonValueType.ARRAY.equals(jsonValue.getValueType()));
 	}

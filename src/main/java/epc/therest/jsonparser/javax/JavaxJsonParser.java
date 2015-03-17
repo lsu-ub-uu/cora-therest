@@ -5,12 +5,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.JsonReaderFactory;
 import javax.json.JsonStructure;
-import javax.json.JsonValue.ValueType;
 
 import epc.therest.jsonparser.JsonParseException;
 import epc.therest.jsonparser.JsonParser;
@@ -19,21 +16,27 @@ import epc.therest.jsonparser.JsonValueType;
 
 public class JavaxJsonParser implements JsonParser {
 
+	private JavaxJsonClassFactory javaxJsonClassFactory;
+
+	public JavaxJsonParser(JavaxJsonClassFactory javaxJsonClassFactory) {
+		this.javaxJsonClassFactory = javaxJsonClassFactory;
+	}
+
 	@Override
 	public JsonValue parseString(String json) {
 		try {
-			Map<String, Object> config = new HashMap<>();
-			JsonReaderFactory jsonReaderFactory = Json.createReaderFactory(config);
-			JsonReader jsonReader = jsonReaderFactory.createReader(new StringReader(json));
-			JsonStructure jsonStructure = jsonReader.read();
-			ValueType valueType = jsonStructure.getValueType();
-			if (ValueType.OBJECT.equals(valueType)) {
-				return new JavaxJsonObject((JsonObject) jsonStructure);
-			}
-			return new JavaxJsonArray((JsonArray) jsonStructure);
+			return tryToParseJsonString(json);
 		} catch (Exception e) {
-			throw new JsonParseException("Json string does not contain a valid json", e);
+			throw new JsonParseException("Unable to parse json string", e);
 		}
+	}
+
+	private JsonValue tryToParseJsonString(String json) {
+		Map<String, Object> config = new HashMap<>();
+		JsonReaderFactory jsonReaderFactory = Json.createReaderFactory(config);
+		JsonReader jsonReader = jsonReaderFactory.createReader(new StringReader(json));
+		JsonStructure jsonStructure = jsonReader.read();
+		return javaxJsonClassFactory.createFromJavaxJsonValue(jsonStructure);
 	}
 
 	@Override
@@ -43,7 +46,6 @@ public class JavaxJsonParser implements JsonParser {
 			return (epc.therest.jsonparser.JsonObject) jsonValue;
 		}
 		throw new JsonParseException("Json string does not contain a valid json object");
-
 	}
 
 	@Override

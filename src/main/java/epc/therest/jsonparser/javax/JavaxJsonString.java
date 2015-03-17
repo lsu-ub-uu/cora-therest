@@ -7,7 +7,11 @@ public class JavaxJsonString implements JsonString {
 
 	private javax.json.JsonString javaxJsonString;
 
-	public JavaxJsonString(javax.json.JsonString javaxJsonString) {
+	public static JavaxJsonString usingJavaxJsonString(javax.json.JsonString javaxJsonString) {
+		return new JavaxJsonString(javaxJsonString);
+	}
+
+	private JavaxJsonString(javax.json.JsonString javaxJsonString) {
 		this.javaxJsonString = javaxJsonString;
 	}
 

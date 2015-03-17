@@ -4,14 +4,16 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import epc.therest.data.RestDataElement;
 import epc.therest.data.RestDataAtomic;
+import epc.therest.data.RestDataElement;
 import epc.therest.data.converter.JsonToDataConverter;
 import epc.therest.data.converter.JsonToDataConverterFactory;
 import epc.therest.data.converter.JsonToDataConverterFactoryImp;
 import epc.therest.jsonparser.JsonParseException;
 import epc.therest.jsonparser.JsonParser;
 import epc.therest.jsonparser.JsonValue;
+import epc.therest.jsonparser.javax.JavaxJsonClassFactory;
+import epc.therest.jsonparser.javax.JavaxJsonClassFactoryImp;
 import epc.therest.jsonparser.javax.JavaxJsonParser;
 
 public class DataAtomicClassCreatorTest {
@@ -21,7 +23,8 @@ public class DataAtomicClassCreatorTest {
 	@BeforeMethod
 	public void beforeMethod() {
 		jsonToDataConverterFactory = new JsonToDataConverterFactoryImp();
-		jsonParser = new JavaxJsonParser();
+		JavaxJsonClassFactory javaxJsonClassFactory = new JavaxJsonClassFactoryImp();
+		jsonParser = new JavaxJsonParser(javaxJsonClassFactory);
 	}
 
 	@Test
@@ -42,7 +45,8 @@ public class DataAtomicClassCreatorTest {
 
 	private RestDataAtomic createRestDataAtomicForJsonString(String json) {
 		JsonValue jsonValue = jsonParser.parseString(json);
-		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory.createForJsonObject(jsonValue);
+		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
+				.createForJsonObject(jsonValue);
 		RestDataElement restDataElement = jsonToDataConverter.toInstance();
 		RestDataAtomic restDataAtomic = (RestDataAtomic) restDataElement;
 		return restDataAtomic;
@@ -53,7 +57,8 @@ public class DataAtomicClassCreatorTest {
 		String json = "{\"id\":[]}";
 
 		JsonValue jsonValue = jsonParser.parseString(json);
-		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory.createForJsonObject(jsonValue);
+		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
+				.createForJsonObject(jsonValue);
 		jsonToDataConverter.toInstance();
 	}
 
@@ -61,7 +66,8 @@ public class DataAtomicClassCreatorTest {
 	public void testToClassWrongJsonExtraKeyValuePair() {
 		String json = "{\"atomicDataId\":\"atomicValue\",\"id2\":\"value2\"}";
 		JsonValue jsonValue = jsonParser.parseString(json);
-		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory.createForJsonObject(jsonValue);
+		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
+				.createForJsonObject(jsonValue);
 		jsonToDataConverter.toInstance();
 	}
 
@@ -69,7 +75,8 @@ public class DataAtomicClassCreatorTest {
 	public void testToClassWrongJsonExtraArray() {
 		String json = "{\"atomicDataId\":\"atomicValue\",\"id2\":[]}";
 		JsonValue jsonValue = jsonParser.parseString(json);
-		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory.createForJsonObject(jsonValue);
+		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
+				.createForJsonObject(jsonValue);
 		jsonToDataConverter.toInstance();
 	}
 

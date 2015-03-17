@@ -5,9 +5,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import javax.json.JsonString;
-import javax.json.JsonValue.ValueType;
-
 import epc.therest.jsonparser.JsonArray;
 import epc.therest.jsonparser.JsonObject;
 import epc.therest.jsonparser.JsonParseException;
@@ -17,10 +14,16 @@ import epc.therest.jsonparser.JsonValueType;
 public class JavaxJsonObject implements JsonObject {
 
 	private javax.json.JsonObject javaxJsonObject;
+	private JavaxJsonClassFactoryImp factory;
 
-	public JavaxJsonObject(javax.json.JsonObject javaxJsonObject) {
+	public static JavaxJsonObject usingJavaxJsonObject(JavaxJsonClassFactoryImp factory,
+			javax.json.JsonObject javaxJsonObject) {
+		return new JavaxJsonObject(factory, javaxJsonObject);
+	}
+
+	private JavaxJsonObject(JavaxJsonClassFactoryImp factory, javax.json.JsonObject javaxJsonObject) {
+		this.factory = factory;
 		this.javaxJsonObject = javaxJsonObject;
-
 	}
 
 	@Override
@@ -42,19 +45,9 @@ public class JavaxJsonObject implements JsonObject {
 	public JsonValue getValue(String key) {
 		javax.json.JsonValue jsonValue = javaxJsonObject.get(key);
 		if (null != jsonValue) {
-			return changeToRightType(jsonValue);
+			return factory.createFromJavaxJsonValue(jsonValue);
 		}
 		throw new JsonParseException("Json object does not contain requested key");
-	}
-
-	private JsonValue changeToRightType(javax.json.JsonValue jsonValue) {
-		if (ValueType.STRING.equals(jsonValue.getValueType())) {
-			return new JavaxJsonString((JsonString) jsonValue);
-		}
-		if (ValueType.ARRAY.equals(jsonValue.getValueType())) {
-			return new JavaxJsonArray((javax.json.JsonArray) jsonValue);
-		}
-		return new JavaxJsonObject((javax.json.JsonObject) jsonValue);
 	}
 
 	@Override
@@ -62,7 +55,7 @@ public class JavaxJsonObject implements JsonObject {
 		Set<Entry<String, javax.json.JsonValue>> entrySet = javaxJsonObject.entrySet();
 		Map<String, JsonValue> out = new HashMap<>();
 		for (Entry<String, javax.json.JsonValue> entry : entrySet) {
-			out.put(entry.getKey(), changeToRightType(entry.getValue()));
+			out.put(entry.getKey(), factory.createFromJavaxJsonValue(entry.getValue()));
 		}
 		return out.entrySet();
 	}

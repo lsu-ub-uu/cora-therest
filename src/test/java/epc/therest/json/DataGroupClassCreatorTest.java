@@ -8,8 +8,8 @@ import java.util.Iterator;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import epc.therest.data.RestDataElement;
 import epc.therest.data.RestDataAtomic;
+import epc.therest.data.RestDataElement;
 import epc.therest.data.RestDataGroup;
 import epc.therest.data.converter.JsonToDataConverter;
 import epc.therest.data.converter.JsonToDataConverterFactory;
@@ -17,6 +17,8 @@ import epc.therest.data.converter.JsonToDataConverterFactoryImp;
 import epc.therest.jsonparser.JsonParseException;
 import epc.therest.jsonparser.JsonParser;
 import epc.therest.jsonparser.JsonValue;
+import epc.therest.jsonparser.javax.JavaxJsonClassFactory;
+import epc.therest.jsonparser.javax.JavaxJsonClassFactoryImp;
 import epc.therest.jsonparser.javax.JavaxJsonParser;
 
 public class DataGroupClassCreatorTest {
@@ -26,7 +28,8 @@ public class DataGroupClassCreatorTest {
 	@BeforeMethod
 	public void beforeMethod() {
 		jsonToDataConverterFactory = new JsonToDataConverterFactoryImp();
-		jsonParser = new JavaxJsonParser();
+		JavaxJsonClassFactory javaxJsonClassFactory = new JavaxJsonClassFactoryImp();
+		jsonParser = new JavaxJsonParser(javaxJsonClassFactory);
 	}
 
 	@Test
@@ -131,7 +134,8 @@ public class DataGroupClassCreatorTest {
 
 	private RestDataGroup createRestDataGroupForJsonString(String json) {
 		JsonValue jsonValue = jsonParser.parseString(json);
-		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory.createForJsonObject(jsonValue);
+		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
+				.createForJsonObject(jsonValue);
 		RestDataElement restDataElement = jsonToDataConverter.toInstance();
 		RestDataGroup restDataGroup = (RestDataGroup) restDataElement;
 		return restDataGroup;
@@ -142,7 +146,8 @@ public class DataGroupClassCreatorTest {
 	public void testToClassWrongJsonExtraKeyValuePairTopLevel() {
 		String json = "{\"id\":{}},{\"id2\":\"value2\"}";
 		JsonValue jsonValue = jsonParser.parseString(json);
-		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory.createForJsonObject(jsonValue);
+		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
+				.createForJsonObject(jsonValue);
 		jsonToDataConverter.toInstance();
 	}
 
@@ -150,7 +155,8 @@ public class DataGroupClassCreatorTest {
 	public void testToClassWrongJsonExtraKeyValuePair() {
 		String json = "{\"id\":{},\"id2\":\"value2\"}";
 		JsonValue jsonValue = jsonParser.parseString(json);
-		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory.createForJsonObject(jsonValue);
+		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
+				.createForJsonObject(jsonValue);
 		jsonToDataConverter.toInstance();
 	}
 
@@ -158,7 +164,8 @@ public class DataGroupClassCreatorTest {
 	public void testToClassWrongJsonOnlyKeyValuePairInsideGroup() {
 		String json = "{\"id\":{\"id2\":\"value2\"}}";
 		JsonValue jsonValue = jsonParser.parseString(json);
-		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory.createForJsonObject(jsonValue);
+		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
+				.createForJsonObject(jsonValue);
 		jsonToDataConverter.toInstance();
 	}
 
@@ -166,7 +173,8 @@ public class DataGroupClassCreatorTest {
 	public void testToClassWrongJsonAttributesIsGroup() {
 		String json = "{\"groupDataId\":{\"attributes\":{\"attributeDataId\":\"attributeValue\",\"bla\":{} }}}";
 		JsonValue jsonValue = jsonParser.parseString(json);
-		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory.createForJsonObject(jsonValue);
+		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
+				.createForJsonObject(jsonValue);
 		jsonToDataConverter.toInstance();
 	}
 
@@ -176,7 +184,8 @@ public class DataGroupClassCreatorTest {
 		String json = "{\"groupDataId\":{\"attributes\":{\"attributeDataId\":\"attributeValue\"}"
 				+ ",\"attributes\":{\"attributeDataId2\":\"attributeValue2\"}}}";
 		JsonValue jsonValue = jsonParser.parseString(json);
-		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory.createForJsonObject(jsonValue);
+		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
+				.createForJsonObject(jsonValue);
 		RestDataElement class1 = jsonToDataConverter.toInstance();
 		assertNotNull(class1);
 	}
@@ -185,7 +194,8 @@ public class DataGroupClassCreatorTest {
 	public void testToClassWrongJsonAttributesIsArray() {
 		String json = "{\"groupDataId\":{\"attributes\":{\"attributeDataId\":\"attributeValue\",\"bla\":[true] }}}";
 		JsonValue jsonValue = jsonParser.parseString(json);
-		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory.createForJsonObject(jsonValue);
+		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
+				.createForJsonObject(jsonValue);
 		jsonToDataConverter.toInstance();
 	}
 
@@ -193,7 +203,8 @@ public class DataGroupClassCreatorTest {
 	public void testToClassWrongJsonChildrenIsArray() {
 		String json = "{\"groupDataId\":{\"children\":[{\"atomicDataId\":\"atomicValue\"},[]]}}";
 		JsonValue jsonValue = jsonParser.parseString(json);
-		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory.createForJsonObject(jsonValue);
+		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
+				.createForJsonObject(jsonValue);
 		jsonToDataConverter.toInstance();
 	}
 
@@ -201,7 +212,8 @@ public class DataGroupClassCreatorTest {
 	public void testToClassWrongJsonChildrenIsString() {
 		String json = "{\"groupDataId\":{\"children\":[{\"atomicDataId\":\"atomicValue\"},\"string\"]}}";
 		JsonValue jsonValue = jsonParser.parseString(json);
-		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory.createForJsonObject(jsonValue);
+		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
+				.createForJsonObject(jsonValue);
 		jsonToDataConverter.toInstance();
 	}
 }
