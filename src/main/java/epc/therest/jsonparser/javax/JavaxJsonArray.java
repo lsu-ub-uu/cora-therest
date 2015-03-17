@@ -8,7 +8,7 @@ import epc.therest.jsonparser.JsonArray;
 import epc.therest.jsonparser.JsonValue;
 import epc.therest.jsonparser.JsonValueType;
 
-public class JavaxJsonArray implements JsonArray {
+public final class JavaxJsonArray implements JsonArray {
 
 	private javax.json.JsonArray javaxJsonArray;
 	private JavaxJsonClassFactoryImp factory;

@@ -11,7 +11,7 @@ import epc.therest.jsonparser.JsonParseException;
 import epc.therest.jsonparser.JsonValue;
 import epc.therest.jsonparser.JsonValueType;
 
-public class JavaxJsonObject implements JsonObject {
+public final class JavaxJsonObject implements JsonObject {
 
 	private javax.json.JsonObject javaxJsonObject;
 	private JavaxJsonClassFactoryImp factory;

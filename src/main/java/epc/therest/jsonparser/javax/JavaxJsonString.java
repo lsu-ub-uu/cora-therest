@@ -3,7 +3,7 @@ package epc.therest.jsonparser.javax;
 import epc.therest.jsonparser.JsonString;
 import epc.therest.jsonparser.JsonValueType;
 
-public class JavaxJsonString implements JsonString {
+public final class JavaxJsonString implements JsonString {
 
 	private javax.json.JsonString javaxJsonString;
 
