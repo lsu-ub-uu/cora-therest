@@ -3,16 +3,19 @@ package epc.therest.json;
 import epc.therest.data.RestDataAtomic;
 import epc.therest.data.RestDataElement;
 import epc.therest.data.RestDataGroup;
+import epc.therest.jsonbuilder.JsonBuilderFactory;
 
 public class DataToJsonConverterFactoryImp implements DataToJsonConverterFactory {
 
 	@Override
-	public DataToJsonConverter createForRestDataElement(RestDataElement restDataElement) {
+	public DataToJsonConverter createForRestDataElement(JsonBuilderFactory factory,
+			RestDataElement restDataElement) {
 
 		if (restDataElement instanceof RestDataGroup) {
-			return DataGroupToJsonConverter.forRestDataGroup((RestDataGroup) restDataElement);
+			return DataGroupToJsonConverter.forRestDataGroup(factory,
+					(RestDataGroup) restDataElement);
 		}
-		return DataAtomicToJsonConverter.forRestDataAtomic((RestDataAtomic) restDataElement);
+		return DataAtomicToJsonConverter.forRestDataAtomic(factory,
+				(RestDataAtomic) restDataElement);
 	}
-
 }

@@ -4,8 +4,10 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import epc.spider.data.SpiderDataAtomic;
-import epc.therest.data.RestDataElement;
 import epc.therest.data.RestDataAtomic;
+import epc.therest.data.RestDataElement;
+import epc.therest.jsonbuilder.JsonBuilderFactory;
+import epc.therest.jsonbuilder.javax.JavaxJsonBuilderFactory;
 
 public class DataAtomicToJsonConverterTest {
 	@Test
@@ -15,7 +17,9 @@ public class DataAtomicToJsonConverterTest {
 				"atomicValue");
 		RestDataElement restDataElement = RestDataAtomic.fromSpiderDataAtomic(dataAtomic);
 
-		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory.createForRestDataElement(restDataElement);
+		JsonBuilderFactory factory = new JavaxJsonBuilderFactory();
+		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
+				.createForRestDataElement(factory, restDataElement);
 		String json = dataToJsonConverter.toJson();
 
 		Assert.assertEquals(json, "{\"atomicDataId\":\"atomicValue\"}");
@@ -27,7 +31,9 @@ public class DataAtomicToJsonConverterTest {
 		SpiderDataAtomic dataAtomic = SpiderDataAtomic.withDataIdAndValue("atomicDataId", "");
 		RestDataElement restDataElement = RestDataAtomic.fromSpiderDataAtomic(dataAtomic);
 
-		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory.createForRestDataElement(restDataElement);
+		JsonBuilderFactory factory = new JavaxJsonBuilderFactory();
+		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
+				.createForRestDataElement(factory, restDataElement);
 		String json = dataToJsonConverter.toJson();
 
 		Assert.assertEquals(json, "{\"atomicDataId\":\"\"}");

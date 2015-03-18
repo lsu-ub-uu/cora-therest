@@ -1,38 +1,37 @@
 package epc.therest.json;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.json.Json;
-import javax.json.JsonBuilderFactory;
-import javax.json.JsonObjectBuilder;
-
 import epc.therest.data.RestDataAtomic;
+import epc.therest.jsonbuilder.JsonBuilderFactory;
+import epc.therest.jsonbuilder.JsonObjectBuilder;
+import epc.therest.jsonparser.JsonObject;
 
 public final class DataAtomicToJsonConverter extends DataToJsonConverter {
 
 	private RestDataAtomic restDataAtomic;
+	private JsonBuilderFactory factory;
 
-	public static DataToJsonConverter forRestDataAtomic(RestDataAtomic dataAtomic) {
-		return new DataAtomicToJsonConverter(dataAtomic);
+	public static DataToJsonConverter forRestDataAtomic(JsonBuilderFactory factory,
+			RestDataAtomic dataAtomic) {
+		return new DataAtomicToJsonConverter(factory, dataAtomic);
 	}
 
-	private DataAtomicToJsonConverter(RestDataAtomic dataAtomic) {
+	private DataAtomicToJsonConverter(JsonBuilderFactory factory, RestDataAtomic dataAtomic) {
+		this.factory = factory;
 		this.restDataAtomic = dataAtomic;
 	}
 
 	@Override
 	public String toJson() {
 		JsonObjectBuilder atomic = toJsonObjectBuilder();
-		return atomic.build().toString();
+		JsonObject build = atomic.build();
+		return build.toJsonString();
 	}
 
 	@Override
 	JsonObjectBuilder toJsonObjectBuilder() {
-		Map<String, Object> config = new HashMap<>();
-		JsonBuilderFactory factory = Json.createBuilderFactory(config);
-		JsonObjectBuilder atomic = factory.createObjectBuilder();
-		atomic.add(restDataAtomic.getDataId(), restDataAtomic.getValue());
-		return atomic;
+		JsonObjectBuilder jsonObjectBuilder = factory.createObjectBuilder();
+
+		jsonObjectBuilder.add(restDataAtomic.getDataId(), restDataAtomic.getValue());
+		return jsonObjectBuilder;
 	}
 }

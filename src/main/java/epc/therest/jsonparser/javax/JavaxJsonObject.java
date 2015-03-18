@@ -82,4 +82,9 @@ public final class JavaxJsonObject implements JsonObject {
 		}
 		throw new JsonParseException("Not an array");
 	}
+
+	@Override
+	public String toJsonString() {
+		return javaxJsonObject.toString();
+	}
 }

@@ -7,6 +7,8 @@ import epc.spider.data.SpiderDataAtomic;
 import epc.spider.data.SpiderDataGroup;
 import epc.therest.data.RestDataElement;
 import epc.therest.data.RestDataGroup;
+import epc.therest.jsonbuilder.JsonBuilderFactory;
+import epc.therest.jsonbuilder.javax.JavaxJsonBuilderFactory;
 
 public class DataGroupToJsonConverterTest {
 	@Test
@@ -15,7 +17,10 @@ public class DataGroupToJsonConverterTest {
 		SpiderDataGroup dataGroup = SpiderDataGroup.withDataId("groupDataId");
 		RestDataElement restDataElement = RestDataGroup.fromDataGroup(dataGroup);
 
-		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory.createForRestDataElement(restDataElement);
+		JsonBuilderFactory factory = new JavaxJsonBuilderFactory();
+
+		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
+				.createForRestDataElement(factory, restDataElement);
 		String json = dataToJsonConverter.toJson();
 
 		Assert.assertEquals(json, "{\"groupDataId\":{}}");
@@ -29,7 +34,9 @@ public class DataGroupToJsonConverterTest {
 
 		RestDataElement restDataElement = RestDataGroup.fromDataGroup(dataGroup);
 
-		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory.createForRestDataElement(restDataElement);
+		JsonBuilderFactory factory = new JavaxJsonBuilderFactory();
+		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
+				.createForRestDataElement(factory, restDataElement);
 		String json = dataToJsonConverter.toJson();
 
 		Assert.assertEquals(json,
@@ -45,7 +52,9 @@ public class DataGroupToJsonConverterTest {
 
 		RestDataElement restDataElement = RestDataGroup.fromDataGroup(dataGroup);
 
-		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory.createForRestDataElement(restDataElement);
+		JsonBuilderFactory factory = new JavaxJsonBuilderFactory();
+		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
+				.createForRestDataElement(factory, restDataElement);
 		String json = dataToJsonConverter.toJson();
 
 		Assert.assertEquals(json, "{\"groupDataId\":{\"attributes\":{"
@@ -64,7 +73,9 @@ public class DataGroupToJsonConverterTest {
 
 		RestDataElement restDataElement = RestDataGroup.fromDataGroup(dataGroup);
 
-		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory.createForRestDataElement(restDataElement);
+		JsonBuilderFactory factory = new JavaxJsonBuilderFactory();
+		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
+				.createForRestDataElement(factory, restDataElement);
 		String json = dataToJsonConverter.toJson();
 
 		Assert.assertEquals(json,
@@ -89,7 +100,9 @@ public class DataGroupToJsonConverterTest {
 
 		RestDataElement restDataElement = RestDataGroup.fromDataGroup(dataGroup);
 
-		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory.createForRestDataElement(restDataElement);
+		JsonBuilderFactory factory = new JavaxJsonBuilderFactory();
+		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
+				.createForRestDataElement(factory, restDataElement);
 		String json = dataToJsonConverter.toJson();
 
 		String expectedJson = "{";
@@ -125,7 +138,9 @@ public class DataGroupToJsonConverterTest {
 
 		RestDataElement restDataElement = RestDataGroup.fromDataGroup(dataGroup);
 
-		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory.createForRestDataElement(restDataElement);
+		JsonBuilderFactory factory = new JavaxJsonBuilderFactory();
+		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
+				.createForRestDataElement(factory, restDataElement);
 		String json = dataToJsonConverter.toJson();
 		String expectedJson = "{";
 		expectedJson += "\"groupDataId\":{";

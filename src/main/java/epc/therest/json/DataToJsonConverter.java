@@ -1,6 +1,6 @@
 package epc.therest.json;
 
-import javax.json.JsonObjectBuilder;
+import epc.therest.jsonbuilder.JsonObjectBuilder;
 
 public abstract class DataToJsonConverter {
 

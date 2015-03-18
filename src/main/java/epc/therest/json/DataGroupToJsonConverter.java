@@ -1,38 +1,34 @@
 package epc.therest.json;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Map.Entry;
-
-import javax.json.Json;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonBuilderFactory;
-import javax.json.JsonObjectBuilder;
 
 import epc.therest.data.RestDataElement;
 import epc.therest.data.RestDataGroup;
+import epc.therest.jsonbuilder.JsonArrayBuilder;
+import epc.therest.jsonbuilder.JsonBuilderFactory;
+import epc.therest.jsonbuilder.JsonObjectBuilder;
 
 public final class DataGroupToJsonConverter extends DataToJsonConverter {
 
 	private RestDataGroup restDataGroup;
-	private JsonBuilderFactory jsonBuilderFactory;
 	private JsonObjectBuilder groupChildren;
+	private JsonBuilderFactory factory;
 
-	public static DataToJsonConverter forRestDataGroup(RestDataGroup restDataGroup) {
-		return new DataGroupToJsonConverter(restDataGroup);
+	public static DataToJsonConverter forRestDataGroup(
+			epc.therest.jsonbuilder.JsonBuilderFactory factory, RestDataGroup restDataGroup) {
+		return new DataGroupToJsonConverter(factory, restDataGroup);
 	}
 
-	private DataGroupToJsonConverter(RestDataGroup restDataGroup) {
+	private DataGroupToJsonConverter(JsonBuilderFactory factory, RestDataGroup restDataGroup) {
+		this.factory = factory;
 		this.restDataGroup = restDataGroup;
-		Map<String, Object> config = new HashMap<>();
-		jsonBuilderFactory = Json.createBuilderFactory(config);
-		groupChildren = jsonBuilderFactory.createObjectBuilder();
+		groupChildren = factory.createObjectBuilder();
 	}
 
 	@Override
 	public String toJson() {
 		JsonObjectBuilder group = toJsonObjectBuilder();
-		return group.build().toString();
+		return group.build().toJsonString();
 	}
 
 	@Override
@@ -43,7 +39,7 @@ public final class DataGroupToJsonConverter extends DataToJsonConverter {
 		if (hasChildren()) {
 			addChildrenToGroup();
 		}
-		JsonObjectBuilder group = jsonBuilderFactory.createObjectBuilder();
+		JsonObjectBuilder group = factory.createObjectBuilder();
 		group.add(restDataGroup.getDataId(), groupChildren);
 		return group;
 	}
@@ -57,7 +53,7 @@ public final class DataGroupToJsonConverter extends DataToJsonConverter {
 	}
 
 	private void addAttributesToGroup() {
-		JsonObjectBuilder attributes = jsonBuilderFactory.createObjectBuilder();
+		JsonObjectBuilder attributes = factory.createObjectBuilder();
 		for (Entry<String, String> attributeEntry : restDataGroup.getAttributes().entrySet()) {
 			attributes.add(attributeEntry.getKey(), attributeEntry.getValue());
 		}
@@ -66,10 +62,10 @@ public final class DataGroupToJsonConverter extends DataToJsonConverter {
 
 	private void addChildrenToGroup() {
 		DataToJsonConverterFactory dataToJsonConverterFactory = new DataToJsonConverterFactoryImp();
-		JsonArrayBuilder childrenArray = jsonBuilderFactory.createArrayBuilder();
+		JsonArrayBuilder childrenArray = factory.createArrayBuilder();
 		for (RestDataElement restDataElement : restDataGroup.getChildren()) {
-			childrenArray.add(dataToJsonConverterFactory.createForRestDataElement(restDataElement)
-					.toJsonObjectBuilder());
+			childrenArray.add(dataToJsonConverterFactory.createForRestDataElement(factory,
+					restDataElement).toJsonObjectBuilder());
 		}
 		groupChildren.add("children", childrenArray);
 	}

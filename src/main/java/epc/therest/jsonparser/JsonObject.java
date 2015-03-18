@@ -19,4 +19,6 @@ public interface JsonObject extends JsonValue {
 
 	boolean containsKey(String key);
 
+	String toJsonString();
+
 }
