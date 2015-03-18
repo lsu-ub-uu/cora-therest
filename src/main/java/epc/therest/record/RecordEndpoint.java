@@ -10,10 +10,10 @@ import epc.spider.data.SpiderDataGroup;
 import epc.systemone.record.SystemOneRecordHandler;
 import epc.systemone.record.SystemOneRecordHandlerImp;
 import epc.therest.data.RestDataGroup;
-import epc.therest.json.DataGroupToJsonConverter;
-import epc.therest.json.DataToJsonConverter;
-import epc.therest.jsonbuilder.JsonBuilderFactory;
-import epc.therest.jsonbuilder.javax.JavaxJsonBuilderFactory;
+import epc.therest.data.converter.DataGroupToJsonConverter;
+import epc.therest.data.converter.DataToJsonConverter;
+import epc.therest.json.builder.JsonBuilderFactory;
+import epc.therest.json.builder.javax.JavaxJsonBuilderFactory;
 
 @Path("record")
 public class RecordEndpoint {

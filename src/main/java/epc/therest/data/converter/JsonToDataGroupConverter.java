@@ -4,11 +4,11 @@ import java.util.Map.Entry;
 
 import epc.therest.data.RestDataElement;
 import epc.therest.data.RestDataGroup;
-import epc.therest.jsonparser.JsonArray;
-import epc.therest.jsonparser.JsonObject;
-import epc.therest.jsonparser.JsonParseException;
-import epc.therest.jsonparser.JsonString;
-import epc.therest.jsonparser.JsonValue;
+import epc.therest.json.parser.JsonArray;
+import epc.therest.json.parser.JsonObject;
+import epc.therest.json.parser.JsonParseException;
+import epc.therest.json.parser.JsonString;
+import epc.therest.json.parser.JsonValue;
 
 public final class JsonToDataGroupConverter implements JsonToDataConverter {
 

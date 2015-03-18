@@ -2,9 +2,9 @@ package epc.therest.data.converter;
 
 import epc.therest.data.RestDataElement;
 import epc.therest.data.RestDataAtomic;
-import epc.therest.jsonparser.JsonObject;
-import epc.therest.jsonparser.JsonParseException;
-import epc.therest.jsonparser.JsonString;
+import epc.therest.json.parser.JsonObject;
+import epc.therest.json.parser.JsonParseException;
+import epc.therest.json.parser.JsonString;
 
 public final class JsonToDataAtomicConverter implements JsonToDataConverter {
 	private JsonObject jsonObject;

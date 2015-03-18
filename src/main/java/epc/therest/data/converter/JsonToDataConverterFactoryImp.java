@@ -2,10 +2,10 @@ package epc.therest.data.converter;
 
 import java.util.Map.Entry;
 
-import epc.therest.jsonparser.JsonObject;
-import epc.therest.jsonparser.JsonParseException;
-import epc.therest.jsonparser.JsonValue;
-import epc.therest.jsonparser.JsonValueType;
+import epc.therest.json.parser.JsonObject;
+import epc.therest.json.parser.JsonParseException;
+import epc.therest.json.parser.JsonValue;
+import epc.therest.json.parser.JsonValueType;
 
 public class JsonToDataConverterFactoryImp implements JsonToDataConverterFactory {
 

@@ -1,6 +1,6 @@
 package epc.therest.data.converter;
 
-import epc.therest.jsonparser.JsonValue;
+import epc.therest.json.parser.JsonValue;
 
 public interface JsonToDataConverterFactory {
 

@@ -9,12 +9,12 @@ import epc.therest.data.RestDataElement;
 import epc.therest.data.converter.JsonToDataConverter;
 import epc.therest.data.converter.JsonToDataConverterFactory;
 import epc.therest.data.converter.JsonToDataConverterFactoryImp;
-import epc.therest.jsonparser.JsonParseException;
-import epc.therest.jsonparser.JsonParser;
-import epc.therest.jsonparser.JsonValue;
-import epc.therest.jsonparser.javax.JavaxJsonClassFactory;
-import epc.therest.jsonparser.javax.JavaxJsonClassFactoryImp;
-import epc.therest.jsonparser.javax.JavaxJsonParser;
+import epc.therest.json.parser.JsonParseException;
+import epc.therest.json.parser.JsonParser;
+import epc.therest.json.parser.JsonValue;
+import epc.therest.json.parser.javax.JavaxJsonClassFactory;
+import epc.therest.json.parser.javax.JavaxJsonClassFactoryImp;
+import epc.therest.json.parser.javax.JavaxJsonParser;
 
 public class JsonToDataAtomicConverterTest {
 	private JsonToDataConverterFactory jsonToDataConverterFactory;
