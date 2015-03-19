@@ -27,6 +27,7 @@
 		<jersey.version>2.16</jersey.version>
 		<javax.json.api.version>1.0</javax.json.api.version>
 		<javax.json.version>1.0.2</javax.json.version>
+		<json.simple.version>1.1.1</json.simple.version>
 	</properties>
 
 	<scm>
@@ -101,6 +102,11 @@
 			<groupId>org.glassfish</groupId>
 			<artifactId>javax.json</artifactId>
 			<version>${javax.json.version}</version>
+		</dependency>
+		<dependency>
+		    <groupId>com.googlecode.json-simple</groupId>
+		    <artifactId>json-simple</artifactId>
+		    <version>${json.simple.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>

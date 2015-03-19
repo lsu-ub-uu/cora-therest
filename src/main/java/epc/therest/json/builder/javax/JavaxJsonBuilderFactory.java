@@ -19,12 +19,14 @@ public class JavaxJsonBuilderFactory implements JsonBuilderFactory {
 
 	@Override
 	public JsonObjectBuilder createObjectBuilder() {
-		return new JavaxJsonObjectBuilder(jsonBuilderFactory.createObjectBuilder());
+		javax.json.JsonObjectBuilder jsonObjectBuilder = jsonBuilderFactory.createObjectBuilder();
+		return new JavaxJsonObjectBuilder(jsonObjectBuilder);
 	}
 
 	@Override
 	public JsonArrayBuilder createArrayBuilder() {
-		return new JavaxJsonArrayBuilder(jsonBuilderFactory.createArrayBuilder());
+		javax.json.JsonArrayBuilder jsonArrayBuilder = jsonBuilderFactory.createArrayBuilder();
+		return new JavaxJsonArrayBuilder(jsonArrayBuilder);
 	}
 
 }

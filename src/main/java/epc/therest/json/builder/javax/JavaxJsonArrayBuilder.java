@@ -17,20 +17,12 @@ public class JavaxJsonArrayBuilder implements JsonArrayBuilder {
 	@Override
 	public void add(String value) {
 		javaxJsonArrayBuilder.add(value);
-
-	}
-
-	@Override
-	public JsonArray build() {
-		return JavaxJsonArray.usingJavaxJsonArray(new JavaxJsonClassFactoryImp(),
-				javaxJsonArrayBuilder.build());
 	}
 
 	@Override
 	public void add(JsonArrayBuilder jsonArrayBuilder) {
 		JavaxJsonArrayBuilder javaxBuilder = (JavaxJsonArrayBuilder) jsonArrayBuilder;
-		javax.json.JsonArrayBuilder javaxJsonArrayBuilderChild = javaxBuilder
-				.getWrappedBuilder();
+		javax.json.JsonArrayBuilder javaxJsonArrayBuilderChild = javaxBuilder.getWrappedBuilder();
 		javaxJsonArrayBuilder.add(javaxJsonArrayBuilderChild);
 	}
 
@@ -43,6 +35,11 @@ public class JavaxJsonArrayBuilder implements JsonArrayBuilder {
 		javax.json.JsonObjectBuilder javaxJsonObjectBuilderChild = ((JavaxJsonObjectBuilder) jsonObjectBuilder)
 				.getWrappedBuilder();
 		javaxJsonArrayBuilder.add(javaxJsonObjectBuilderChild);
+	}
 
+	@Override
+	public JsonArray build() {
+		return JavaxJsonArray.usingJavaxJsonArray(new JavaxJsonClassFactoryImp(),
+				javaxJsonArrayBuilder.build());
 	}
 }

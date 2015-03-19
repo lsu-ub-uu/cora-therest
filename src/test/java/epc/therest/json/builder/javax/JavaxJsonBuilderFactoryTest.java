@@ -11,7 +11,7 @@ import epc.therest.json.builder.javax.JavaxJsonArrayBuilder;
 import epc.therest.json.builder.javax.JavaxJsonBuilderFactory;
 import epc.therest.json.builder.javax.JavaxJsonObjectBuilder;
 
-public class JsonBuilderFactoryTest {
+public class JavaxJsonBuilderFactoryTest {
 	@Test
 	public void testCreateBuilderFactoryObject() {
 		JsonBuilderFactory jsonBuilderFactory = new JavaxJsonBuilderFactory();

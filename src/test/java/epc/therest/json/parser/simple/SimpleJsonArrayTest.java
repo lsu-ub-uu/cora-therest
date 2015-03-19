@@ -1,4 +1,4 @@
-package epc.therest.json.parser.javax;
+package epc.therest.json.parser.simple;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
@@ -12,15 +12,15 @@ import epc.therest.json.parser.JsonParser;
 import epc.therest.json.parser.JsonString;
 import epc.therest.json.parser.JsonValue;
 
-public class JavaxJsonArrayTest {
+public class SimpleJsonArrayTest {
 	private JsonParser jsonParser;
 
 	@BeforeMethod
 	public void beforeMethod() {
-		JavaxJsonClassFactory javaxJsonClassFactory = new JavaxJsonClassFactoryImp();
-		jsonParser = new JavaxJsonParser(javaxJsonClassFactory);
+		jsonParser = new SimpleJsonParser();
 	}
 
+	// TODO: add the same type of tests as for object
 	@Test
 	public void testGetValueString() {
 		JsonArray jsonArray = jsonParser.parseStringAsArray("[\"id\",\"value\"]");
@@ -52,5 +52,4 @@ public class JavaxJsonArrayTest {
 		}
 		assertEquals(((JsonString) afterIterator).getStringValue(), "value");
 	}
-
 }
