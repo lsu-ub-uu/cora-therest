@@ -12,7 +12,7 @@ import epc.therest.json.parser.JsonParser;
 import epc.therest.json.parser.JsonString;
 import epc.therest.json.parser.JsonValue;
 
-public class SimpleJsonArrayTest {
+public class SimpleJsonArrayAdapterTest {
 	private JsonParser jsonParser;
 
 	@BeforeMethod

@@ -3,14 +3,13 @@ package epc.therest.json.builder.javax;
 import epc.therest.json.builder.JsonArrayBuilder;
 import epc.therest.json.builder.JsonObjectBuilder;
 import epc.therest.json.parser.JsonObject;
-import epc.therest.json.parser.javax.JavaxJsonClassFactoryImp;
-import epc.therest.json.parser.javax.JavaxJsonObject;
+import epc.therest.json.parser.javax.JavaxJsonObjectAdapter;
 
-public class JavaxJsonObjectBuilder implements JsonObjectBuilder {
+public class JavaxJsonObjectBuilderAdapter implements JsonObjectBuilder {
 
 	private javax.json.JsonObjectBuilder javaxJsonObjectBuilder;
 
-	public JavaxJsonObjectBuilder(javax.json.JsonObjectBuilder javaxJsonObjectBuilder) {
+	public JavaxJsonObjectBuilderAdapter(javax.json.JsonObjectBuilder javaxJsonObjectBuilder) {
 		this.javaxJsonObjectBuilder = javaxJsonObjectBuilder;
 	}
 
@@ -21,7 +20,7 @@ public class JavaxJsonObjectBuilder implements JsonObjectBuilder {
 
 	@Override
 	public void add(String key, JsonObjectBuilder jsonObjectBuilder) {
-		javax.json.JsonObjectBuilder javaxJsonObjectBuilderChild = ((JavaxJsonObjectBuilder) jsonObjectBuilder)
+		javax.json.JsonObjectBuilder javaxJsonObjectBuilderChild = ((JavaxJsonObjectBuilderAdapter) jsonObjectBuilder)
 				.getWrappedBuilder();
 		javaxJsonObjectBuilder.add(key, javaxJsonObjectBuilderChild);
 
@@ -29,8 +28,7 @@ public class JavaxJsonObjectBuilder implements JsonObjectBuilder {
 
 	@Override
 	public JsonObject build() {
-		return JavaxJsonObject.usingJavaxJsonObject(new JavaxJsonClassFactoryImp(),
-				javaxJsonObjectBuilder.build());
+		return JavaxJsonObjectAdapter.usingJavaxJsonObjectAdapter(javaxJsonObjectBuilder.build());
 	}
 
 	javax.json.JsonObjectBuilder getWrappedBuilder() {
@@ -39,8 +37,8 @@ public class JavaxJsonObjectBuilder implements JsonObjectBuilder {
 
 	@Override
 	public void add(String key, JsonArrayBuilder jsonArrayBuilder) {
-		JavaxJsonArrayBuilder javaxBuilder = (JavaxJsonArrayBuilder) jsonArrayBuilder;
-		javax.json.JsonArrayBuilder javaxJsonArrayBuilderChild = javaxBuilder.getWrappedBuilder();
+		JavaxJsonArrayBuilderAdapter javaxAdapter = (JavaxJsonArrayBuilderAdapter) jsonArrayBuilder;
+		javax.json.JsonArrayBuilder javaxJsonArrayBuilderChild = javaxAdapter.getWrappedBuilder();
 		javaxJsonObjectBuilder.add(key, javaxJsonArrayBuilderChild);
 
 	}

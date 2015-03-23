@@ -5,16 +5,9 @@ import static org.testng.Assert.assertTrue;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import epc.therest.data.converter.JsonToDataAtomicConverter;
-import epc.therest.data.converter.JsonToDataConverter;
-import epc.therest.data.converter.JsonToDataConverterFactory;
-import epc.therest.data.converter.JsonToDataConverterFactoryImp;
-import epc.therest.data.converter.JsonToDataGroupConverter;
 import epc.therest.json.parser.JsonParseException;
 import epc.therest.json.parser.JsonParser;
 import epc.therest.json.parser.JsonValue;
-import epc.therest.json.parser.javax.JavaxJsonClassFactory;
-import epc.therest.json.parser.javax.JavaxJsonClassFactoryImp;
 import epc.therest.json.parser.javax.JavaxJsonParser;
 
 public class JsonToDataConverterFactoryTest {
@@ -24,8 +17,7 @@ public class JsonToDataConverterFactoryTest {
 	@BeforeMethod
 	public void beforeMethod() {
 		jsonToDataConverterFactory = new JsonToDataConverterFactoryImp();
-		JavaxJsonClassFactory javaxJsonClassFactory = new JavaxJsonClassFactoryImp();
-		jsonParser = new JavaxJsonParser(javaxJsonClassFactory);
+		jsonParser = new JavaxJsonParser();
 	}
 
 	@Test

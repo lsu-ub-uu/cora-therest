@@ -5,20 +5,20 @@ import org.json.simple.JSONObject;
 
 import epc.therest.json.parser.JsonValue;
 
-public final class SimpleJsonClassFactory {
+public final class SimpleJsonValueFactory {
 
-	private SimpleJsonClassFactory() {
+	private SimpleJsonValueFactory() {
 		// not called
 		throw new UnsupportedOperationException();
 	}
 
 	static JsonValue createFromSimpleJsonValue(Object value) {
 		if (value instanceof JSONArray) {
-			return new SimpleJsonArray((JSONArray) value);
+			return new SimpleJsonArrayAdapter((JSONArray) value);
 		}
 		if (value instanceof JSONObject) {
-			return new SimpleJsonObject((JSONObject) value);
+			return new SimpleJsonObjectAdapter((JSONObject) value);
 		}
-		return new SimpleJsonString((String) value);
+		return new SimpleJsonStringAdapter((String) value);
 	}
 }

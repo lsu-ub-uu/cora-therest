@@ -8,17 +8,13 @@ import org.testng.annotations.Test;
 import epc.therest.json.parser.JsonArray;
 import epc.therest.json.parser.JsonParser;
 import epc.therest.json.parser.JsonString;
-import epc.therest.json.parser.javax.JavaxJsonClassFactory;
-import epc.therest.json.parser.javax.JavaxJsonClassFactoryImp;
-import epc.therest.json.parser.javax.JavaxJsonParser;
 
-public class JavaxJsonStringTest {
+public class JavaxJsonStringAdapterTest {
 	private JsonParser jsonParser;
 
 	@BeforeMethod
 	public void beforeMethod() {
-		JavaxJsonClassFactory javaxJsonClassFactory = new JavaxJsonClassFactoryImp();
-		jsonParser = new JavaxJsonParser(javaxJsonClassFactory);
+		jsonParser = new JavaxJsonParser();
 	}
 
 	@Test

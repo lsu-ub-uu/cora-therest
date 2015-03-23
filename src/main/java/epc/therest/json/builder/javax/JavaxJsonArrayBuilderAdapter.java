@@ -3,14 +3,13 @@ package epc.therest.json.builder.javax;
 import epc.therest.json.builder.JsonArrayBuilder;
 import epc.therest.json.builder.JsonObjectBuilder;
 import epc.therest.json.parser.JsonArray;
-import epc.therest.json.parser.javax.JavaxJsonArray;
-import epc.therest.json.parser.javax.JavaxJsonClassFactoryImp;
+import epc.therest.json.parser.javax.JavaxJsonArrayAdapter;
 
-public class JavaxJsonArrayBuilder implements JsonArrayBuilder {
+public class JavaxJsonArrayBuilderAdapter implements JsonArrayBuilder {
 
 	private javax.json.JsonArrayBuilder javaxJsonArrayBuilder;
 
-	public JavaxJsonArrayBuilder(javax.json.JsonArrayBuilder javaxJsonArrayBuilder) {
+	public JavaxJsonArrayBuilderAdapter(javax.json.JsonArrayBuilder javaxJsonArrayBuilder) {
 		this.javaxJsonArrayBuilder = javaxJsonArrayBuilder;
 	}
 
@@ -21,8 +20,8 @@ public class JavaxJsonArrayBuilder implements JsonArrayBuilder {
 
 	@Override
 	public void add(JsonArrayBuilder jsonArrayBuilder) {
-		JavaxJsonArrayBuilder javaxBuilder = (JavaxJsonArrayBuilder) jsonArrayBuilder;
-		javax.json.JsonArrayBuilder javaxJsonArrayBuilderChild = javaxBuilder.getWrappedBuilder();
+		JavaxJsonArrayBuilderAdapter javaxAdapter = (JavaxJsonArrayBuilderAdapter) jsonArrayBuilder;
+		javax.json.JsonArrayBuilder javaxJsonArrayBuilderChild = javaxAdapter.getWrappedBuilder();
 		javaxJsonArrayBuilder.add(javaxJsonArrayBuilderChild);
 	}
 
@@ -32,14 +31,13 @@ public class JavaxJsonArrayBuilder implements JsonArrayBuilder {
 
 	@Override
 	public void add(JsonObjectBuilder jsonObjectBuilder) {
-		javax.json.JsonObjectBuilder javaxJsonObjectBuilderChild = ((JavaxJsonObjectBuilder) jsonObjectBuilder)
+		javax.json.JsonObjectBuilder javaxJsonObjectBuilderChild = ((JavaxJsonObjectBuilderAdapter) jsonObjectBuilder)
 				.getWrappedBuilder();
 		javaxJsonArrayBuilder.add(javaxJsonObjectBuilderChild);
 	}
 
 	@Override
 	public JsonArray build() {
-		return JavaxJsonArray.usingJavaxJsonArray(new JavaxJsonClassFactoryImp(),
-				javaxJsonArrayBuilder.build());
+		return JavaxJsonArrayAdapter.usingJavaxJsonArrayAdapter(javaxJsonArrayBuilder.build());
 	}
 }

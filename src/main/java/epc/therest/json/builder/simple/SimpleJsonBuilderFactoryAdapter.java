@@ -4,16 +4,16 @@ import epc.therest.json.builder.JsonArrayBuilder;
 import epc.therest.json.builder.JsonBuilderFactory;
 import epc.therest.json.builder.JsonObjectBuilder;
 
-public class SimpleJsonBuilderFactory implements JsonBuilderFactory {
+public class SimpleJsonBuilderFactoryAdapter implements JsonBuilderFactory {
 
 	@Override
 	public JsonObjectBuilder createObjectBuilder() {
-		return new SimpleJsonObjectBuilder();
+		return new SimpleJsonObjectBuilderAdapter();
 	}
 
 	@Override
 	public JsonArrayBuilder createArrayBuilder() {
-		return new SimpleJsonArrayBuilder();
+		return new SimpleJsonArrayBuilderAdapter();
 	}
 
 }

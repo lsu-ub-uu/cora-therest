@@ -69,8 +69,8 @@ public final class JsonToDataGroupConverter implements JsonToDataConverter {
 	}
 
 	private RestDataElement createDataGroupInstance() {
-		String dataId2 = getDataIdFromJsonObject();
-		restDataGroup = RestDataGroup.withDataId(dataId2);
+		String dataId = getDataIdFromJsonObject();
+		restDataGroup = RestDataGroup.withDataId(dataId);
 		if (hasAttributes()) {
 			addAttributesToGroup();
 		}

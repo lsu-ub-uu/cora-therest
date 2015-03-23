@@ -16,17 +16,17 @@ import epc.therest.json.parser.JsonObject;
 import epc.therest.json.parser.JsonString;
 import epc.therest.json.parser.JsonValue;
 
-public class SimpleJsonClassFactoryTest {
+public class SimpleJsonValueFactoryTest {
 	@Test
 	public void testPrivateConstructor() throws Exception {
-		Constructor<SimpleJsonClassFactory> constructor = SimpleJsonClassFactory.class
+		Constructor<SimpleJsonValueFactory> constructor = SimpleJsonValueFactory.class
 				.getDeclaredConstructor();
 		Assert.assertTrue(Modifier.isPrivate(constructor.getModifiers()));
 	}
 
 	@Test(expectedExceptions = InvocationTargetException.class)
 	public void testPrivateConstructorInvoke() throws Exception {
-		Constructor<SimpleJsonClassFactory> constructor = SimpleJsonClassFactory.class
+		Constructor<SimpleJsonValueFactory> constructor = SimpleJsonValueFactory.class
 				.getDeclaredConstructor();
 		Assert.assertTrue(Modifier.isPrivate(constructor.getModifiers()));
 		constructor.setAccessible(true);
@@ -39,7 +39,7 @@ public class SimpleJsonClassFactoryTest {
 		JSONObject javaxJsonValue = new JSONObject();
 		javaxJsonValue.put("id", "value");
 
-		JsonValue jsonValue = SimpleJsonClassFactory.createFromSimpleJsonValue(javaxJsonValue);
+		JsonValue jsonValue = SimpleJsonValueFactory.createFromSimpleJsonValue(javaxJsonValue);
 		assertTrue(jsonValue instanceof JsonObject);
 	}
 
@@ -49,13 +49,13 @@ public class SimpleJsonClassFactoryTest {
 		JSONArray javaxJsonValue = new JSONArray();
 		javaxJsonValue.add("id");
 
-		JsonValue jsonValue = SimpleJsonClassFactory.createFromSimpleJsonValue(javaxJsonValue);
+		JsonValue jsonValue = SimpleJsonValueFactory.createFromSimpleJsonValue(javaxJsonValue);
 		assertTrue(jsonValue instanceof JsonArray);
 	}
 
 	@Test
 	public void testCreateFromString() {
-		JsonValue jsonValue = SimpleJsonClassFactory.createFromSimpleJsonValue("id");
+		JsonValue jsonValue = SimpleJsonValueFactory.createFromSimpleJsonValue("id");
 		assertTrue(jsonValue instanceof JsonString);
 	}
 }

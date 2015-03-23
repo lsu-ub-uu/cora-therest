@@ -13,11 +13,11 @@ import epc.therest.json.parser.JsonParseException;
 import epc.therest.json.parser.JsonValue;
 import epc.therest.json.parser.JsonValueType;
 
-public class SimpleJsonObject implements JsonObject {
+public class SimpleJsonObjectAdapter implements JsonObject {
 
 	private JSONObject simpleJsonObject;
 
-	public SimpleJsonObject(JSONObject jsonObject) {
+	public SimpleJsonObjectAdapter(JSONObject jsonObject) {
 		this.simpleJsonObject = jsonObject;
 	}
 
@@ -38,7 +38,7 @@ public class SimpleJsonObject implements JsonObject {
 		if (null == value) {
 			throw new JsonParseException("Value does not exist");
 		}
-		return SimpleJsonClassFactory.createFromSimpleJsonValue(value);
+		return SimpleJsonValueFactory.createFromSimpleJsonValue(value);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -48,7 +48,7 @@ public class SimpleJsonObject implements JsonObject {
 		Map<String, JsonValue> out = new HashMap<>();
 		for (Entry<String, Object> entry : entrySet) {
 			out.put(entry.getKey(),
-					SimpleJsonClassFactory.createFromSimpleJsonValue(entry.getValue()));
+					SimpleJsonValueFactory.createFromSimpleJsonValue(entry.getValue()));
 		}
 		return out.entrySet();
 	}

@@ -10,10 +10,10 @@ import epc.therest.json.parser.JsonArray;
 import epc.therest.json.parser.JsonObject;
 import epc.therest.json.parser.JsonString;
 
-public class SimpleJsonObjectBuilderTest {
+public class SimpleJsonObjectBuilderAdapterTest {
 	@Test
 	public void testJsonObjectBuilderAddKeyValue() {
-		JsonObjectBuilder jsonObjectBuilder = new SimpleJsonObjectBuilder();
+		JsonObjectBuilder jsonObjectBuilder = new SimpleJsonObjectBuilderAdapter();
 		jsonObjectBuilder.add("id", "value");
 		JsonObject jsonObject = jsonObjectBuilder.build();
 		assertEquals(((JsonString) jsonObject.getValue("id")).getStringValue(), "value");
@@ -21,8 +21,8 @@ public class SimpleJsonObjectBuilderTest {
 
 	@Test
 	public void testJsonObjectBuilderAddKeyJsonObjectBuilder() {
-		JsonObjectBuilder jsonObjectBuilder = new SimpleJsonObjectBuilder();
-		JsonObjectBuilder jsonObjectBuilder2 = new SimpleJsonObjectBuilder();
+		JsonObjectBuilder jsonObjectBuilder = new SimpleJsonObjectBuilderAdapter();
+		JsonObjectBuilder jsonObjectBuilder2 = new SimpleJsonObjectBuilderAdapter();
 		jsonObjectBuilder2.add("id2", "value2");
 		jsonObjectBuilder.add("id", jsonObjectBuilder2);
 		JsonObject jsonObject = jsonObjectBuilder.build();
@@ -35,9 +35,9 @@ public class SimpleJsonObjectBuilderTest {
 
 	@Test
 	public void testJsonObjectBuilderAddKeyJsonArrayBuilder() {
-		JsonObjectBuilder jsonObjectBuilder = new SimpleJsonObjectBuilder();
+		JsonObjectBuilder jsonObjectBuilder = new SimpleJsonObjectBuilderAdapter();
 
-		JsonArrayBuilder jsonArrayBuilder = new SimpleJsonArrayBuilder();
+		JsonArrayBuilder jsonArrayBuilder = new SimpleJsonArrayBuilderAdapter();
 		jsonArrayBuilder.add("value");
 
 		jsonObjectBuilder.add("id", jsonArrayBuilder);

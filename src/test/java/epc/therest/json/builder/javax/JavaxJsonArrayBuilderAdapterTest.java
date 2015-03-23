@@ -11,20 +11,20 @@ import org.testng.annotations.Test;
 
 import epc.therest.json.builder.JsonArrayBuilder;
 import epc.therest.json.builder.JsonObjectBuilder;
-import epc.therest.json.builder.javax.JavaxJsonArrayBuilder;
-import epc.therest.json.builder.javax.JavaxJsonObjectBuilder;
+import epc.therest.json.builder.javax.JavaxJsonArrayBuilderAdapter;
+import epc.therest.json.builder.javax.JavaxJsonObjectBuilderAdapter;
 import epc.therest.json.parser.JsonArray;
 import epc.therest.json.parser.JsonObject;
 import epc.therest.json.parser.JsonString;
 
-public class JavaxJsonArrayBuilderTest {
+public class JavaxJsonArrayBuilderAdapterTest {
 	@Test
 	public void testAddStringValue() {
 		Map<String, Object> config = new HashMap<>();
 		javax.json.JsonBuilderFactory jsonBuilderFactory = Json.createBuilderFactory(config);
 		javax.json.JsonArrayBuilder javaxJsonArrayBuilder = jsonBuilderFactory.createArrayBuilder();
 
-		JsonArrayBuilder jsonArrayBuilder = new JavaxJsonArrayBuilder(javaxJsonArrayBuilder);
+		JsonArrayBuilder jsonArrayBuilder = new JavaxJsonArrayBuilderAdapter(javaxJsonArrayBuilder);
 		jsonArrayBuilder.add("value");
 
 		JsonArray jsonArray = jsonArrayBuilder.build();
@@ -39,8 +39,8 @@ public class JavaxJsonArrayBuilderTest {
 		javax.json.JsonArrayBuilder javaxJsonArrayBuilder2 = jsonBuilderFactory
 				.createArrayBuilder();
 
-		JsonArrayBuilder jsonArrayBuilder = new JavaxJsonArrayBuilder(javaxJsonArrayBuilder);
-		JsonArrayBuilder jsonArrayBuilder2 = new JavaxJsonArrayBuilder(javaxJsonArrayBuilder2);
+		JsonArrayBuilder jsonArrayBuilder = new JavaxJsonArrayBuilderAdapter(javaxJsonArrayBuilder);
+		JsonArrayBuilder jsonArrayBuilder2 = new JavaxJsonArrayBuilderAdapter(javaxJsonArrayBuilder2);
 
 		jsonArrayBuilder2.add("value");
 		jsonArrayBuilder.add(jsonArrayBuilder2);
@@ -58,8 +58,8 @@ public class JavaxJsonArrayBuilderTest {
 		javax.json.JsonObjectBuilder javaxJsonObjectBuilder = jsonBuilderFactory
 				.createObjectBuilder();
 
-		JsonArrayBuilder jsonArrayBuilder = new JavaxJsonArrayBuilder(javaxJsonArrayBuilder);
-		JsonObjectBuilder jsonObjectBuilder = new JavaxJsonObjectBuilder(javaxJsonObjectBuilder);
+		JsonArrayBuilder jsonArrayBuilder = new JavaxJsonArrayBuilderAdapter(javaxJsonArrayBuilder);
+		JsonObjectBuilder jsonObjectBuilder = new JavaxJsonObjectBuilderAdapter(javaxJsonObjectBuilder);
 
 		jsonObjectBuilder.add("id", "value");
 		jsonArrayBuilder.add(jsonObjectBuilder);

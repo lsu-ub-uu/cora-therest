@@ -5,9 +5,9 @@ import org.json.simple.JSONObject;
 import epc.therest.json.builder.JsonArrayBuilder;
 import epc.therest.json.builder.JsonObjectBuilder;
 import epc.therest.json.parser.JsonObject;
-import epc.therest.json.parser.simple.SimpleJsonObject;
+import epc.therest.json.parser.simple.SimpleJsonObjectAdapter;
 
-public class SimpleJsonObjectBuilder implements JsonObjectBuilder {
+public class SimpleJsonObjectBuilderAdapter implements JsonObjectBuilder {
 
 	private JSONObject jsonObject = new JSONObject();
 
@@ -20,21 +20,21 @@ public class SimpleJsonObjectBuilder implements JsonObjectBuilder {
 
 	@Override
 	public JsonObject build() {
-		return new SimpleJsonObject(jsonObject);
+		return new SimpleJsonObjectAdapter(jsonObject);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void add(String dataId, JsonObjectBuilder jsonObjectBuilder) {
-		SimpleJsonObjectBuilder simpleJsonObjectBuilder = (SimpleJsonObjectBuilder) jsonObjectBuilder;
-		jsonObject.put(dataId, simpleJsonObjectBuilder.getWrappedBuilder());
+		SimpleJsonObjectBuilderAdapter simpleJsonObjectBuilderAdapter = (SimpleJsonObjectBuilderAdapter) jsonObjectBuilder;
+		jsonObject.put(dataId, simpleJsonObjectBuilderAdapter.getWrappedBuilder());
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void add(String key, JsonArrayBuilder jsonArrayBuilder) {
-		SimpleJsonArrayBuilder simpleJsonArrayBuilder = (SimpleJsonArrayBuilder) jsonArrayBuilder;
-		jsonObject.put(key, simpleJsonArrayBuilder.getWrappedBuilder());
+		SimpleJsonArrayBuilderAdapter simpleJsonArrayBuilderAdapter = (SimpleJsonArrayBuilderAdapter) jsonArrayBuilder;
+		jsonObject.put(key, simpleJsonArrayBuilderAdapter.getWrappedBuilder());
 
 	}
 

@@ -5,9 +5,9 @@ import org.json.simple.JSONArray;
 import epc.therest.json.builder.JsonArrayBuilder;
 import epc.therest.json.builder.JsonObjectBuilder;
 import epc.therest.json.parser.JsonArray;
-import epc.therest.json.parser.simple.SimpleJsonArray;
+import epc.therest.json.parser.simple.SimpleJsonArrayAdapter;
 
-public class SimpleJsonArrayBuilder implements JsonArrayBuilder {
+public class SimpleJsonArrayBuilderAdapter implements JsonArrayBuilder {
 
 	private JSONArray jsonArray = new JSONArray();
 
@@ -20,8 +20,8 @@ public class SimpleJsonArrayBuilder implements JsonArrayBuilder {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void add(JsonArrayBuilder jsonArrayBuilder) {
-		SimpleJsonArrayBuilder simpleJsonArrayBuilder = (SimpleJsonArrayBuilder) jsonArrayBuilder;
-		jsonArray.add(simpleJsonArrayBuilder.getWrappedBuilder());
+		SimpleJsonArrayBuilderAdapter simpleJsonArrayBuilderAdapter = (SimpleJsonArrayBuilderAdapter) jsonArrayBuilder;
+		jsonArray.add(simpleJsonArrayBuilderAdapter.getWrappedBuilder());
 	}
 
 	JSONArray getWrappedBuilder() {
@@ -31,13 +31,13 @@ public class SimpleJsonArrayBuilder implements JsonArrayBuilder {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void add(JsonObjectBuilder jsonObjectBuilder) {
-		SimpleJsonObjectBuilder simpleJsonObjectBuilder = (SimpleJsonObjectBuilder) jsonObjectBuilder;
-		jsonArray.add(simpleJsonObjectBuilder.getWrappedBuilder());
+		SimpleJsonObjectBuilderAdapter simpleJsonObjectBuilderAdapter = (SimpleJsonObjectBuilderAdapter) jsonObjectBuilder;
+		jsonArray.add(simpleJsonObjectBuilderAdapter.getWrappedBuilder());
 	}
 
 	@Override
 	public JsonArray build() {
-		return new SimpleJsonArray(jsonArray);
+		return new SimpleJsonArrayAdapter(jsonArray);
 	}
 
 }

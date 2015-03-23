@@ -12,20 +12,20 @@ import org.testng.annotations.Test;
 
 import epc.therest.json.builder.JsonArrayBuilder;
 import epc.therest.json.builder.JsonObjectBuilder;
-import epc.therest.json.builder.javax.JavaxJsonArrayBuilder;
-import epc.therest.json.builder.javax.JavaxJsonObjectBuilder;
+import epc.therest.json.builder.javax.JavaxJsonArrayBuilderAdapter;
+import epc.therest.json.builder.javax.JavaxJsonObjectBuilderAdapter;
 import epc.therest.json.parser.JsonArray;
 import epc.therest.json.parser.JsonObject;
 import epc.therest.json.parser.JsonString;
 
-public class JavaxJsonObjectBuilderTest {
+public class JavaxJsonObjectBuilderAdapterTest {
 	@Test
 	public void testJsonObjectBuilderAddKeyValue() {
 		Map<String, Object> config = new HashMap<>();
 		JsonBuilderFactory jsonBuilderFactory = Json.createBuilderFactory(config);
 		javax.json.JsonObjectBuilder javaxJsonObjectBuilder = jsonBuilderFactory
 				.createObjectBuilder();
-		JsonObjectBuilder jsonObjectBuilder = new JavaxJsonObjectBuilder(javaxJsonObjectBuilder);
+		JsonObjectBuilder jsonObjectBuilder = new JavaxJsonObjectBuilderAdapter(javaxJsonObjectBuilder);
 		jsonObjectBuilder.add("id", "value");
 		JsonObject jsonObject = jsonObjectBuilder.build();
 		assertEquals(((JsonString) jsonObject.getValue("id")).getStringValue(), "value");
@@ -37,10 +37,10 @@ public class JavaxJsonObjectBuilderTest {
 		JsonBuilderFactory jsonBuilderFactory = Json.createBuilderFactory(config);
 		javax.json.JsonObjectBuilder javaxJsonObjectBuilder = jsonBuilderFactory
 				.createObjectBuilder();
-		JsonObjectBuilder jsonObjectBuilder = new JavaxJsonObjectBuilder(javaxJsonObjectBuilder);
+		JsonObjectBuilder jsonObjectBuilder = new JavaxJsonObjectBuilderAdapter(javaxJsonObjectBuilder);
 		javax.json.JsonObjectBuilder javaxJsonObjectBuilder2 = jsonBuilderFactory
 				.createObjectBuilder();
-		JsonObjectBuilder jsonObjectBuilder2 = new JavaxJsonObjectBuilder(javaxJsonObjectBuilder2);
+		JsonObjectBuilder jsonObjectBuilder2 = new JavaxJsonObjectBuilderAdapter(javaxJsonObjectBuilder2);
 		jsonObjectBuilder2.add("id2", "value2");
 		jsonObjectBuilder.add("id", jsonObjectBuilder2);
 		JsonObject jsonObject = jsonObjectBuilder.build();
@@ -57,11 +57,11 @@ public class JavaxJsonObjectBuilderTest {
 		JsonBuilderFactory jsonBuilderFactory = Json.createBuilderFactory(config);
 		javax.json.JsonObjectBuilder javaxJsonObjectBuilder = jsonBuilderFactory
 				.createObjectBuilder();
-		JsonObjectBuilder jsonObjectBuilder = new JavaxJsonObjectBuilder(javaxJsonObjectBuilder);
+		JsonObjectBuilder jsonObjectBuilder = new JavaxJsonObjectBuilderAdapter(javaxJsonObjectBuilder);
 
 		javax.json.JsonArrayBuilder javaxJsonArrayBuilder = jsonBuilderFactory.createArrayBuilder();
 
-		JsonArrayBuilder jsonArrayBuilder = new JavaxJsonArrayBuilder(javaxJsonArrayBuilder);
+		JsonArrayBuilder jsonArrayBuilder = new JavaxJsonArrayBuilderAdapter(javaxJsonArrayBuilder);
 		jsonArrayBuilder.add("value");
 
 		jsonObjectBuilder.add("id", jsonArrayBuilder);

@@ -12,13 +12,12 @@ import epc.therest.json.parser.JsonParser;
 import epc.therest.json.parser.JsonString;
 import epc.therest.json.parser.JsonValue;
 
-public class JavaxJsonArrayTest {
+public class JavaxJsonArrayAdapterTest {
 	private JsonParser jsonParser;
 
 	@BeforeMethod
 	public void beforeMethod() {
-		JavaxJsonClassFactory javaxJsonClassFactory = new JavaxJsonClassFactoryImp();
-		jsonParser = new JavaxJsonParser(javaxJsonClassFactory);
+		jsonParser = new JavaxJsonParser();
 	}
 
 	@Test

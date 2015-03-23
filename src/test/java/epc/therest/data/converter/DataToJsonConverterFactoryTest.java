@@ -14,7 +14,7 @@ import epc.therest.data.converter.DataToJsonConverter;
 import epc.therest.data.converter.DataToJsonConverterFactory;
 import epc.therest.data.converter.DataToJsonConverterFactoryImp;
 import epc.therest.json.builder.JsonBuilderFactory;
-import epc.therest.json.builder.javax.JavaxJsonBuilderFactory;
+import epc.therest.json.builder.javax.JavaxJsonBuilderFactoryAdapter;
 
 public class DataToJsonConverterFactoryTest {
 	@Test
@@ -23,7 +23,7 @@ public class DataToJsonConverterFactoryTest {
 		SpiderDataGroup dataGroup = SpiderDataGroup.withDataId("groupDataId");
 		RestDataElement restDataElement = RestDataGroup.fromDataGroup(dataGroup);
 
-		JsonBuilderFactory factory = new JavaxJsonBuilderFactory();
+		JsonBuilderFactory factory = new JavaxJsonBuilderFactoryAdapter();
 		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForRestDataElement(factory, restDataElement);
 
@@ -37,7 +37,7 @@ public class DataToJsonConverterFactoryTest {
 				"atomicValue");
 		RestDataElement restDataElement = RestDataAtomic.fromSpiderDataAtomic(dataAtomic);
 
-		JsonBuilderFactory factory = new JavaxJsonBuilderFactory();
+		JsonBuilderFactory factory = new JavaxJsonBuilderFactoryAdapter();
 		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForRestDataElement(factory, restDataElement);
 

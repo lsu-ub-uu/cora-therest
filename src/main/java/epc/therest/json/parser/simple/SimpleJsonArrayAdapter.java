@@ -10,11 +10,11 @@ import epc.therest.json.parser.JsonArray;
 import epc.therest.json.parser.JsonValue;
 import epc.therest.json.parser.JsonValueType;
 
-public class SimpleJsonArray implements JsonArray {
+public class SimpleJsonArrayAdapter implements JsonArray {
 
 	private JSONArray simpleJsonArray;
 
-	public SimpleJsonArray(JSONArray simpleJsonArray) {
+	public SimpleJsonArrayAdapter(JSONArray simpleJsonArray) {
 		this.simpleJsonArray = simpleJsonArray;
 	}
 
@@ -27,7 +27,7 @@ public class SimpleJsonArray implements JsonArray {
 	public Iterator<JsonValue> iterator() {
 		List<JsonValue> list = new ArrayList<>();
 		for (Object jsonValue : simpleJsonArray) {
-			list.add(SimpleJsonClassFactory.createFromSimpleJsonValue(jsonValue));
+			list.add(SimpleJsonValueFactory.createFromSimpleJsonValue(jsonValue));
 		}
 		return list.iterator();
 	}
@@ -35,7 +35,7 @@ public class SimpleJsonArray implements JsonArray {
 	@Override
 	public JsonValue get(int index) {
 		Object value = simpleJsonArray.get(index);
-		return SimpleJsonClassFactory.createFromSimpleJsonValue(value);
+		return SimpleJsonValueFactory.createFromSimpleJsonValue(value);
 	}
 
 }

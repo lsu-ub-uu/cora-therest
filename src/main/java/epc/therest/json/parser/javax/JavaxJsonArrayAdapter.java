@@ -8,18 +8,15 @@ import epc.therest.json.parser.JsonArray;
 import epc.therest.json.parser.JsonValue;
 import epc.therest.json.parser.JsonValueType;
 
-public final class JavaxJsonArray implements JsonArray {
+public final class JavaxJsonArrayAdapter implements JsonArray {
 
 	private javax.json.JsonArray javaxJsonArray;
-	private JavaxJsonClassFactoryImp factory;
 
-	public static JavaxJsonArray usingJavaxJsonArray(JavaxJsonClassFactoryImp factory,
-			javax.json.JsonArray javaxJsonArray) {
-		return new JavaxJsonArray(factory, javaxJsonArray);
+	public static JavaxJsonArrayAdapter usingJavaxJsonArrayAdapter(javax.json.JsonArray javaxJsonArray) {
+		return new JavaxJsonArrayAdapter(javaxJsonArray);
 	}
 
-	private JavaxJsonArray(JavaxJsonClassFactoryImp factory, javax.json.JsonArray javaxJsonArray) {
-		this.factory = factory;
+	private JavaxJsonArrayAdapter(javax.json.JsonArray javaxJsonArray) {
 		this.javaxJsonArray = javaxJsonArray;
 	}
 
@@ -31,14 +28,14 @@ public final class JavaxJsonArray implements JsonArray {
 	@Override
 	public JsonValue get(int index) {
 		javax.json.JsonValue jsonValue = javaxJsonArray.get(index);
-		return factory.createFromJavaxJsonValue(jsonValue);
+		return JavaxJsonValueFactory.createFromJavaxJsonValue(jsonValue);
 	}
 
 	@Override
 	public Iterator<JsonValue> iterator() {
 		List<JsonValue> list = new ArrayList<>();
 		for (javax.json.JsonValue jsonValue : javaxJsonArray) {
-			list.add(factory.createFromJavaxJsonValue(jsonValue));
+			list.add(JavaxJsonValueFactory.createFromJavaxJsonValue(jsonValue));
 		}
 		return list.iterator();
 	}

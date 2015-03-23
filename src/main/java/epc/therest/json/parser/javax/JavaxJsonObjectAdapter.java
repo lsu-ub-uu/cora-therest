@@ -11,18 +11,15 @@ import epc.therest.json.parser.JsonParseException;
 import epc.therest.json.parser.JsonValue;
 import epc.therest.json.parser.JsonValueType;
 
-public final class JavaxJsonObject implements JsonObject {
+public final class JavaxJsonObjectAdapter implements JsonObject {
 
 	private javax.json.JsonObject javaxJsonObject;
-	private JavaxJsonClassFactoryImp factory;
 
-	public static JavaxJsonObject usingJavaxJsonObject(JavaxJsonClassFactoryImp factory,
-			javax.json.JsonObject javaxJsonObject) {
-		return new JavaxJsonObject(factory, javaxJsonObject);
+	public static JavaxJsonObjectAdapter usingJavaxJsonObjectAdapter(javax.json.JsonObject javaxJsonObject) {
+		return new JavaxJsonObjectAdapter(javaxJsonObject);
 	}
 
-	private JavaxJsonObject(JavaxJsonClassFactoryImp factory, javax.json.JsonObject javaxJsonObject) {
-		this.factory = factory;
+	private JavaxJsonObjectAdapter(javax.json.JsonObject javaxJsonObject) {
 		this.javaxJsonObject = javaxJsonObject;
 	}
 
@@ -45,7 +42,7 @@ public final class JavaxJsonObject implements JsonObject {
 	public JsonValue getValue(String key) {
 		javax.json.JsonValue jsonValue = javaxJsonObject.get(key);
 		if (null != jsonValue) {
-			return factory.createFromJavaxJsonValue(jsonValue);
+			return JavaxJsonValueFactory.createFromJavaxJsonValue(jsonValue);
 		}
 		throw new JsonParseException("Json object does not contain requested key");
 	}
@@ -55,7 +52,8 @@ public final class JavaxJsonObject implements JsonObject {
 		Set<Entry<String, javax.json.JsonValue>> entrySet = javaxJsonObject.entrySet();
 		Map<String, JsonValue> out = new HashMap<>();
 		for (Entry<String, javax.json.JsonValue> entry : entrySet) {
-			out.put(entry.getKey(), factory.createFromJavaxJsonValue(entry.getValue()));
+			out.put(entry.getKey(),
+					JavaxJsonValueFactory.createFromJavaxJsonValue(entry.getValue()));
 		}
 		return out.entrySet();
 	}

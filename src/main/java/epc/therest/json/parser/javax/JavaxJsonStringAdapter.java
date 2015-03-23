@@ -3,15 +3,15 @@ package epc.therest.json.parser.javax;
 import epc.therest.json.parser.JsonString;
 import epc.therest.json.parser.JsonValueType;
 
-public final class JavaxJsonString implements JsonString {
+public final class JavaxJsonStringAdapter implements JsonString {
 
 	private javax.json.JsonString javaxJsonString;
 
-	public static JavaxJsonString usingJavaxJsonString(javax.json.JsonString javaxJsonString) {
-		return new JavaxJsonString(javaxJsonString);
+	public static JavaxJsonStringAdapter usingJavaxJsonStringAdapter(javax.json.JsonString javaxJsonString) {
+		return new JavaxJsonStringAdapter(javaxJsonString);
 	}
 
-	private JavaxJsonString(javax.json.JsonString javaxJsonString) {
+	private JavaxJsonStringAdapter(javax.json.JsonString javaxJsonString) {
 		this.javaxJsonString = javaxJsonString;
 	}
 

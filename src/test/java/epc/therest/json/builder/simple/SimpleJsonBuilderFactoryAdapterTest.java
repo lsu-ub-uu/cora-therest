@@ -8,18 +8,18 @@ import epc.therest.json.builder.JsonArrayBuilder;
 import epc.therest.json.builder.JsonBuilderFactory;
 import epc.therest.json.builder.JsonObjectBuilder;
 
-public class SimpleJsonBuilderFactoryTest {
+public class SimpleJsonBuilderFactoryAdapterTest {
 	@Test
 	public void testCreateObjectBuilder() {
-		JsonBuilderFactory jsonBuilderFactory = new SimpleJsonBuilderFactory();
+		JsonBuilderFactory jsonBuilderFactory = new SimpleJsonBuilderFactoryAdapter();
 		JsonObjectBuilder jsonObjectBuilder = jsonBuilderFactory.createObjectBuilder();
-		assertTrue(jsonObjectBuilder instanceof SimpleJsonObjectBuilder);
+		assertTrue(jsonObjectBuilder instanceof SimpleJsonObjectBuilderAdapter);
 	}
 
 	@Test
 	public void testCreateArrayBuilder() {
-		JsonBuilderFactory jsonBuilderFactory = new SimpleJsonBuilderFactory();
+		JsonBuilderFactory jsonBuilderFactory = new SimpleJsonBuilderFactoryAdapter();
 		JsonArrayBuilder jsonArrayBuilder = jsonBuilderFactory.createArrayBuilder();
-		assertTrue(jsonArrayBuilder instanceof SimpleJsonArrayBuilder);
+		assertTrue(jsonArrayBuilder instanceof SimpleJsonArrayBuilderAdapter);
 	}
 }

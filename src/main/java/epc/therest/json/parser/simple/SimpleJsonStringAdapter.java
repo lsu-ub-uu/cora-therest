@@ -3,11 +3,11 @@ package epc.therest.json.parser.simple;
 import epc.therest.json.parser.JsonString;
 import epc.therest.json.parser.JsonValueType;
 
-public class SimpleJsonString implements JsonString {
+public class SimpleJsonStringAdapter implements JsonString {
 
 	private String value;
 
-	public SimpleJsonString(String value) {
+	public SimpleJsonStringAdapter(String value) {
 		this.value = value;
 	}
 

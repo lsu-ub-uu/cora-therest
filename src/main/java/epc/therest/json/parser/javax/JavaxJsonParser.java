@@ -15,13 +15,6 @@ import epc.therest.json.parser.JsonValue;
 import epc.therest.json.parser.JsonValueType;
 
 public class JavaxJsonParser implements JsonParser {
-
-	private JavaxJsonClassFactory javaxJsonClassFactory;
-
-	public JavaxJsonParser(JavaxJsonClassFactory javaxJsonClassFactory) {
-		this.javaxJsonClassFactory = javaxJsonClassFactory;
-	}
-
 	@Override
 	public JsonValue parseString(String json) {
 		try {
@@ -36,7 +29,7 @@ public class JavaxJsonParser implements JsonParser {
 		JsonReaderFactory jsonReaderFactory = Json.createReaderFactory(config);
 		JsonReader jsonReader = jsonReaderFactory.createReader(new StringReader(json));
 		JsonStructure jsonStructure = jsonReader.read();
-		return javaxJsonClassFactory.createFromJavaxJsonValue(jsonStructure);
+		return JavaxJsonValueFactory.createFromJavaxJsonValue(jsonStructure);
 	}
 
 	@Override

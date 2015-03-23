@@ -1,4 +1,4 @@
-package epc.therest.json.parser.simple;
+package epc.therest.json.parser.javax;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
@@ -17,12 +17,12 @@ import epc.therest.json.parser.JsonParser;
 import epc.therest.json.parser.JsonString;
 import epc.therest.json.parser.JsonValue;
 
-public class SimpleJsonObjectTest {
+public class JavaxJsonObjectAdapterTest {
 	private JsonParser jsonParser;
 
 	@BeforeMethod
 	public void beforeMethod() {
-		jsonParser = new SimpleJsonParser();
+		jsonParser = new JavaxJsonParser();
 	}
 
 	@Test

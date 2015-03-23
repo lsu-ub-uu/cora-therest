@@ -11,17 +11,13 @@ import epc.therest.json.parser.JsonParseException;
 import epc.therest.json.parser.JsonParser;
 import epc.therest.json.parser.JsonValue;
 import epc.therest.json.parser.JsonValueType;
-import epc.therest.json.parser.javax.JavaxJsonClassFactory;
-import epc.therest.json.parser.javax.JavaxJsonClassFactoryImp;
-import epc.therest.json.parser.javax.JavaxJsonParser;
 
 public class JavaxJsonParserTest {
 	private JsonParser jsonParser;
 
 	@BeforeMethod
 	public void beforeMethod() {
-		JavaxJsonClassFactory javaxJsonClassFactory = new JavaxJsonClassFactoryImp();
-		jsonParser = new JavaxJsonParser(javaxJsonClassFactory);
+		jsonParser = new JavaxJsonParser();
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)

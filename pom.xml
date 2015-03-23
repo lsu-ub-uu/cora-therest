@@ -28,6 +28,7 @@
 		<javax.json.api.version>1.0</javax.json.api.version>
 		<javax.json.version>1.0.2</javax.json.version>
 		<json.simple.version>1.1.1</json.simple.version>
+		<org.json.version>20141113</org.json.version>
 	</properties>
 
 	<scm>
@@ -113,6 +114,11 @@
 			<artifactId>javax.servlet-api</artifactId>
 			<version>3.0.1</version>
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>${org.json.version}</version>
 		</dependency>
 	</dependencies>
 </project>

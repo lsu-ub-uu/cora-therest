@@ -18,7 +18,7 @@ public class SimpleJsonParser implements JsonParser {
 			if (null == jsonObject) {
 				throw new JsonParseException("Unable to parse json string");
 			}
-			return SimpleJsonClassFactory.createFromSimpleJsonValue(jsonObject);
+			return SimpleJsonValueFactory.createFromSimpleJsonValue(jsonObject);
 		} catch (Exception e) {
 			throw new JsonParseException("Unable to parse json string", e);
 		}
