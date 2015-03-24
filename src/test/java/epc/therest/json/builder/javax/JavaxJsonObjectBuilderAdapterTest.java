@@ -12,8 +12,6 @@ import org.testng.annotations.Test;
 
 import epc.therest.json.builder.JsonArrayBuilder;
 import epc.therest.json.builder.JsonObjectBuilder;
-import epc.therest.json.builder.javax.JavaxJsonArrayBuilderAdapter;
-import epc.therest.json.builder.javax.JavaxJsonObjectBuilderAdapter;
 import epc.therest.json.parser.JsonArray;
 import epc.therest.json.parser.JsonObject;
 import epc.therest.json.parser.JsonString;
@@ -25,7 +23,8 @@ public class JavaxJsonObjectBuilderAdapterTest {
 		JsonBuilderFactory jsonBuilderFactory = Json.createBuilderFactory(config);
 		javax.json.JsonObjectBuilder javaxJsonObjectBuilder = jsonBuilderFactory
 				.createObjectBuilder();
-		JsonObjectBuilder jsonObjectBuilder = new JavaxJsonObjectBuilderAdapter(javaxJsonObjectBuilder);
+		JsonObjectBuilder jsonObjectBuilder = new JavaxJsonObjectBuilderAdapter(
+				javaxJsonObjectBuilder);
 		jsonObjectBuilder.add("id", "value");
 		JsonObject jsonObject = jsonObjectBuilder.build();
 		assertEquals(((JsonString) jsonObject.getValue("id")).getStringValue(), "value");
@@ -37,15 +36,17 @@ public class JavaxJsonObjectBuilderAdapterTest {
 		JsonBuilderFactory jsonBuilderFactory = Json.createBuilderFactory(config);
 		javax.json.JsonObjectBuilder javaxJsonObjectBuilder = jsonBuilderFactory
 				.createObjectBuilder();
-		JsonObjectBuilder jsonObjectBuilder = new JavaxJsonObjectBuilderAdapter(javaxJsonObjectBuilder);
+		JsonObjectBuilder jsonObjectBuilder = new JavaxJsonObjectBuilderAdapter(
+				javaxJsonObjectBuilder);
 		javax.json.JsonObjectBuilder javaxJsonObjectBuilder2 = jsonBuilderFactory
 				.createObjectBuilder();
-		JsonObjectBuilder jsonObjectBuilder2 = new JavaxJsonObjectBuilderAdapter(javaxJsonObjectBuilder2);
+		JsonObjectBuilder jsonObjectBuilder2 = new JavaxJsonObjectBuilderAdapter(
+				javaxJsonObjectBuilder2);
 		jsonObjectBuilder2.add("id2", "value2");
 		jsonObjectBuilder.add("id", jsonObjectBuilder2);
 		JsonObject jsonObject = jsonObjectBuilder.build();
 
-		JsonObject jsonObjectLevel1 = jsonObject.getObject("id");
+		JsonObject jsonObjectLevel1 = jsonObject.getValueAsJsonObject("id");
 		JsonString jsonString = (JsonString) jsonObjectLevel1.getValue("id2");
 
 		assertEquals(jsonString.getStringValue(), "value2");
@@ -57,7 +58,8 @@ public class JavaxJsonObjectBuilderAdapterTest {
 		JsonBuilderFactory jsonBuilderFactory = Json.createBuilderFactory(config);
 		javax.json.JsonObjectBuilder javaxJsonObjectBuilder = jsonBuilderFactory
 				.createObjectBuilder();
-		JsonObjectBuilder jsonObjectBuilder = new JavaxJsonObjectBuilderAdapter(javaxJsonObjectBuilder);
+		JsonObjectBuilder jsonObjectBuilder = new JavaxJsonObjectBuilderAdapter(
+				javaxJsonObjectBuilder);
 
 		javax.json.JsonArrayBuilder javaxJsonArrayBuilder = jsonBuilderFactory.createArrayBuilder();
 
@@ -67,8 +69,8 @@ public class JavaxJsonObjectBuilderAdapterTest {
 		jsonObjectBuilder.add("id", jsonArrayBuilder);
 		JsonObject jsonObject = jsonObjectBuilder.build();
 
-		JsonArray jsonArrayLevel1 = jsonObject.getArray("id");
-		JsonString jsonString = (JsonString) jsonArrayLevel1.get(0);
+		JsonArray jsonArrayLevel1 = jsonObject.getValueAsJsonArray("id");
+		JsonString jsonString = (JsonString) jsonArrayLevel1.getValue(0);
 
 		assertEquals(jsonString.getStringValue(), "value");
 	}

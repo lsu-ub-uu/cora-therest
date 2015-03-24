@@ -10,6 +10,7 @@ import org.json.simple.JSONObject;
 import epc.therest.json.parser.JsonArray;
 import epc.therest.json.parser.JsonObject;
 import epc.therest.json.parser.JsonParseException;
+import epc.therest.json.parser.JsonString;
 import epc.therest.json.parser.JsonValue;
 import epc.therest.json.parser.JsonValueType;
 
@@ -59,7 +60,7 @@ public class SimpleJsonObjectAdapter implements JsonObject {
 	}
 
 	@Override
-	public JsonObject getObject(String key) {
+	public JsonObject getValueAsJsonObject(String key) {
 		JsonValue jsonValue = getValue(key);
 		if (JsonValueType.OBJECT.equals(jsonValue.getValueType())) {
 			return (JsonObject) getValue(key);
@@ -68,7 +69,7 @@ public class SimpleJsonObjectAdapter implements JsonObject {
 	}
 
 	@Override
-	public JsonArray getArray(String key) {
+	public JsonArray getValueAsJsonArray(String key) {
 		JsonValue jsonValue = getValue(key);
 		if (JsonValueType.ARRAY.equals(jsonValue.getValueType())) {
 			return (JsonArray) getValue(key);
@@ -87,6 +88,12 @@ public class SimpleJsonObjectAdapter implements JsonObject {
 	@Override
 	public String toJsonString() {
 		return simpleJsonObject.toJSONString();
+	}
+
+	@Override
+	public JsonString getValueAsJsonString(String key) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

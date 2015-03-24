@@ -11,8 +11,6 @@ import org.testng.annotations.Test;
 
 import epc.therest.json.builder.JsonArrayBuilder;
 import epc.therest.json.builder.JsonObjectBuilder;
-import epc.therest.json.builder.javax.JavaxJsonArrayBuilderAdapter;
-import epc.therest.json.builder.javax.JavaxJsonObjectBuilderAdapter;
 import epc.therest.json.parser.JsonArray;
 import epc.therest.json.parser.JsonObject;
 import epc.therest.json.parser.JsonString;
@@ -28,7 +26,7 @@ public class JavaxJsonArrayBuilderAdapterTest {
 		jsonArrayBuilder.add("value");
 
 		JsonArray jsonArray = jsonArrayBuilder.build();
-		assertEquals(((JsonString) jsonArray.get(0)).getStringValue(), "value");
+		assertEquals(((JsonString) jsonArray.getValue(0)).getStringValue(), "value");
 	}
 
 	@Test
@@ -40,13 +38,16 @@ public class JavaxJsonArrayBuilderAdapterTest {
 				.createArrayBuilder();
 
 		JsonArrayBuilder jsonArrayBuilder = new JavaxJsonArrayBuilderAdapter(javaxJsonArrayBuilder);
-		JsonArrayBuilder jsonArrayBuilder2 = new JavaxJsonArrayBuilderAdapter(javaxJsonArrayBuilder2);
+		JsonArrayBuilder jsonArrayBuilder2 = new JavaxJsonArrayBuilderAdapter(
+				javaxJsonArrayBuilder2);
 
 		jsonArrayBuilder2.add("value");
 		jsonArrayBuilder.add(jsonArrayBuilder2);
 
 		JsonArray jsonArray = jsonArrayBuilder.build();
-		assertEquals(((JsonString) ((JsonArray) jsonArray.get(0)).get(0)).getStringValue(), "value");
+		assertEquals(
+				((JsonString) ((JsonArray) jsonArray.getValue(0)).getValue(0)).getStringValue(),
+				"value");
 
 	}
 
@@ -59,14 +60,15 @@ public class JavaxJsonArrayBuilderAdapterTest {
 				.createObjectBuilder();
 
 		JsonArrayBuilder jsonArrayBuilder = new JavaxJsonArrayBuilderAdapter(javaxJsonArrayBuilder);
-		JsonObjectBuilder jsonObjectBuilder = new JavaxJsonObjectBuilderAdapter(javaxJsonObjectBuilder);
+		JsonObjectBuilder jsonObjectBuilder = new JavaxJsonObjectBuilderAdapter(
+				javaxJsonObjectBuilder);
 
 		jsonObjectBuilder.add("id", "value");
 		jsonArrayBuilder.add(jsonObjectBuilder);
 
 		JsonArray jsonArray = jsonArrayBuilder.build();
 		assertEquals(
-				((JsonString) ((JsonObject) jsonArray.get(0)).getValue("id")).getStringValue(),
+				((JsonString) ((JsonObject) jsonArray.getValue(0)).getValue("id")).getStringValue(),
 				"value");
 
 	}

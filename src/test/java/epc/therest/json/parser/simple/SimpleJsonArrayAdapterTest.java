@@ -24,21 +24,21 @@ public class SimpleJsonArrayAdapterTest {
 	@Test
 	public void testGetValueString() {
 		JsonArray jsonArray = jsonParser.parseStringAsArray("[\"id\",\"value\"]");
-		JsonValue value = jsonArray.get(0);
+		JsonValue value = jsonArray.getValue(0);
 		assertTrue(value instanceof JsonString);
 	}
 
 	@Test
 	public void testGetValueArray() {
 		JsonArray jsonArray = jsonParser.parseStringAsArray("[[\"id\",\"value\"]]");
-		JsonValue value = jsonArray.get(0);
+		JsonValue value = jsonArray.getValue(0);
 		assertTrue(value instanceof JsonArray);
 	}
 
 	@Test
 	public void testGetValueObject() {
 		JsonArray jsonArray = jsonParser.parseStringAsArray("[{\"id\":\"value\"}]");
-		JsonValue value = jsonArray.get(0);
+		JsonValue value = jsonArray.getValue(0);
 		assertTrue(value instanceof JsonObject);
 	}
 

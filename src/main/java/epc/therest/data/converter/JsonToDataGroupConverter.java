@@ -35,7 +35,7 @@ public final class JsonToDataGroupConverter implements JsonToDataConverter {
 
 	private RestDataElement tryToInstanciate() {
 		String dataId = getDataIdFromJsonObject();
-		jsonGroupChildren = jsonObject.getObject(dataId);
+		jsonGroupChildren = jsonObject.getValueAsJsonObject(dataId);
 		validateJsonData();
 		return createDataGroupInstance();
 	}
@@ -85,7 +85,7 @@ public final class JsonToDataGroupConverter implements JsonToDataConverter {
 	}
 
 	private void addAttributesToGroup() {
-		JsonObject attributes = jsonGroupChildren.getObject("attributes");
+		JsonObject attributes = jsonGroupChildren.getValueAsJsonObject("attributes");
 		for (Entry<String, JsonValue> attributeEntry : attributes.entrySet()) {
 			addAttributeToGroup(attributeEntry);
 		}
@@ -101,7 +101,7 @@ public final class JsonToDataGroupConverter implements JsonToDataConverter {
 	}
 
 	private void addChildrenToGroup() {
-		JsonArray children = jsonGroupChildren.getArray("children");
+		JsonArray children = jsonGroupChildren.getValueAsJsonArray("children");
 		for (JsonValue child : children) {
 			addChildToGroup(child);
 		}

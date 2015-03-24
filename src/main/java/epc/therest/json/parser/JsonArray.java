@@ -2,6 +2,12 @@ package epc.therest.json.parser;
 
 public interface JsonArray extends JsonValue, Iterable<JsonValue> {
 
-	JsonValue get(int index);
+	JsonValue getValue(int index);
+
+	JsonString getValueAsJsonString(int index);
+
+	JsonObject getValueAsJsonObject(int index);
+
+	JsonArray getValueAsJsonArray(int index);
 
 }

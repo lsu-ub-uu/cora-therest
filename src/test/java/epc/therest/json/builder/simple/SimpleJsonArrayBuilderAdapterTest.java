@@ -16,7 +16,7 @@ public class SimpleJsonArrayBuilderAdapterTest {
 		JsonArrayBuilder jsonArrayBuilder = new SimpleJsonArrayBuilderAdapter();
 		jsonArrayBuilder.add("value");
 		JsonArray jsonArray = jsonArrayBuilder.build();
-		assertEquals(((JsonString) jsonArray.get(0)).getStringValue(), "value");
+		assertEquals(((JsonString) jsonArray.getValue(0)).getStringValue(), "value");
 	}
 
 	@Test
@@ -29,7 +29,9 @@ public class SimpleJsonArrayBuilderAdapterTest {
 		jsonArrayBuilder.add(jsonArrayBuilder2);
 
 		JsonArray jsonArray = jsonArrayBuilder.build();
-		assertEquals(((JsonString) ((JsonArray) jsonArray.get(0)).get(0)).getStringValue(), "value");
+		assertEquals(
+				((JsonString) ((JsonArray) jsonArray.getValue(0)).getValue(0)).getStringValue(),
+				"value");
 
 	}
 
@@ -44,7 +46,7 @@ public class SimpleJsonArrayBuilderAdapterTest {
 
 		JsonArray jsonArray = jsonArrayBuilder.build();
 		assertEquals(
-				((JsonString) ((JsonObject) jsonArray.get(0)).getValue("id")).getStringValue(),
+				((JsonString) ((JsonObject) jsonArray.getValue(0)).getValue("id")).getStringValue(),
 				"value");
 	}
 }

@@ -7,6 +7,8 @@ import java.util.List;
 import org.json.simple.JSONArray;
 
 import epc.therest.json.parser.JsonArray;
+import epc.therest.json.parser.JsonObject;
+import epc.therest.json.parser.JsonString;
 import epc.therest.json.parser.JsonValue;
 import epc.therest.json.parser.JsonValueType;
 
@@ -33,9 +35,27 @@ public class SimpleJsonArrayAdapter implements JsonArray {
 	}
 
 	@Override
-	public JsonValue get(int index) {
+	public JsonValue getValue(int index) {
 		Object value = simpleJsonArray.get(index);
 		return SimpleJsonValueFactory.createFromSimpleJsonValue(value);
+	}
+
+	@Override
+	public JsonString getValueAsJsonString(int index) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public JsonObject getValueAsJsonObject(int index) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public JsonArray getValueAsJsonArray(int index) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

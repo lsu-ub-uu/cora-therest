@@ -5,19 +5,21 @@ import java.util.Set;
 
 public interface JsonObject extends JsonValue {
 
-	Set<String> keySet();
-
 	JsonValue getValue(String key);
+
+	JsonString getValueAsJsonString(String key);
+
+	JsonObject getValueAsJsonObject(String key);
+
+	JsonArray getValueAsJsonArray(String key);
+
+	boolean containsKey(String key);
+
+	Set<String> keySet();
 
 	Set<Entry<String, JsonValue>> entrySet();
 
 	int size();
-
-	JsonObject getObject(String key);
-
-	JsonArray getArray(String key);
-
-	boolean containsKey(String key);
 
 	String toJsonString();
 

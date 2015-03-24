@@ -8,6 +8,7 @@ import java.util.Set;
 import epc.therest.json.parser.JsonArray;
 import epc.therest.json.parser.JsonObject;
 import epc.therest.json.parser.JsonParseException;
+import epc.therest.json.parser.JsonString;
 import epc.therest.json.parser.JsonValue;
 import epc.therest.json.parser.JsonValueType;
 
@@ -15,7 +16,8 @@ public final class JavaxJsonObjectAdapter implements JsonObject {
 
 	private javax.json.JsonObject javaxJsonObject;
 
-	public static JavaxJsonObjectAdapter usingJavaxJsonObjectAdapter(javax.json.JsonObject javaxJsonObject) {
+	public static JavaxJsonObjectAdapter usingJavaxJsonObjectAdapter(
+			javax.json.JsonObject javaxJsonObject) {
 		return new JavaxJsonObjectAdapter(javaxJsonObject);
 	}
 
@@ -64,7 +66,7 @@ public final class JavaxJsonObjectAdapter implements JsonObject {
 	}
 
 	@Override
-	public JsonObject getObject(String key) {
+	public JsonObject getValueAsJsonObject(String key) {
 		JsonValue jsonValue = getValue(key);
 		if (JsonValueType.OBJECT.equals(jsonValue.getValueType())) {
 			return (JsonObject) getValue(key);
@@ -73,7 +75,7 @@ public final class JavaxJsonObjectAdapter implements JsonObject {
 	}
 
 	@Override
-	public JsonArray getArray(String key) {
+	public JsonArray getValueAsJsonArray(String key) {
 		JsonValue jsonValue = getValue(key);
 		if (JsonValueType.ARRAY.equals(jsonValue.getValueType())) {
 			return (JsonArray) getValue(key);
@@ -84,5 +86,11 @@ public final class JavaxJsonObjectAdapter implements JsonObject {
 	@Override
 	public String toJsonString() {
 		return javaxJsonObject.toString();
+	}
+
+	@Override
+	public JsonString getValueAsJsonString(String key) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

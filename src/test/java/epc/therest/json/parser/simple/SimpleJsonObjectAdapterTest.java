@@ -88,28 +88,28 @@ public class SimpleJsonObjectAdapterTest {
 	@Test
 	public void testGetObject() {
 		JsonObject jsonObject = jsonParser.parseStringAsObject("{\"id\":{\"id2\":\"value\"}}");
-		JsonObject object = jsonObject.getObject("id");
+		JsonObject object = jsonObject.getValueAsJsonObject("id");
 		assertTrue(object instanceof JsonObject);
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testGetObjectNotAnObject() {
 		JsonObject jsonObject = jsonParser.parseStringAsObject("{\"id\":\"value\"}");
-		JsonObject object = jsonObject.getObject("id");
+		JsonObject object = jsonObject.getValueAsJsonObject("id");
 		assertTrue(object instanceof JsonObject);
 	}
 
 	@Test
 	public void testGetArray() {
 		JsonObject jsonObject = jsonParser.parseStringAsObject("{\"id\":[\"value\"]}");
-		JsonArray array = jsonObject.getArray("id");
+		JsonArray array = jsonObject.getValueAsJsonArray("id");
 		assertTrue(array instanceof JsonArray);
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testGetArrayNotAnArray() {
 		JsonObject jsonObject = jsonParser.parseStringAsObject("{\"id\":{\"id\":\"value\"}}");
-		JsonArray array = jsonObject.getArray("id");
+		JsonArray array = jsonObject.getValueAsJsonArray("id");
 		assertTrue(array instanceof JsonArray);
 	}
 

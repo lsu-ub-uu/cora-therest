@@ -27,7 +27,7 @@ public class SimpleJsonObjectBuilderAdapterTest {
 		jsonObjectBuilder.add("id", jsonObjectBuilder2);
 		JsonObject jsonObject = jsonObjectBuilder.build();
 
-		JsonObject jsonObjectLevel1 = jsonObject.getObject("id");
+		JsonObject jsonObjectLevel1 = jsonObject.getValueAsJsonObject("id");
 		JsonString jsonString = (JsonString) jsonObjectLevel1.getValue("id2");
 
 		assertEquals(jsonString.getStringValue(), "value2");
@@ -43,8 +43,8 @@ public class SimpleJsonObjectBuilderAdapterTest {
 		jsonObjectBuilder.add("id", jsonArrayBuilder);
 		JsonObject jsonObject = jsonObjectBuilder.build();
 
-		JsonArray jsonArrayLevel1 = jsonObject.getArray("id");
-		JsonString jsonString = (JsonString) jsonArrayLevel1.get(0);
+		JsonArray jsonArrayLevel1 = jsonObject.getValueAsJsonArray("id");
+		JsonString jsonString = (JsonString) jsonArrayLevel1.getValue(0);
 
 		assertEquals(jsonString.getStringValue(), "value");
 	}

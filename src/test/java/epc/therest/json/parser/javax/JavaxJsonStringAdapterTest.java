@@ -20,7 +20,7 @@ public class JavaxJsonStringAdapterTest {
 	@Test
 	public void testGetValueString() {
 		JsonArray jsonArray = jsonParser.parseStringAsArray("[\"id\",\"value\"]");
-		JsonString value = (JsonString) jsonArray.get(0);
+		JsonString value = (JsonString) jsonArray.getValue(0);
 		assertEquals(value.getStringValue(), "id");
 	}
 }
