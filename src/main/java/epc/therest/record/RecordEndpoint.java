@@ -31,8 +31,6 @@ public class RecordEndpoint {
 
 		RestDataGroup restDataGroup = RestDataGroup.fromDataGroup(createdRecord);
 
-		// JsonBuilderFactory jsonBuilderFactory = new JavaxJsonBuilderFactoryAdapter();
-		// JsonBuilderFactory jsonBuilderFactory = new SimpleJsonBuilderFactoryAdapter();
 		JsonBuilderFactory jsonBuilderFactory = new OrgJsonBuilderFactoryAdapter();
 
 		DataToJsonConverter dataToJsonConverter = DataGroupToJsonConverter.forRestDataGroup(
@@ -50,8 +48,6 @@ public class RecordEndpoint {
 		SpiderDataGroup record = recordHandler.readRecord("userId", type, id);
 		RestDataGroup restDataGroup = RestDataGroup.fromDataGroup(record);
 
-		// JsonBuilderFactory jsonBuilderFactory = new JavaxJsonBuilderFactoryAdapter();
-		// JsonBuilderFactory jsonBuilderFactory = new SimpleJsonBuilderFactoryAdapter();
 		JsonBuilderFactory jsonBuilderFactory = new OrgJsonBuilderFactoryAdapter();
 		DataToJsonConverter dataToJsonConverter = DataGroupToJsonConverter.forRestDataGroup(
 				jsonBuilderFactory, restDataGroup);
