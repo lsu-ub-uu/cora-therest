@@ -13,26 +13,26 @@ public class SimpleJsonObjectBuilderAdapter implements JsonObjectBuilder {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void add(String key, String value) {
+	public void addKeyString(String key, String value) {
 		jsonObject.put(key, value);
 
 	}
 
 	@Override
-	public JsonObject build() {
+	public JsonObject toJsonObject() {
 		return new SimpleJsonObjectAdapter(jsonObject);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void add(String dataId, JsonObjectBuilder jsonObjectBuilder) {
+	public void addKeyJsonObjectBuilder(String dataId, JsonObjectBuilder jsonObjectBuilder) {
 		SimpleJsonObjectBuilderAdapter simpleJsonObjectBuilderAdapter = (SimpleJsonObjectBuilderAdapter) jsonObjectBuilder;
 		jsonObject.put(dataId, simpleJsonObjectBuilderAdapter.getWrappedBuilder());
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void add(String key, JsonArrayBuilder jsonArrayBuilder) {
+	public void addKeyJsonArrayBuilder(String key, JsonArrayBuilder jsonArrayBuilder) {
 		SimpleJsonArrayBuilderAdapter simpleJsonArrayBuilderAdapter = (SimpleJsonArrayBuilderAdapter) jsonArrayBuilder;
 		jsonObject.put(key, simpleJsonArrayBuilderAdapter.getWrappedBuilder());
 
@@ -40,6 +40,12 @@ public class SimpleJsonObjectBuilderAdapter implements JsonObjectBuilder {
 
 	public Object getWrappedBuilder() {
 		return jsonObject;
+	}
+
+	@Override
+	public String toJsonFormattedString() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

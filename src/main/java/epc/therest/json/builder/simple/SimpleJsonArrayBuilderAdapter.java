@@ -13,13 +13,13 @@ public class SimpleJsonArrayBuilderAdapter implements JsonArrayBuilder {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void add(String value) {
+	public void addString(String value) {
 		jsonArray.add(value);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void add(JsonArrayBuilder jsonArrayBuilder) {
+	public void addJsonArrayBuilder(JsonArrayBuilder jsonArrayBuilder) {
 		SimpleJsonArrayBuilderAdapter simpleJsonArrayBuilderAdapter = (SimpleJsonArrayBuilderAdapter) jsonArrayBuilder;
 		jsonArray.add(simpleJsonArrayBuilderAdapter.getWrappedBuilder());
 	}
@@ -30,14 +30,20 @@ public class SimpleJsonArrayBuilderAdapter implements JsonArrayBuilder {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void add(JsonObjectBuilder jsonObjectBuilder) {
+	public void addJsonObjectBuilder(JsonObjectBuilder jsonObjectBuilder) {
 		SimpleJsonObjectBuilderAdapter simpleJsonObjectBuilderAdapter = (SimpleJsonObjectBuilderAdapter) jsonObjectBuilder;
 		jsonArray.add(simpleJsonObjectBuilderAdapter.getWrappedBuilder());
 	}
 
 	@Override
-	public JsonArray build() {
+	public JsonArray toJsonArray() {
 		return new SimpleJsonArrayAdapter(jsonArray);
+	}
+
+	@Override
+	public String toJsonFormattedString() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

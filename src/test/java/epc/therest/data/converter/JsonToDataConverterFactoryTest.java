@@ -8,7 +8,7 @@ import org.testng.annotations.Test;
 import epc.therest.json.parser.JsonParseException;
 import epc.therest.json.parser.JsonParser;
 import epc.therest.json.parser.JsonValue;
-import epc.therest.json.parser.javax.JavaxJsonParser;
+import epc.therest.json.parser.org.OrgJsonParser;
 
 public class JsonToDataConverterFactoryTest {
 	private JsonToDataConverterFactory jsonToDataConverterFactory;
@@ -17,7 +17,7 @@ public class JsonToDataConverterFactoryTest {
 	@BeforeMethod
 	public void beforeMethod() {
 		jsonToDataConverterFactory = new JsonToDataConverterFactoryImp();
-		jsonParser = new JavaxJsonParser();
+		jsonParser = new OrgJsonParser();
 	}
 
 	@Test

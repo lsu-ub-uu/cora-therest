@@ -21,6 +21,5 @@ public interface JsonObject extends JsonValue {
 
 	int size();
 
-	String toJsonString();
-
+	String toJsonFormattedString();
 }

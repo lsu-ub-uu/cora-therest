@@ -5,7 +5,11 @@ import org.json.JSONObject;
 
 import epc.therest.json.parser.JsonValue;
 
-public class OrgJsonValueFactory {
+public final class OrgJsonValueFactory {
+	private OrgJsonValueFactory() {
+		// not in use
+		throw new UnsupportedOperationException();
+	}
 
 	public static JsonValue createFromOrgJsonObject(Object orgJsonObject) {
 		if (orgJsonObject instanceof org.json.JSONObject) {

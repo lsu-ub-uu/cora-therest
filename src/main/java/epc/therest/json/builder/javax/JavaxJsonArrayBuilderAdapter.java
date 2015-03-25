@@ -14,12 +14,12 @@ public class JavaxJsonArrayBuilderAdapter implements JsonArrayBuilder {
 	}
 
 	@Override
-	public void add(String value) {
+	public void addString(String value) {
 		javaxJsonArrayBuilder.add(value);
 	}
 
 	@Override
-	public void add(JsonArrayBuilder jsonArrayBuilder) {
+	public void addJsonArrayBuilder(JsonArrayBuilder jsonArrayBuilder) {
 		JavaxJsonArrayBuilderAdapter javaxAdapter = (JavaxJsonArrayBuilderAdapter) jsonArrayBuilder;
 		javax.json.JsonArrayBuilder javaxJsonArrayBuilderChild = javaxAdapter.getWrappedBuilder();
 		javaxJsonArrayBuilder.add(javaxJsonArrayBuilderChild);
@@ -30,14 +30,20 @@ public class JavaxJsonArrayBuilderAdapter implements JsonArrayBuilder {
 	}
 
 	@Override
-	public void add(JsonObjectBuilder jsonObjectBuilder) {
+	public void addJsonObjectBuilder(JsonObjectBuilder jsonObjectBuilder) {
 		javax.json.JsonObjectBuilder javaxJsonObjectBuilderChild = ((JavaxJsonObjectBuilderAdapter) jsonObjectBuilder)
 				.getWrappedBuilder();
 		javaxJsonArrayBuilder.add(javaxJsonObjectBuilderChild);
 	}
 
 	@Override
-	public JsonArray build() {
+	public JsonArray toJsonArray() {
 		return JavaxJsonArrayAdapter.usingJavaxJsonArrayAdapter(javaxJsonArrayBuilder.build());
+	}
+
+	@Override
+	public String toJsonFormattedString() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

@@ -4,12 +4,14 @@ import epc.therest.json.parser.JsonArray;
 
 public interface JsonArrayBuilder {
 
-	void add(String value);
+	void addString(String value);
 
-	void add(JsonArrayBuilder jsonArrayBuilder);
+	void addJsonObjectBuilder(JsonObjectBuilder jsonObjectBuilder);
 
-	void add(JsonObjectBuilder jsonObjectBuilder);
+	void addJsonArrayBuilder(JsonArrayBuilder jsonArrayBuilder);
 
-	JsonArray build();
+	JsonArray toJsonArray();
+
+	String toJsonFormattedString();
 
 }

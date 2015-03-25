@@ -1,26 +1,30 @@
 package epc.therest.data.converter;
 
 import org.testng.Assert;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import epc.spider.data.SpiderDataAtomic;
 import epc.spider.data.SpiderDataGroup;
 import epc.therest.data.RestDataElement;
 import epc.therest.data.RestDataGroup;
-import epc.therest.data.converter.DataToJsonConverter;
-import epc.therest.data.converter.DataToJsonConverterFactory;
-import epc.therest.data.converter.DataToJsonConverterFactoryImp;
 import epc.therest.json.builder.JsonBuilderFactory;
-import epc.therest.json.builder.javax.JavaxJsonBuilderFactoryAdapter;
+import epc.therest.json.builder.org.OrgJsonBuilderFactoryAdapter;
 
 public class DataGroupToJsonConverterTest {
+	private DataToJsonConverterFactory dataToJsonConverterFactory;
+	private JsonBuilderFactory factory;
+
+	@BeforeMethod
+	public void beforeMethod() {
+		dataToJsonConverterFactory = new DataToJsonConverterFactoryImp();
+		factory = new OrgJsonBuilderFactoryAdapter();
+	}
+
 	@Test
 	public void testToJson() {
-		DataToJsonConverterFactory dataToJsonConverterFactory = new DataToJsonConverterFactoryImp();
 		SpiderDataGroup dataGroup = SpiderDataGroup.withDataId("groupDataId");
 		RestDataElement restDataElement = RestDataGroup.fromDataGroup(dataGroup);
-
-		JsonBuilderFactory factory = new JavaxJsonBuilderFactoryAdapter();
 
 		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForRestDataElement(factory, restDataElement);
@@ -31,13 +35,11 @@ public class DataGroupToJsonConverterTest {
 
 	@Test
 	public void testToJsonGroupWithAttribute() {
-		DataToJsonConverterFactory dataToJsonConverterFactory = new DataToJsonConverterFactoryImp();
 		SpiderDataGroup dataGroup = SpiderDataGroup.withDataId("groupDataId");
 		dataGroup.addAttributeByIdWithValue("attributeDataId", "attributeValue");
 
 		RestDataElement restDataElement = RestDataGroup.fromDataGroup(dataGroup);
 
-		JsonBuilderFactory factory = new JavaxJsonBuilderFactoryAdapter();
 		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForRestDataElement(factory, restDataElement);
 		String json = dataToJsonConverter.toJson();
@@ -48,14 +50,12 @@ public class DataGroupToJsonConverterTest {
 
 	@Test
 	public void testToJsonGroupWithAttributes() {
-		DataToJsonConverterFactory dataToJsonConverterFactory = new DataToJsonConverterFactoryImp();
 		SpiderDataGroup dataGroup = SpiderDataGroup.withDataId("groupDataId");
 		dataGroup.addAttributeByIdWithValue("attributeDataId", "attributeValue");
 		dataGroup.addAttributeByIdWithValue("attributeDataId2", "attributeValue2");
 
 		RestDataElement restDataElement = RestDataGroup.fromDataGroup(dataGroup);
 
-		JsonBuilderFactory factory = new JavaxJsonBuilderFactoryAdapter();
 		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForRestDataElement(factory, restDataElement);
 		String json = dataToJsonConverter.toJson();
@@ -67,7 +67,6 @@ public class DataGroupToJsonConverterTest {
 
 	@Test
 	public void testToJsonGroupWithAtomicChild() {
-		DataToJsonConverterFactory dataToJsonConverterFactory = new DataToJsonConverterFactoryImp();
 		SpiderDataGroup dataGroup = SpiderDataGroup.withDataId("groupDataId");
 
 		SpiderDataAtomic dataAtomic = SpiderDataAtomic.withDataIdAndValue("atomicDataId",
@@ -76,7 +75,6 @@ public class DataGroupToJsonConverterTest {
 
 		RestDataElement restDataElement = RestDataGroup.fromDataGroup(dataGroup);
 
-		JsonBuilderFactory factory = new JavaxJsonBuilderFactoryAdapter();
 		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForRestDataElement(factory, restDataElement);
 		String json = dataToJsonConverter.toJson();
@@ -87,7 +85,6 @@ public class DataGroupToJsonConverterTest {
 
 	@Test
 	public void testToJsonGroupWithAtomicChildAndGroupChildWithAtomicChild() {
-		DataToJsonConverterFactory dataToJsonConverterFactory = new DataToJsonConverterFactoryImp();
 		SpiderDataGroup dataGroup = SpiderDataGroup.withDataId("groupDataId");
 
 		SpiderDataAtomic dataAtomic = SpiderDataAtomic.withDataIdAndValue("atomicDataId",
@@ -103,7 +100,6 @@ public class DataGroupToJsonConverterTest {
 
 		RestDataElement restDataElement = RestDataGroup.fromDataGroup(dataGroup);
 
-		JsonBuilderFactory factory = new JavaxJsonBuilderFactoryAdapter();
 		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForRestDataElement(factory, restDataElement);
 		String json = dataToJsonConverter.toJson();
@@ -122,7 +118,6 @@ public class DataGroupToJsonConverterTest {
 
 	@Test
 	public void testToJsonGroupWithAttributesAndAtomicChildAndGroupChildWithAtomicChild() {
-		DataToJsonConverterFactory dataToJsonConverterFactory = new DataToJsonConverterFactoryImp();
 		SpiderDataGroup dataGroup = SpiderDataGroup.withDataId("groupDataId");
 		dataGroup.addAttributeByIdWithValue("attributeDataId", "attributeValue");
 		dataGroup.addAttributeByIdWithValue("attributeDataId2", "attributeValue2");
@@ -141,22 +136,21 @@ public class DataGroupToJsonConverterTest {
 
 		RestDataElement restDataElement = RestDataGroup.fromDataGroup(dataGroup);
 
-		JsonBuilderFactory factory = new JavaxJsonBuilderFactoryAdapter();
 		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForRestDataElement(factory, restDataElement);
 		String json = dataToJsonConverter.toJson();
 		String expectedJson = "{";
 		expectedJson += "\"groupDataId\":{";
-
-		expectedJson += "\"attributes\":{" + "\"attributeDataId\":\"attributeValue\","
-				+ "\"attributeDataId2\":\"attributeValue2\"" + "},";
-
 		expectedJson += "\"children\":[";
 		expectedJson += "{\"atomicDataId\":\"atomicValue\"},";
 		expectedJson += "{\"groupDataId2\":{";
-		expectedJson += "\"attributes\":{\"g2AttributeDataId\":\"g2AttributeValue\"},";
-		expectedJson += "\"children\":[{\"atomicDataId2\":\"atomicValue2\"}]}}";
-		expectedJson += "]";
+		expectedJson += "\"children\":[{\"atomicDataId2\":\"atomicValue2\"}],";
+		expectedJson += "\"attributes\":{\"g2AttributeDataId\":\"g2AttributeValue\"}" + "}";
+		expectedJson += "}" + "],";
+
+		expectedJson += "\"attributes\":{" + "\"attributeDataId\":\"attributeValue\","
+				+ "\"attributeDataId2\":\"attributeValue2\"}";
+
 		expectedJson += "}";
 		expectedJson += "}";
 

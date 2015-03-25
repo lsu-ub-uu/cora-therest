@@ -58,4 +58,10 @@ public class SimpleJsonArrayAdapter implements JsonArray {
 		return null;
 	}
 
+	@Override
+	public String toJsonFormattedString() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

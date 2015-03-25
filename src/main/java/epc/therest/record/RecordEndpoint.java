@@ -13,7 +13,7 @@ import epc.therest.data.RestDataGroup;
 import epc.therest.data.converter.DataGroupToJsonConverter;
 import epc.therest.data.converter.DataToJsonConverter;
 import epc.therest.json.builder.JsonBuilderFactory;
-import epc.therest.json.builder.simple.SimpleJsonBuilderFactoryAdapter;
+import epc.therest.json.builder.org.OrgJsonBuilderFactoryAdapter;
 
 @Path("record")
 public class RecordEndpoint {
@@ -32,7 +32,8 @@ public class RecordEndpoint {
 		RestDataGroup restDataGroup = RestDataGroup.fromDataGroup(createdRecord);
 
 		// JsonBuilderFactory jsonBuilderFactory = new JavaxJsonBuilderFactoryAdapter();
-		JsonBuilderFactory jsonBuilderFactory = new SimpleJsonBuilderFactoryAdapter();
+		// JsonBuilderFactory jsonBuilderFactory = new SimpleJsonBuilderFactoryAdapter();
+		JsonBuilderFactory jsonBuilderFactory = new OrgJsonBuilderFactoryAdapter();
 
 		DataToJsonConverter dataToJsonConverter = DataGroupToJsonConverter.forRestDataGroup(
 				jsonBuilderFactory, restDataGroup);
@@ -50,7 +51,8 @@ public class RecordEndpoint {
 		RestDataGroup restDataGroup = RestDataGroup.fromDataGroup(record);
 
 		// JsonBuilderFactory jsonBuilderFactory = new JavaxJsonBuilderFactoryAdapter();
-		JsonBuilderFactory jsonBuilderFactory = new SimpleJsonBuilderFactoryAdapter();
+		// JsonBuilderFactory jsonBuilderFactory = new SimpleJsonBuilderFactoryAdapter();
+		JsonBuilderFactory jsonBuilderFactory = new OrgJsonBuilderFactoryAdapter();
 		DataToJsonConverter dataToJsonConverter = DataGroupToJsonConverter.forRestDataGroup(
 				jsonBuilderFactory, restDataGroup);
 

@@ -3,7 +3,6 @@ package epc.therest.data.converter;
 import epc.therest.data.RestDataAtomic;
 import epc.therest.json.builder.JsonBuilderFactory;
 import epc.therest.json.builder.JsonObjectBuilder;
-import epc.therest.json.parser.JsonObject;
 
 public final class DataAtomicToJsonConverter extends DataToJsonConverter {
 
@@ -23,15 +22,14 @@ public final class DataAtomicToJsonConverter extends DataToJsonConverter {
 	@Override
 	public String toJson() {
 		JsonObjectBuilder atomic = toJsonObjectBuilder();
-		JsonObject build = atomic.build();
-		return build.toJsonString();
+		return atomic.toJsonFormattedString();
 	}
 
 	@Override
 	JsonObjectBuilder toJsonObjectBuilder() {
 		JsonObjectBuilder jsonObjectBuilder = factory.createObjectBuilder();
 
-		jsonObjectBuilder.add(restDataAtomic.getDataId(), restDataAtomic.getValue());
+		jsonObjectBuilder.addKeyString(restDataAtomic.getDataId(), restDataAtomic.getValue());
 		return jsonObjectBuilder;
 	}
 }

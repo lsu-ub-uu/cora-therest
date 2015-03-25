@@ -14,12 +14,12 @@ public class JavaxJsonObjectBuilderAdapter implements JsonObjectBuilder {
 	}
 
 	@Override
-	public void add(String key, String value) {
+	public void addKeyString(String key, String value) {
 		javaxJsonObjectBuilder.add(key, value);
 	}
 
 	@Override
-	public void add(String key, JsonObjectBuilder jsonObjectBuilder) {
+	public void addKeyJsonObjectBuilder(String key, JsonObjectBuilder jsonObjectBuilder) {
 		javax.json.JsonObjectBuilder javaxJsonObjectBuilderChild = ((JavaxJsonObjectBuilderAdapter) jsonObjectBuilder)
 				.getWrappedBuilder();
 		javaxJsonObjectBuilder.add(key, javaxJsonObjectBuilderChild);
@@ -27,7 +27,7 @@ public class JavaxJsonObjectBuilderAdapter implements JsonObjectBuilder {
 	}
 
 	@Override
-	public JsonObject build() {
+	public JsonObject toJsonObject() {
 		return JavaxJsonObjectAdapter.usingJavaxJsonObjectAdapter(javaxJsonObjectBuilder.build());
 	}
 
@@ -36,10 +36,16 @@ public class JavaxJsonObjectBuilderAdapter implements JsonObjectBuilder {
 	}
 
 	@Override
-	public void add(String key, JsonArrayBuilder jsonArrayBuilder) {
+	public void addKeyJsonArrayBuilder(String key, JsonArrayBuilder jsonArrayBuilder) {
 		JavaxJsonArrayBuilderAdapter javaxAdapter = (JavaxJsonArrayBuilderAdapter) jsonArrayBuilder;
 		javax.json.JsonArrayBuilder javaxJsonArrayBuilderChild = javaxAdapter.getWrappedBuilder();
 		javaxJsonObjectBuilder.add(key, javaxJsonArrayBuilderChild);
 
+	}
+
+	@Override
+	public String toJsonFormattedString() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

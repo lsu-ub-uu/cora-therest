@@ -13,7 +13,7 @@ import epc.therest.json.parser.JsonString;
 import epc.therest.json.parser.JsonValue;
 import epc.therest.json.parser.JsonValueType;
 
-public class OrgJsonArrayAdapter implements JsonArray {
+public final class OrgJsonArrayAdapter implements JsonArray {
 
 	public static OrgJsonArrayAdapter usingOrgJsonArray(JSONArray orgJsonArray) {
 		return new OrgJsonArrayAdapter(orgJsonArray);
@@ -78,6 +78,11 @@ public class OrgJsonArrayAdapter implements JsonArray {
 			list.add(OrgJsonValueFactory.createFromOrgJsonObject(orgJsonArray.get(i)));
 		}
 		return list.iterator();
+	}
+
+	@Override
+	public String toJsonFormattedString() {
+		return orgJsonArray.toString();
 	}
 
 }

@@ -14,7 +14,7 @@ import epc.therest.json.parser.JsonString;
 import epc.therest.json.parser.JsonValue;
 import epc.therest.json.parser.JsonValueType;
 
-public class OrgJsonObjectAdapter implements JsonObject {
+public final class OrgJsonObjectAdapter implements JsonObject {
 
 	public static OrgJsonObjectAdapter usingOrgJsonObject(JSONObject orgJsonObject) {
 		return new OrgJsonObjectAdapter(orgJsonObject);
@@ -99,8 +99,7 @@ public class OrgJsonObjectAdapter implements JsonObject {
 	}
 
 	@Override
-	public String toJsonString() {
-		// TODO Make this obsolete
-		return null;
+	public String toJsonFormattedString() {
+		return orgJsonObject.toString();
 	}
 }

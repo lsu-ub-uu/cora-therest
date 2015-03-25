@@ -14,7 +14,7 @@ import epc.therest.data.RestDataGroup;
 import epc.therest.json.parser.JsonParseException;
 import epc.therest.json.parser.JsonParser;
 import epc.therest.json.parser.JsonValue;
-import epc.therest.json.parser.javax.JavaxJsonParser;
+import epc.therest.json.parser.org.OrgJsonParser;
 
 public class JsonToDataGroupConverterTest {
 	private JsonToDataConverterFactory jsonToDataConverterFactory;
@@ -23,7 +23,7 @@ public class JsonToDataGroupConverterTest {
 	@BeforeMethod
 	public void beforeMethod() {
 		jsonToDataConverterFactory = new JsonToDataConverterFactoryImp();
-		jsonParser = new JavaxJsonParser();
+		jsonParser = new OrgJsonParser();
 	}
 
 	@Test
@@ -135,8 +135,7 @@ public class JsonToDataGroupConverterTest {
 		return restDataGroup;
 	}
 
-	@Test(expectedExceptions = JsonParseException.class, enabled = false)
-	// test disabled as this is currently not supported :(
+	@Test(expectedExceptions = JsonParseException.class)
 	public void testToClassWrongJsonExtraKeyValuePairTopLevel() {
 		String json = "{\"id\":{}},{\"id2\":\"value2\"}";
 		JsonValue jsonValue = jsonParser.parseString(json);
@@ -172,8 +171,7 @@ public class JsonToDataGroupConverterTest {
 		jsonToDataConverter.toInstance();
 	}
 
-	@Test(expectedExceptions = JsonParseException.class, enabled = false)
-	// test disabled as this is currently not supported :(
+	@Test(expectedExceptions = JsonParseException.class)
 	public void testToClassWrongJsonTwoAttributes() {
 		String json = "{\"groupDataId\":{\"attributes\":{\"attributeDataId\":\"attributeValue\"}"
 				+ ",\"attributes\":{\"attributeDataId2\":\"attributeValue2\"}}}";

@@ -84,12 +84,13 @@ public final class JavaxJsonObjectAdapter implements JsonObject {
 	}
 
 	@Override
-	public String toJsonString() {
-		return javaxJsonObject.toString();
+	public JsonString getValueAsJsonString(String key) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
-	public JsonString getValueAsJsonString(String key) {
+	public String toJsonFormattedString() {
 		// TODO Auto-generated method stub
 		return null;
 	}

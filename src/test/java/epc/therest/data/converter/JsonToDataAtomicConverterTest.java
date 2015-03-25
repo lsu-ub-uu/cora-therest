@@ -9,7 +9,7 @@ import epc.therest.data.RestDataElement;
 import epc.therest.json.parser.JsonParseException;
 import epc.therest.json.parser.JsonParser;
 import epc.therest.json.parser.JsonValue;
-import epc.therest.json.parser.javax.JavaxJsonParser;
+import epc.therest.json.parser.org.OrgJsonParser;
 
 public class JsonToDataAtomicConverterTest {
 	private JsonToDataConverterFactory jsonToDataConverterFactory;
@@ -18,7 +18,7 @@ public class JsonToDataAtomicConverterTest {
 	@BeforeMethod
 	public void beforeMethod() {
 		jsonToDataConverterFactory = new JsonToDataConverterFactoryImp();
-		jsonParser = new JavaxJsonParser();
+		jsonParser = new OrgJsonParser();
 	}
 
 	@Test

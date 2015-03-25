@@ -23,9 +23,9 @@ public class JavaxJsonArrayBuilderAdapterTest {
 		javax.json.JsonArrayBuilder javaxJsonArrayBuilder = jsonBuilderFactory.createArrayBuilder();
 
 		JsonArrayBuilder jsonArrayBuilder = new JavaxJsonArrayBuilderAdapter(javaxJsonArrayBuilder);
-		jsonArrayBuilder.add("value");
+		jsonArrayBuilder.addString("value");
 
-		JsonArray jsonArray = jsonArrayBuilder.build();
+		JsonArray jsonArray = jsonArrayBuilder.toJsonArray();
 		assertEquals(((JsonString) jsonArray.getValue(0)).getStringValue(), "value");
 	}
 
@@ -41,10 +41,10 @@ public class JavaxJsonArrayBuilderAdapterTest {
 		JsonArrayBuilder jsonArrayBuilder2 = new JavaxJsonArrayBuilderAdapter(
 				javaxJsonArrayBuilder2);
 
-		jsonArrayBuilder2.add("value");
-		jsonArrayBuilder.add(jsonArrayBuilder2);
+		jsonArrayBuilder2.addString("value");
+		jsonArrayBuilder.addJsonArrayBuilder(jsonArrayBuilder2);
 
-		JsonArray jsonArray = jsonArrayBuilder.build();
+		JsonArray jsonArray = jsonArrayBuilder.toJsonArray();
 		assertEquals(
 				((JsonString) ((JsonArray) jsonArray.getValue(0)).getValue(0)).getStringValue(),
 				"value");
@@ -63,10 +63,10 @@ public class JavaxJsonArrayBuilderAdapterTest {
 		JsonObjectBuilder jsonObjectBuilder = new JavaxJsonObjectBuilderAdapter(
 				javaxJsonObjectBuilder);
 
-		jsonObjectBuilder.add("id", "value");
-		jsonArrayBuilder.add(jsonObjectBuilder);
+		jsonObjectBuilder.addKeyString("id", "value");
+		jsonArrayBuilder.addJsonObjectBuilder(jsonObjectBuilder);
 
-		JsonArray jsonArray = jsonArrayBuilder.build();
+		JsonArray jsonArray = jsonArrayBuilder.toJsonArray();
 		assertEquals(
 				((JsonString) ((JsonObject) jsonArray.getValue(0)).getValue("id")).getStringValue(),
 				"value");

@@ -86,12 +86,13 @@ public class SimpleJsonObjectAdapter implements JsonObject {
 	}
 
 	@Override
-	public String toJsonString() {
-		return simpleJsonObject.toJSONString();
+	public JsonString getValueAsJsonString(String key) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
-	public JsonString getValueAsJsonString(String key) {
+	public String toJsonFormattedString() {
 		// TODO Auto-generated method stub
 		return null;
 	}

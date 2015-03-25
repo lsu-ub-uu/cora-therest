@@ -113,9 +113,4 @@ public class JavaxJsonObjectAdapterTest {
 		assertTrue(array instanceof JsonArray);
 	}
 
-	@Test
-	public void testToJsonString() {
-		JsonObject jsonObject = jsonParser.parseStringAsObject("{\"id\":{\"id\":\"value\"}}");
-		assertEquals(jsonObject.toJsonString(), "{\"id\":{\"id\":\"value\"}}");
-	}
 }

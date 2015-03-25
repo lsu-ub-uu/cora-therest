@@ -60,4 +60,10 @@ public final class JavaxJsonArrayAdapter implements JsonArray {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public String toJsonFormattedString() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
