@@ -23,20 +23,6 @@ public class OrgJsonParser implements JsonParser {
 		}
 	}
 
-	private void validateEntireStringWasParsed(String jsonString, JsonValue jsonValue) {
-		String allWhitespace = "\\s";
-		String originalJsonWithoutWhitespace = jsonString.replaceAll(allWhitespace, "");
-		String convertedJsonWithoutWhitespace = "";
-		if (JsonValueType.OBJECT.equals(jsonValue.getValueType())) {
-			convertedJsonWithoutWhitespace = ((JsonObject) jsonValue).toJsonFormattedString();
-		} else {
-			convertedJsonWithoutWhitespace = ((JsonArray) jsonValue).toJsonFormattedString();
-		}
-		if (originalJsonWithoutWhitespace.length() != convertedJsonWithoutWhitespace.length()) {
-			throw new JsonParseException("Unable to fully parse json string");
-		}
-	}
-
 	private JsonValue tryToParseJsonString(String jsonString) {
 		try {
 			return tryToParseJsonStringAsObject(jsonString);
@@ -53,6 +39,26 @@ public class OrgJsonParser implements JsonParser {
 	private JsonValue tryToParseJsonStringAsArray(String jsonString) {
 		JSONArray jsonArray = new JSONArray(jsonString);
 		return OrgJsonValueFactory.createFromOrgJsonObject(jsonArray);
+	}
+
+	private void validateEntireStringWasParsed(String jsonString, JsonValue jsonValue) {
+		String allWhitespace = "\\s";
+		String originalJsonWithoutWhitespace = jsonString.replaceAll(allWhitespace, "");
+		String recreatedJsonString = recreateJsonStringFromJsonValue(jsonValue);
+		String recreatedJsonWithoutWhitespace = recreatedJsonString.replaceAll(allWhitespace, "");
+		if (originalJsonWithoutWhitespace.length() != recreatedJsonWithoutWhitespace.length()) {
+			throw new JsonParseException("Unable to fully parse json string");
+		}
+	}
+
+	private String recreateJsonStringFromJsonValue(JsonValue jsonValue) {
+		String recreatedJsonString = "";
+		if (JsonValueType.OBJECT.equals(jsonValue.getValueType())) {
+			recreatedJsonString = ((JsonObject) jsonValue).toJsonFormattedString();
+		} else {
+			recreatedJsonString = ((JsonArray) jsonValue).toJsonFormattedString();
+		}
+		return recreatedJsonString;
 	}
 
 	@Override

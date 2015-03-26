@@ -45,9 +45,27 @@ public class OrgJsonParserTest {
 	}
 
 	@Test
+	public void testObjectCreateWithSpaceInValue() {
+		JsonValue jsonValue = jsonParser.parseString("{\"id\":\"This is a value with space\"}");
+		assertTrue(jsonValue instanceof JsonObject);
+	}
+
+	@Test
 	public void testObjectGetValueType() {
 		JsonValue jsonValue = jsonParser.parseString("{\"id\":\"value\"}");
 		assertTrue(JsonValueType.OBJECT.equals(jsonValue.getValueType()));
+	}
+
+	@Test(expectedExceptions = JsonParseException.class)
+	public void testParseWrongJsonExtraKeyValuePairTopLevel() {
+		String json = "{\"id\":{}},{\"id2\":\"value2\"}";
+		jsonParser.parseString(json);
+	}
+
+	@Test(expectedExceptions = JsonParseException.class)
+	public void testParseWrongJsonDuplicateKeyValuePair() {
+		String json = "{\"id\":{},\"id\":\"value2\"}";
+		jsonParser.parseString(json);
 	}
 
 	@Test

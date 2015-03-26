@@ -148,8 +148,4 @@ public class OrgJsonObjectAdapterTest {
 		JsonObject jsonObject = parseStringAsJsonObject("{\"id\":\"value\",\"id2\":\"value2\"}");
 		assertEquals(jsonObject.size(), 2);
 	}
-
-	// TODO: add tests for stuff that does not work...
-	// DO NOT IMPLEMENT toJsonString, move that to ObjectBuilder
-
 }
