@@ -1,7 +1,9 @@
 package epc.therest.data.converter;
 
 import java.util.Map.Entry;
+import java.util.Set;
 
+import epc.therest.data.ActionLink;
 import epc.therest.data.RestDataElement;
 import epc.therest.data.RestDataGroup;
 import epc.therest.json.builder.JsonArrayBuilder;
@@ -39,6 +41,9 @@ public final class DataGroupToJsonConverter extends DataToJsonConverter {
 		if (hasChildren()) {
 			addChildrenToGroup();
 		}
+		if (hasActionLinks()) {
+			addActionLinksToGroup();
+		}
 		JsonObjectBuilder group = factory.createObjectBuilder();
 		group.addKeyJsonObjectBuilder(restDataGroup.getDataId(), groupChildren);
 		return group;
@@ -50,6 +55,10 @@ public final class DataGroupToJsonConverter extends DataToJsonConverter {
 
 	private boolean hasAttributes() {
 		return !restDataGroup.getAttributes().isEmpty();
+	}
+
+	private boolean hasActionLinks() {
+		return !restDataGroup.getActionLinks().isEmpty();
 	}
 
 	private void addAttributesToGroup() {
@@ -68,5 +77,23 @@ public final class DataGroupToJsonConverter extends DataToJsonConverter {
 					factory, restDataElement).toJsonObjectBuilder());
 		}
 		groupChildren.addKeyJsonArrayBuilder("children", childrenArray);
+	}
+
+	private void addActionLinksToGroup() {
+		JsonObjectBuilder actionLinksObject = factory.createObjectBuilder();
+		Set<ActionLink> actionLinks = restDataGroup.getActionLinks();
+
+		for (ActionLink actionLink : actionLinks) {
+			JsonObjectBuilder internalLinkBuilder = factory.createObjectBuilder();
+			String actionString = actionLink.getAction().toString().toLowerCase();
+			internalLinkBuilder.addKeyString("rel", actionString);
+			internalLinkBuilder.addKeyString("url", actionLink.getURL());
+			internalLinkBuilder.addKeyString("requestMethod", actionLink.getRequestMethod());
+			internalLinkBuilder.addKeyString("accept", actionLink.getAccept());
+			internalLinkBuilder.addKeyString("contentType", actionLink.getContentType());
+
+			actionLinksObject.addKeyJsonObjectBuilder(actionString, internalLinkBuilder);
+		}
+		groupChildren.addKeyJsonObjectBuilder("actionLinks", actionLinksObject);
 	}
 }

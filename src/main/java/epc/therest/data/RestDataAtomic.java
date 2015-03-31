@@ -1,7 +1,5 @@
 package epc.therest.data;
 
-import epc.spider.data.SpiderDataAtomic;
-
 public final class RestDataAtomic implements RestDataElement {
 
 	private String dataId;
@@ -15,15 +13,6 @@ public final class RestDataAtomic implements RestDataElement {
 		this.dataId = dataId;
 		this.value = value;
 
-	}
-
-	public static RestDataAtomic fromSpiderDataAtomic(SpiderDataAtomic spiderDataAtomic) {
-		return new RestDataAtomic(spiderDataAtomic);
-	}
-
-	private RestDataAtomic(SpiderDataAtomic spiderDataAtomic) {
-		this.dataId = spiderDataAtomic.getDataId();
-		this.value = spiderDataAtomic.getValue();
 	}
 
 	@Override

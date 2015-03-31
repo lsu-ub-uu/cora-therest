@@ -2,18 +2,17 @@ package epc.therest.data;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-
-import epc.spider.data.SpiderDataAtomic;
-import epc.spider.data.SpiderDataElement;
-import epc.spider.data.SpiderDataGroup;
+import java.util.Set;
 
 public final class RestDataGroup implements RestDataElement {
 
 	private final String dataId;
 	private Map<String, String> attributes = new HashMap<>();
 	private List<RestDataElement> children = new ArrayList<>();
+	private Set<ActionLink> actionLinks = new HashSet<>();
 
 	public static RestDataGroup withDataId(String dataId) {
 		return new RestDataGroup(dataId);
@@ -21,29 +20,6 @@ public final class RestDataGroup implements RestDataElement {
 
 	private RestDataGroup(String dataId) {
 		this.dataId = dataId;
-	}
-
-	public static RestDataGroup fromDataGroup(SpiderDataGroup spiderDataGroup) {
-		return new RestDataGroup(spiderDataGroup);
-	}
-
-	private RestDataGroup(SpiderDataGroup spiderDataGroup) {
-		dataId = spiderDataGroup.getDataId();
-		attributes.putAll(spiderDataGroup.getAttributes());
-		convertAndSetChildren(spiderDataGroup);
-	}
-
-	private void convertAndSetChildren(SpiderDataGroup spiderDataGroup) {
-		for (SpiderDataElement spiderDataElement : spiderDataGroup.getChildren()) {
-			children.add(convertToElementEquivalentDataClass(spiderDataElement));
-		}
-	}
-
-	private RestDataElement convertToElementEquivalentDataClass(SpiderDataElement spiderDataElement) {
-		if (spiderDataElement instanceof SpiderDataGroup) {
-			return new RestDataGroup((SpiderDataGroup) spiderDataElement);
-		}
-		return RestDataAtomic.fromSpiderDataAtomic((SpiderDataAtomic) spiderDataElement);
 	}
 
 	@Override
@@ -65,5 +41,13 @@ public final class RestDataGroup implements RestDataElement {
 
 	public List<RestDataElement> getChildren() {
 		return children;
+	}
+
+	public void addActionLink(ActionLink actionLink) {
+		actionLinks.add(actionLink);
+	}
+
+	public Set<ActionLink> getActionLinks() {
+		return actionLinks;
 	}
 }

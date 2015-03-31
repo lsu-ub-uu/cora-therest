@@ -12,46 +12,55 @@ import epc.systemone.record.SystemOneRecordHandlerImp;
 import epc.therest.data.RestDataGroup;
 import epc.therest.data.converter.DataGroupToJsonConverter;
 import epc.therest.data.converter.DataToJsonConverter;
+import epc.therest.data.converter.spider.DataGroupSpiderToRestConverter;
 import epc.therest.json.builder.JsonBuilderFactory;
 import epc.therest.json.builder.org.OrgJsonBuilderFactoryAdapter;
 
 @Path("record")
 public class RecordEndpoint {
 
+	private SystemOneRecordHandler recordHandler = new SystemOneRecordHandlerImp();
+
 	@GET
 	@Path("001")
 	@Produces(MediaType.APPLICATION_JSON)
 	public String createRecord() {
-		SystemOneRecordHandler recordHandler = new SystemOneRecordHandlerImp();
-
 		// this is temporary, it should take a record in containing this info
 		SpiderDataGroup record = SpiderDataGroup.withDataId("authority");
 		record.addAttributeByIdWithValue("type", "place");
 		SpiderDataGroup createdRecord = recordHandler.createRecord("userId", "place", record);
 
-		RestDataGroup restDataGroup = RestDataGroup.fromDataGroup(createdRecord);
+		return convertRecord(createdRecord);
+	}
 
+	private String convertRecord(SpiderDataGroup record) {
+		RestDataGroup restDataGroup = convertToRest(record);
+
+		DataToJsonConverter dataToJsonConverter = convertToJson(restDataGroup);
+		return dataToJsonConverter.toJson();
+	}
+
+	private RestDataGroup convertToRest(SpiderDataGroup record) {
+		DataGroupSpiderToRestConverter converter = DataGroupSpiderToRestConverter
+				.fromSpiderDataGroup(record);
+		return converter.toRest();
+	}
+
+	private DataToJsonConverter convertToJson(RestDataGroup restDataGroup) {
 		JsonBuilderFactory jsonBuilderFactory = new OrgJsonBuilderFactoryAdapter();
-
 		DataToJsonConverter dataToJsonConverter = DataGroupToJsonConverter.forRestDataGroup(
 				jsonBuilderFactory, restDataGroup);
-
-		return dataToJsonConverter.toJson();
-
+		return dataToJsonConverter;
 	}
 
 	@GET
 	@Path("{type}/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public String readRecord(@PathParam("type") String type, @PathParam("id") String id) {
-		SystemOneRecordHandler recordHandler = new SystemOneRecordHandlerImp();
-		SpiderDataGroup record = recordHandler.readRecord("userId", type, id);
-		RestDataGroup restDataGroup = RestDataGroup.fromDataGroup(record);
-
-		JsonBuilderFactory jsonBuilderFactory = new OrgJsonBuilderFactoryAdapter();
-		DataToJsonConverter dataToJsonConverter = DataGroupToJsonConverter.forRestDataGroup(
-				jsonBuilderFactory, restDataGroup);
-
-		return dataToJsonConverter.toJson();
+		// @QueryParam
+		String userId = "userId";
+		SpiderDataGroup record = recordHandler.readRecord(userId, type, id);
+		return convertRecord(record);
 	}
+
 }
