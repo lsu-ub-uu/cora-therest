@@ -19,7 +19,7 @@ public class RestDataGroupTest {
 		Assert.assertNotNull(restDataGroup.getAttributes(),
 				"Attributes should not be null for a new DataGroup");
 
-		restDataGroup.addAttribute("dataId", "Value");
+		restDataGroup.addAttributeByIdWithValue("dataId", "Value");
 
 		Assert.assertEquals(restDataGroup.getAttributes().get("dataId"), "Value",
 				"Attribute with dataId dataId should have value Value");

@@ -5,33 +5,30 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import epc.spider.data.Action;
-import epc.spider.data.SpiderDataAtomic;
 import epc.spider.data.SpiderDataGroup;
-import epc.therest.data.RestDataElement;
-import epc.therest.data.converter.spider.DataGroupSpiderToRestConverter;
+import epc.therest.data.ActionLink;
+import epc.therest.data.RestDataAtomic;
+import epc.therest.data.RestDataGroup;
 import epc.therest.json.builder.JsonBuilderFactory;
 import epc.therest.json.builder.org.OrgJsonBuilderFactoryAdapter;
 
 public class DataGroupToJsonConverterTest {
 	private DataToJsonConverterFactory dataToJsonConverterFactory;
 	private JsonBuilderFactory factory;
-	private SpiderDataGroup dataGroup;
+	private RestDataGroup restDataGroup;
 
 	@BeforeMethod
 	public void beforeMethod() {
 		dataToJsonConverterFactory = new DataToJsonConverterFactoryImp();
 		factory = new OrgJsonBuilderFactoryAdapter();
-		dataGroup = SpiderDataGroup.withDataId("groupDataId");
+		SpiderDataGroup.withDataId("groupDataId");
+		restDataGroup = RestDataGroup.withDataId("groupDataId");
 	}
 
 	@Test
 	public void testToJson() {
-		DataGroupSpiderToRestConverter converter = DataGroupSpiderToRestConverter
-				.fromSpiderDataGroup(dataGroup);
-		RestDataElement restDataElement = converter.toRest();
-
 		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
-				.createForRestDataElement(factory, restDataElement);
+				.createForRestDataElement(factory, restDataGroup);
 		String json = dataToJsonConverter.toJson();
 
 		Assert.assertEquals(json, "{\"groupDataId\":{}}");
@@ -39,14 +36,10 @@ public class DataGroupToJsonConverterTest {
 
 	@Test
 	public void testToJsonGroupWithAttribute() {
-		dataGroup.addAttributeByIdWithValue("attributeDataId", "attributeValue");
-
-		DataGroupSpiderToRestConverter converter = DataGroupSpiderToRestConverter
-				.fromSpiderDataGroup(dataGroup);
-		RestDataElement restDataElement = converter.toRest();
+		restDataGroup.addAttributeByIdWithValue("attributeDataId", "attributeValue");
 
 		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
-				.createForRestDataElement(factory, restDataElement);
+				.createForRestDataElement(factory, restDataGroup);
 		String json = dataToJsonConverter.toJson();
 
 		Assert.assertEquals(json,
@@ -55,15 +48,11 @@ public class DataGroupToJsonConverterTest {
 
 	@Test
 	public void testToJsonGroupWithAttributes() {
-		dataGroup.addAttributeByIdWithValue("attributeDataId", "attributeValue");
-		dataGroup.addAttributeByIdWithValue("attributeDataId2", "attributeValue2");
-
-		DataGroupSpiderToRestConverter converter = DataGroupSpiderToRestConverter
-				.fromSpiderDataGroup(dataGroup);
-		RestDataElement restDataElement = converter.toRest();
+		restDataGroup.addAttributeByIdWithValue("attributeDataId", "attributeValue");
+		restDataGroup.addAttributeByIdWithValue("attributeDataId2", "attributeValue2");
 
 		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
-				.createForRestDataElement(factory, restDataElement);
+				.createForRestDataElement(factory, restDataGroup);
 		String json = dataToJsonConverter.toJson();
 
 		Assert.assertEquals(json, "{\"groupDataId\":{\"attributes\":{"
@@ -73,16 +62,10 @@ public class DataGroupToJsonConverterTest {
 
 	@Test
 	public void testToJsonGroupWithAtomicChild() {
-		SpiderDataAtomic dataAtomic = SpiderDataAtomic.withDataIdAndValue("atomicDataId",
-				"atomicValue");
-		dataGroup.addChild(dataAtomic);
-
-		DataGroupSpiderToRestConverter converter = DataGroupSpiderToRestConverter
-				.fromSpiderDataGroup(dataGroup);
-		RestDataElement restDataElement = converter.toRest();
+		restDataGroup.addChild(RestDataAtomic.withDataIdAndValue("atomicDataId", "atomicValue"));
 
 		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
-				.createForRestDataElement(factory, restDataElement);
+				.createForRestDataElement(factory, restDataGroup);
 		String json = dataToJsonConverter.toJson();
 
 		Assert.assertEquals(json,
@@ -91,23 +74,15 @@ public class DataGroupToJsonConverterTest {
 
 	@Test
 	public void testToJsonGroupWithAtomicChildAndGroupChildWithAtomicChild() {
-		SpiderDataAtomic dataAtomic = SpiderDataAtomic.withDataIdAndValue("atomicDataId",
-				"atomicValue");
-		dataGroup.addChild(dataAtomic);
+		restDataGroup.addChild(RestDataAtomic.withDataIdAndValue("atomicDataId", "atomicValue"));
 
-		SpiderDataGroup dataGroup2 = SpiderDataGroup.withDataId("groupDataId2");
-		dataGroup.addChild(dataGroup2);
+		RestDataGroup restDataGroup2 = RestDataGroup.withDataId("groupDataId2");
+		restDataGroup.addChild(restDataGroup2);
 
-		SpiderDataAtomic dataAtomic2 = SpiderDataAtomic.withDataIdAndValue("atomicDataId2",
-				"atomicValue2");
-		dataGroup2.addChild(dataAtomic2);
-
-		DataGroupSpiderToRestConverter converter = DataGroupSpiderToRestConverter
-				.fromSpiderDataGroup(dataGroup);
-		RestDataElement restDataElement = converter.toRest();
+		restDataGroup2.addChild(RestDataAtomic.withDataIdAndValue("atomicDataId2", "atomicValue2"));
 
 		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
-				.createForRestDataElement(factory, restDataElement);
+				.createForRestDataElement(factory, restDataGroup);
 		String json = dataToJsonConverter.toJson();
 
 		String expectedJson = "{";
@@ -124,19 +99,16 @@ public class DataGroupToJsonConverterTest {
 
 	@Test
 	public void testToJsonGroupWithAction() {
-		dataGroup.addAction(Action.READ);
-		SpiderDataGroup recordInfo = SpiderDataGroup.withDataId("recordInfo");
-		recordInfo.addChild(SpiderDataAtomic.withDataIdAndValue("id", "place:0001"));
-		recordInfo.addChild(SpiderDataAtomic.withDataIdAndValue("type", "place"));
-		recordInfo.addChild(SpiderDataAtomic.withDataIdAndValue("createdBy", "userId"));
-		dataGroup.addChild(recordInfo);
+		restDataGroup.addActionLink(createReadActionLink());
 
-		DataGroupSpiderToRestConverter converter = DataGroupSpiderToRestConverter
-				.fromSpiderDataGroup(dataGroup);
-		RestDataElement restDataElement = converter.toRest();
+		RestDataGroup recordInfo = RestDataGroup.withDataId("recordInfo");
+		recordInfo.addChild(RestDataAtomic.withDataIdAndValue("id", "place:0001"));
+		recordInfo.addChild(RestDataAtomic.withDataIdAndValue("type", "place"));
+		recordInfo.addChild(RestDataAtomic.withDataIdAndValue("createdBy", "userId"));
+		restDataGroup.addChild(recordInfo);
 
 		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
-				.createForRestDataElement(factory, restDataElement);
+				.createForRestDataElement(factory, restDataGroup);
 		String json = dataToJsonConverter.toJson();
 
 		String expectedJson = "{\"groupDataId\":" + "{\"children\":[" + "{\"recordInfo\":"
@@ -149,35 +121,37 @@ public class DataGroupToJsonConverterTest {
 		Assert.assertEquals(json, expectedJson);
 	}
 
+	private ActionLink createReadActionLink() {
+		ActionLink actionLink = ActionLink.withAction(Action.READ);
+		actionLink.setAccept("application/metadata_record+json");
+		actionLink.setContentType("application/metadata_record+json");
+		actionLink.setRequestMethod("GET");
+		actionLink.setURL("http://localhost:8080/therest/rest/record/place/place:0001");
+		return actionLink;
+	}
+
 	@Test
 	public void testToJsonGroupWithAttributesAndAtomicChildAndGroupChildWithAtomicChildAndAction() {
-		dataGroup.addAttributeByIdWithValue("attributeDataId", "attributeValue");
-		dataGroup.addAttributeByIdWithValue("attributeDataId2", "attributeValue2");
-		dataGroup.addAction(Action.READ);
-		SpiderDataGroup recordInfo = SpiderDataGroup.withDataId("recordInfo");
-		recordInfo.addChild(SpiderDataAtomic.withDataIdAndValue("id", "place:0001"));
-		recordInfo.addChild(SpiderDataAtomic.withDataIdAndValue("type", "place"));
-		recordInfo.addChild(SpiderDataAtomic.withDataIdAndValue("createdBy", "userId"));
-		dataGroup.addChild(recordInfo);
+		restDataGroup.addAttributeByIdWithValue("attributeDataId", "attributeValue");
+		restDataGroup.addAttributeByIdWithValue("attributeDataId2", "attributeValue2");
+		restDataGroup.addActionLink(createReadActionLink());
 
-		SpiderDataAtomic dataAtomic = SpiderDataAtomic.withDataIdAndValue("atomicDataId",
-				"atomicValue");
-		dataGroup.addChild(dataAtomic);
+		RestDataGroup recordInfo = RestDataGroup.withDataId("recordInfo");
+		recordInfo.addChild(RestDataAtomic.withDataIdAndValue("id", "place:0001"));
+		recordInfo.addChild(RestDataAtomic.withDataIdAndValue("type", "place"));
+		recordInfo.addChild(RestDataAtomic.withDataIdAndValue("createdBy", "userId"));
+		restDataGroup.addChild(recordInfo);
 
-		SpiderDataGroup dataGroup2 = SpiderDataGroup.withDataId("groupDataId2");
+		restDataGroup.addChild(RestDataAtomic.withDataIdAndValue("atomicDataId", "atomicValue"));
+
+		RestDataGroup dataGroup2 = RestDataGroup.withDataId("groupDataId2");
 		dataGroup2.addAttributeByIdWithValue("g2AttributeDataId", "g2AttributeValue");
-		dataGroup.addChild(dataGroup2);
+		restDataGroup.addChild(dataGroup2);
 
-		SpiderDataAtomic dataAtomic2 = SpiderDataAtomic.withDataIdAndValue("atomicDataId2",
-				"atomicValue2");
-		dataGroup2.addChild(dataAtomic2);
-
-		DataGroupSpiderToRestConverter converter = DataGroupSpiderToRestConverter
-				.fromSpiderDataGroup(dataGroup);
-		RestDataElement restDataElement = converter.toRest();
+		dataGroup2.addChild(RestDataAtomic.withDataIdAndValue("atomicDataId2", "atomicValue2"));
 
 		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
-				.createForRestDataElement(factory, restDataElement);
+				.createForRestDataElement(factory, restDataGroup);
 		String json = dataToJsonConverter.toJson();
 		String expectedJson = "{\"groupDataId\":{";
 		expectedJson += "\"children\":[";

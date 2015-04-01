@@ -12,6 +12,8 @@ import epc.therest.json.parser.JsonValueType;
 
 public class OrgJsonParser implements JsonParser {
 
+	private static final String UNABLE_TO_PARSE_JSON_STRING = "Unable to parse json string";
+
 	@Override
 	public JsonValue parseString(String jsonString) {
 		try {
@@ -19,7 +21,7 @@ public class OrgJsonParser implements JsonParser {
 			validateEntireStringWasParsed(jsonString, jsonValue);
 			return jsonValue;
 		} catch (Exception e) {
-			throw new JsonParseException("Unable to parse json string", e);
+			throw new JsonParseException(UNABLE_TO_PARSE_JSON_STRING, e);
 		}
 	}
 
@@ -66,7 +68,7 @@ public class OrgJsonParser implements JsonParser {
 		try {
 			return (JsonObject) tryToParseJsonStringAsObject(jsonString);
 		} catch (Exception e) {
-			throw new JsonParseException("Unable to parse json string", e);
+			throw new JsonParseException(UNABLE_TO_PARSE_JSON_STRING, e);
 		}
 	}
 
@@ -75,7 +77,7 @@ public class OrgJsonParser implements JsonParser {
 		try {
 			return (JsonArray) tryToParseJsonStringAsArray(jsonString);
 		} catch (Exception e) {
-			throw new JsonParseException("Unable to parse json string", e);
+			throw new JsonParseException(UNABLE_TO_PARSE_JSON_STRING, e);
 		}
 	}
 

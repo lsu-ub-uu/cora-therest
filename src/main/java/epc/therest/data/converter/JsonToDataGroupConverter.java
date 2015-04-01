@@ -12,6 +12,8 @@ import epc.therest.json.parser.JsonValue;
 
 public final class JsonToDataGroupConverter implements JsonToDataConverter {
 
+	private static final String CHILDREN = "children";
+	private static final String ATTRIBUTES = "attributes";
 	private JsonObject jsonObject;
 	private RestDataGroup restDataGroup;
 	private JsonObject jsonGroupChildren;
@@ -63,7 +65,7 @@ public final class JsonToDataGroupConverter implements JsonToDataConverter {
 
 	private void validateChildEntryIsAttributesOrChildren(Entry<String, JsonValue> childEntry) {
 		String key = childEntry.getKey();
-		if (!"attributes".equals(key) && !"children".equals(key)) {
+		if (!ATTRIBUTES.equals(key) && !CHILDREN.equals(key)) {
 			throw new JsonParseException("Group data can only contain attributes or children");
 		}
 	}
@@ -81,11 +83,11 @@ public final class JsonToDataGroupConverter implements JsonToDataConverter {
 	}
 
 	private boolean hasAttributes() {
-		return jsonGroupChildren.containsKey("attributes");
+		return jsonGroupChildren.containsKey(ATTRIBUTES);
 	}
 
 	private void addAttributesToGroup() {
-		JsonObject attributes = jsonGroupChildren.getValueAsJsonObject("attributes");
+		JsonObject attributes = jsonGroupChildren.getValueAsJsonObject(ATTRIBUTES);
 		for (Entry<String, JsonValue> attributeEntry : attributes.entrySet()) {
 			addAttributeToGroup(attributeEntry);
 		}
@@ -93,15 +95,15 @@ public final class JsonToDataGroupConverter implements JsonToDataConverter {
 
 	private void addAttributeToGroup(Entry<String, JsonValue> attributeEntry) {
 		String value = ((JsonString) attributeEntry.getValue()).getStringValue();
-		restDataGroup.addAttribute(attributeEntry.getKey(), value);
+		restDataGroup.addAttributeByIdWithValue(attributeEntry.getKey(), value);
 	}
 
 	private boolean hasChildren() {
-		return jsonGroupChildren.containsKey("children");
+		return jsonGroupChildren.containsKey(CHILDREN);
 	}
 
 	private void addChildrenToGroup() {
-		JsonArray children = jsonGroupChildren.getValueAsJsonArray("children");
+		JsonArray children = jsonGroupChildren.getValueAsJsonArray(CHILDREN);
 		for (JsonValue child : children) {
 			addChildToGroup(child);
 		}

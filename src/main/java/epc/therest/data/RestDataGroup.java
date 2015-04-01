@@ -31,7 +31,7 @@ public final class RestDataGroup implements RestDataElement {
 		return attributes;
 	}
 
-	public void addAttribute(String dataId, String value) {
+	public void addAttributeByIdWithValue(String dataId, String value) {
 		attributes.put(dataId, value);
 	}
 

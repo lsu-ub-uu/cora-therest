@@ -4,11 +4,9 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import epc.spider.data.SpiderDataAtomic;
-import epc.spider.data.SpiderDataGroup;
+import epc.therest.data.RestDataAtomic;
 import epc.therest.data.RestDataElement;
-import epc.therest.data.converter.spider.DataAtomicSpiderToRestConverter;
-import epc.therest.data.converter.spider.DataGroupSpiderToRestConverter;
+import epc.therest.data.RestDataGroup;
 import epc.therest.json.builder.JsonBuilderFactory;
 import epc.therest.json.builder.org.OrgJsonBuilderFactoryAdapter;
 
@@ -24,10 +22,7 @@ public class DataToJsonConverterFactoryTest {
 
 	@Test
 	public void testJsonCreatorFactoryDataGroup() {
-		SpiderDataGroup dataGroup = SpiderDataGroup.withDataId("groupDataId");
-		DataGroupSpiderToRestConverter converter = DataGroupSpiderToRestConverter
-				.fromSpiderDataGroup(dataGroup);
-		RestDataElement restDataElement = converter.toRest();
+		RestDataElement restDataElement = RestDataGroup.withDataId("groupDataId");
 
 		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForRestDataElement(factory, restDataElement);
@@ -37,11 +32,8 @@ public class DataToJsonConverterFactoryTest {
 
 	@Test
 	public void testJsonCreatorFactoryDataAtomic() {
-		SpiderDataAtomic dataAtomic = SpiderDataAtomic.withDataIdAndValue("atomicDataId",
+		RestDataElement restDataElement = RestDataAtomic.withDataIdAndValue("atomicDataId",
 				"atomicValue");
-		DataAtomicSpiderToRestConverter converter = DataAtomicSpiderToRestConverter
-				.fromSpiderDataAtomic(dataAtomic);
-		RestDataElement restDataElement = converter.toRest();
 
 		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForRestDataElement(factory, restDataElement);

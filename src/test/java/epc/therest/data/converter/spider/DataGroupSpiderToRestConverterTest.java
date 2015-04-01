@@ -24,8 +24,6 @@ public class DataGroupSpiderToRestConverterTest {
 	@BeforeMethod
 	public void beforeMetod() {
 		spiderDataGroup = SpiderDataGroup.withDataId("dataId");
-		SpiderDataGroup recordInfo = SpiderDataGroup.withDataId("recordInfo");
-
 	}
 
 	@Test
