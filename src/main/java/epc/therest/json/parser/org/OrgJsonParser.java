@@ -26,11 +26,14 @@ public class OrgJsonParser implements JsonParser {
 	}
 
 	private JsonValue tryToParseJsonString(String jsonString) {
-		try {
+		if (stringIsBelivedToContainAnObject(jsonString)) {
 			return tryToParseJsonStringAsObject(jsonString);
-		} catch (Exception e) {
-			return tryToParseJsonStringAsArray(jsonString);
 		}
+		return tryToParseJsonStringAsArray(jsonString);
+	}
+
+	private boolean stringIsBelivedToContainAnObject(String jsonString) {
+		return jsonString.trim().startsWith("{");
 	}
 
 	private JsonValue tryToParseJsonStringAsObject(String jsonString) {
