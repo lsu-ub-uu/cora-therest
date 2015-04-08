@@ -29,8 +29,7 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testReadRecord() {
-		Response response = recordEndpoint.readRecordAsUserIdByTypeAndId("userId", "place",
-				"place:0001");
+		Response response = recordEndpoint.readRecord("place", "place:0001");
 		String entity = (String) response.getEntity();
 
 		assertNotNull(entity, "An entity in json format should be returned");
@@ -52,8 +51,7 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testDeleteRecord() {
-		Response response = recordEndpoint.deleteRecordAsUserIdByTypeAndId("userId", "place",
-				"place:0001");
+		Response response = recordEndpoint.deleteRecord("place", "place:0001");
 		assertEquals(response.getStatusInfo(), Response.Status.OK);
 	}
 
