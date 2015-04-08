@@ -158,6 +158,31 @@ public class DataGroupSpiderToRestConverterTest {
 	}
 
 	@Test
+	public void testLinkConvertionDELETE() {
+		spiderDataGroup.addAction(Action.DELETE);
+
+		SpiderDataGroup recordInfo = SpiderDataGroup.withDataId("recordInfo");
+		// id
+		recordInfo.addChild(SpiderDataAtomic.withDataIdAndValue("id", "place:0001"));
+		recordInfo.addChild(SpiderDataAtomic.withDataIdAndValue("type", "place"));
+		recordInfo.addChild(SpiderDataAtomic.withDataIdAndValue("createdBy", "userId"));
+
+		spiderDataGroup.addChild(recordInfo);
+
+		DataGroupSpiderToRestConverter dataGroupSpiderToRestConverter = DataGroupSpiderToRestConverter
+				.fromSpiderDataGroup(spiderDataGroup);
+		RestDataGroup restDataGroup = dataGroupSpiderToRestConverter.toRest();
+		Set<ActionLink> actionLinks = restDataGroup.getActionLinks();
+		Iterator<ActionLink> iterator = actionLinks.iterator();
+		ActionLink actionLink = iterator.next();
+		assertEquals(actionLink.getAction(), Action.DELETE);
+		assertEquals(actionLink.getURL(),
+				"http://localhost:8080/therest/rest/record/place/place:0001");
+		assertEquals(actionLink.getRequestMethod(), "DELETE");
+
+	}
+
+	@Test
 	public void testToRestWithGroupLevelsOfChildren() {
 		spiderDataGroup
 				.addChild(SpiderDataAtomic.withDataIdAndValue("atomicDataId", "atomicValue"));

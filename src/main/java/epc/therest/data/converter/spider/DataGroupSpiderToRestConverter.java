@@ -110,12 +110,14 @@ public final class DataGroupSpiderToRestConverter {
 			// TODO: add path etc.
 			if (Action.READ.equals(action)) {
 				actionLink.setRequestMethod("GET");
-			} else {
+			} else if (Action.UPDATE.equals(action)) {
 				actionLink.setRequestMethod("POST");
+			} else {
+				actionLink.setRequestMethod("DELETE");
 			}
 
-			actionLink.setAccept("application/metadata_record+json");
-			actionLink.setContentType("application/metadata_record+json");
+			actionLink.setAccept("application/uub+record+json");
+			actionLink.setContentType("application/uub+record+json");
 			restDataGroup.addActionLink(actionLink);
 		}
 	}
