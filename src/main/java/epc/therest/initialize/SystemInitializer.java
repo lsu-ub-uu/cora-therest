@@ -12,8 +12,9 @@ public class SystemInitializer implements ServletContextListener {
 	public void contextInitialized(ServletContextEvent arg0) {
 		SystemBuilderForProduction.createAllDependenciesInSystemHolder();
 	}
-	
+
 	@Override
 	public void contextDestroyed(ServletContextEvent arg0) {
+		// not sure we need anything here
 	}
 }

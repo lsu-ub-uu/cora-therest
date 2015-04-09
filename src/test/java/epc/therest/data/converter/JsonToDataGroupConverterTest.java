@@ -8,6 +8,8 @@ import java.util.Iterator;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import epc.spider.data.Action;
+import epc.therest.data.ActionLink;
 import epc.therest.data.RestDataAtomic;
 import epc.therest.data.RestDataElement;
 import epc.therest.data.RestDataGroup;
@@ -207,5 +209,59 @@ public class JsonToDataGroupConverterTest {
 		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
 				.createForJsonObject(jsonValue);
 		jsonToDataConverter.toInstance();
+	}
+
+	@Test(expectedExceptions = JsonParseException.class)
+	public void testToClassWrongJsonChildrenIsNotCorrectObject() {
+		String json = "{\"groupDataId\":{\"children\":[{\"atomicDataId\":\"atomicValue\""
+				+ ",\"atomicDataId2\":\"atomicValue2\"}]}}";
+		JsonValue jsonValue = jsonParser.parseString(json);
+		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
+				.createForJsonObject(jsonValue);
+		jsonToDataConverter.toInstance();
+	}
+
+	@Test
+	public void testToClassWithActionLinks() {
+		String json = "{\"groupDataId\":{"
+				+ "\"actionLinks\":{\"read\":{\"requestMethod\":\"GET\",\"rel\":\"read\""
+				+ ",\"contentType\":\"application/uub+record+json\""
+				+ ",\"url\":\"http://localhost:8080/therest/rest/record/place/place:0001\""
+				+ ",\"accept\":\"application/uub+record+json\"}"
+				+ ",\"update\":{\"requestMethod\":\"POST\",\"rel\":\"update\""
+				+ ",\"contentType\":\"application/uub+record+json\""
+				+ ",\"url\":\"http://localhost:8080/therest/rest/record/place/place:0001\""
+				+ ",\"accept\":\"application/uub+record+json\"}"
+				+ ",\"delete\":{\"requestMethod\":\"DELETE\",\"rel\":\"delete\""
+				+ ",\"contentType\":\"application/uub+record+json\""
+				+ ",\"url\":\"http://localhost:8080/therest/rest/record/place/place:0001\""
+				+ ",\"accept\":\"application/uub+record+json\"}}" + "}}";
+		RestDataGroup restDataGroup = createRestDataGroupForJsonString(json);
+		int noOfLinks = restDataGroup.getActionLinks().size();
+		assertEquals(noOfLinks, 3);
+	}
+
+	@Test
+	public void testToClassWithActionLink() {
+		String json = "{\"groupDataId\":{"
+				+ "\"actionLinks\":{\"read\":{\"requestMethod\":\"GET\",\"rel\":\"read\""
+				+ ",\"contentType\":\"application/uub+record+json\""
+				+ ",\"url\":\"http://localhost:8080/therest/rest/record/place/place:0001\""
+				+ ",\"accept\":\"application/uub+record+json\"}}" + "}}";
+		RestDataGroup restDataGroup = createRestDataGroupForJsonString(json);
+		ActionLink actionLink = restDataGroup.getActionLinks().iterator().next();
+		assertEquals(actionLink.getAction(), Action.READ);
+	}
+
+	@Test(expectedExceptions = JsonParseException.class)
+	public void testToClassWithActionLinkWrongRel() {
+		String json = "{\"groupDataId\":{"
+				+ "\"actionLinks\":{\"read\":{\"requestMethod\":\"GET\",\"rel\":\"read_WRONG\""
+				+ ",\"contentType\":\"application/uub+record+json\""
+				+ ",\"url\":\"http://localhost:8080/therest/rest/record/place/place:0001\""
+				+ ",\"accept\":\"application/uub+record+json\"}}" + "}}";
+		RestDataGroup restDataGroup = createRestDataGroupForJsonString(json);
+		ActionLink actionLink = restDataGroup.getActionLinks().iterator().next();
+		assertEquals(actionLink.getAction(), Action.READ);
 	}
 }

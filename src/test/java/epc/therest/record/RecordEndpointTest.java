@@ -36,7 +36,7 @@ public class RecordEndpointTest {
 	}
 
 	@Test
-	public void testReadRecordUnAuthorized() {
+	public void testReadRecordUnauthorized() {
 		Response response = recordEndpoint.readRecordAsUserIdByTypeAndId("unauthorizedUserId",
 				"place", "place:0001");
 		assertEquals(response.getStatusInfo(), Response.Status.UNAUTHORIZED);
@@ -56,7 +56,7 @@ public class RecordEndpointTest {
 	}
 
 	@Test
-	public void testDeleteRecordUnAuthorized() {
+	public void testDeleteRecordUnauthorized() {
 		Response response = recordEndpoint.deleteRecordAsUserIdByTypeAndId("unauthorizedUserId",
 				"place", "place:0001");
 		assertEquals(response.getStatusInfo(), Response.Status.UNAUTHORIZED);
@@ -67,5 +67,52 @@ public class RecordEndpointTest {
 		Response response = recordEndpoint.deleteRecordAsUserIdByTypeAndId("userId", "place",
 				"place:0001_NOT_FOUND");
 		assertEquals(response.getStatusInfo(), Response.Status.NOT_FOUND);
+	}
+
+	@Test
+	public void testUpdateRecord() {
+		String type = "place";
+		String id = "place:0001";
+		Response response = recordEndpoint.readRecord(type, id);
+		String jsonString = (String) response.getEntity();
+
+		Response responseUpdate = recordEndpoint.updateRecord(type, id, jsonString);
+		assertEquals(responseUpdate.getStatusInfo(), Response.Status.OK);
+	}
+
+	@Test
+	public void testUpdateRecordUnauthorized() {
+		String type = "place";
+		String id = "place:0001";
+		Response response = recordEndpoint.readRecord(type, id);
+		String jsonString = (String) response.getEntity();
+
+		Response responseUpdate = recordEndpoint.updateRecordAsUserIdWithRecord(
+				"unauthorizedUserId", type, id, jsonString);
+		assertEquals(responseUpdate.getStatusInfo(), Response.Status.UNAUTHORIZED);
+	}
+
+	@Test
+	public void testUpdateRecordNotFound() {
+		String type = "place";
+		String id = "place:0001";
+		Response response = recordEndpoint.readRecord(type, id);
+		String jsonString = (String) response.getEntity();
+
+		Response responseUpdate = recordEndpoint.updateRecordAsUserIdWithRecord(
+				"unauthorizedUserId", type, id + "_NOT_FOUND", jsonString);
+		assertEquals(responseUpdate.getStatusInfo(), Response.Status.NOT_FOUND);
+	}
+
+	@Test
+	public void testUpdateRecordBadJson() {
+		String type = "place";
+		String id = "place:0001";
+		Response response = recordEndpoint.readRecord(type, id);
+		String jsonString = (String) response.getEntity();
+		String json = "{\"groupDataId\":{\"children\":[{\"atomicDataId\":\"atomicValue\""
+				+ ",\"atomicDataId2\":\"atomicValue2\"}]}}";
+		Response responseUpdate = recordEndpoint.updateRecord(type, id, json);
+		assertEquals(responseUpdate.getStatusInfo(), Response.Status.BAD_REQUEST);
 	}
 }
