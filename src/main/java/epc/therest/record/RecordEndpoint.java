@@ -11,7 +11,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
@@ -53,17 +52,6 @@ public class RecordEndpoint {
 		return baseURI + "record/";
 	}
 
-	@GET
-	@Path("001")
-	@Produces(MediaType.APPLICATION_JSON)
-	public String createRecordHACK() {
-		// this is temporary, it should take a record in containing this info
-		SpiderDataGroup record = SpiderDataGroup.withDataId("authority");
-		record.addAttributeByIdWithValue("type", "place");
-		SpiderDataGroup createdRecord = recordHandler.createRecord("userId", "place", record);
-		return convertSpiderDataGroupToJsonString(createdRecord);
-	}
-
 	@POST
 	@Path("{type}")
 	@Consumes("application/uub+record+json")
@@ -100,40 +88,6 @@ public class RecordEndpoint {
 			return Response.status(Response.Status.BAD_REQUEST).build();
 		}
 		return Response.created(uri).entity(json).build();
-	}
-
-	private SpiderDataGroup convertJsonStringToSpiderDataGroup(String jsonRecord) {
-		RestDataGroup restDataGroup = convertJsonStringToRestDataGroup(jsonRecord);
-		return DataGroupRestToSpiderConverter.fromRestDataGroup(restDataGroup)
-				.toSpider();
-	}
-
-	private RestDataGroup convertJsonStringToRestDataGroup(String jsonRecord) {
-		JsonParser jsonParser = new OrgJsonParser();
-		JsonValue jsonValue = jsonParser.parseString(jsonRecord);
-		JsonToDataConverterFactory jsonToDataConverterFactory = new JsonToDataConverterFactoryImp();
-		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
-				.createForJsonObject(jsonValue);
-		RestDataElement restDataElement = jsonToDataConverter.toInstance();
-		return (RestDataGroup) restDataElement;
-	}
-
-	private String convertSpiderDataGroupToJsonString(SpiderDataGroup record) {
-		RestDataGroup restDataGroup = convertSpiderDataGroupToRestDataGroup(record);
-		DataToJsonConverter dataToJsonConverter = convertRestDataGroupToJson(restDataGroup);
-		return dataToJsonConverter.toJson();
-	}
-
-	private RestDataGroup convertSpiderDataGroupToRestDataGroup(SpiderDataGroup record) {
-
-		DataGroupSpiderToRestConverter converter = DataGroupSpiderToRestConverter
-				.fromSpiderDataGroupWithBaseURL(record, url);
-		return converter.toRest();
-	}
-
-	private DataToJsonConverter convertRestDataGroupToJson(RestDataGroup restDataGroup) {
-		JsonBuilderFactory jsonBuilderFactory = new OrgJsonBuilderFactoryAdapter();
-		return DataGroupToJsonConverter.forRestDataGroup(jsonBuilderFactory, restDataGroup);
 	}
 
 	@GET
@@ -212,5 +166,38 @@ public class RecordEndpoint {
 		SpiderDataGroup updatedRecord = recordHandler.updateRecord(userId, type, id, record);
 		String json = convertSpiderDataGroupToJsonString(updatedRecord);
 		return Response.status(Response.Status.OK).entity(json).build();
+	}
+
+	private SpiderDataGroup convertJsonStringToSpiderDataGroup(String jsonRecord) {
+		RestDataGroup restDataGroup = convertJsonStringToRestDataGroup(jsonRecord);
+		return DataGroupRestToSpiderConverter.fromRestDataGroup(restDataGroup).toSpider();
+	}
+
+	private RestDataGroup convertJsonStringToRestDataGroup(String jsonRecord) {
+		JsonParser jsonParser = new OrgJsonParser();
+		JsonValue jsonValue = jsonParser.parseString(jsonRecord);
+		JsonToDataConverterFactory jsonToDataConverterFactory = new JsonToDataConverterFactoryImp();
+		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
+				.createForJsonObject(jsonValue);
+		RestDataElement restDataElement = jsonToDataConverter.toInstance();
+		return (RestDataGroup) restDataElement;
+	}
+
+	private String convertSpiderDataGroupToJsonString(SpiderDataGroup record) {
+		RestDataGroup restDataGroup = convertSpiderDataGroupToRestDataGroup(record);
+		DataToJsonConverter dataToJsonConverter = convertRestDataGroupToJson(restDataGroup);
+		return dataToJsonConverter.toJson();
+	}
+
+	private RestDataGroup convertSpiderDataGroupToRestDataGroup(SpiderDataGroup record) {
+
+		DataGroupSpiderToRestConverter converter = DataGroupSpiderToRestConverter
+				.fromSpiderDataGroupWithBaseURL(record, url);
+		return converter.toRest();
+	}
+
+	private DataToJsonConverter convertRestDataGroupToJson(RestDataGroup restDataGroup) {
+		JsonBuilderFactory jsonBuilderFactory = new OrgJsonBuilderFactoryAdapter();
+		return DataGroupToJsonConverter.forRestDataGroup(jsonBuilderFactory, restDataGroup);
 	}
 }

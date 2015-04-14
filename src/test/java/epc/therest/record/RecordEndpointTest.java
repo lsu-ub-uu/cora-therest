@@ -52,14 +52,6 @@ public class RecordEndpointTest {
 	}
 
 	@Test
-	public void testCreateNew() {
-		// String result = recordEndpoint.createRecord();
-		String response = recordEndpoint.createRecordHACK();
-		// TODO: test something better...
-		assertNotNull(response, "A response should be returned");
-	}
-
-	@Test
 	public void testReadRecord() {
 		Response response = recordEndpoint.readRecord("place", "place:0001");
 		String entity = (String) response.getEntity();

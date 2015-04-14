@@ -6,9 +6,6 @@ Use the firefox addon RESTClient to play with this...
 <br>
 and the site: http://www.jsoneditoronline.org/ might also help
 <br>
-<h2>A small hack to create a new post</h2>
-http://130.238.171.39:8080/therest/rest/record/001
-<br>
 http://130.238.171.39:8080/therest/rest/record/place/place:XXX
 <br>
 <h2>Use this information for update</h2>
