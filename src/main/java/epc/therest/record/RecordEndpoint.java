@@ -1,5 +1,8 @@
 package epc.therest.record;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -7,8 +10,10 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import epc.spider.data.SpiderDataGroup;
 import epc.spider.record.AuthorizationException;
@@ -26,6 +31,7 @@ import epc.therest.data.converter.spider.DataGroupRestToSpiderConverter;
 import epc.therest.data.converter.spider.DataGroupSpiderToRestConverter;
 import epc.therest.json.builder.JsonBuilderFactory;
 import epc.therest.json.builder.org.OrgJsonBuilderFactoryAdapter;
+import epc.therest.json.parser.JsonParseException;
 import epc.therest.json.parser.JsonParser;
 import epc.therest.json.parser.JsonValue;
 import epc.therest.json.parser.org.OrgJsonParser;
@@ -34,47 +40,108 @@ import epc.therest.json.parser.org.OrgJsonParser;
 public class RecordEndpoint {
 
 	private SystemOneRecordHandler recordHandler = new SystemOneRecordHandlerImp();
+	private UriInfo uriInfo;
+	private String url;
+
+	public RecordEndpoint(@Context UriInfo uriInfo) {
+		this.uriInfo = uriInfo;
+		url = getBaseURLFromURI();
+	}
+
+	private String getBaseURLFromURI() {
+		String baseURI = uriInfo.getBaseUri().toString();
+		return baseURI + "record/";
+	}
 
 	@GET
 	@Path("001")
-	// @Consumes
 	@Produces(MediaType.APPLICATION_JSON)
-	public String createRecord() {
+	public String createRecordHACK() {
 		// this is temporary, it should take a record in containing this info
 		SpiderDataGroup record = SpiderDataGroup.withDataId("authority");
 		record.addAttributeByIdWithValue("type", "place");
 		SpiderDataGroup createdRecord = recordHandler.createRecord("userId", "place", record);
-
-		return convertRecord(createdRecord);
+		return convertSpiderDataGroupToJsonString(createdRecord);
 	}
 
-	private String convertRecord(SpiderDataGroup record) {
-		RestDataGroup restDataGroup = convertToRest(record);
+	@POST
+	@Path("{type}")
+	@Consumes("application/uub+record+json")
+	@Produces("application/uub+record+json")
+	public Response createRecord(@PathParam("type") String type, String jsonRecord) {
+		// set user directly here until we have decided how to authenticate user
+		String userId = "userId";
+		return createRecordAsUserIdWithRecord(userId, type, jsonRecord);
+	}
 
-		DataToJsonConverter dataToJsonConverter = convertToJson(restDataGroup);
+	public Response createRecordAsUserIdWithRecord(String userId, String type, String jsonRecord) {
+		try {
+			return tryCreateRecord(userId, type, jsonRecord);
+		} catch (JsonParseException e) {
+			return Response.status(Response.Status.BAD_REQUEST).build();
+		} catch (AuthorizationException e) {
+			return Response.status(Response.Status.UNAUTHORIZED).build();
+		}
+	}
+
+	private Response tryCreateRecord(String userId, String type, String jsonRecord) {
+		SpiderDataGroup record = convertJsonStringToSpiderDataGroup(jsonRecord);
+		SpiderDataGroup createdRecord = recordHandler.createRecord(userId, type, record);
+
+		SpiderDataGroup recordInfo = createdRecord.extractGroup("recordInfo");
+		String createdId = recordInfo.extractAtomicValue("id");
+
+		String json = convertSpiderDataGroupToJsonString(createdRecord);
+
+		URI uri = null;
+		try {
+			uri = new URI("record/" + type + "/" + createdId);
+		} catch (URISyntaxException e) {
+			return Response.status(Response.Status.BAD_REQUEST).build();
+		}
+		return Response.created(uri).entity(json).build();
+	}
+
+	private SpiderDataGroup convertJsonStringToSpiderDataGroup(String jsonRecord) {
+		RestDataGroup restDataGroup = convertJsonStringToRestDataGroup(jsonRecord);
+		return DataGroupRestToSpiderConverter.fromRestDataGroup(restDataGroup)
+				.toSpider();
+	}
+
+	private RestDataGroup convertJsonStringToRestDataGroup(String jsonRecord) {
+		JsonParser jsonParser = new OrgJsonParser();
+		JsonValue jsonValue = jsonParser.parseString(jsonRecord);
+		JsonToDataConverterFactory jsonToDataConverterFactory = new JsonToDataConverterFactoryImp();
+		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
+				.createForJsonObject(jsonValue);
+		RestDataElement restDataElement = jsonToDataConverter.toInstance();
+		return (RestDataGroup) restDataElement;
+	}
+
+	private String convertSpiderDataGroupToJsonString(SpiderDataGroup record) {
+		RestDataGroup restDataGroup = convertSpiderDataGroupToRestDataGroup(record);
+		DataToJsonConverter dataToJsonConverter = convertRestDataGroupToJson(restDataGroup);
 		return dataToJsonConverter.toJson();
 	}
 
-	private RestDataGroup convertToRest(SpiderDataGroup record) {
+	private RestDataGroup convertSpiderDataGroupToRestDataGroup(SpiderDataGroup record) {
+
 		DataGroupSpiderToRestConverter converter = DataGroupSpiderToRestConverter
-				.fromSpiderDataGroup(record);
+				.fromSpiderDataGroupWithBaseURL(record, url);
 		return converter.toRest();
 	}
 
-	private DataToJsonConverter convertToJson(RestDataGroup restDataGroup) {
+	private DataToJsonConverter convertRestDataGroupToJson(RestDataGroup restDataGroup) {
 		JsonBuilderFactory jsonBuilderFactory = new OrgJsonBuilderFactoryAdapter();
-		return DataGroupToJsonConverter.forRestDataGroup(
-				jsonBuilderFactory, restDataGroup);
+		return DataGroupToJsonConverter.forRestDataGroup(jsonBuilderFactory, restDataGroup);
 	}
 
 	@GET
 	@Path("{type}/{id}")
 	@Produces("application/uub+record+json")
 	public Response readRecord(@PathParam("type") String type, @PathParam("id") String id) {
-		// @QueryParam
 		// set user directly here until we have decided how to authenticate user
 		String userId = "userId";
-		// String userId = "unauthorizedUserId";
 		return readRecordAsUserIdByTypeAndId(userId, type, id);
 	}
 
@@ -90,7 +157,7 @@ public class RecordEndpoint {
 
 	private Response tryReadRecord(String userId, String type, String id) {
 		SpiderDataGroup record = recordHandler.readRecord(userId, type, id);
-		String json = convertRecord(record);
+		String json = convertSpiderDataGroupToJsonString(record);
 		return Response.status(Response.Status.OK).entity(json).build();
 	}
 
@@ -99,7 +166,6 @@ public class RecordEndpoint {
 	public Response deleteRecord(@PathParam("type") String type, @PathParam("id") String id) {
 		// set user directly here until we have decided how to authenticate user
 		String userId = "userId";
-		// String userId = "unauthorizedUserId";
 		return deleteRecordAsUserIdByTypeAndId(userId, type, id);
 	}
 
@@ -125,8 +191,6 @@ public class RecordEndpoint {
 	public Response updateRecord(@PathParam("type") String type, @PathParam("id") String id,
 			String jsonRecord) {
 		String userId = "userId";
-		// String userId = "unauthorizedUserId";
-
 		return updateRecordAsUserIdWithRecord(userId, type, id, jsonRecord);
 	}
 
@@ -134,6 +198,8 @@ public class RecordEndpoint {
 			String jsonRecord) {
 		try {
 			return tryUpdateRecord(userId, type, id, jsonRecord);
+		} catch (JsonParseException e) {
+			return Response.status(Response.Status.BAD_REQUEST).build();
 		} catch (RecordNotFoundException e) {
 			return Response.status(Response.Status.NOT_FOUND).build();
 		} catch (AuthorizationException e) {
@@ -142,26 +208,9 @@ public class RecordEndpoint {
 	}
 
 	private Response tryUpdateRecord(String userId, String type, String id, String jsonRecord) {
-		JsonParser jsonParser = new OrgJsonParser();
-		JsonValue jsonValue = jsonParser.parseString(jsonRecord);
-		JsonToDataConverterFactory jsonToDataConverterFactory = new JsonToDataConverterFactoryImp();
-		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
-				.createForJsonObject(jsonValue);
-		RestDataElement restDataElement = null;
-		try {
-			restDataElement = jsonToDataConverter.toInstance();
-		} catch (Exception e) {
-			return Response.status(Response.Status.BAD_REQUEST).build();
-		}
-
-		RestDataGroup restDataGroup = (RestDataGroup) restDataElement;
-
-		SpiderDataGroup record = DataGroupRestToSpiderConverter.fromRestDataGroup(restDataGroup)
-				.toSpider();
-
+		SpiderDataGroup record = convertJsonStringToSpiderDataGroup(jsonRecord);
 		SpiderDataGroup updatedRecord = recordHandler.updateRecord(userId, type, id, record);
-
-		String json = convertRecord(updatedRecord);
+		String json = convertSpiderDataGroupToJsonString(updatedRecord);
 		return Response.status(Response.Status.OK).entity(json).build();
 	}
 }

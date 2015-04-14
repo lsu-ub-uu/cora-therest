@@ -11,7 +11,11 @@ import epc.therest.data.converter.ConverterException;
 
 public final class DataGroupSpiderToRestConverter {
 
-	public static DataGroupSpiderToRestConverter fromSpiderDataGroup(SpiderDataGroup spiderDataGroup) {
+	private static String baseURL;
+
+	public static DataGroupSpiderToRestConverter fromSpiderDataGroupWithBaseURL(SpiderDataGroup spiderDataGroup,
+			String baseURL) {
+		DataGroupSpiderToRestConverter.baseURL = baseURL;
 		return new DataGroupSpiderToRestConverter(spiderDataGroup);
 	}
 
@@ -45,8 +49,8 @@ public final class DataGroupSpiderToRestConverter {
 
 	private RestDataElement convertToElementEquivalentDataClass(SpiderDataElement spiderDataElement) {
 		if (spiderDataElement instanceof SpiderDataGroup) {
-			return DataGroupSpiderToRestConverter.fromSpiderDataGroup(
-					(SpiderDataGroup) spiderDataElement).toRest();
+			return DataGroupSpiderToRestConverter.fromSpiderDataGroupWithBaseURL((SpiderDataGroup) spiderDataElement,
+					baseURL).toRest();
 		}
 		return DataAtomicSpiderToRestConverter.fromSpiderDataAtomic(
 				(SpiderDataAtomic) spiderDataElement).toRest();
@@ -100,7 +104,6 @@ public final class DataGroupSpiderToRestConverter {
 	}
 
 	private void createRestLinks(String id, String type) {
-		String baseURL = "http://localhost:8080/therest/rest/record/";
 		String url = type + "/" + id;
 
 		for (Action action : spiderDataGroup.getActions()) {
