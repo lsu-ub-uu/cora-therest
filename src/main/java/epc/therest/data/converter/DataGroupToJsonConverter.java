@@ -13,8 +13,8 @@ import epc.therest.json.builder.JsonObjectBuilder;
 public final class DataGroupToJsonConverter extends DataToJsonConverter {
 
 	private RestDataGroup restDataGroup;
-	private JsonObjectBuilder groupChildren;
-	private JsonBuilderFactory factory;
+	private JsonObjectBuilder dataGroupJsonObjectBuilder;
+	private JsonBuilderFactory jsonBuilderFactory;
 
 	public static DataToJsonConverter forRestDataGroup(
 			epc.therest.json.builder.JsonBuilderFactory factory, RestDataGroup restDataGroup) {
@@ -22,15 +22,15 @@ public final class DataGroupToJsonConverter extends DataToJsonConverter {
 	}
 
 	private DataGroupToJsonConverter(JsonBuilderFactory factory, RestDataGroup restDataGroup) {
-		this.factory = factory;
+		this.jsonBuilderFactory = factory;
 		this.restDataGroup = restDataGroup;
-		groupChildren = factory.createObjectBuilder();
+		dataGroupJsonObjectBuilder = factory.createObjectBuilder();
 	}
 
 	@Override
 	public String toJson() {
-		JsonObjectBuilder group = toJsonObjectBuilder();
-		return group.toJsonFormattedString();
+		JsonObjectBuilder rootWrappingJsonObjectBuilder = toJsonObjectBuilder();
+		return rootWrappingJsonObjectBuilder.toJsonFormattedString();
 	}
 
 	@Override
@@ -44,47 +44,48 @@ public final class DataGroupToJsonConverter extends DataToJsonConverter {
 		if (hasActionLinks()) {
 			addActionLinksToGroup();
 		}
-		JsonObjectBuilder group = factory.createObjectBuilder();
-		group.addKeyJsonObjectBuilder(restDataGroup.getDataId(), groupChildren);
-		return group;
-	}
-
-	private boolean hasChildren() {
-		return !restDataGroup.getChildren().isEmpty();
+		JsonObjectBuilder rootWrappingJsonObjectBuilder = jsonBuilderFactory.createObjectBuilder();
+		rootWrappingJsonObjectBuilder.addKeyJsonObjectBuilder(restDataGroup.getDataId(),
+				dataGroupJsonObjectBuilder);
+		return rootWrappingJsonObjectBuilder;
 	}
 
 	private boolean hasAttributes() {
 		return !restDataGroup.getAttributes().isEmpty();
 	}
 
-	private boolean hasActionLinks() {
-		return !restDataGroup.getActionLinks().isEmpty();
-	}
-
 	private void addAttributesToGroup() {
-		JsonObjectBuilder attributes = factory.createObjectBuilder();
+		JsonObjectBuilder attributes = jsonBuilderFactory.createObjectBuilder();
 		for (Entry<String, String> attributeEntry : restDataGroup.getAttributes().entrySet()) {
 			attributes.addKeyString(attributeEntry.getKey(), attributeEntry.getValue());
 		}
-		groupChildren.addKeyJsonObjectBuilder("attributes", attributes);
+		dataGroupJsonObjectBuilder.addKeyJsonObjectBuilder("attributes", attributes);
+	}
+
+	private boolean hasChildren() {
+		return !restDataGroup.getChildren().isEmpty();
 	}
 
 	private void addChildrenToGroup() {
 		DataToJsonConverterFactory dataToJsonConverterFactory = new DataToJsonConverterFactoryImp();
-		JsonArrayBuilder childrenArray = factory.createArrayBuilder();
+		JsonArrayBuilder childrenArray = jsonBuilderFactory.createArrayBuilder();
 		for (RestDataElement restDataElement : restDataGroup.getChildren()) {
 			childrenArray.addJsonObjectBuilder(dataToJsonConverterFactory.createForRestDataElement(
-					factory, restDataElement).toJsonObjectBuilder());
+					jsonBuilderFactory, restDataElement).toJsonObjectBuilder());
 		}
-		groupChildren.addKeyJsonArrayBuilder("children", childrenArray);
+		dataGroupJsonObjectBuilder.addKeyJsonArrayBuilder("children", childrenArray);
+	}
+
+	private boolean hasActionLinks() {
+		return !restDataGroup.getActionLinks().isEmpty();
 	}
 
 	private void addActionLinksToGroup() {
-		JsonObjectBuilder actionLinksObject = factory.createObjectBuilder();
+		JsonObjectBuilder actionLinksObject = jsonBuilderFactory.createObjectBuilder();
 		Set<ActionLink> actionLinks = restDataGroup.getActionLinks();
 
 		for (ActionLink actionLink : actionLinks) {
-			JsonObjectBuilder internalLinkBuilder = factory.createObjectBuilder();
+			JsonObjectBuilder internalLinkBuilder = jsonBuilderFactory.createObjectBuilder();
 			String actionString = actionLink.getAction().toString().toLowerCase();
 			internalLinkBuilder.addKeyString("rel", actionString);
 			internalLinkBuilder.addKeyString("url", actionLink.getURL());
@@ -94,6 +95,6 @@ public final class DataGroupToJsonConverter extends DataToJsonConverter {
 
 			actionLinksObject.addKeyJsonObjectBuilder(actionString, internalLinkBuilder);
 		}
-		groupChildren.addKeyJsonObjectBuilder("actionLinks", actionLinksObject);
+		dataGroupJsonObjectBuilder.addKeyJsonObjectBuilder("actionLinks", actionLinksObject);
 	}
 }

@@ -25,14 +25,11 @@ public class TestUri implements UriInfo {
 
 	@Override
 	public URI getBaseUri() {
-		// TODO Auto-generated method stub
 		try {
 			return new URI("http://localhost:8080/therest/rest/record/");
 		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
-		return null;
 	}
 
 	@Override

@@ -15,19 +15,20 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import epc.spider.data.SpiderDataGroup;
+import epc.spider.data.SpiderDataRecord;
 import epc.spider.record.AuthorizationException;
 import epc.spider.record.storage.RecordNotFoundException;
 import epc.systemone.record.SystemOneRecordHandler;
 import epc.systemone.record.SystemOneRecordHandlerImp;
 import epc.therest.data.RestDataElement;
 import epc.therest.data.RestDataGroup;
-import epc.therest.data.converter.DataGroupToJsonConverter;
-import epc.therest.data.converter.DataToJsonConverter;
+import epc.therest.data.RestDataRecord;
+import epc.therest.data.converter.DataRecordToJsonConterter;
 import epc.therest.data.converter.JsonToDataConverter;
 import epc.therest.data.converter.JsonToDataConverterFactory;
 import epc.therest.data.converter.JsonToDataConverterFactoryImp;
 import epc.therest.data.converter.spider.DataGroupRestToSpiderConverter;
-import epc.therest.data.converter.spider.DataGroupSpiderToRestConverter;
+import epc.therest.data.converter.spider.DataRecordSpiderToRestConverter;
 import epc.therest.json.builder.JsonBuilderFactory;
 import epc.therest.json.builder.org.OrgJsonBuilderFactoryAdapter;
 import epc.therest.json.parser.JsonParseException;
@@ -74,12 +75,13 @@ public class RecordEndpoint {
 
 	private Response tryCreateRecord(String userId, String type, String jsonRecord) {
 		SpiderDataGroup record = convertJsonStringToSpiderDataGroup(jsonRecord);
-		SpiderDataGroup createdRecord = recordHandler.createRecord(userId, type, record);
+		SpiderDataRecord createdRecord = recordHandler.createRecord(userId, type, record);
 
-		SpiderDataGroup recordInfo = createdRecord.extractGroup("recordInfo");
+		SpiderDataGroup createdGroup = createdRecord.getSpiderDataGroup();
+		SpiderDataGroup recordInfo = createdGroup.extractGroup("recordInfo");
 		String createdId = recordInfo.extractAtomicValue("id");
 
-		String json = convertSpiderDataGroupToJsonString(createdRecord);
+		String json = convertSpiderDataRecordToJsonString(createdRecord);
 
 		URI uri = null;
 		try {
@@ -110,8 +112,8 @@ public class RecordEndpoint {
 	}
 
 	private Response tryReadRecord(String userId, String type, String id) {
-		SpiderDataGroup record = recordHandler.readRecord(userId, type, id);
-		String json = convertSpiderDataGroupToJsonString(record);
+		SpiderDataRecord record = recordHandler.readRecord(userId, type, id);
+		String json = convertSpiderDataRecordToJsonString(record);
 		return Response.status(Response.Status.OK).entity(json).build();
 	}
 
@@ -163,8 +165,8 @@ public class RecordEndpoint {
 
 	private Response tryUpdateRecord(String userId, String type, String id, String jsonRecord) {
 		SpiderDataGroup record = convertJsonStringToSpiderDataGroup(jsonRecord);
-		SpiderDataGroup updatedRecord = recordHandler.updateRecord(userId, type, id, record);
-		String json = convertSpiderDataGroupToJsonString(updatedRecord);
+		SpiderDataRecord updatedRecord = recordHandler.updateRecord(userId, type, id, record);
+		String json = convertSpiderDataRecordToJsonString(updatedRecord);
 		return Response.status(Response.Status.OK).entity(json).build();
 	}
 
@@ -183,21 +185,22 @@ public class RecordEndpoint {
 		return (RestDataGroup) restDataElement;
 	}
 
-	private String convertSpiderDataGroupToJsonString(SpiderDataGroup record) {
-		RestDataGroup restDataGroup = convertSpiderDataGroupToRestDataGroup(record);
-		DataToJsonConverter dataToJsonConverter = convertRestDataGroupToJson(restDataGroup);
+	private String convertSpiderDataRecordToJsonString(SpiderDataRecord record) {
+		RestDataRecord restDataRecord = convertSpiderDataRecordToRestDataRecord(record);
+		DataRecordToJsonConterter dataToJsonConverter = convertRestDataGroupToJson(restDataRecord);
 		return dataToJsonConverter.toJson();
 	}
 
-	private RestDataGroup convertSpiderDataGroupToRestDataGroup(SpiderDataGroup record) {
+	private RestDataRecord convertSpiderDataRecordToRestDataRecord(SpiderDataRecord record) {
 
-		DataGroupSpiderToRestConverter converter = DataGroupSpiderToRestConverter
-				.fromSpiderDataGroupWithBaseURL(record, url);
+		DataRecordSpiderToRestConverter converter = DataRecordSpiderToRestConverter
+				.fromSpiderDataRecordWithBaseURL(record, url);
 		return converter.toRest();
 	}
 
-	private DataToJsonConverter convertRestDataGroupToJson(RestDataGroup restDataGroup) {
+	private DataRecordToJsonConterter convertRestDataGroupToJson(RestDataRecord restDataRecord) {
 		JsonBuilderFactory jsonBuilderFactory = new OrgJsonBuilderFactoryAdapter();
-		return DataGroupToJsonConverter.forRestDataGroup(jsonBuilderFactory, restDataGroup);
+		return DataRecordToJsonConterter.usingJsonFactoryForRestDataRecord(jsonBuilderFactory,
+				restDataRecord);
 	}
 }

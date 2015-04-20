@@ -1,6 +1,7 @@
 package epc.therest.data.converter;
 
-import org.testng.Assert;
+import static org.testng.Assert.assertEquals;
+
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -31,7 +32,7 @@ public class DataGroupToJsonConverterTest {
 				.createForRestDataElement(factory, restDataGroup);
 		String json = dataToJsonConverter.toJson();
 
-		Assert.assertEquals(json, "{\"groupDataId\":{}}");
+		assertEquals(json, "{\"groupDataId\":{}}");
 	}
 
 	@Test
@@ -42,7 +43,7 @@ public class DataGroupToJsonConverterTest {
 				.createForRestDataElement(factory, restDataGroup);
 		String json = dataToJsonConverter.toJson();
 
-		Assert.assertEquals(json,
+		assertEquals(json,
 				"{\"groupDataId\":{\"attributes\":{\"attributeDataId\":\"attributeValue\"}}}");
 	}
 
@@ -55,7 +56,7 @@ public class DataGroupToJsonConverterTest {
 				.createForRestDataElement(factory, restDataGroup);
 		String json = dataToJsonConverter.toJson();
 
-		Assert.assertEquals(json, "{\"groupDataId\":{\"attributes\":{"
+		assertEquals(json, "{\"groupDataId\":{\"attributes\":{"
 				+ "\"attributeDataId\":\"attributeValue\","
 				+ "\"attributeDataId2\":\"attributeValue2\"" + "}}}");
 	}
@@ -68,8 +69,7 @@ public class DataGroupToJsonConverterTest {
 				.createForRestDataElement(factory, restDataGroup);
 		String json = dataToJsonConverter.toJson();
 
-		Assert.assertEquals(json,
-				"{\"groupDataId\":{\"children\":[{\"atomicDataId\":\"atomicValue\"}]}}");
+		assertEquals(json, "{\"groupDataId\":{\"children\":[{\"atomicDataId\":\"atomicValue\"}]}}");
 	}
 
 	@Test
@@ -94,7 +94,7 @@ public class DataGroupToJsonConverterTest {
 		expectedJson += "}";
 		expectedJson += "}";
 
-		Assert.assertEquals(json, expectedJson);
+		assertEquals(json, expectedJson);
 	}
 
 	@Test
@@ -118,7 +118,7 @@ public class DataGroupToJsonConverterTest {
 				+ "\"contentType\":\"application/metadata_record+json\","
 				+ "\"url\":\"http://localhost:8080/therest/rest/record/place/place:0001\","
 				+ "\"accept\":\"application/metadata_record+json\"}}}}";
-		Assert.assertEquals(json, expectedJson);
+		assertEquals(json, expectedJson);
 	}
 
 	private ActionLink createReadActionLink() {
@@ -175,7 +175,7 @@ public class DataGroupToJsonConverterTest {
 		expectedJson += "\"attributeDataId\":\"attributeValue\",";
 		expectedJson += "\"attributeDataId2\":\"attributeValue2\"}}}";
 
-		Assert.assertEquals(json, expectedJson);
+		assertEquals(json, expectedJson);
 	}
 
 }
