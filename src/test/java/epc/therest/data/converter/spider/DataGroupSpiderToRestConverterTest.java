@@ -3,20 +3,16 @@ package epc.therest.data.converter.spider;
 import static org.testng.Assert.assertEquals;
 
 import java.util.Iterator;
-import java.util.Set;
 
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import epc.spider.data.Action;
 import epc.spider.data.SpiderDataAtomic;
 import epc.spider.data.SpiderDataGroup;
-import epc.therest.data.ActionLink;
 import epc.therest.data.RestDataAtomic;
 import epc.therest.data.RestDataElement;
 import epc.therest.data.RestDataGroup;
-import epc.therest.data.converter.ConverterException;
 
 public class DataGroupSpiderToRestConverterTest {
 	private SpiderDataGroup spiderDataGroup;
@@ -67,120 +63,6 @@ public class DataGroupSpiderToRestConverterTest {
 		RestDataGroup restDataGroupChild = (RestDataGroup) restDataGroup.getChildren().iterator()
 				.next();
 		assertEquals(restDataGroupChild.getDataId(), "childDataId");
-	}
-
-	@Test(expectedExceptions = ConverterException.class)
-	public void testToRestWithActionLinkNoRecordInfo() {
-		spiderDataGroup.addAction(Action.READ);
-		spiderDataGroup
-				.addChild(SpiderDataAtomic.withDataIdAndValue("atomicDataId", "atomicValue"));
-		DataGroupSpiderToRestConverter dataGroupSpiderToRestConverter = DataGroupSpiderToRestConverter
-				.fromSpiderDataGroupWithBaseURL(spiderDataGroup, baseURL);
-		dataGroupSpiderToRestConverter.toRest();
-	}
-
-	@Test(expectedExceptions = ConverterException.class)
-	public void testToRestWithActionLinkNoId() {
-		spiderDataGroup.addAction(Action.READ);
-		DataGroupSpiderToRestConverter dataGroupSpiderToRestConverter = DataGroupSpiderToRestConverter
-				.fromSpiderDataGroupWithBaseURL(spiderDataGroup, baseURL);
-
-		SpiderDataGroup recordInfo = SpiderDataGroup.withDataId("recordInfo");
-		recordInfo.addChild(SpiderDataAtomic.withDataIdAndValue("type", "place"));
-		recordInfo.addChild(SpiderDataAtomic.withDataIdAndValue("createdBy", "userId"));
-
-		spiderDataGroup.addChild(recordInfo);
-
-		dataGroupSpiderToRestConverter.toRest();
-	}
-
-	@Test(expectedExceptions = ConverterException.class)
-	public void testToRestWithActionLinkNoType() {
-		spiderDataGroup.addAction(Action.READ);
-		DataGroupSpiderToRestConverter dataGroupSpiderToRestConverter = DataGroupSpiderToRestConverter
-				.fromSpiderDataGroupWithBaseURL(spiderDataGroup, baseURL);
-
-		SpiderDataGroup recordInfo = SpiderDataGroup.withDataId("recordInfo");
-		recordInfo.addChild(SpiderDataAtomic.withDataIdAndValue("id", "place:0001"));
-		recordInfo.addChild(SpiderDataAtomic.withDataIdAndValue("createdBy", "userId"));
-
-		spiderDataGroup.addChild(recordInfo);
-
-		dataGroupSpiderToRestConverter.toRest();
-	}
-
-	@Test
-	public void testLinkConvertionREAD() {
-		spiderDataGroup.addAction(Action.READ);
-
-		SpiderDataGroup recordInfo = SpiderDataGroup.withDataId("recordInfo");
-		// id
-		recordInfo.addChild(SpiderDataAtomic.withDataIdAndValue("id", "place:0001"));
-		recordInfo.addChild(SpiderDataAtomic.withDataIdAndValue("type", "place"));
-		recordInfo.addChild(SpiderDataAtomic.withDataIdAndValue("createdBy", "userId"));
-
-		spiderDataGroup.addChild(recordInfo);
-
-		DataGroupSpiderToRestConverter dataGroupSpiderToRestConverter = DataGroupSpiderToRestConverter
-				.fromSpiderDataGroupWithBaseURL(spiderDataGroup, baseURL);
-		RestDataGroup restDataGroup = dataGroupSpiderToRestConverter.toRest();
-		Set<ActionLink> actionLinks = restDataGroup.getActionLinks();
-		Iterator<ActionLink> iterator = actionLinks.iterator();
-		ActionLink actionLink = iterator.next();
-		assertEquals(actionLink.getAction(), Action.READ);
-		assertEquals(actionLink.getURL(),
-				"http://localhost:8080/therest/rest/record/place/place:0001");
-		assertEquals(actionLink.getRequestMethod(), "GET");
-	}
-
-	@Test
-	public void testLinkConvertionUPDATE() {
-		spiderDataGroup.addAction(Action.UPDATE);
-
-		SpiderDataGroup recordInfo = SpiderDataGroup.withDataId("recordInfo");
-		// id
-		recordInfo.addChild(SpiderDataAtomic.withDataIdAndValue("id", "place:0001"));
-		recordInfo.addChild(SpiderDataAtomic.withDataIdAndValue("type", "place"));
-		recordInfo.addChild(SpiderDataAtomic.withDataIdAndValue("createdBy", "userId"));
-
-		spiderDataGroup.addChild(recordInfo);
-
-		DataGroupSpiderToRestConverter dataGroupSpiderToRestConverter = DataGroupSpiderToRestConverter
-				.fromSpiderDataGroupWithBaseURL(spiderDataGroup, baseURL);
-		RestDataGroup restDataGroup = dataGroupSpiderToRestConverter.toRest();
-		Set<ActionLink> actionLinks = restDataGroup.getActionLinks();
-		Iterator<ActionLink> iterator = actionLinks.iterator();
-		ActionLink actionLink = iterator.next();
-		assertEquals(actionLink.getAction(), Action.UPDATE);
-		assertEquals(actionLink.getURL(),
-				"http://localhost:8080/therest/rest/record/place/place:0001");
-		assertEquals(actionLink.getRequestMethod(), "POST");
-
-	}
-
-	@Test
-	public void testLinkConvertionDELETE() {
-		spiderDataGroup.addAction(Action.DELETE);
-
-		SpiderDataGroup recordInfo = SpiderDataGroup.withDataId("recordInfo");
-		// id
-		recordInfo.addChild(SpiderDataAtomic.withDataIdAndValue("id", "place:0001"));
-		recordInfo.addChild(SpiderDataAtomic.withDataIdAndValue("type", "place"));
-		recordInfo.addChild(SpiderDataAtomic.withDataIdAndValue("createdBy", "userId"));
-
-		spiderDataGroup.addChild(recordInfo);
-
-		DataGroupSpiderToRestConverter dataGroupSpiderToRestConverter = DataGroupSpiderToRestConverter
-				.fromSpiderDataGroupWithBaseURL(spiderDataGroup, baseURL);
-		RestDataGroup restDataGroup = dataGroupSpiderToRestConverter.toRest();
-		Set<ActionLink> actionLinks = restDataGroup.getActionLinks();
-		Iterator<ActionLink> iterator = actionLinks.iterator();
-		ActionLink actionLink = iterator.next();
-		assertEquals(actionLink.getAction(), Action.DELETE);
-		assertEquals(actionLink.getURL(),
-				"http://localhost:8080/therest/rest/record/place/place:0001");
-		assertEquals(actionLink.getRequestMethod(), "DELETE");
-
 	}
 
 	@Test

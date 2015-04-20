@@ -4,10 +4,8 @@ import static org.testng.Assert.assertEquals;
 
 import org.testng.annotations.Test;
 
-import epc.spider.data.Action;
 import epc.spider.data.SpiderDataAtomic;
 import epc.spider.data.SpiderDataGroup;
-import epc.therest.data.ActionLink;
 import epc.therest.data.RestDataAtomic;
 import epc.therest.data.RestDataGroup;
 
@@ -30,17 +28,6 @@ public class DataGroupRestToSpiderConverterTest {
 		SpiderDataGroup spiderDataGroup = dataGroupRestToSpiderConverter.toSpider();
 		String attributeValue = spiderDataGroup.getAttributes().get("attributeId");
 		assertEquals(attributeValue, "attributeValue");
-	}
-
-	@Test
-	public void testToSpiderWithActionLinks() {
-		RestDataGroup restDataGroup = RestDataGroup.withDataId("dataId");
-		restDataGroup.addActionLink(ActionLink.withAction(Action.READ));
-		DataGroupRestToSpiderConverter dataGroupRestToSpiderConverter = DataGroupRestToSpiderConverter
-				.fromRestDataGroup(restDataGroup);
-		SpiderDataGroup spiderDataGroup = dataGroupRestToSpiderConverter.toSpider();
-		Action action = spiderDataGroup.getActions().iterator().next();
-		assertEquals(action, Action.READ);
 	}
 
 	@Test

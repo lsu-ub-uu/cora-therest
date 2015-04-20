@@ -2,12 +2,8 @@ package epc.therest.data;
 
 import static org.testng.Assert.assertEquals;
 
-import java.util.Set;
-
 import org.testng.Assert;
 import org.testng.annotations.Test;
-
-import epc.spider.data.Action;
 
 public class RestDataGroupTest {
 	@Test
@@ -32,15 +28,5 @@ public class RestDataGroupTest {
 		Assert.assertEquals(restDataGroup.getChildren().stream().findAny().get(), restDataElement,
 				"Child should be the same as the one we added");
 
-	}
-
-	@Test
-	public void testAddActionLink() {
-		RestDataGroup restDataGroup = RestDataGroup.withDataId("dataId");
-		ActionLink actionLink = ActionLink.withAction(Action.READ);
-		restDataGroup.addActionLink(actionLink);
-		Set<ActionLink> actionLinks = restDataGroup.getActionLinks();
-		ActionLink actionLinkOut = actionLinks.iterator().next();
-		assertEquals(actionLinkOut.getAction(), Action.READ);
 	}
 }

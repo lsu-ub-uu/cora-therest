@@ -5,7 +5,6 @@ import java.util.Map.Entry;
 
 import epc.spider.data.SpiderDataAtomic;
 import epc.spider.data.SpiderDataGroup;
-import epc.therest.data.ActionLink;
 import epc.therest.data.RestDataAtomic;
 import epc.therest.data.RestDataElement;
 import epc.therest.data.RestDataGroup;
@@ -25,7 +24,6 @@ public final class DataGroupRestToSpiderConverter {
 	public SpiderDataGroup toSpider() {
 		spiderDataGroup = SpiderDataGroup.withDataId(restDataGroup.getDataId());
 		addAttributesToSpiderGroup();
-		addActionsToSpiderGroup();
 		addChildrenToSpiderGroup();
 		return spiderDataGroup;
 	}
@@ -34,12 +32,6 @@ public final class DataGroupRestToSpiderConverter {
 		Map<String, String> attributes = restDataGroup.getAttributes();
 		for (Entry<String, String> entry : attributes.entrySet()) {
 			spiderDataGroup.addAttributeByIdWithValue(entry.getKey(), entry.getValue());
-		}
-	}
-
-	private void addActionsToSpiderGroup() {
-		for (ActionLink actionLink : restDataGroup.getActionLinks()) {
-			spiderDataGroup.addAction(actionLink.getAction());
 		}
 	}
 
