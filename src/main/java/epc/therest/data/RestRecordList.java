@@ -3,7 +3,7 @@ package epc.therest.data;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RestRecordList {
+public final class RestRecordList {
 
 	private String containRecordsOfType;
 	private List<RestDataRecord> records = new ArrayList<>();
