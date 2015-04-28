@@ -16,6 +16,7 @@ import javax.ws.rs.core.UriInfo;
 
 import epc.spider.data.SpiderDataGroup;
 import epc.spider.data.SpiderDataRecord;
+import epc.spider.data.SpiderRecordList;
 import epc.spider.record.AuthorizationException;
 import epc.spider.record.storage.RecordNotFoundException;
 import epc.systemone.record.SystemOneRecordHandler;
@@ -23,12 +24,15 @@ import epc.systemone.record.SystemOneRecordHandlerImp;
 import epc.therest.data.RestDataElement;
 import epc.therest.data.RestDataGroup;
 import epc.therest.data.RestDataRecord;
+import epc.therest.data.RestRecordList;
 import epc.therest.data.converter.DataRecordToJsonConterter;
 import epc.therest.data.converter.JsonToDataConverter;
 import epc.therest.data.converter.JsonToDataConverterFactory;
 import epc.therest.data.converter.JsonToDataConverterFactoryImp;
+import epc.therest.data.converter.RecordListToJsonConverter;
 import epc.therest.data.converter.spider.DataGroupRestToSpiderConverter;
 import epc.therest.data.converter.spider.DataRecordSpiderToRestConverter;
+import epc.therest.data.converter.spider.RecordListSpiderToRestConverter;
 import epc.therest.json.builder.JsonBuilderFactory;
 import epc.therest.json.builder.org.OrgJsonBuilderFactoryAdapter;
 import epc.therest.json.parser.JsonParseException;
@@ -39,6 +43,7 @@ import epc.therest.json.parser.org.OrgJsonParser;
 @Path("record")
 public class RecordEndpoint {
 
+	private static final String USER_ID = "userId";
 	private SystemOneRecordHandler recordHandler = new SystemOneRecordHandlerImp();
 	private UriInfo uriInfo;
 	private String url;
@@ -59,8 +64,7 @@ public class RecordEndpoint {
 	@Produces("application/uub+record+json")
 	public Response createRecord(@PathParam("type") String type, String jsonRecord) {
 		// set user directly here until we have decided how to authenticate user
-		String userId = "userId";
-		return createRecordAsUserIdWithRecord(userId, type, jsonRecord);
+		return createRecordAsUserIdWithRecord(USER_ID, type, jsonRecord);
 	}
 
 	public Response createRecordAsUserIdWithRecord(String userId, String type, String jsonRecord) {
@@ -93,12 +97,45 @@ public class RecordEndpoint {
 	}
 
 	@GET
+	@Path("{type}/")
+	@Produces("application/uub+recordList+json")
+	public Response readRecordList(@PathParam("type") String type) {
+		return readRecordListAsUserIdByType(USER_ID, type);
+	}
+
+	Response readRecordListAsUserIdByType(String userId, String type) {
+		try {
+			return tryReadRecordList(userId, type);
+		} catch (RecordNotFoundException e) {
+			return Response.status(Response.Status.NOT_FOUND).build();
+		} catch (AuthorizationException e) {
+			return Response.status(Response.Status.UNAUTHORIZED).build();
+		}
+	}
+
+	private Response tryReadRecordList(String userId, String type) {
+		SpiderRecordList readRecordList = recordHandler.readRecordList(userId, type);
+		String json = convertSpiderRecordListToJsonString(readRecordList);
+		return Response.status(Response.Status.OK).entity(json).build();
+	}
+
+	private String convertSpiderRecordListToJsonString(SpiderRecordList readRecordList) {
+		RecordListSpiderToRestConverter listSpiderToRestConverter = RecordListSpiderToRestConverter
+				.fromSpiderRecordListWithBaseURL(readRecordList, url);
+		RestRecordList restRecordList = listSpiderToRestConverter.toRest();
+
+		JsonBuilderFactory jsonBuilderFactory = new OrgJsonBuilderFactoryAdapter();
+		RecordListToJsonConverter recordListToJsonConverter = new RecordListToJsonConverter(
+				jsonBuilderFactory, restRecordList);
+		return recordListToJsonConverter.toJson();
+	}
+
+	@GET
 	@Path("{type}/{id}")
 	@Produces("application/uub+record+json")
 	public Response readRecord(@PathParam("type") String type, @PathParam("id") String id) {
 		// set user directly here until we have decided how to authenticate user
-		String userId = "userId";
-		return readRecordAsUserIdByTypeAndId(userId, type, id);
+		return readRecordAsUserIdByTypeAndId(USER_ID, type, id);
 	}
 
 	Response readRecordAsUserIdByTypeAndId(String userId, String type, String id) {
@@ -121,8 +158,7 @@ public class RecordEndpoint {
 	@Path("{type}/{id}")
 	public Response deleteRecord(@PathParam("type") String type, @PathParam("id") String id) {
 		// set user directly here until we have decided how to authenticate user
-		String userId = "userId";
-		return deleteRecordAsUserIdByTypeAndId(userId, type, id);
+		return deleteRecordAsUserIdByTypeAndId(USER_ID, type, id);
 	}
 
 	public Response deleteRecordAsUserIdByTypeAndId(String userId, String type, String id) {
@@ -146,8 +182,7 @@ public class RecordEndpoint {
 	@Produces("application/uub+record+json")
 	public Response updateRecord(@PathParam("type") String type, @PathParam("id") String id,
 			String jsonRecord) {
-		String userId = "userId";
-		return updateRecordAsUserIdWithRecord(userId, type, id, jsonRecord);
+		return updateRecordAsUserIdWithRecord(USER_ID, type, id, jsonRecord);
 	}
 
 	public Response updateRecordAsUserIdWithRecord(String userId, String type, String id,
@@ -203,4 +238,5 @@ public class RecordEndpoint {
 		return DataRecordToJsonConterter.usingJsonFactoryForRestDataRecord(jsonBuilderFactory,
 				restDataRecord);
 	}
+
 }

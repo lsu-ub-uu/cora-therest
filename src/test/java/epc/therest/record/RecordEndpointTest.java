@@ -86,6 +86,27 @@ public class RecordEndpointTest {
 	}
 
 	@Test
+	public void testReadRecordList() {
+		String type = "place";
+		Response response = recordEndpoint.readRecordList(type);
+		String entity = (String) response.getEntity();
+		assertNotNull(entity, "An entity in json format should be returned");
+	}
+
+	@Test
+	public void testReadRecordListNotFound() {
+		Response response = recordEndpoint.readRecordList("place_NOT_FOUND");
+		assertEquals(response.getStatusInfo(), Response.Status.NOT_FOUND);
+	}
+
+	@Test
+	public void testReadRecordListUnauthorized() {
+		Response response = recordEndpoint.readRecordListAsUserIdByType("unauthorizedUserId",
+				"place");
+		assertEquals(response.getStatusInfo(), Response.Status.UNAUTHORIZED);
+	}
+
+	@Test
 	public void testReadRecord() {
 		Response response = recordEndpoint.readRecord("place", "place:0001");
 		String entity = (String) response.getEntity();
