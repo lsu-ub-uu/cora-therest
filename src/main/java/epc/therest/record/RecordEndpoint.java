@@ -18,6 +18,7 @@ import epc.spider.data.SpiderDataGroup;
 import epc.spider.data.SpiderDataRecord;
 import epc.spider.data.SpiderRecordList;
 import epc.spider.record.AuthorizationException;
+import epc.spider.record.DataException;
 import epc.spider.record.storage.RecordNotFoundException;
 import epc.systemone.record.SystemOneRecordHandler;
 import epc.systemone.record.SystemOneRecordHandlerImp;
@@ -70,7 +71,7 @@ public class RecordEndpoint {
 	public Response createRecordAsUserIdWithRecord(String userId, String type, String jsonRecord) {
 		try {
 			return tryCreateRecord(userId, type, jsonRecord);
-		} catch (JsonParseException e) {
+		} catch (JsonParseException | DataException e) {
 			return Response.status(Response.Status.BAD_REQUEST).build();
 		} catch (AuthorizationException e) {
 			return Response.status(Response.Status.UNAUTHORIZED).build();

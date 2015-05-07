@@ -8,11 +8,8 @@ import epc.therest.data.RestDataGroup;
 
 public final class DataGroupSpiderToRestConverter {
 
-	private static String baseURL;
-
-	public static DataGroupSpiderToRestConverter fromSpiderDataGroupWithBaseURL(
-			SpiderDataGroup spiderDataGroup, String baseURL) {
-		DataGroupSpiderToRestConverter.baseURL = baseURL;
+	public static DataGroupSpiderToRestConverter fromSpiderDataGroup(
+			SpiderDataGroup spiderDataGroup) {
 		return new DataGroupSpiderToRestConverter(spiderDataGroup);
 	}
 
@@ -39,8 +36,8 @@ public final class DataGroupSpiderToRestConverter {
 
 	private RestDataElement convertToElementEquivalentDataClass(SpiderDataElement spiderDataElement) {
 		if (spiderDataElement instanceof SpiderDataGroup) {
-			return DataGroupSpiderToRestConverter.fromSpiderDataGroupWithBaseURL(
-					(SpiderDataGroup) spiderDataElement, baseURL).toRest();
+			return DataGroupSpiderToRestConverter.fromSpiderDataGroup(
+					(SpiderDataGroup) spiderDataElement).toRest();
 		}
 		return DataAtomicSpiderToRestConverter.fromSpiderDataAtomic(
 				(SpiderDataAtomic) spiderDataElement).toRest();

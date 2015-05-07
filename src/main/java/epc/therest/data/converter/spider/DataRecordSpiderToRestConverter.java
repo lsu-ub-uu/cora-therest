@@ -31,7 +31,7 @@ public final class DataRecordSpiderToRestConverter {
 
 		spiderDataGroup = spiderDataRecord.getSpiderDataGroup();
 		DataGroupSpiderToRestConverter dataGroupSpiderToRestConverter = DataGroupSpiderToRestConverter
-				.fromSpiderDataGroupWithBaseURL(spiderDataGroup, baseURL);
+				.fromSpiderDataGroup(spiderDataGroup);
 		RestDataGroup restDataGroup = dataGroupSpiderToRestConverter.toRest();
 		restDataRecord = RestDataRecord.withRestDataGroup(restDataGroup);
 

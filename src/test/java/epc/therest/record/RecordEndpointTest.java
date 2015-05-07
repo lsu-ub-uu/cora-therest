@@ -215,4 +215,12 @@ public class RecordEndpointTest {
 				"unauthorizedUserId", type, jsonToCreateFrom);
 		assertEquals(responseUpdate.getStatusInfo(), Response.Status.UNAUTHORIZED);
 	}
+
+	@Test
+	public void testCreateNonExcistingRecordType() {
+		String type = "recordType_NON_EXCISTING";
+		Response responseUpdate = recordEndpoint.createRecordAsUserIdWithRecord(
+				"unauthorizedUserId", type, jsonToCreateFrom);
+		assertEquals(responseUpdate.getStatusInfo(), Response.Status.BAD_REQUEST);
+	}
 }
