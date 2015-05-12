@@ -1,5 +1,7 @@
 package epc.therest.record;
 
+import static epc.spider.dependency.SpiderInstanceProvider.getSpiderRecordHandler;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -20,8 +22,6 @@ import epc.spider.data.SpiderRecordList;
 import epc.spider.record.AuthorizationException;
 import epc.spider.record.DataException;
 import epc.spider.record.storage.RecordNotFoundException;
-import epc.systemone.record.SystemOneRecordHandler;
-import epc.systemone.record.SystemOneRecordHandlerImp;
 import epc.therest.data.RestDataElement;
 import epc.therest.data.RestDataGroup;
 import epc.therest.data.RestDataRecord;
@@ -45,7 +45,6 @@ import epc.therest.json.parser.org.OrgJsonParser;
 public class RecordEndpoint {
 
 	private static final String USER_ID = "userId";
-	private SystemOneRecordHandler recordHandler = new SystemOneRecordHandlerImp();
 	private UriInfo uriInfo;
 	private String url;
 
@@ -80,7 +79,8 @@ public class RecordEndpoint {
 
 	private Response tryCreateRecord(String userId, String type, String jsonRecord) {
 		SpiderDataGroup record = convertJsonStringToSpiderDataGroup(jsonRecord);
-		SpiderDataRecord createdRecord = recordHandler.createRecord(userId, type, record);
+		SpiderDataRecord createdRecord = getSpiderRecordHandler().createAndStoreRecord(userId,
+				type, record);
 
 		SpiderDataGroup createdGroup = createdRecord.getSpiderDataGroup();
 		SpiderDataGroup recordInfo = createdGroup.extractGroup("recordInfo");
@@ -115,7 +115,7 @@ public class RecordEndpoint {
 	}
 
 	private Response tryReadRecordList(String userId, String type) {
-		SpiderRecordList readRecordList = recordHandler.readRecordList(userId, type);
+		SpiderRecordList readRecordList = getSpiderRecordHandler().readRecordList(userId, type);
 		String json = convertSpiderRecordListToJsonString(readRecordList);
 		return Response.status(Response.Status.OK).entity(json).build();
 	}
@@ -150,7 +150,7 @@ public class RecordEndpoint {
 	}
 
 	private Response tryReadRecord(String userId, String type, String id) {
-		SpiderDataRecord record = recordHandler.readRecord(userId, type, id);
+		SpiderDataRecord record = getSpiderRecordHandler().readRecord(userId, type, id);
 		String json = convertSpiderDataRecordToJsonString(record);
 		return Response.status(Response.Status.OK).entity(json).build();
 	}
@@ -173,7 +173,7 @@ public class RecordEndpoint {
 	}
 
 	private Response tryDeleteRecord(String userId, String type, String id) {
-		recordHandler.deleteRecord(userId, type, id);
+		getSpiderRecordHandler().deleteRecord(userId, type, id);
 		return Response.status(Response.Status.OK).build();
 	}
 
@@ -201,7 +201,8 @@ public class RecordEndpoint {
 
 	private Response tryUpdateRecord(String userId, String type, String id, String jsonRecord) {
 		SpiderDataGroup record = convertJsonStringToSpiderDataGroup(jsonRecord);
-		SpiderDataRecord updatedRecord = recordHandler.updateRecord(userId, type, id, record);
+		SpiderDataRecord updatedRecord = getSpiderRecordHandler().updateRecord(userId, type, id,
+				record);
 		String json = convertSpiderDataRecordToJsonString(updatedRecord);
 		return Response.status(Response.Status.OK).entity(json).build();
 	}

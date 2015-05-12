@@ -4,13 +4,15 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
-import epc.systemone.SystemBuilderForProduction;
+import epc.spider.dependency.SpiderInstanceProvider;
+import epc.systemone.SystemOneDependencyProvider;
 
 @WebListener
 public class SystemInitializer implements ServletContextListener {
 	@Override
 	public void contextInitialized(ServletContextEvent arg0) {
-		SystemBuilderForProduction.createAllDependenciesInSystemHolder();
+		SystemOneDependencyProvider dependencyProvider = new SystemOneDependencyProvider();
+		SpiderInstanceProvider.setSpiderDependencyProvider(dependencyProvider);
 	}
 
 	@Override

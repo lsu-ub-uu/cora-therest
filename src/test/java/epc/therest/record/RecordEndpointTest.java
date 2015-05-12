@@ -10,7 +10,8 @@ import javax.ws.rs.core.UriInfo;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import epc.therest.SystemBuilderForTest;
+import epc.spider.dependency.SpiderInstanceProvider;
+import epc.therest.initialize.DependencyProviderForTest;
 
 public class RecordEndpointTest {
 	private String jsonToCreateFrom = "{\"authority\":{\"children\":["
@@ -80,7 +81,7 @@ public class RecordEndpointTest {
 
 	@BeforeMethod
 	public void beforeMethod() {
-		SystemBuilderForTest.createAllDependenciesInSystemHolder();
+		SpiderInstanceProvider.setSpiderDependencyProvider(new DependencyProviderForTest());
 		UriInfo uriInfo = new TestUri();
 		recordEndpoint = new RecordEndpoint(uriInfo);
 	}

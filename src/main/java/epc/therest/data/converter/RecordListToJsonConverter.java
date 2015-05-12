@@ -11,10 +11,8 @@ public class RecordListToJsonConverter {
 	private JsonBuilderFactory jsonBuilderFactory;
 	private RestRecordList restRecordList;
 	private JsonObjectBuilder recordListJsonObjectBuilder;
-	private JsonBuilderFactory jsonFactory;
 
 	public RecordListToJsonConverter(JsonBuilderFactory jsonFactory, RestRecordList restRecordList) {
-		this.jsonFactory = jsonFactory;
 		this.jsonBuilderFactory = jsonFactory;
 		this.restRecordList = restRecordList;
 		recordListJsonObjectBuilder = jsonFactory.createObjectBuilder();
@@ -32,11 +30,11 @@ public class RecordListToJsonConverter {
 		recordListJsonObjectBuilder.addKeyString("containRecordsOfType",
 				restRecordList.getContainRecordsOfType());
 
-		JsonArrayBuilder recordsJsonBuilder = jsonFactory.createArrayBuilder();
+		JsonArrayBuilder recordsJsonBuilder = jsonBuilderFactory.createArrayBuilder();
 
 		for (RestDataRecord restDataRecord : restRecordList.getRecords()) {
 			DataRecordToJsonConterter converter = DataRecordToJsonConterter
-					.usingJsonFactoryForRestDataRecord(jsonFactory, restDataRecord);
+					.usingJsonFactoryForRestDataRecord(jsonBuilderFactory, restDataRecord);
 			recordsJsonBuilder.addJsonObjectBuilder(converter.toJsonObjectBuilder());
 		}
 
