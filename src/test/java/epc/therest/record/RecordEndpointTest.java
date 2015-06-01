@@ -224,4 +224,16 @@ public class RecordEndpointTest {
 				"unauthorizedUserId", type, jsonToCreateFrom);
 		assertEquals(responseUpdate.getStatusInfo(), Response.Status.BAD_REQUEST);
 	}
+
+	@Test
+	public void testCreateRecordNotValid() {
+		// uses always invalid validator
+		DependencyProviderForTest spiderDependencyProvider = new DependencyProviderForTest();
+		spiderDependencyProvider.setDataValidator(new DataValidatorAlwaysInvalidSpy());
+		SpiderInstanceProvider.setSpiderDependencyProvider(spiderDependencyProvider);
+
+		String type = "place";
+		Response responseCreated = recordEndpoint.createRecord(type, jsonToCreateFrom);
+		assertEquals(responseCreated.getStatusInfo(), Response.Status.BAD_REQUEST);
+	}
 }

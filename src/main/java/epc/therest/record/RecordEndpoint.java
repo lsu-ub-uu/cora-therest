@@ -71,7 +71,7 @@ public class RecordEndpoint {
 		try {
 			return tryCreateRecord(userId, type, jsonRecord);
 		} catch (JsonParseException | DataException e) {
-			return Response.status(Response.Status.BAD_REQUEST).build();
+			return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
 		} catch (AuthorizationException e) {
 			return Response.status(Response.Status.UNAUTHORIZED).build();
 		}

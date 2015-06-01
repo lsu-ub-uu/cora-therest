@@ -8,6 +8,16 @@ and the site: http://www.jsoneditoronline.org/ might also help
 <br>
 http://130.238.171.39:8080/therest/rest/record/place/place:XXX
 <br>
+<h2>Use this information to create a new recordType</h2>
+Content-Type application/uub+record+json
+<br>
+{"recordType":{"children":[{"recordInfo":{"children":[{"id":"place"}]}},{"metadataId":"place"},{"presentationViewId":"pgPlaceView"},{"presentationFormId":"pgPlaceForm"},{"newMetadataId":"placeNew"},{"newPresentationFormId":"pgPlaceFormNew"},{"listPresentationViewId":"pgPlaceList"},{"searchMetadataId":"placeSearch"},{"searchPresentationFormId":"pgPlaceSearchForm"},{"userSuppliedId":"true"},{"selfPresentationViewId":"metadataSelfPresentation"},{"permissionKey":"RECORDTYPE_PLACE"}]}}
+<h2>Use this information to create a new metadata</h2>
+http://localhost:8080/delivery/rest/record/metadata
+<br>
+Content-Type application/uub+record+json
+<br>
+{"metadata":{"attributes":{"type":"group"},"children":[{"recordInfo":{"children":[{"id":"authority"}]}},{"dataId":"authority"},{"textId":"authorityTextId"},{"defTextId":"authorityDefTextId"},{"attributeReferences":{"children":[{"ref":"authorityType"}]}},{"childReferences":{"children":[{"childReference":{"children":[{"ref":"autocomplete"},{"repeatMin":"1"},{"repeatMax":"1"}]}},{"childReference":{"children":[{"ref":"existenceDatePeriod"},{"repeatMin":"1"},{"repeatMax":"1"}]}},{"childReference":{"children":[{"ref":"name"},{"repeatMin":"1"},{"repeatMax":"X"}]}},{"childReference":{"children":[{"ref":"other"},{"repeatMin":"1"},{"repeatMax":"3"}]}},{"childReference":{"children":[{"ref":"otherCollection"},{"repeatMin":"1"},{"repeatMax":"3"}]}}]}}]}}
 <h2>Use this information for update</h2>
 Content-Type application/uub+record+json
 <br>
