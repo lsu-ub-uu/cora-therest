@@ -1,7 +1,5 @@
 package epc.therest.record;
 
-import static epc.spider.dependency.SpiderInstanceProvider.getSpiderRecordHandler;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -19,6 +17,7 @@ import javax.ws.rs.core.UriInfo;
 import epc.spider.data.SpiderDataGroup;
 import epc.spider.data.SpiderDataRecord;
 import epc.spider.data.SpiderRecordList;
+import epc.spider.dependency.SpiderInstanceProvider;
 import epc.spider.record.AuthorizationException;
 import epc.spider.record.DataException;
 import epc.spider.record.storage.RecordNotFoundException;
@@ -79,8 +78,8 @@ public class RecordEndpoint {
 
 	private Response tryCreateRecord(String userId, String type, String jsonRecord) {
 		SpiderDataGroup record = convertJsonStringToSpiderDataGroup(jsonRecord);
-		SpiderDataRecord createdRecord = getSpiderRecordHandler().createAndStoreRecord(userId,
-				type, record);
+		SpiderDataRecord createdRecord = SpiderInstanceProvider.getSpiderRecordCreator()
+				.createAndStoreRecord(userId, type, record);
 
 		SpiderDataGroup createdGroup = createdRecord.getSpiderDataGroup();
 		SpiderDataGroup recordInfo = createdGroup.extractGroup("recordInfo");
@@ -115,7 +114,8 @@ public class RecordEndpoint {
 	}
 
 	private Response tryReadRecordList(String userId, String type) {
-		SpiderRecordList readRecordList = getSpiderRecordHandler().readRecordList(userId, type);
+		SpiderRecordList readRecordList = SpiderInstanceProvider.getSpiderRecordReader()
+				.readRecordList(userId, type);
 		String json = convertSpiderRecordListToJsonString(readRecordList);
 		return Response.status(Response.Status.OK).entity(json).build();
 	}
@@ -150,7 +150,8 @@ public class RecordEndpoint {
 	}
 
 	private Response tryReadRecord(String userId, String type, String id) {
-		SpiderDataRecord record = getSpiderRecordHandler().readRecord(userId, type, id);
+		SpiderDataRecord record = SpiderInstanceProvider.getSpiderRecordReader().readRecord(userId,
+				type, id);
 		String json = convertSpiderDataRecordToJsonString(record);
 		return Response.status(Response.Status.OK).entity(json).build();
 	}
@@ -173,7 +174,7 @@ public class RecordEndpoint {
 	}
 
 	private Response tryDeleteRecord(String userId, String type, String id) {
-		getSpiderRecordHandler().deleteRecord(userId, type, id);
+		SpiderInstanceProvider.getSpiderRecordDeleter().deleteRecord(userId, type, id);
 		return Response.status(Response.Status.OK).build();
 	}
 
@@ -201,8 +202,8 @@ public class RecordEndpoint {
 
 	private Response tryUpdateRecord(String userId, String type, String id, String jsonRecord) {
 		SpiderDataGroup record = convertJsonStringToSpiderDataGroup(jsonRecord);
-		SpiderDataRecord updatedRecord = getSpiderRecordHandler().updateRecord(userId, type, id,
-				record);
+		SpiderDataRecord updatedRecord = SpiderInstanceProvider.getSpiderRecordUpdater()
+				.updateRecord(userId, type, id, record);
 		String json = convertSpiderDataRecordToJsonString(updatedRecord);
 		return Response.status(Response.Status.OK).entity(json).build();
 	}
