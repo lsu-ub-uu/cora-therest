@@ -191,8 +191,8 @@ public class RecordEndpoint {
 			String jsonRecord) {
 		try {
 			return tryUpdateRecord(userId, type, id, jsonRecord);
-		} catch (JsonParseException e) {
-			return Response.status(Response.Status.BAD_REQUEST).build();
+		} catch (JsonParseException | DataException e) {
+			return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
 		} catch (RecordNotFoundException e) {
 			return Response.status(Response.Status.NOT_FOUND).build();
 		} catch (AuthorizationException e) {
