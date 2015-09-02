@@ -1,19 +1,16 @@
 package epc.therest.data.converter;
 
-import java.util.Map.Entry;
-
 import epc.therest.data.RestDataElement;
 import epc.therest.data.RestDataGroup;
-import epc.therest.json.parser.JsonArray;
-import epc.therest.json.parser.JsonObject;
-import epc.therest.json.parser.JsonParseException;
-import epc.therest.json.parser.JsonString;
-import epc.therest.json.parser.JsonValue;
+import epc.therest.json.parser.*;
+
+import java.util.Map.Entry;
 
 public final class JsonToDataGroupConverter implements JsonToDataConverter {
 
 	private static final String CHILDREN = "children";
 	private static final String ATTRIBUTES = "attributes";
+	private static final int NUM_OF_ALLOWED_KEYS_AT_TOP_LEVEL = 3;
 	private JsonObject jsonObject;
 	private RestDataGroup restDataGroup;
 
@@ -50,17 +47,15 @@ public final class JsonToDataGroupConverter implements JsonToDataConverter {
 		}
 
 		if (!hasChildren()) {
-			throw new JsonParseException("Group data must contain key \"children\"");
+			throw new JsonParseException("Group data must contain key \""+CHILDREN+"\"");
 		}
 
-		if(jsonObject.keySet().size() == 3){
-			if (!hasAttributes()) {
-				throw new JsonParseException("Group data must contain key \"attributes\"");
-			}
+		if(jsonObject.keySet().size() == NUM_OF_ALLOWED_KEYS_AT_TOP_LEVEL && !hasAttributes()){
+			throw new JsonParseException("Group data must contain key \""+ATTRIBUTES+"\"");
 		}
 
-		if(jsonObject.keySet().size() > 3){
-			throw new JsonParseException("Group data can only contain keys \"name\", \"children\" and \"attributes\"");
+		if(jsonObject.keySet().size() > NUM_OF_ALLOWED_KEYS_AT_TOP_LEVEL){
+			throw new JsonParseException("Group data can only contain keys \"name\", \""+CHILDREN+"\" and \""+ATTRIBUTES+"\"");
 		}
 	}
 
