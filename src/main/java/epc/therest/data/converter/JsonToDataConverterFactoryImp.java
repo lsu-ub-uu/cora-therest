@@ -16,7 +16,10 @@ public class JsonToDataConverterFactoryImp implements JsonToDataConverterFactory
 		}
 		JsonObject jsonObject = (JsonObject) jsonValue;
 		Entry<String, JsonValue> entry = jsonObject.entrySet().iterator().next();
-		if (JsonValueType.OBJECT.equals(entry.getValue().getValueType())) {
+
+		boolean hasChildren = jsonObject.containsKey("children");
+
+		if (hasChildren) {
 			return JsonToDataGroupConverter.forJsonObject(jsonObject);
 		}
 		return JsonToDataAtomicConverter.forJsonObject(jsonObject);

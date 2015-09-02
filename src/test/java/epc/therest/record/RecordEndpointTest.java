@@ -14,103 +14,10 @@ import epc.spider.dependency.SpiderInstanceProvider;
 import epc.therest.initialize.DependencyProviderForTest;
 
 public class RecordEndpointTest {
-	private String jsonToCreateFrom = "{\"authority\":{\"children\":["
-			+ "{\"datePeriod\":{\"attributes\":{\"eventType\":\"existence\"},"
-			+ "\"children\":[{\"date\":{\"attributes\":{\"datePointEventType\":\"start\"},"
-			+ "\"children\":[{\"year\":\"1976\"},{\"month\":\"07\"},{\"day\":\"22\"}]}},"
-			+ "{\"date\":{\"attributes\":{\"datePointEventType\":\"end\"},"
-			+ "\"children\":[{\"year\":\"2076\"},{\"month\":\"12\"},{\"day\":\"31\"}]}},"
-			+ "{\"description\":\"76 - 76\"}]}},{\"name\":{"
-			+ "\"attributes\":{\"type\":\"person\",\"nameform\":\"authorized\"},"
-			+ "\"children\":[{\"namepart\":{\"attributes\":{\"type\":\"givenname\"},"
-			+ "\"children\":[{\"name\":\"Olov\"}]}},{\"namepart\":{"
-			+ "\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"McKie\"}]}},"
-			+ "{\"namepart\":{\"attributes\":{\"type\":\"number\"},"
-			+ "\"children\":[{\"name\":\"II\"}]}},{\"namepart\":{\"attributes\":{"
-			+ "\"type\":\"addition\"},\"children\":[{\"name\":\"Ett tillägg\"}]}},"
-			+ "{\"datePeriod\":{\"attributes\":{\"eventType\":\"valid\"},"
-			+ "\"children\":[{\"date\":{\"attributes\":{\"datePointEventType\":\"start\"},"
-			+ "\"children\":[{\"year\":\"2008\"},{\"month\":\"06\"},{\"day\":\"28\"}]}},"
-			+ "{\"description\":\"Namn som gift\"}]}}]}},{\"name\":{"
-			+ "\"attributes\":{\"type\":\"person\",\"nameform\":\"alternative\"},"
-			+ "\"children\":[{\"namepart\":{\"attributes\":{\"type\":\"givenname\"},"
-			+ "\"children\":[{\"name\":\"Olle\"}]}},{\"namepart\":{"
-			+ "\"attributes\":{\"type\":\"familyname\"},"
-			+ "\"children\":[{\"name\":\"Nilsson\"}]}}]}},{\"name\":{\"attributes\":{"
-			+ "\"type\":\"person\",\"nameform\":\"alternative\"},\"children\":["
-			+ "{\"namepart\":{\"attributes\":{\"type\":\"givenname\"},\"children\":["
-			+ "{\"name\":\"Olle2\"}]}},{\"namepart\":{\"attributes\":{\"type\":\"familyname\"},"
-			+ "\"children\":[{\"name\":\"Nilsson2\"}]}}]}},{\"other\":\"some other stuff\"},"
-			+ "{\"other\":\"second other stuff\"},{\"other\":\"third other stuff\"},"
-			+ "{\"othercol\":\"yes\"}],\"attributes\":{\"type\":\"place\"}}}";
-	private String jsonToUpdateWith = "{\"authority\":{\"children\":["
-			+ "{\"recordInfo\":{\"children\":[{\"id\":\"place:0001\"}"
-			+ ",{\"type\":\"place\"},{\"createdBy\":\"userId\"}]}},"
-			+ "{\"datePeriod\":{\"attributes\":{\"eventType\":\"existence\"},"
-			+ "\"children\":[{\"date\":{\"attributes\":{\"datePointEventType\":\"start\"},"
-			+ "\"children\":[{\"year\":\"1976\"},{\"month\":\"07\"},{\"day\":\"22\"}]}},"
-			+ "{\"date\":{\"attributes\":{\"datePointEventType\":\"end\"},"
-			+ "\"children\":[{\"year\":\"2076\"},{\"month\":\"12\"},{\"day\":\"31\"}]}},"
-			+ "{\"description\":\"76 - 76\"}]}},{\"name\":{\"attributes\":{\"type\":\"person\","
-			+ "\"nameform\":\"authorized\"},"
-			+ "\"children\":[{\"namepart\":{\"attributes\":{\"type\":\"givenname\"},"
-			+ "\"children\":[{\"name\":\"Olov\"}]}},"
-			+ "{\"namepart\":{\"attributes\":{\"type\":\"familyname\"},"
-			+ "\"children\":[{\"name\":\"McKie\"}]}},"
-			+ "{\"namepart\":{\"attributes\":{\"type\":\"number\"},"
-			+ "\"children\":[{\"name\":\"II\"}]}},"
-			+ "{\"namepart\":{\"attributes\":{\"type\":\"addition\"},"
-			+ "\"children\":[{\"name\":\"Ett tillägg\"}]}},"
-			+ "{\"datePeriod\":{\"attributes\":{\"eventType\":\"valid\"},"
-			+ "\"children\":[{\"date\":{\"attributes\":{\"datePointEventType\":\"start\"},"
-			+ "\"children\":[{\"year\":\"2008\"},{\"month\":\"06\"},{\"day\":\"28\"}]}},"
-			+ "{\"description\":\"Namn som gift\"}]}}]}},"
-			+ "{\"name\":{\"attributes\":{\"type\":\"person\",\"nameform\":\"alternative\"},"
-			+ "\"children\":[{\"namepart\":{\"attributes\":{\"type\":\"givenname\"},"
-			+ "\"children\":[{\"name\":\"Olle\"}]}},"
-			+ "{\"namepart\":{\"attributes\":{\"type\":\"familyname\"},"
-			+ "\"children\":[{\"name\":\"Nilsson\"}]}}]}},"
-			+ "{\"name\":{\"attributes\":{\"type\":\"person\"," + "\"nameform\":\"alternative\"},"
-			+ "\"children\":[{\"namepart\":{\"attributes\":{\"type\":\"givenname\"},"
-			+ "\"children\":[{\"name\":\"Olle2\"}]}},"
-			+ "{\"namepart\":{\"attributes\":{\"type\":\"familyname\"},"
-			+ "\"children\":[{\"name\":\"Nilsson2\"}]}}]}},{\"other\":\"some other stuff\"},"
-			+ "{\"other\":\"second other stuff\"},{\"other\":\"third other stuff\"}," + ""
-			+ "{\"othercol\":\"yes\"}],\"attributes\":{\"type\":\"place\"}}}";
-	private String jsonToUpdateWithNotFound = "{\"authority\":{\"children\":["
-			+ "{\"recordInfo\":{\"children\":[{\"id\":\"place:0001_NOT_FOUND\"}"
-			+ ",{\"type\":\"place\"},{\"createdBy\":\"userId\"}]}},"
-			+ "{\"datePeriod\":{\"attributes\":{\"eventType\":\"existence\"},"
-			+ "\"children\":[{\"date\":{\"attributes\":{\"datePointEventType\":\"start\"},"
-			+ "\"children\":[{\"year\":\"1976\"},{\"month\":\"07\"},{\"day\":\"22\"}]}},"
-			+ "{\"date\":{\"attributes\":{\"datePointEventType\":\"end\"},"
-			+ "\"children\":[{\"year\":\"2076\"},{\"month\":\"12\"},{\"day\":\"31\"}]}},"
-			+ "{\"description\":\"76 - 76\"}]}},{\"name\":{\"attributes\":{\"type\":\"person\","
-			+ "\"nameform\":\"authorized\"},"
-			+ "\"children\":[{\"namepart\":{\"attributes\":{\"type\":\"givenname\"},"
-			+ "\"children\":[{\"name\":\"Olov\"}]}},"
-			+ "{\"namepart\":{\"attributes\":{\"type\":\"familyname\"},"
-			+ "\"children\":[{\"name\":\"McKie\"}]}},"
-			+ "{\"namepart\":{\"attributes\":{\"type\":\"number\"},"
-			+ "\"children\":[{\"name\":\"II\"}]}},"
-			+ "{\"namepart\":{\"attributes\":{\"type\":\"addition\"},"
-			+ "\"children\":[{\"name\":\"Ett tillägg\"}]}},"
-			+ "{\"datePeriod\":{\"attributes\":{\"eventType\":\"valid\"},"
-			+ "\"children\":[{\"date\":{\"attributes\":{\"datePointEventType\":\"start\"},"
-			+ "\"children\":[{\"year\":\"2008\"},{\"month\":\"06\"},{\"day\":\"28\"}]}},"
-			+ "{\"description\":\"Namn som gift\"}]}}]}},"
-			+ "{\"name\":{\"attributes\":{\"type\":\"person\",\"nameform\":\"alternative\"},"
-			+ "\"children\":[{\"namepart\":{\"attributes\":{\"type\":\"givenname\"},"
-			+ "\"children\":[{\"name\":\"Olle\"}]}},"
-			+ "{\"namepart\":{\"attributes\":{\"type\":\"familyname\"},"
-			+ "\"children\":[{\"name\":\"Nilsson\"}]}}]}},"
-			+ "{\"name\":{\"attributes\":{\"type\":\"person\"," + "\"nameform\":\"alternative\"},"
-			+ "\"children\":[{\"namepart\":{\"attributes\":{\"type\":\"givenname\"},"
-			+ "\"children\":[{\"name\":\"Olle2\"}]}},"
-			+ "{\"namepart\":{\"attributes\":{\"type\":\"familyname\"},"
-			+ "\"children\":[{\"name\":\"Nilsson2\"}]}}]}},{\"other\":\"some other stuff\"},"
-			+ "{\"other\":\"second other stuff\"},{\"other\":\"third other stuff\"}," + ""
-			+ "{\"othercol\":\"yes\"}],\"attributes\":{\"type\":\"place\"}}}";
+	private String jsonToCreateFrom = "{\"name\":\"authority\",\"children\":[{\"name\":\"datePeriod\",\"attributes\":{\"eventType\":\"existence\"},\"children\":[{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"start\"},\"children\":[{\"year\":\"1976\"},{\"month\":\"07\"},{\"day\":\"22\"}]},{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"end\"},\"children\":[{\"year\":\"2076\"},{\"month\":\"12\"},{\"day\":\"31\"}]},{\"description\":\"76 - 76\"}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"authorized\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"Olov\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"McKie\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"number\"},\"children\":[{\"name\":\"II\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"addition\"},\"children\":[{\"name\":\"Ett till�gg\"}]},{\"name\":\"datePeriod\",\"attributes\":{\"eventType\":\"valid\"},\"children\":[{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"start\"},\"children\":[{\"year\":\"2008\"},{\"month\":\"06\"},{\"day\":\"28\"}]},{\"description\":\"Namn som gift\"}]}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"alternative\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"Olle\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"Nilsson\"}]}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"alternative\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"Olle2\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"Nilsson2\"}]}]},{\"other\":\"some other stuff\"},{\"other\":\"second other stuff\"},{\"other\":\"third other stuff\"},{\"othercol\":\"yes\"}],\"attributes\":{\"type\":\"place\"}}";
+	private String jsonToUpdateWith = "{\"name\":\"authority\",\"children\":[{\"name\":\"recordInfo\",\"children\":[{\"id\":\"place:0001\"},{\"type\":\"place\"},{\"createdBy\":\"userId\"}]},{\"name\":\"datePeriod\",\"attributes\":{\"eventType\":\"existence\"},\"children\":[{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"start\"},\"children\":[{\"year\":\"1976\"},{\"month\":\"07\"},{\"day\":\"22\"}]},{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"end\"},\"children\":[{\"year\":\"2076\"},{\"month\":\"12\"},{\"day\":\"31\"}]},{\"description\":\"76 - 76\"}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"authorized\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"Olov\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"McKie\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"number\"},\"children\":[{\"name\":\"II\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"addition\"},\"children\":[{\"name\":\"Ett tillägg\"}]},{\"name\":\"datePeriod\",\"attributes\":{\"eventType\":\"valid\"},\"children\":[{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"start\"},\"children\":[{\"year\":\"2008\"},{\"month\":\"06\"},{\"day\":\"28\"}]},{\"description\":\"Namn som gift\"}]}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"alternative\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"Olle\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"Nilsson\"}]}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"alternative\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"Olle2\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"Nilsson2\"}]}]},{\"other\":\"some other stuff\"},{\"other\":\"second other stuff\"},{\"other\":\"third other stuff\"},{\"othercol\":\"yes\"}],\"attributes\":{\"type\":\"place\"}}";
+
+	private String jsonToUpdateWithNotFound = "{\"name\":\"authority\",\"children\":[{\"name\":\"recordInfo\",\"children\":[{\"id\":\"place:0001_NOT_FOUND\"},{\"type\":\"place\"},{\"createdBy\":\"userId\"}]},{\"name\":\"datePeriod\",\"attributes\":{\"eventType\":\"existence\"},\"children\":[{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"start\"},\"children\":[{\"year\":\"1976\"},{\"month\":\"07\"},{\"day\":\"22\"}]},{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"end\"},\"children\":[{\"year\":\"2076\"},{\"month\":\"12\"},{\"day\":\"31\"}]},{\"description\":\"76 - 76\"}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"authorized\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"Olov\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"McKie\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"number\"},\"children\":[{\"name\":\"II\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"addition\"},\"children\":[{\"name\":\"Ett tillägg\"}]},{\"name\":\"datePeriod\",\"attributes\":{\"eventType\":\"valid\"},\"children\":[{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"start\"},\"children\":[{\"year\":\"2008\"},{\"month\":\"06\"},{\"day\":\"28\"}]},{\"description\":\"Namn som gift\"}]}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"alternative\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"Olle\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"Nilsson\"}]}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"alternative\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"Olle2\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"Nilsson2\"}]}]},{\"other\":\"some other stuff\"},{\"other\":\"second other stuff\"},{\"other\":\"third other stuff\"},{\"othercol\":\"yes\"}],\"attributes\":{\"type\":\"place\"}}";
 	private RecordEndpoint recordEndpoint;
 
 	@BeforeMethod
@@ -210,7 +117,7 @@ public class RecordEndpointTest {
 	}
 
 	@Test
-	public void testUpdateRecordBadJson() {
+	public void testUpdateRecordBadContentInJson() {
 		String type = "place";
 		String id = "place:0001";
 		String json = "{\"groupDataId\":{\"children\":[{\"atomicDataId\":\"atomicValue\""
@@ -235,7 +142,7 @@ public class RecordEndpointTest {
 	}
 
 	@Test
-	public void testCreateRecordBadJson() {
+	public void testCreateRecordBadContentInJson() {
 		String type = "place";
 		String json = "{\"groupDataId\":{\"children\":[{\"atomicDataId\":\"atomicValue\""
 				+ ",\"atomicDataId2\":\"atomicValue2\"}]}}";
@@ -252,7 +159,7 @@ public class RecordEndpointTest {
 	}
 
 	@Test
-	public void testCreateNonExcistingRecordType() {
+	public void testCreateNonExistingRecordType() {
 		String type = "recordType_NON_EXCISTING";
 		Response responseUpdate = recordEndpoint.createRecordAsUserIdWithRecord(
 				"unauthorizedUserId", type, jsonToCreateFrom);

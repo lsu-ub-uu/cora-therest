@@ -25,7 +25,7 @@ import epc.therest.data.RestDataElement;
 import epc.therest.data.RestDataGroup;
 import epc.therest.data.RestDataRecord;
 import epc.therest.data.RestRecordList;
-import epc.therest.data.converter.DataRecordToJsonConterter;
+import epc.therest.data.converter.DataRecordToJsonConverter;
 import epc.therest.data.converter.JsonToDataConverter;
 import epc.therest.data.converter.JsonToDataConverterFactory;
 import epc.therest.data.converter.JsonToDataConverterFactoryImp;
@@ -225,7 +225,7 @@ public class RecordEndpoint {
 
 	private String convertSpiderDataRecordToJsonString(SpiderDataRecord record) {
 		RestDataRecord restDataRecord = convertSpiderDataRecordToRestDataRecord(record);
-		DataRecordToJsonConterter dataToJsonConverter = convertRestDataGroupToJson(restDataRecord);
+		DataRecordToJsonConverter dataToJsonConverter = convertRestDataGroupToJson(restDataRecord);
 		return dataToJsonConverter.toJson();
 	}
 
@@ -236,9 +236,9 @@ public class RecordEndpoint {
 		return converter.toRest();
 	}
 
-	private DataRecordToJsonConterter convertRestDataGroupToJson(RestDataRecord restDataRecord) {
+	private DataRecordToJsonConverter convertRestDataGroupToJson(RestDataRecord restDataRecord) {
 		JsonBuilderFactory jsonBuilderFactory = new OrgJsonBuilderFactoryAdapter();
-		return DataRecordToJsonConterter.usingJsonFactoryForRestDataRecord(jsonBuilderFactory,
+		return DataRecordToJsonConverter.usingJsonFactoryForRestDataRecord(jsonBuilderFactory,
 				restDataRecord);
 	}
 

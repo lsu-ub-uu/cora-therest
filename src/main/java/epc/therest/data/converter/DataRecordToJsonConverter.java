@@ -9,18 +9,18 @@ import epc.therest.json.builder.JsonArrayBuilder;
 import epc.therest.json.builder.JsonBuilderFactory;
 import epc.therest.json.builder.JsonObjectBuilder;
 
-public final class DataRecordToJsonConterter {
+public final class DataRecordToJsonConverter {
 
-	public static DataRecordToJsonConterter usingJsonFactoryForRestDataRecord(
+	public static DataRecordToJsonConverter usingJsonFactoryForRestDataRecord(
 			JsonBuilderFactory jsonFactory, RestDataRecord restDataRecord) {
-		return new DataRecordToJsonConterter(jsonFactory, restDataRecord);
+		return new DataRecordToJsonConverter(jsonFactory, restDataRecord);
 	}
 
 	private JsonBuilderFactory jsonBuilderFactory;
 	private RestDataRecord restDataRecord;
 	private JsonObjectBuilder recordJsonObjectBuilder;
 
-	private DataRecordToJsonConterter(JsonBuilderFactory jsonFactory, RestDataRecord restDataRecord) {
+	private DataRecordToJsonConverter(JsonBuilderFactory jsonFactory, RestDataRecord restDataRecord) {
 		this.jsonBuilderFactory = jsonFactory;
 		this.restDataRecord = restDataRecord;
 		recordJsonObjectBuilder = jsonFactory.createObjectBuilder();

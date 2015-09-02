@@ -27,8 +27,7 @@ public final class DataGroupToJsonConverter extends DataToJsonConverter {
 
 	@Override
 	public String toJson() {
-		JsonObjectBuilder rootWrappingJsonObjectBuilder = toJsonObjectBuilder();
-		return rootWrappingJsonObjectBuilder.toJsonFormattedString();
+		return toJsonObjectBuilder().toJsonFormattedString();
 	}
 
 	@Override
@@ -39,10 +38,8 @@ public final class DataGroupToJsonConverter extends DataToJsonConverter {
 		if (hasChildren()) {
 			addChildrenToGroup();
 		}
-		JsonObjectBuilder rootWrappingJsonObjectBuilder = jsonBuilderFactory.createObjectBuilder();
-		rootWrappingJsonObjectBuilder.addKeyJsonObjectBuilder(restDataGroup.getDataId(),
-				dataGroupJsonObjectBuilder);
-		return rootWrappingJsonObjectBuilder;
+		dataGroupJsonObjectBuilder.addKeyString("name", restDataGroup.getDataId());
+		return dataGroupJsonObjectBuilder;
 	}
 
 	private boolean hasAttributes() {

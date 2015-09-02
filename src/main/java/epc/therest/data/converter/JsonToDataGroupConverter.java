@@ -16,7 +16,6 @@ public final class JsonToDataGroupConverter implements JsonToDataConverter {
 	private static final String ATTRIBUTES = "attributes";
 	private JsonObject jsonObject;
 	private RestDataGroup restDataGroup;
-	private JsonObject jsonGroupChildren;
 
 	static JsonToDataGroupConverter forJsonObject(JsonObject jsonObject) {
 		return new JsonToDataGroupConverter(jsonObject);
@@ -36,37 +35,32 @@ public final class JsonToDataGroupConverter implements JsonToDataConverter {
 	}
 
 	private RestDataElement tryToInstanciate() {
-		validateOnlyOneKeyValuePairAtTopLevel();
-		getChildrenFromJsonObject();
-		validateGroupOnlyContainsAttributesOrChildrenOrActionLinks();
+		validateOnlyCorrectKeysAtTopLevel();
 		return createDataGroupInstance();
 	}
 
-	private void getChildrenFromJsonObject() {
-		String dataId = getDataIdFromJsonObject();
-		jsonGroupChildren = jsonObject.getValueAsJsonObject(dataId);
-	}
-
 	private String getDataIdFromJsonObject() {
-		return jsonObject.keySet().iterator().next();
+		return jsonObject.getValueAsJsonString("name").getStringValue();
 	}
 
-	private void validateOnlyOneKeyValuePairAtTopLevel() {
-		if (jsonObject.size() != 1) {
-			throw new JsonParseException("Group data can only contain one key value pair");
+	private void validateOnlyCorrectKeysAtTopLevel() {
+
+		if (!jsonObject.containsKey("name")) {
+			throw new JsonParseException("Group data must contain key \"name\"");
 		}
-	}
 
-	private void validateGroupOnlyContainsAttributesOrChildrenOrActionLinks() {
-		for (Entry<String, JsonValue> childEntry : jsonGroupChildren.entrySet()) {
-			validateChildEntryIsAttributesOrChildren(childEntry);
+		if (!hasChildren()) {
+			throw new JsonParseException("Group data must contain key \"children\"");
 		}
-	}
 
-	private void validateChildEntryIsAttributesOrChildren(Entry<String, JsonValue> childEntry) {
-		String key = childEntry.getKey();
-		if (!ATTRIBUTES.equals(key) && !CHILDREN.equals(key)) {
-			throw new JsonParseException("Group data can only contain attributes or children");
+		if(jsonObject.keySet().size() == 3){
+			if (!hasAttributes()) {
+				throw new JsonParseException("Group data must contain key \"attributes\"");
+			}
+		}
+
+		if(jsonObject.keySet().size() > 3){
+			throw new JsonParseException("Group data can only contain keys \"name\", \"children\" and \"attributes\"");
 		}
 	}
 
@@ -83,11 +77,11 @@ public final class JsonToDataGroupConverter implements JsonToDataConverter {
 	}
 
 	private boolean hasAttributes() {
-		return jsonGroupChildren.containsKey(ATTRIBUTES);
+		return jsonObject.containsKey(ATTRIBUTES);
 	}
 
 	private void addAttributesToGroup() {
-		JsonObject attributes = jsonGroupChildren.getValueAsJsonObject(ATTRIBUTES);
+		JsonObject attributes = jsonObject.getValueAsJsonObject(ATTRIBUTES);
 		for (Entry<String, JsonValue> attributeEntry : attributes.entrySet()) {
 			addAttributeToGroup(attributeEntry);
 		}
@@ -99,11 +93,11 @@ public final class JsonToDataGroupConverter implements JsonToDataConverter {
 	}
 
 	private boolean hasChildren() {
-		return jsonGroupChildren.containsKey(CHILDREN);
+		return jsonObject.containsKey(CHILDREN);
 	}
 
 	private void addChildrenToGroup() {
-		JsonArray children = jsonGroupChildren.getValueAsJsonArray(CHILDREN);
+		JsonArray children = jsonObject.getValueAsJsonArray(CHILDREN);
 		for (JsonValue child : children) {
 			addChildToGroup(child);
 		}
