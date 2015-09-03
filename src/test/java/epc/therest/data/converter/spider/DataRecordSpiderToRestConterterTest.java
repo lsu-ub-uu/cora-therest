@@ -1,9 +1,5 @@
 package epc.therest.data.converter.spider;
 
-import static org.testng.Assert.assertEquals;
-
-import org.testng.annotations.Test;
-
 import epc.spider.data.Action;
 import epc.spider.data.SpiderDataAtomic;
 import epc.spider.data.SpiderDataGroup;
@@ -12,6 +8,9 @@ import epc.therest.data.ActionLink;
 import epc.therest.data.RestDataGroup;
 import epc.therest.data.RestDataRecord;
 import epc.therest.data.converter.ConverterException;
+import org.testng.annotations.Test;
+
+import static org.testng.Assert.assertEquals;
 
 public class DataRecordSpiderToRestConterterTest {
 	private String baseURL = "http://localhost:8080/therest/rest/record/";
@@ -25,6 +24,18 @@ public class DataRecordSpiderToRestConterterTest {
 		RestDataRecord restDataRecord = dataRecordSpiderToRestConverter.toRest();
 		RestDataGroup restDataGroup = restDataRecord.getRestDataGroup();
 		assertEquals(restDataGroup.getDataId(), "groupId");
+	}
+
+	@Test(expectedExceptions = ConverterException.class)
+	public void testToRestWithActionLinkNoRecordInfoButOtherChild() {
+		SpiderDataGroup spiderDataGroup = SpiderDataGroup.withDataId("groupId");
+		spiderDataGroup.addChild(SpiderDataAtomic.withDataIdAndValue("type", "place"));
+		SpiderDataRecord spiderDataRecord = SpiderDataRecord.withSpiderDataGroup(spiderDataGroup);
+		spiderDataRecord.addAction(Action.READ);
+
+		DataRecordSpiderToRestConverter dataRecordSpiderToRestConverter = DataRecordSpiderToRestConverter
+				.fromSpiderDataRecordWithBaseURL(spiderDataRecord, baseURL);
+		dataRecordSpiderToRestConverter.toRest();
 	}
 
 	@Test(expectedExceptions = ConverterException.class)
