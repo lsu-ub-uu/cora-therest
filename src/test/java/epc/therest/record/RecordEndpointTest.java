@@ -1,17 +1,14 @@
 package epc.therest.record;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertTrue;
+import epc.spider.dependency.SpiderInstanceProvider;
+import epc.therest.initialize.DependencyProviderForTest;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
-
-import epc.spider.dependency.SpiderInstanceProvider;
-import epc.therest.initialize.DependencyProviderForTest;
+import static org.testng.Assert.*;
 
 public class RecordEndpointTest {
 	private String jsonToCreateFrom = "{\"name\":\"authority\",\"children\":[{\"name\":\"datePeriod\",\"attributes\":{\"eventType\":\"existence\"},\"children\":[{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"start\"},\"children\":[{\"year\":\"1976\"},{\"month\":\"07\"},{\"day\":\"22\"}]},{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"end\"},\"children\":[{\"year\":\"2076\"},{\"month\":\"12\"},{\"day\":\"31\"}]},{\"description\":\"76 - 76\"}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"authorized\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"Olov\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"McKie\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"number\"},\"children\":[{\"name\":\"II\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"addition\"},\"children\":[{\"name\":\"Ett till�gg\"}]},{\"name\":\"datePeriod\",\"attributes\":{\"eventType\":\"valid\"},\"children\":[{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"start\"},\"children\":[{\"year\":\"2008\"},{\"month\":\"06\"},{\"day\":\"28\"}]},{\"description\":\"Namn som gift\"}]}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"alternative\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"Olle\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"Nilsson\"}]}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"alternative\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"Olle2\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"Nilsson2\"}]}]},{\"other\":\"some other stuff\"},{\"other\":\"second other stuff\"},{\"other\":\"third other stuff\"},{\"othercol\":\"yes\"}],\"attributes\":{\"type\":\"place\"}}";
@@ -134,7 +131,7 @@ public class RecordEndpointTest {
 		assertTrue(responseCreated.getLocation().toString().startsWith("record/" + type));
 	}
 
-	@Test()
+	@Test
 	public void testCreateRecordBadCreatedLocation() {
 		String type = "place&& &&\\\\";
 		Response responseCreated = recordEndpoint.createRecord(type, jsonToCreateFrom);

@@ -27,7 +27,7 @@ public final class JsonToDataGroupConverter implements JsonToDataConverter {
 		try {
 			return tryToInstanciate();
 		} catch (Exception e) {
-			throw new JsonParseException("Error parsing jsonObject", e);
+			throw new JsonParseException("Error parsing jsonObject: "+e.getMessage(), e);
 		}
 	}
 
