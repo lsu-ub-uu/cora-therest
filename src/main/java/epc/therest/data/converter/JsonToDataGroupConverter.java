@@ -65,9 +65,7 @@ public final class JsonToDataGroupConverter implements JsonToDataConverter {
 		if (hasAttributes()) {
 			addAttributesToGroup();
 		}
-		if (hasChildren()) {
-			addChildrenToGroup();
-		}
+		addChildrenToGroup();
 		return restDataGroup;
 	}
 
