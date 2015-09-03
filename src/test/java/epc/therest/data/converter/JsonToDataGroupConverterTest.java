@@ -5,6 +5,7 @@ import static org.testng.Assert.assertNotNull;
 
 import java.util.Iterator;
 
+import epc.therest.json.parser.JsonObject;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -28,14 +29,14 @@ public class JsonToDataGroupConverterTest {
 
 	@Test
 	public void testToClass() {
-		String json = "{\"groupDataId\":{}}";
+		String json = "{\"name\":\"groupDataId\", \"children\":[]}";
 		RestDataGroup restDataGroup = createRestDataGroupForJsonString(json);
 		assertEquals(restDataGroup.getDataId(), "groupDataId");
 	}
 
 	@Test
 	public void testToClassWithAttribute() {
-		String json = "{\"groupDataId\":{\"attributes\":{\"attributeDataId\":\"attributeValue\"}}}";
+		String json = "{\"name\":\"groupDataId\",\"attributes\":{\"attributeDataId\":\"attributeValue\"}, \"children\":[]}";
 		RestDataGroup restDataGroup = createRestDataGroupForJsonString(json);
 		assertEquals(restDataGroup.getDataId(), "groupDataId");
 		String attributeValue = restDataGroup.getAttributes().get("attributeDataId");
@@ -44,9 +45,9 @@ public class JsonToDataGroupConverterTest {
 
 	@Test
 	public void testToClassWithAttributes() {
-		String json = "{\"groupDataId\":{\"attributes\":{"
+		String json = "{\"name\":\"groupDataId\",\"attributes\":{"
 				+ "\"attributeDataId\":\"attributeValue\","
-				+ "\"attributeDataId2\":\"attributeValue2\"" + "}}}";
+				+ "\"attributeDataId2\":\"attributeValue2\"" + "},\"children\":[]}";
 
 		RestDataGroup restDataGroup = createRestDataGroupForJsonString(json);
 		assertEquals(restDataGroup.getDataId(), "groupDataId");
@@ -58,7 +59,7 @@ public class JsonToDataGroupConverterTest {
 
 	@Test
 	public void testToClassWithAtomicChild() {
-		String json = "{\"groupDataId\":{\"children\":[{\"atomicDataId\":\"atomicValue\"}]}}";
+		String json = "{\"name\":\"groupDataId\",\"children\":[{\"atomicDataId\":\"atomicValue\"}]}";
 
 		RestDataGroup restDataGroup = createRestDataGroupForJsonString(json);
 		assertEquals(restDataGroup.getDataId(), "groupDataId");
@@ -70,12 +71,11 @@ public class JsonToDataGroupConverterTest {
 	@Test
 	public void testToClassGroupWithAtomicChildAndGroupChildWithAtomicChild() {
 		String json = "{";
-		json += "\"groupDataId\":{";
+		json += "\"name\":\"groupDataId\",";
 		json += "\"children\":[";
 		json += "{\"atomicDataId\":\"atomicValue\"},";
-		json += "{\"groupDataId2\":{\"children\":[{\"atomicDataId2\":\"atomicValue2\"}]}}";
+		json += "{\"name\":\"groupDataId2\",\"children\":[{\"atomicDataId2\":\"atomicValue2\"}]}";
 		json += "]";
-		json += "}";
 		json += "}";
 
 		RestDataGroup restDataGroup = createRestDataGroupForJsonString(json);
@@ -94,16 +94,15 @@ public class JsonToDataGroupConverterTest {
 	@Test
 	public void testToClassGroupWithAttributesAndAtomicChildAndGroupChildWithAtomicChild() {
 		String json = "{";
-		json += "\"groupDataId\":{";
+		json += "\"name\":\"groupDataId\",";
 		json += "\"attributes\":{" + "\"attributeDataId\":\"attributeValue\","
 				+ "\"attributeDataId2\":\"attributeValue2\"" + "},";
 		json += "\"children\":[";
 		json += "{\"atomicDataId\":\"atomicValue\"},";
-		json += "{\"groupDataId2\":{";
+		json += "{\"name\":\"groupDataId2\",";
 		json += "\"attributes\":{\"g2AttributeDataId\":\"g2AttributeValue\"},";
-		json += "\"children\":[{\"atomicDataId2\":\"atomicValue2\"}]}}";
+		json += "\"children\":[{\"atomicDataId2\":\"atomicValue2\"}]}";
 		json += "]";
-		json += "}";
 		json += "}";
 
 		RestDataGroup restDataGroup = createRestDataGroupForJsonString(json);
@@ -136,8 +135,8 @@ public class JsonToDataGroupConverterTest {
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)
-	public void testToClassWrongJsonExtraKeyValuePairTopLevel() {
-		String json = "{\"id\":{}},{\"id2\":\"value2\"}";
+	public void testToClassWrongJsonTopLevelNoName() {
+		String json = "{\"children\":[],\"extra\":{\"id2\":\"value2\"}}";
 		JsonValue jsonValue = jsonParser.parseString(json);
 		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
 				.createForJsonObject(jsonValue);
@@ -145,17 +144,27 @@ public class JsonToDataGroupConverterTest {
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)
-	public void testToClassWrongJsonExtraKeyValuePair() {
-		String json = "{\"id\":{},\"id2\":\"value2\"}";
+	public void testToClassWrongJsonTopLevelNoChildren() {
+		String json = "{\"name\":\"id\",\"attributes\":{}}";
+		JsonValue jsonValue = jsonParser.parseString(json);
+
+		JsonToDataConverter jsonToDataConverter = JsonToDataGroupConverter.forJsonObject((JsonObject) jsonValue);
+		jsonToDataConverter.toInstance();
+	}
+
+	@Test(expectedExceptions = JsonParseException.class)
+	public void testToClassWrongJsonKeyTopLevel() {
+		String json = "{\"name\":\"id\",\"children\":[],\"extra\":{\"id2\":\"value2\"}}";
 		JsonValue jsonValue = jsonParser.parseString(json);
 		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
 				.createForJsonObject(jsonValue);
 		jsonToDataConverter.toInstance();
 	}
 
+
 	@Test(expectedExceptions = JsonParseException.class)
-	public void testToClassWrongJsonOnlyKeyValuePairInsideGroup() {
-		String json = "{\"id\":{\"id2\":\"value2\"}}";
+	public void testToClassWrongJsonKeyTopLevelWithAttributes() {
+		String json = "{\"name\":\"id\",\"children\":[], \"attributes\":{},\"extra\":{\"id2\":\"value2\"}}";
 		JsonValue jsonValue = jsonParser.parseString(json);
 		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
 				.createForJsonObject(jsonValue);
@@ -164,7 +173,7 @@ public class JsonToDataGroupConverterTest {
 
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testToClassWrongJsonAttributesIsGroup() {
-		String json = "{\"groupDataId\":{\"attributes\":{\"attributeDataId\":\"attributeValue\",\"bla\":{} }}}";
+		String json = "{\"name\":\"groupDataId\", \"attributes\":{\"attributeDataId\":\"attributeValue\",\"bla\":{} }}";
 		JsonValue jsonValue = jsonParser.parseString(json);
 		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
 				.createForJsonObject(jsonValue);
@@ -173,8 +182,8 @@ public class JsonToDataGroupConverterTest {
 
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testToClassWrongJsonTwoAttributes() {
-		String json = "{\"groupDataId\":{\"attributes\":{\"attributeDataId\":\"attributeValue\"}"
-				+ ",\"attributes\":{\"attributeDataId2\":\"attributeValue2\"}}}";
+		String json = "{\"name\":\"groupDataId\",\"children\":[],\"attributes\":{\"attributeDataId\":\"attributeValue\"}"
+				+ ",\"attributes\":{\"attributeDataId2\":\"attributeValue2\"}}";
 		JsonValue jsonValue = jsonParser.parseString(json);
 		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
 				.createForJsonObject(jsonValue);
@@ -183,8 +192,17 @@ public class JsonToDataGroupConverterTest {
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)
+	public void testToClassWrongJsonOneAttributesIsArray() {
+		String json = "{\"name\":\"groupDataId\",\"children\":[],\"attributes\":{\"attributeDataId\":\"attributeValue\",\"bla\":[true] }}";
+		JsonValue jsonValue = jsonParser.parseString(json);
+		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
+				.createForJsonObject(jsonValue);
+		jsonToDataConverter.toInstance();
+	}
+
+	@Test(expectedExceptions = JsonParseException.class)
 	public void testToClassWrongJsonAttributesIsArray() {
-		String json = "{\"groupDataId\":{\"attributes\":{\"attributeDataId\":\"attributeValue\",\"bla\":[true] }}}";
+		String json = "{\"name\":\"groupDataId\",\"children\":[],\"attributes\":[{\"attributeDataId\":\"attributeValue\"}]}";
 		JsonValue jsonValue = jsonParser.parseString(json);
 		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
 				.createForJsonObject(jsonValue);
@@ -192,8 +210,8 @@ public class JsonToDataGroupConverterTest {
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)
-	public void testToClassWrongJsonChildrenIsArray() {
-		String json = "{\"groupDataId\":{\"children\":[{\"atomicDataId\":\"atomicValue\"},[]]}}";
+	public void testToClassWrongJsonOneChildIsArray() {
+		String json = "{\"name\":\"groupDataId\",\"children\":[{\"atomicDataId\":\"atomicValue\"},[]]}";
 		JsonValue jsonValue = jsonParser.parseString(json);
 		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
 				.createForJsonObject(jsonValue);
@@ -201,8 +219,8 @@ public class JsonToDataGroupConverterTest {
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)
-	public void testToClassWrongJsonChildrenIsString() {
-		String json = "{\"groupDataId\":{\"children\":[{\"atomicDataId\":\"atomicValue\"},\"string\"]}}";
+	public void testToClassWrongJsonOneChildIsString() {
+		String json = "{\"name\":\"groupDataId\",\"children\":[{\"atomicDataId\":\"atomicValue\"},\"string\"]}";
 		JsonValue jsonValue = jsonParser.parseString(json);
 		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
 				.createForJsonObject(jsonValue);
@@ -211,8 +229,8 @@ public class JsonToDataGroupConverterTest {
 
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testToClassWrongJsonChildrenIsNotCorrectObject() {
-		String json = "{\"groupDataId\":{\"children\":[{\"atomicDataId\":\"atomicValue\""
-				+ ",\"atomicDataId2\":\"atomicValue2\"}]}}";
+		String json = "{\"name\":\"groupDataId\",\"children\":[{\"atomicDataId\":\"atomicValue\""
+				+ ",\"atomicDataId2\":\"atomicValue2\"}]}";
 		JsonValue jsonValue = jsonParser.parseString(json);
 		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
 				.createForJsonObject(jsonValue);

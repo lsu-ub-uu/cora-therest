@@ -1,22 +1,18 @@
 package epc.therest.data.converter;
 
-import java.util.Map.Entry;
-
 import epc.therest.data.RestDataElement;
 import epc.therest.data.RestDataGroup;
-import epc.therest.json.parser.JsonArray;
-import epc.therest.json.parser.JsonObject;
-import epc.therest.json.parser.JsonParseException;
-import epc.therest.json.parser.JsonString;
-import epc.therest.json.parser.JsonValue;
+import epc.therest.json.parser.*;
+
+import java.util.Map.Entry;
 
 public final class JsonToDataGroupConverter implements JsonToDataConverter {
 
 	private static final String CHILDREN = "children";
 	private static final String ATTRIBUTES = "attributes";
+	private static final int NUM_OF_ALLOWED_KEYS_AT_TOP_LEVEL = 3;
 	private JsonObject jsonObject;
 	private RestDataGroup restDataGroup;
-	private JsonObject jsonGroupChildren;
 
 	static JsonToDataGroupConverter forJsonObject(JsonObject jsonObject) {
 		return new JsonToDataGroupConverter(jsonObject);
@@ -36,37 +32,30 @@ public final class JsonToDataGroupConverter implements JsonToDataConverter {
 	}
 
 	private RestDataElement tryToInstanciate() {
-		validateOnlyOneKeyValuePairAtTopLevel();
-		getChildrenFromJsonObject();
-		validateGroupOnlyContainsAttributesOrChildrenOrActionLinks();
+		validateOnlyCorrectKeysAtTopLevel();
 		return createDataGroupInstance();
 	}
 
-	private void getChildrenFromJsonObject() {
-		String dataId = getDataIdFromJsonObject();
-		jsonGroupChildren = jsonObject.getValueAsJsonObject(dataId);
-	}
-
 	private String getDataIdFromJsonObject() {
-		return jsonObject.keySet().iterator().next();
+		return jsonObject.getValueAsJsonString("name").getStringValue();
 	}
 
-	private void validateOnlyOneKeyValuePairAtTopLevel() {
-		if (jsonObject.size() != 1) {
-			throw new JsonParseException("Group data can only contain one key value pair");
+	private void validateOnlyCorrectKeysAtTopLevel() {
+
+		if (!jsonObject.containsKey("name")) {
+			throw new JsonParseException("Group data must contain key \"name\"");
 		}
-	}
 
-	private void validateGroupOnlyContainsAttributesOrChildrenOrActionLinks() {
-		for (Entry<String, JsonValue> childEntry : jsonGroupChildren.entrySet()) {
-			validateChildEntryIsAttributesOrChildren(childEntry);
+		if (!hasChildren()) {
+			throw new JsonParseException("Group data must contain key \""+CHILDREN+"\"");
 		}
-	}
 
-	private void validateChildEntryIsAttributesOrChildren(Entry<String, JsonValue> childEntry) {
-		String key = childEntry.getKey();
-		if (!ATTRIBUTES.equals(key) && !CHILDREN.equals(key)) {
-			throw new JsonParseException("Group data can only contain attributes or children");
+		if(jsonObject.keySet().size() == NUM_OF_ALLOWED_KEYS_AT_TOP_LEVEL && !hasAttributes()){
+			throw new JsonParseException("Group data must contain key \""+ATTRIBUTES+"\"");
+		}
+
+		if(jsonObject.keySet().size() > NUM_OF_ALLOWED_KEYS_AT_TOP_LEVEL){
+			throw new JsonParseException("Group data can only contain keys \"name\", \""+CHILDREN+"\" and \""+ATTRIBUTES+"\"");
 		}
 	}
 
@@ -76,18 +65,16 @@ public final class JsonToDataGroupConverter implements JsonToDataConverter {
 		if (hasAttributes()) {
 			addAttributesToGroup();
 		}
-		if (hasChildren()) {
-			addChildrenToGroup();
-		}
+		addChildrenToGroup();
 		return restDataGroup;
 	}
 
 	private boolean hasAttributes() {
-		return jsonGroupChildren.containsKey(ATTRIBUTES);
+		return jsonObject.containsKey(ATTRIBUTES);
 	}
 
 	private void addAttributesToGroup() {
-		JsonObject attributes = jsonGroupChildren.getValueAsJsonObject(ATTRIBUTES);
+		JsonObject attributes = jsonObject.getValueAsJsonObject(ATTRIBUTES);
 		for (Entry<String, JsonValue> attributeEntry : attributes.entrySet()) {
 			addAttributeToGroup(attributeEntry);
 		}
@@ -99,11 +86,11 @@ public final class JsonToDataGroupConverter implements JsonToDataConverter {
 	}
 
 	private boolean hasChildren() {
-		return jsonGroupChildren.containsKey(CHILDREN);
+		return jsonObject.containsKey(CHILDREN);
 	}
 
 	private void addChildrenToGroup() {
-		JsonArray children = jsonGroupChildren.getValueAsJsonArray(CHILDREN);
+		JsonArray children = jsonObject.getValueAsJsonArray(CHILDREN);
 		for (JsonValue child : children) {
 			addChildToGroup(child);
 		}

@@ -33,7 +33,7 @@ public class RecordListToJsonConverter {
 		JsonArrayBuilder recordsJsonBuilder = jsonBuilderFactory.createArrayBuilder();
 
 		for (RestDataRecord restDataRecord : restRecordList.getRecords()) {
-			DataRecordToJsonConterter converter = DataRecordToJsonConterter
+			DataRecordToJsonConverter converter = DataRecordToJsonConverter
 					.usingJsonFactoryForRestDataRecord(jsonBuilderFactory, restDataRecord);
 			recordsJsonBuilder.addJsonObjectBuilder(converter.toJsonObjectBuilder());
 		}

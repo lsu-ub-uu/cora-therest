@@ -20,7 +20,6 @@ public class DataGroupToJsonConverterTest {
 	public void beforeMethod() {
 		dataToJsonConverterFactory = new DataToJsonConverterFactoryImp();
 		factory = new OrgJsonBuilderFactoryAdapter();
-		SpiderDataGroup.withDataId("groupDataId");
 		restDataGroup = RestDataGroup.withDataId("groupDataId");
 	}
 
@@ -30,7 +29,7 @@ public class DataGroupToJsonConverterTest {
 				.createForRestDataElement(factory, restDataGroup);
 		String json = dataToJsonConverter.toJson();
 
-		assertEquals(json, "{\"groupDataId\":{}}");
+		assertEquals(json, "{\"name\":\"groupDataId\"}");
 	}
 
 	@Test
@@ -42,7 +41,7 @@ public class DataGroupToJsonConverterTest {
 		String json = dataToJsonConverter.toJson();
 
 		assertEquals(json,
-				"{\"groupDataId\":{\"attributes\":{\"attributeDataId\":\"attributeValue\"}}}");
+				"{\"name\":\"groupDataId\",\"attributes\":{\"attributeDataId\":\"attributeValue\"}}");
 	}
 
 	@Test
@@ -54,9 +53,9 @@ public class DataGroupToJsonConverterTest {
 				.createForRestDataElement(factory, restDataGroup);
 		String json = dataToJsonConverter.toJson();
 
-		assertEquals(json, "{\"groupDataId\":{\"attributes\":{"
+		assertEquals(json, "{\"name\":\"groupDataId\",\"attributes\":{"
 				+ "\"attributeDataId\":\"attributeValue\","
-				+ "\"attributeDataId2\":\"attributeValue2\"" + "}}}");
+				+ "\"attributeDataId2\":\"attributeValue2\"" + "}}");
 	}
 
 	@Test
@@ -67,7 +66,7 @@ public class DataGroupToJsonConverterTest {
 				.createForRestDataElement(factory, restDataGroup);
 		String json = dataToJsonConverter.toJson();
 
-		assertEquals(json, "{\"groupDataId\":{\"children\":[{\"atomicDataId\":\"atomicValue\"}]}}");
+		assertEquals(json, "{\"children\":[{\"atomicDataId\":\"atomicValue\"}],\"name\":\"groupDataId\"}");
 	}
 
 	@Test
@@ -84,13 +83,12 @@ public class DataGroupToJsonConverterTest {
 		String json = dataToJsonConverter.toJson();
 
 		String expectedJson = "{";
-		expectedJson += "\"groupDataId\":{";
+//		expectedJson += "\"groupDataId\"";
 		expectedJson += "\"children\":[";
 		expectedJson += "{\"atomicDataId\":\"atomicValue\"},";
-		expectedJson += "{\"groupDataId2\":{\"children\":[{\"atomicDataId2\":\"atomicValue2\"}]}}";
-		expectedJson += "]";
-		expectedJson += "}";
-		expectedJson += "}";
+		expectedJson += "{\"children\":[{\"atomicDataId2\":\"atomicValue2\"}]";
+		expectedJson += ",\"name\":\"groupDataId2\"}]";
+		expectedJson += ",\"name\":\"groupDataId\"}";
 
 		assertEquals(json, expectedJson);
 	}
@@ -117,20 +115,18 @@ public class DataGroupToJsonConverterTest {
 		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForRestDataElement(factory, restDataGroup);
 		String json = dataToJsonConverter.toJson();
-		String expectedJson = "{\"groupDataId\":{";
-		expectedJson += "\"children\":[";
-		expectedJson += "{\"recordInfo\":{";
-		expectedJson += "\"children\":[";
+		String  expectedJson = "{\"children\":[";
+		expectedJson += "{\"children\":[";
 		expectedJson += "{\"id\":\"place:0001\"},";
 		expectedJson += "{\"type\":\"place\"},";
-		expectedJson += "{\"createdBy\":\"userId\"}]}},";
+		expectedJson += "{\"createdBy\":\"userId\"}],\"name\":\"recordInfo\"},";
 		expectedJson += "{\"atomicDataId\":\"atomicValue\"},";
-		expectedJson += "{\"groupDataId2\":{\"children\":[{\"atomicDataId2\":\"atomicValue2\"}],";
-		expectedJson += "\"attributes\":{";
-		expectedJson += "\"g2AttributeDataId\":\"g2AttributeValue\"}}}],";
-		expectedJson += "\"attributes\":{";
+		expectedJson += "{\"children\":[{\"atomicDataId2\":\"atomicValue2\"}],";
+		expectedJson += "\"name\":\"groupDataId2\",\"attributes\":{";
+		expectedJson += "\"g2AttributeDataId\":\"g2AttributeValue\"}}],";
+		expectedJson += "\"name\":\"groupDataId\",\"attributes\":{";
 		expectedJson += "\"attributeDataId\":\"attributeValue\",";
-		expectedJson += "\"attributeDataId2\":\"attributeValue2\"}}}";
+		expectedJson += "\"attributeDataId2\":\"attributeValue2\"}}";
 
 		assertEquals(json, expectedJson);
 	}

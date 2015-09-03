@@ -21,8 +21,17 @@ public class JsonToDataConverterFactoryTest {
 	}
 
 	@Test
-	public void testFactorOnJsonStringDataGroup() {
-		String json = "{\"groupDataId\":{}}";
+	public void testFactorOnJsonStringDataGroupEmptyChildren() {
+		String json = "{\"name\":\"groupDataId\", \"children\":[]}";
+		JsonValue jsonValue = jsonParser.parseString(json);
+		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
+				.createForJsonObject(jsonValue);
+		assertTrue(jsonToDataConverter instanceof JsonToDataGroupConverter);
+	}
+
+	@Test
+	public void testFactorOnJsonStringDataGroupAtomicChild() {
+		String json = "{\"name\":\"id\", \"children\":[{\"id2\":\"value\"}]}";
 		JsonValue jsonValue = jsonParser.parseString(json);
 		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
 				.createForJsonObject(jsonValue);
@@ -43,23 +52,6 @@ public class JsonToDataConverterFactoryTest {
 		jsonToDataConverterFactory.createForJsonObject(null);
 	}
 
-	@Test
-	public void testClassCreatorAtomic() {
-		String json = "{\"id\":\"value\"}";
-		JsonValue jsonValue = jsonParser.parseString(json);
-		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
-				.createForJsonObject(jsonValue);
-		assertTrue(jsonToDataConverter instanceof JsonToDataAtomicConverter);
-	}
-
-	@Test
-	public void testClassCreatorGroup() {
-		String json = "{\"id\":{\"id2\":\"value\"}}";
-		JsonValue jsonValue = jsonParser.parseString(json);
-		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
-				.createForJsonObject(jsonValue);
-		assertTrue(jsonToDataConverter instanceof JsonToDataGroupConverter);
-	}
 
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testClassCreatorGroupNotAGroup() {
@@ -68,12 +60,4 @@ public class JsonToDataConverterFactoryTest {
 		jsonToDataConverterFactory.createForJsonObject(jsonValue);
 	}
 
-	@Test(expectedExceptions = JsonParseException.class)
-	public void testClassCreatorGroupWithTwoTopLevel() {
-		String json = "{\"id\":{\"id2\":\"value\"},\"id4\":{\"id3\":\"value\"}}";
-		JsonValue jsonValue = jsonParser.parseString(json);
-		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
-				.createForJsonObject(jsonValue);
-		jsonToDataConverter.toInstance();
-	}
 }

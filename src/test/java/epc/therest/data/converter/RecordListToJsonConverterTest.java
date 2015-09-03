@@ -26,7 +26,7 @@ public class RecordListToJsonConverterTest {
 				jsonFactory, restRecordList);
 		String jsonString = recordListToJsonConverter.toJson();
 		assertEquals(jsonString, "{\"recordList\":{\"fromNo\":\"0\",\""
-				+ "records\":[{\"record\":{\"data\":{\"groupId\":{}}}}],"
+				+ "records\":[{\"record\":{\"data\":{\"name\":\"groupId\"}}}],"
 				+ "\"totalNo\":\"1\",\"toNo\":\"1\",\"containRecordsOfType\":\"place\"}}");
 
 	}
