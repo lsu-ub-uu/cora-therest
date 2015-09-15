@@ -98,15 +98,12 @@
             <artifactId>smartrics-RestFixture</artifactId>
             <version>4.0</version>
             <scope>runtime</scope>
-<<<<<<< HEAD
-=======
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.11</version>
             <scope>test</scope>
->>>>>>> branch 'master' of https://git.epc.ub.uu.se/epc/therest.git
         </dependency>
         <dependency>
             <groupId>org.fitnesse.plugins</groupId>
@@ -120,7 +117,6 @@
             <version>4.11</version>
             <scope>test</scope>
         </dependency>
-        
     </dependencies>
     <build>
         <finalName>therest</finalName>
