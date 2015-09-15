@@ -119,8 +119,7 @@
                         <stopPort>9999</stopPort>
                         <scanIntervalSeconds>5</scanIntervalSeconds>
                         <httpConnector>
-                            <!-- change this for automated builds -->
-                            <port>8080</port>
+                            <port>8089</port>
                         </httpConnector>
                         <webAppConfig>
                             <contextPath>/therest</contextPath>
