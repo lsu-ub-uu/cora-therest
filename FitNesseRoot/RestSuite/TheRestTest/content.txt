@@ -7,6 +7,6 @@
 |Table:smartrics.rest.fitnesse.fixture.RestFixtureConfig||
 |restfixture.default.headers | Content-Type: application/uub+record+json|
 
-|Table:smartrics.rest.fitnesse.fixture.RestFixture|http://localhost:8080/therest|
+|Table:smartrics.rest.fitnesse.fixture.RestFixture|http://localhost:8089/therest|
 |setBody|{"name":"metadata","attributes":{"type":"group"},"children":[{"name":"recordInfo","children":[{"id":"generatedId"}]},{"dataId":"generatedId"},{"textId":"generatedIdTextId"},{"defTextId":"generatedIdDefTextId"},{"name":"childReferences","children":[{"name":"childReference","children":[{"ref":"recordInfo"},{"repeatMin":"1"},{"repeatMax":"1"}]},{"name":"childReference","children":[{"ref":"id"},{"repeatMin":"1"},{"repeatMax":"1"}]}]}]}|
 |POST|/rest/record/metadata|201|||

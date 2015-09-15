@@ -13,6 +13,7 @@
     </parent>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <testng.version>6.8.8</testng.version>
         <systemone.version>0.1-SNAPSHOT</systemone.version>
         <javax.ws.rs.version>2.0.1</javax.ws.rs.version>
@@ -96,7 +97,21 @@
             <groupId>smartrics.restfixture</groupId>
             <artifactId>smartrics-RestFixture</artifactId>
             <version>4.0</version>
+            <scope>runtime</scope>
         </dependency>
+        <dependency>
+            <groupId>org.fitnesse.plugins</groupId>
+            <artifactId>maven-classpath-plugin</artifactId>
+            <version>1.9</version>
+        </dependency>
+        <!--  FitNesse end -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+            <scope>test</scope>
+        </dependency>
+        
     </dependencies>
     <build>
         <finalName>therest</finalName>
@@ -111,8 +126,7 @@
                         <stopPort>9999</stopPort>
                         <scanIntervalSeconds>5</scanIntervalSeconds>
                         <httpConnector>
-                            <!-- change this for automated builds -->
-                            <port>8080</port>
+                            <port>8089</port>
                         </httpConnector>
                         <webAppConfig>
                             <contextPath>/therest</contextPath>
@@ -160,6 +174,7 @@
                         <artifactId>jetty-maven-plugin</artifactId>
                     </plugin>
                     <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-antrun-plugin</artifactId>
                         <executions>
                             <execution>
@@ -172,13 +187,53 @@
                                               classpathref="maven.runtime.classpath"
                                               fork="true">
                                             <arg line="-p 8090"/>
-                                            <arg line="-c RestSuite.TheRestTest?test&amp;format=text"/>
+                                           <arg line="-c TheRestTests?suite&amp;format=text"/>
                                             <arg line="-d ."/>
                                         </java>
                                     </target>
                                 </configuration>
                                 <goals>
                                     <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>fitnesse-junit</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.eclipse.jetty</groupId>
+                        <artifactId>jetty-maven-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>2.18.1</version>
+                        <dependencies>
+                            <dependency>
+                                <groupId>org.apache.maven.surefire</groupId>
+                                <artifactId>surefire-junit47</artifactId>
+                                <version>2.18.1</version>
+                            </dependency>
+                        </dependencies>
+                        <configuration>
+                            <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>integration-test</id>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>verify</id>
+                                <goals>
+                                    <goal>verify</goal>
                                 </goals>
                             </execution>
                         </executions>
@@ -195,8 +250,8 @@
                         <artifactId>jetty-maven-plugin</artifactId>
                     </plugin>
                     <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-antrun-plugin</artifactId>
-                        <version>1.8</version>
                         <executions>
                             <execution>
                                 <id>start-fitnesse</id>
