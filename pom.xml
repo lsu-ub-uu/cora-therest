@@ -213,6 +213,9 @@
                                 <version>2.18.1</version>
                             </dependency>
                         </dependencies>
+                        <configuration>
+                            <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
+                        </configuration>
                         <executions>
                             <execution>
                                 <id>integration-test</id>
