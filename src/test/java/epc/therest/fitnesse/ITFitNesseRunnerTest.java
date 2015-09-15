@@ -7,8 +7,6 @@ package epc.therest.fitnesse;
  */
 
 import fitnesse.junit.FitNesseRunner;
-import org.junit.Assert;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(FitNesseRunner.class)
@@ -17,9 +15,4 @@ import org.junit.runner.RunWith;
 @FitNesseRunner.OutputDir("./target/fitnesse-results")
 public class ITFitNesseRunnerTest
 {
-    @Test
-    public void dummy()
-    {
-        Assert.assertTrue(true);
-    }
 }
