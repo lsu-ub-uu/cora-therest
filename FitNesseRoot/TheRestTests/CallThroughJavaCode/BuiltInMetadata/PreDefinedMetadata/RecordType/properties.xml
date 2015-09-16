@@ -2,12 +2,13 @@
 <properties>
 <Edit>true</Edit>
 <Files>true</Files>
-<Help>EVERYTHING is a record, test for handling records in the system (create, read, update, delete, list, etc)</Help>
+<Help/>
 <Properties>true</Properties>
 <RecentChanges>true</RecentChanges>
 <Refactor>true</Refactor>
 <Search>true</Search>
-<Suite>true</Suite>
+<Suites/>
+<Test>true</Test>
 <Versions>true</Versions>
 <WhereUsed>true</WhereUsed>
 </properties>

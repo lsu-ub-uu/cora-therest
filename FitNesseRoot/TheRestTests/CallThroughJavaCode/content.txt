@@ -1,4 +1,5 @@
 !1 Test suite X
-!contents -R2 -g -p -f -h
+!contents -R4 -g -p -f -h
+
 
 !pomFile ./pom.xml
