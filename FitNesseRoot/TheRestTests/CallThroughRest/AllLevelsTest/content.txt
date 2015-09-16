@@ -1,0 +1,40 @@
+!contents -R2 -g -p -f -h
+This test will create the metadatagroup trainingProgram, containing two fields, id and createdBy. they are both mandatory (min 1, max 1)
+It will then create a metadatagroup called singleTrainingProgram which must contain one trainingProgram, no less, no more.
+Then the test will create a recordType which describes a singleTrainingProgram
+
+Last, we will create a trainingProgram using the metadata groups specified. We can only create a trainingProgram if we provide the mandatory elements.
+The first test is missing id.
+The second test is missing the entire trainingProgram child
+The third test contains everything needed
+
+!*****> Configure !-RestFixture-!
+|Table:smartrics.rest.fitnesse.fixture.RestFixtureConfig||
+|restfixture.default.headers | Content-Type: application/uub+record+json|
+*****!
+
+!*****> Create Metadata
+| Table:smartrics.rest.fitnesse.fixture.RestFixture | http://localhost:8089/therest |
+| setBody | {"name":"metadata","attributes":{"type":"group"},"children":[{"name":"recordInfo","children":[{"id":"trainingProgram"}]},{"textId":"hereistextid"},{"defTextId":"hereisdeftext"},{"dataId":"trainingProgram"},{"name":"childReferences","children":[{"name":"childReference","children":[{"ref":"id"},{"repeatMin":"1"},{"repeatMax":"1"}]},{"name":"childReference","children":[{"ref":"createdBy"},{"repeatMin":"1"},{"repeatMax":"1"}]}]}]} |
+| POST | /rest/record/metadata | 201 | | |
+| setBody | {"name":"metadata","attributes":{"type":"group"},"children":[{"name":"recordInfo","children":[{"id":"singleTrainingProgramNew"}]},{"textId":"hereistextid"},{"defTextId":"hereisdeftext"},{"dataId":"singleTrainingProgramNew"},{"name":"childReferences","children":[{"name":"childReference","children":[{"ref":"trainingProgram"},{"repeatMin":"1"},{"repeatMax":"1"}]}]}]} |
+| POST | /rest/record/metadata | 201 | | |
+| setBody | {"name":"metadata","attributes":{"type":"group"},"children":[{"name":"recordInfo","children":[{"id":"singleTrainingProgram"}]},{"textId":"hereistextid"},{"defTextId":"hereisdeftext"},{"dataId":"singleTrainingProgram"},{"name":"childReferences","children":[{"name":"childReference","children":[{"ref":"trainingProgram"},{"repeatMin":"1"},{"repeatMax":"1"}]},{"name":"childReference","children":[{"ref":"recordInfo"},{"repeatMin":"1"},{"repeatMax":"1"}]}]}]} |
+| POST | /rest/record/metadata | 201 | | |
+*****!
+
+!*****> Create recordType
+| Table:smartrics.rest.fitnesse.fixture.RestFixture | http://localhost:8089/therest |
+| setBody | {"name":"recordType","children":[{"name":"recordInfo","children":[{"id":"singleTrainingProgramRecordType"}]},{"metadataId":"singleTrainingProgram"},{"presentationViewId":"trainingAsPresentedWhenViewing"},{"presentationFormId":"trainingAsPresentedWhenEditing"},{"newMetadataId":"singleTrainingProgramNew"},{"newPresentationFormId":"trainingAsPresentedWhenCreatingNew"},{"listPresentationViewId":"trainingAsPresentedInList"},{"searchMetadataId":"singleTrainingProgramSearch"},{"searchPresentationFormId":"trainingAsPresentedWhenSearching"},{"userSuppliedId":"false"},{"selfPresentationViewId":"trainingPresentingItself"},{"permissionKey":"SINGLETRAINING_TEST"}]} |
+| POST | /rest/record/recordType | 201 | | |
+*****!
+
+!*****> Create data
+| Table:smartrics.rest.fitnesse.fixture.RestFixture | http://localhost:8089/therest |
+| setBody | {"name":"singleTrainingProgramNew","children":[{"name":"trainingProgram","children":[{"createdBy":"asta_kask"}]}]} |
+| POST | /rest/record/singleTrainingProgramRecordType | 400 | | |
+| setBody | {"name":"singleTrainingProgramNew","children":[]} |
+| POST | /rest/record/singleTrainingProgramRecordType | 400 | | |
+| setBody | {"name":"singleTrainingProgramNew","children":[{"name":"trainingProgram","children":[{"id":"x1"},{"createdBy":"asta_kask"}]}]} |
+| POST | /rest/record/singleTrainingProgramRecordType | 201 | | |
+*****!
