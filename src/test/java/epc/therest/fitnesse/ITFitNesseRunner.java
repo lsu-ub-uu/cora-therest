@@ -7,6 +7,6 @@ import org.junit.runner.RunWith;
 @FitNesseRunner.Suite("TheRestTests")
 @FitNesseRunner.FitnesseDir(".")
 @FitNesseRunner.OutputDir("./target/fitnesse-results")
-public class ITFitNesseRunnerTest
+public class ITFitNesseRunner
 {
 }
