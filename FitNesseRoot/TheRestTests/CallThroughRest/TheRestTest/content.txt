@@ -1,11 +1,21 @@
 !contents -R2 -g -p -f -h
+!***> Configure !-RestFixture-!
 
-!*****> Configure !-RestFixture-!
-|Table:smartrics.rest.fitnesse.fixture.RestFixtureConfig||
-|restfixture.default.headers | Content-Type: application/uub+record+json|
-*****!
-!*****> Create Metadata
-|Table:smartrics.rest.fitnesse.fixture.RestFixture|http://localhost:8089/therest|
-|setBody|{"name":"metadata","attributes":{"type":"group"},"children":[{"name":"recordInfo","children":[{"id":"generatedId"}]},{"dataId":"generatedId"},{"textId":"generatedIdTextId"},{"defTextId":"generatedIdDefTextId"},{"name":"childReferences","children":[{"name":"childReference","children":[{"ref":"recordInfo"},{"repeatMin":"1"},{"repeatMax":"1"}]},{"name":"childReference","children":[{"ref":"id"},{"repeatMin":"1"},{"repeatMax":"1"}]}]}]}|
-|POST|/rest/record/metadata|201|Content-Type : application/uub\+record\+json||
-*****!
+| Table:smartrics.rest.fitnesse.fixture.RestFixtureConfig | |
+| restfixture.default.headers | Content-Type: application/uub+record+json |
+| restfixture.content.handlers.map | application/uub+record+json=JSON!-
+-!default=JSON |
+
+*!
+!***> Create Metadata
+
+| Table:smartrics.rest.fitnesse.fixture.RestFixture | http://localhost:8089/therest |
+| setBody | {"name":"metadata","attributes":{"type":"group"},"children":[{"name":"recordInfo","children":[{"id":"generatedId"}]},{"dataId":"generatedId"},{"textId":"generatedIdTextId"},{"defTextId":"generatedIdDefTextId"},{"name":"childReferences","children":[{"name":"childReference","children":[{"ref":"recordInfo"},{"repeatMin":"1"},{"repeatMax":"1"}]},{"name":"childReference","children":[{"ref":"id"},{"repeatMin":"1"},{"repeatMax":"1"}]}]}]} |
+| POST | /rest/record/metadata | 201 | Content-Type : application/uub\+record\+json | /* javascript */ !-
+-!!-
+-!jsonbody.record.data.children[0].children[0].id == 'generatedId' &&!-
+-!jsonbody.record.actionLinks.read.requestMethod == 'GET' &&!-
+-!jsonbody.record.actionLinks.update.requestMethod == 'POST';!-
+-! |
+
+*!
