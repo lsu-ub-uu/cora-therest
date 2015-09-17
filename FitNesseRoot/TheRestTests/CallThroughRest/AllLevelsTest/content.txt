@@ -1,12 +1,12 @@
 !contents -R2 -g -p -f -h
-This test will create the metadatagroup trainingProgram, containing two fields, id and createdBy. they are both mandatory (min 1, max 1)
-It will then create a metadatagroup called singleTrainingProgram which must contain one trainingProgram, no less, no more.
-Then the test will create a recordType which describes a singleTrainingProgram
+This test will create the metadatagroup trainingProgram, containing two fields, id and createdBy. they are both mandatory (min 1, max 1)!-
+-!It will then create a metadatagroup called singleTrainingProgram which must contain one trainingProgram, no less, no more.!-
+-!Then the test will create a recordType which describes a singleTrainingProgram
 
-Last, we will create a trainingProgram using the metadata groups specified. We can only create a trainingProgram if we provide the mandatory elements.
-The first test is missing id.
-The second test is missing the entire trainingProgram child
-The third test contains everything needed
+Last, we will create a trainingProgram using the metadata groups specified. We can only create a trainingProgram if we provide the mandatory elements.!-
+-!The first test is missing id.!-
+-!The second test is missing the entire trainingProgram child!-
+-!The third test contains everything needed
 
 !***> Configure !-RestFixture-!
 
@@ -41,7 +41,8 @@ The third test contains everything needed
 | setBody | {"name":"singleTrainingProgramNew","children":[]} |
 | POST | /rest/record/singleTrainingProgramRecordType | 400 | | |
 | setBody | {"name":"singleTrainingProgramNew","children":[{"name":"trainingProgram","children":[{"id":"x1"},{"createdBy":"asta_kask"}]}]} |
-| POST | /rest/record/singleTrainingProgramRecordType | 201 | | /* javascript */ !-
+| POST | /rest/record/singleTrainingProgramRecordType | 201 | Location:/rest/record/singleTrainingProgramRecordType !-
+-!| /* javascript */ !-
 -!jsonbody.record.data.children[0].children[0].id == 'x1' && !-
 -!jsonbody.record.data.children[0].children[1].createdBy == 'asta_kask'; |
 
