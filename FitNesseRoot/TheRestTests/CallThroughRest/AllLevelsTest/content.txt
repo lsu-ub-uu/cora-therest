@@ -12,6 +12,7 @@ The third test contains everything needed
 
 | Table:smartrics.rest.fitnesse.fixture.RestFixtureConfig | |
 | restfixture.default.headers | Content-Type: application/uub+record+json |
+| restfixture.content.handlers.map | application/uub+record+json=JSON |
 
 *!
 !***> Create Metadata
@@ -40,14 +41,17 @@ The third test contains everything needed
 | setBody | {"name":"singleTrainingProgramNew","children":[]} |
 | POST | /rest/record/singleTrainingProgramRecordType | 400 | | |
 | setBody | {"name":"singleTrainingProgramNew","children":[{"name":"trainingProgram","children":[{"id":"x1"},{"createdBy":"asta_kask"}]}]} |
-| POST | /rest/record/singleTrainingProgramRecordType | 201 | | |
+| POST | /rest/record/singleTrainingProgramRecordType | 201 | | /* javascript */ !-
+-!jsonbody.record.data.children[0].children[0].id == 'x1' && !-
+-!jsonbody.record.data.children[0].children[1].createdBy == 'asta_kask'; |
 
 *!
 !***> Remove metadata
 
 | Table:smartrics.rest.fitnesse.fixture.RestFixture | http://localhost:8089/therest |
-| DELETE | /rest/record/metadata/trainingProgram | | | |
-| DELETE | /rest/record/metadata/singleTrainingProgramNew | | | |
-| DELETE | /rest/record/metadata/singleTrainingProgram | | | |
 | DELETE | /rest/record/recordType/singleTrainingProgramRecordType | | | |
+| DELETE | /rest/record/metadata/singleTrainingProgram | | | |
+| DELETE | /rest/record/metadata/singleTrainingProgramNew | | | |
+| DELETE | /rest/record/metadata/trainingProgram | | | |
+
 *!
