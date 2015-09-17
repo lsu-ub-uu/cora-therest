@@ -2,6 +2,7 @@
 <properties>
 <Edit>true</Edit>
 <Files>true</Files>
+<Help>Test which performs a POST with data from the first example on the index page of therest</Help>
 <Properties>true</Properties>
 <RecentChanges>true</RecentChanges>
 <Refactor>true</Refactor>
