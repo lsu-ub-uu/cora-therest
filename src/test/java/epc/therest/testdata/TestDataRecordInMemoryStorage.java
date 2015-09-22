@@ -75,6 +75,8 @@ public class TestDataRecordInMemoryStorage {
 		dataGroup.addChild(DataAtomic.withDataIdAndValue("permissionKey", "RECORDTYPE_RECORDTYPE"));
 		dataGroup.addChild(DataAtomic.withDataIdAndValue("selfPresentationViewId",
 				"presentation:pgrecordTypeRecordType"));
+		
+		dataGroup.addChild(DataAtomic.withDataIdAndValue("abstract", "false"));
 		records.get(recordType).put("recordType", dataGroup);
 
 	}
@@ -107,6 +109,7 @@ public class TestDataRecordInMemoryStorage {
 		dataGroup.addChild(DataAtomic.withDataIdAndValue("permissionKey", "RECORDTYPE_PLACE"));
 		dataGroup.addChild(DataAtomic.withDataIdAndValue("selfPresentationViewId",
 				"presentation:pgPlaceRecordType"));
+		dataGroup.addChild(DataAtomic.withDataIdAndValue("abstract", "false"));
 		records.get(recordType).put("place", dataGroup);
 
 	}
@@ -139,7 +142,7 @@ public class TestDataRecordInMemoryStorage {
 		dataGroup.addChild(DataAtomic.withDataIdAndValue("permissionKey", "RECORDTYPE_PLACE"));
 		dataGroup.addChild(DataAtomic.withDataIdAndValue("selfPresentationViewId",
 				"presentation:pgPlaceRecordType"));
+		dataGroup.addChild(DataAtomic.withDataIdAndValue("abstract", "false"));
 		records.get(recordType).put("place&& &&\\\\", dataGroup);
-
 	}
 }
