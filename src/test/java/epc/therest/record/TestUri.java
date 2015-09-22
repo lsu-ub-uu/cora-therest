@@ -26,7 +26,7 @@ public class TestUri implements UriInfo {
 	@Override
 	public URI getBaseUri() {
 		try {
-			return new URI("http://localhost:8080/therest/rest/record/");
+			return new URI("http://localhost:8080/therest/rest/");
 		} catch (URISyntaxException e) {
 			throw new RuntimeException(e);
 		}
