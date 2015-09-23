@@ -20,6 +20,7 @@ import epc.spider.data.SpiderRecordList;
 import epc.spider.dependency.SpiderInstanceProvider;
 import epc.spider.record.AuthorizationException;
 import epc.spider.record.DataException;
+import epc.spider.record.MisuseException;
 import epc.spider.record.storage.RecordNotFoundException;
 import epc.therest.data.RestDataElement;
 import epc.therest.data.RestDataGroup;
@@ -69,6 +70,8 @@ public class RecordEndpoint {
 	public Response createRecordAsUserIdWithRecord(String userId, String type, String jsonRecord) {
 		try {
 			return tryCreateRecord(userId, type, jsonRecord);
+		} catch (MisuseException e) {
+			return Response.status(Response.Status.METHOD_NOT_ALLOWED).entity(e.getMessage()).build();
 		} catch (JsonParseException | DataException e) {
 			return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
 		} catch (AuthorizationException e) {

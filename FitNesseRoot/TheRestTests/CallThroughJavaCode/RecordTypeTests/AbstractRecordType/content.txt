@@ -47,3 +47,12 @@
 | plant | {"recordList":{"fromNo":"0","records":[{"record":{"data":{"children":[{"children":[{"id":"tree1"},{"type":"tree"},{"createdBy":"userId"}],"name":"recordInfo"},{"id":"notRealyAnId"}],"name":"plant"},"actionLinks":{"read":{"requestMethod":"GET","rel":"read","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/tree/tree1","accept":"application/uub+record+json"},"update":{"requestMethod":"POST","rel":"update","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/tree/tree1","accept":"application/uub+record+json"},"delete":{"requestMethod":"DELETE","rel":"delete","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/tree/tree1","accept":"application/uub+record+json"}}}},{"record":{"data":{"children":[{"children":[{"id":"flower1"},{"type":"flower"},{"createdBy":"userId"}],"name":"recordInfo"},{"id":"theRose"}],"name":"plant"},"actionLinks":{"read":{"requestMethod":"GET","rel":"read","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/flower/flower1","accept":"application/uub+record+json"},"update":{"requestMethod":"POST","rel":"update","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/flower/flower1","accept":"application/uub+record+json"},"delete":{"requestMethod":"DELETE","rel":"delete","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/flower/flower1","accept":"application/uub+record+json"}}}}],"totalNo":"1","toNo":"1","containRecordsOfType":"plant"}} | OK |
 
 *!
+405
+
+!***> Try to create data on plant, this should fail as plant is abstract
+
+!| RecordEndpointFixture |
+| type | json | testCreateRecord? | getStatusType? |
+| plant | {"name":"plant","children":[{"name":"recordInfo","children":[{"id":"tree1"}]},{"id":"notRealyAnId"}]} | | 405 |
+
+*!

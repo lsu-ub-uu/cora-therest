@@ -174,4 +174,10 @@ public class RecordEndpointTest {
 		Response responseCreated = recordEndpoint.createRecord(type, jsonToCreateFrom);
 		assertEquals(responseCreated.getStatusInfo(), Response.Status.BAD_REQUEST);
 	}
+	@Test
+	public void testCreateRecordAbstractRecordType(){
+		String type = "abstract";
+		Response responseCreated = recordEndpoint.createRecord(type, jsonToCreateFrom);
+		assertEquals(responseCreated.getStatusInfo(), Response.Status.METHOD_NOT_ALLOWED);
+	}
 }
