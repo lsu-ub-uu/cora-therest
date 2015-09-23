@@ -16,7 +16,6 @@ import epc.therest.data.RestDataGroup;
 
 public class DataGroupSpiderToRestConverterTest {
 	private SpiderDataGroup spiderDataGroup;
-	private String baseURL = "http://localhost:8080/therest/rest/record/";
 
 	@BeforeMethod
 	public void beforeMetod() {

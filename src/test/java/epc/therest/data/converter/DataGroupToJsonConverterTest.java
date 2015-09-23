@@ -5,7 +5,6 @@ import static org.testng.Assert.assertEquals;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import epc.spider.data.SpiderDataGroup;
 import epc.therest.data.RestDataAtomic;
 import epc.therest.data.RestDataGroup;
 import epc.therest.json.builder.JsonBuilderFactory;
