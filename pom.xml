@@ -160,6 +160,11 @@
                     <artifactId>maven-antrun-plugin</artifactId>
                     <version>1.8</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>2.18.1</version>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>
@@ -186,7 +191,7 @@
                                               classpathref="maven.runtime.classpath"
                                               fork="true">
                                             <arg line="-p 8090"/>
-                                           <arg line="-c TheRestTests?suite&amp;format=text"/>
+                                            <arg line="-c TheRestTests?suite&amp;format=text"/>
                                             <arg line="-d ."/>
                                         </java>
                                     </target>
@@ -211,7 +216,6 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-failsafe-plugin</artifactId>
-                        <version>2.18.1</version>
                         <dependencies>
                             <dependency>
                                 <groupId>org.apache.maven.surefire</groupId>
@@ -219,9 +223,9 @@
                                 <version>2.18.1</version>
                             </dependency>
                         </dependencies>
-                        <configuration>
-                            <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
-                        </configuration>
+                        <!--<configuration>-->
+                            <!--<reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>-->
+                        <!--</configuration>-->
                         <executions>
                             <execution>
                                 <id>integration-test</id>
