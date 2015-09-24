@@ -68,6 +68,13 @@ public class RecordEndpointTest {
 	}
 
 	@Test
+	public void testReadRecordAbstractRecordType() {
+		String type = "abstract";
+		Response responseRead = recordEndpoint.readRecord(type, jsonToCreateFrom);
+		assertEquals(responseRead.getStatusInfo(), Response.Status.METHOD_NOT_ALLOWED);
+	}
+
+	@Test
 	public void testDeleteRecord() {
 		Response response = recordEndpoint.deleteRecord("place", "place:0001");
 		assertEquals(response.getStatusInfo(), Response.Status.OK);
@@ -88,6 +95,13 @@ public class RecordEndpointTest {
 	}
 
 	@Test
+	public void testDeleteRecordAbstractRecordType() {
+		String type = "abstract";
+		Response responseDeleted = recordEndpoint.deleteRecord(type, jsonToCreateFrom);
+		assertEquals(responseDeleted.getStatusInfo(), Response.Status.METHOD_NOT_ALLOWED);
+	}
+
+	@Test
 	public void testUpdateRecord() {
 		String type = "place";
 		String id = "place:0001";
@@ -99,8 +113,8 @@ public class RecordEndpointTest {
 	public void testUpdateRecordUnauthorized() {
 		String type = "place";
 		String id = "place:0001";
-		Response responseUpdate = recordEndpoint.updateRecordAsUserIdWithRecord(
-				"unauthorizedUserId", type, id, jsonToUpdateWith);
+		Response responseUpdate = recordEndpoint
+				.updateRecordAsUserIdWithRecord("unauthorizedUserId", type, id, jsonToUpdateWith);
 		assertEquals(responseUpdate.getStatusInfo(), Response.Status.UNAUTHORIZED);
 	}
 
@@ -121,6 +135,14 @@ public class RecordEndpointTest {
 				+ ",\"atomicDataId2\":\"atomicValue2\"}]}}";
 		Response responseUpdate = recordEndpoint.updateRecord(type, id, json);
 		assertEquals(responseUpdate.getStatusInfo(), Response.Status.BAD_REQUEST);
+	}
+
+	@Test
+	public void testUpdateRecordAbstractRecordType() {
+		String type = "abstract";
+		Response responseUpdated = recordEndpoint.updateRecord(type, "anIdNotImportant",
+				jsonToCreateFrom);
+		assertEquals(responseUpdated.getStatusInfo(), Response.Status.METHOD_NOT_ALLOWED);
 	}
 
 	@Test
@@ -150,16 +172,16 @@ public class RecordEndpointTest {
 	@Test
 	public void testCreateRecordUnauthorized() {
 		String type = "place";
-		Response responseUpdate = recordEndpoint.createRecordAsUserIdWithRecord(
-				"unauthorizedUserId", type, jsonToCreateFrom);
+		Response responseUpdate = recordEndpoint
+				.createRecordAsUserIdWithRecord("unauthorizedUserId", type, jsonToCreateFrom);
 		assertEquals(responseUpdate.getStatusInfo(), Response.Status.UNAUTHORIZED);
 	}
 
 	@Test
 	public void testCreateNonExistingRecordType() {
 		String type = "recordType_NON_EXCISTING";
-		Response responseUpdate = recordEndpoint.createRecordAsUserIdWithRecord(
-				"unauthorizedUserId", type, jsonToCreateFrom);
+		Response responseUpdate = recordEndpoint
+				.createRecordAsUserIdWithRecord("unauthorizedUserId", type, jsonToCreateFrom);
 		assertEquals(responseUpdate.getStatusInfo(), Response.Status.BAD_REQUEST);
 	}
 
@@ -174,8 +196,9 @@ public class RecordEndpointTest {
 		Response responseCreated = recordEndpoint.createRecord(type, jsonToCreateFrom);
 		assertEquals(responseCreated.getStatusInfo(), Response.Status.BAD_REQUEST);
 	}
+
 	@Test
-	public void testCreateRecordAbstractRecordType(){
+	public void testCreateRecordAbstractRecordType() {
 		String type = "abstract";
 		Response responseCreated = recordEndpoint.createRecord(type, jsonToCreateFrom);
 		assertEquals(responseCreated.getStatusInfo(), Response.Status.METHOD_NOT_ALLOWED);

@@ -41,6 +41,7 @@ public class RecordEndpointFixture {
 		statusType = response.getStatusInfo();
 		return entity;
 	}
+
 	public String testReadRecordList() {
 		UriInfo uriInfo = new TestUri();
 		SpiderInstanceProvider.setSpiderDependencyProvider(
@@ -61,6 +62,30 @@ public class RecordEndpointFixture {
 		String entity = (String) response.getEntity();
 		statusType = response.getStatusInfo();
 		return entity;
+	}
+
+	public String testUpdateRecord() {
+		UriInfo uriInfo = new TestUri();
+		SpiderInstanceProvider.setSpiderDependencyProvider(
+				DependencyProviderForMultipleTestsWorkingTogether.spiderDependencyProvider);
+		RecordEndpoint recordEndpoint = new RecordEndpoint(uriInfo);
+		Response response = recordEndpoint.updateRecord(type, id, json);
+		String entity = (String) response.getEntity();
+		statusType = response.getStatusInfo();
+		return entity;
+	}
+
+	public String testDeleteRecord() {
+		UriInfo uriInfo = new TestUri();
+		SpiderInstanceProvider.setSpiderDependencyProvider(
+				DependencyProviderForMultipleTestsWorkingTogether.spiderDependencyProvider);
+		RecordEndpoint recordEndpoint = new RecordEndpoint(uriInfo);
+		Response response = recordEndpoint.deleteRecord(type, id);
+		statusType = response.getStatusInfo();
+		if(null==response.getEntity()){
+			return "";
+		}
+		return (String) response.getEntity();
 	}
 
 }

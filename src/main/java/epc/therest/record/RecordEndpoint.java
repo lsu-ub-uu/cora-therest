@@ -14,6 +14,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import epc.spider.data.DataMissingException;
 import epc.spider.data.SpiderDataGroup;
 import epc.spider.data.SpiderDataRecord;
 import epc.spider.data.SpiderRecordList;
@@ -71,7 +72,8 @@ public class RecordEndpoint {
 		try {
 			return tryCreateRecord(userId, type, jsonRecord);
 		} catch (MisuseException e) {
-			return Response.status(Response.Status.METHOD_NOT_ALLOWED).entity(e.getMessage()).build();
+			return Response.status(Response.Status.METHOD_NOT_ALLOWED).entity(e.getMessage())
+					.build();
 		} catch (JsonParseException | DataException e) {
 			return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
 		} catch (AuthorizationException e) {
@@ -145,6 +147,9 @@ public class RecordEndpoint {
 	Response readRecordAsUserIdByTypeAndId(String userId, String type, String id) {
 		try {
 			return tryReadRecord(userId, type, id);
+		} catch (MisuseException e) {
+			return Response.status(Response.Status.METHOD_NOT_ALLOWED).entity(e.getMessage())
+					.build();
 		} catch (RecordNotFoundException e) {
 			return Response.status(Response.Status.NOT_FOUND).build();
 		} catch (AuthorizationException e) {
@@ -169,6 +174,9 @@ public class RecordEndpoint {
 	public Response deleteRecordAsUserIdByTypeAndId(String userId, String type, String id) {
 		try {
 			return tryDeleteRecord(userId, type, id);
+		} catch (MisuseException e) {
+			return Response.status(Response.Status.METHOD_NOT_ALLOWED).entity(e.getMessage())
+					.build();
 		} catch (RecordNotFoundException e) {
 			return Response.status(Response.Status.NOT_FOUND).build();
 		} catch (AuthorizationException e) {
@@ -194,7 +202,10 @@ public class RecordEndpoint {
 			String jsonRecord) {
 		try {
 			return tryUpdateRecord(userId, type, id, jsonRecord);
-		} catch (JsonParseException | DataException e) {
+		} catch (MisuseException e) {
+			return Response.status(Response.Status.METHOD_NOT_ALLOWED).entity(e.getMessage())
+					.build();
+		} catch (JsonParseException | DataException | DataMissingException e) {
 			return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
 		} catch (RecordNotFoundException e) {
 			return Response.status(Response.Status.NOT_FOUND).build();
