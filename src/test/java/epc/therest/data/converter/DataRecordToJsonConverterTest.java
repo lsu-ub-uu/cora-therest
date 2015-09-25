@@ -14,7 +14,7 @@ import epc.therest.json.builder.org.OrgJsonBuilderFactoryAdapter;
 public class DataRecordToJsonConverterTest {
 	@Test
 	public void testToJson() {
-		RestDataGroup restDataGroup = RestDataGroup.withDataId("groupDataId");
+		RestDataGroup restDataGroup = RestDataGroup.withNameInData("groupNameInData");
 		RestDataRecord restDataRecord = RestDataRecord.withRestDataGroup(restDataGroup);
 
 		JsonBuilderFactory jsonFactory = new OrgJsonBuilderFactoryAdapter();
@@ -22,12 +22,12 @@ public class DataRecordToJsonConverterTest {
 				.usingJsonFactoryForRestDataRecord(jsonFactory, restDataRecord);
 		String jsonString = dataRecordToJsonConverter.toJson();
 
-		assertEquals(jsonString, "{\"record\":{\"data\":{\"name\":\"groupDataId\"}}}");
+		assertEquals(jsonString, "{\"record\":{\"data\":{\"name\":\"groupNameInData\"}}}");
 	}
 
 	@Test
 	public void testToJsonWithKey() {
-		RestDataGroup restDataGroup = RestDataGroup.withDataId("groupDataId");
+		RestDataGroup restDataGroup = RestDataGroup.withNameInData("groupNameInData");
 		RestDataRecord restDataRecord = RestDataRecord.withRestDataGroup(restDataGroup);
 		restDataRecord.addKey("KEY1");
 
@@ -36,13 +36,13 @@ public class DataRecordToJsonConverterTest {
 				.usingJsonFactoryForRestDataRecord(jsonFactory, restDataRecord);
 		String jsonString = dataRecordToJsonConverter.toJson();
 
-		assertEquals(jsonString, "{\"record\":{\"data\":{\"name\":\"groupDataId\"}"
+		assertEquals(jsonString, "{\"record\":{\"data\":{\"name\":\"groupNameInData\"}"
 				+ ",\"keys\":[\"KEY1\"]" + "}}");
 	}
 
 	@Test
 	public void testToJsonWithKeys() {
-		RestDataGroup restDataGroup = RestDataGroup.withDataId("groupDataId");
+		RestDataGroup restDataGroup = RestDataGroup.withNameInData("groupNameInData");
 		RestDataRecord restDataRecord = RestDataRecord.withRestDataGroup(restDataGroup);
 		restDataRecord.addKey("KEY1");
 		restDataRecord.addKey("KEY2");
@@ -53,13 +53,13 @@ public class DataRecordToJsonConverterTest {
 				.usingJsonFactoryForRestDataRecord(jsonFactory, restDataRecord);
 		String jsonString = dataRecordToJsonConverter.toJson();
 
-		assertEquals(jsonString, "{\"record\":{\"data\":{\"name\":\"groupDataId\"}"
+		assertEquals(jsonString, "{\"record\":{\"data\":{\"name\":\"groupNameInData\"}"
 				+ ",\"keys\":[\"KEY1\",\"KEY2\",\"KEY3\"]" + "}}");
 	}
 
 	@Test
 	public void testToJsonWithActionLinks() {
-		RestDataGroup restDataGroup = RestDataGroup.withDataId("groupDataId");
+		RestDataGroup restDataGroup = RestDataGroup.withNameInData("groupNameInData");
 		RestDataRecord restDataRecord = RestDataRecord.withRestDataGroup(restDataGroup);
 		restDataRecord.addActionLink("read", createReadActionLink());
 
@@ -68,7 +68,7 @@ public class DataRecordToJsonConverterTest {
 				.usingJsonFactoryForRestDataRecord(jsonFactory, restDataRecord);
 		String jsonString = dataRecordToJsonConverter.toJson();
 
-		assertEquals(jsonString, "{\"record\":{\"data\":{\"name\":\"groupDataId\"}"
+		assertEquals(jsonString, "{\"record\":{\"data\":{\"name\":\"groupNameInData\"}"
 				+ ",\"actionLinks\":{" + "\"read\":{\"requestMethod\":\"GET\",\"rel\":\"read\","
 				+ "\"contentType\":\"application/metadata_record+json\","
 				+ "\"url\":\"http://localhost:8080/therest/rest/record/place/place:0001\","

@@ -36,7 +36,7 @@ public final class JsonToDataGroupConverter implements JsonToDataConverter {
 		return createDataGroupInstance();
 	}
 
-	private String getDataIdFromJsonObject() {
+	private String getNameInDataFromJsonObject() {
 		return jsonObject.getValueAsJsonString("name").getStringValue();
 	}
 
@@ -60,8 +60,8 @@ public final class JsonToDataGroupConverter implements JsonToDataConverter {
 	}
 
 	private RestDataElement createDataGroupInstance() {
-		String dataId = getDataIdFromJsonObject();
-		restDataGroup = RestDataGroup.withDataId(dataId);
+		String nameInData = getNameInDataFromJsonObject();
+		restDataGroup = RestDataGroup.withNameInData(nameInData);
 		if (hasAttributes()) {
 			addAttributesToGroup();
 		}

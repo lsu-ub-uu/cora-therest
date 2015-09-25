@@ -8,22 +8,22 @@ import org.testng.annotations.Test;
 public class RestDataGroupTest {
 	@Test
 	public void testInit() {
-		RestDataGroup restDataGroup = RestDataGroup.withDataId("dataId");
-		assertEquals(restDataGroup.getDataId(), "dataId",
-				"DataId shold be the one set in the constructor");
+		RestDataGroup restDataGroup = RestDataGroup.withNameInData("nameInData");
+		assertEquals(restDataGroup.getNameInData(), "nameInData",
+				"NameInData shold be the one set in the constructor");
 
 		Assert.assertNotNull(restDataGroup.getAttributes(),
 				"Attributes should not be null for a new DataGroup");
 
-		restDataGroup.addAttributeByIdWithValue("dataId", "Value");
+		restDataGroup.addAttributeByIdWithValue("nameInData", "Value");
 
-		Assert.assertEquals(restDataGroup.getAttributes().get("dataId"), "Value",
-				"Attribute with dataId dataId should have value Value");
+		Assert.assertEquals(restDataGroup.getAttributes().get("nameInData"), "Value",
+				"Attribute with nameInData nameInData should have value Value");
 
 		Assert.assertNotNull(restDataGroup.getChildren(),
 				"Children should not be null for a new DataGroup");
 
-		RestDataElement restDataElement = RestDataGroup.withDataId("dataId2");
+		RestDataElement restDataElement = RestDataGroup.withNameInData("nameInData2");
 		restDataGroup.addChild(restDataElement);
 		Assert.assertEquals(restDataGroup.getChildren().stream().findAny().get(), restDataElement,
 				"Child should be the same as the one we added");

@@ -2,23 +2,23 @@ package epc.therest.data;
 
 public final class RestDataAtomic implements RestDataElement {
 
-	private String dataId;
+	private String nameInData;
 	private String value;
 
-	public static RestDataAtomic withDataIdAndValue(String dataId, String value) {
-		return new RestDataAtomic(dataId, value);
+	public static RestDataAtomic withNameInDataAndValue(String nameInData, String value) {
+		return new RestDataAtomic(nameInData, value);
 	}
 
-	private RestDataAtomic(String dataId, String value) {
-		this.dataId = dataId;
+	private RestDataAtomic(String nameInData, String value) {
+		this.nameInData = nameInData;
 		this.value = value;
 
 	}
 
 	@Override
-	public String getDataId() {
+	public String getNameInData() {
 
-		return dataId;
+		return nameInData;
 	}
 
 	public String getValue() {

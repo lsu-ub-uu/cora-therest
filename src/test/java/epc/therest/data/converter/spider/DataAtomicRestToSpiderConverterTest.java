@@ -10,11 +10,11 @@ import epc.therest.data.RestDataAtomic;
 public class DataAtomicRestToSpiderConverterTest {
 	@Test
 	public void testToSpider() {
-		RestDataAtomic restDataAtomic = RestDataAtomic.withDataIdAndValue("dataId", "value");
+		RestDataAtomic restDataAtomic = RestDataAtomic.withNameInDataAndValue("nameInData", "value");
 		DataAtomicRestToSpiderConverter converter = DataAtomicRestToSpiderConverter
 				.fromRestDataAtomic(restDataAtomic);
 		SpiderDataAtomic spiderDataAtomic = converter.toSpider();
-		assertEquals(spiderDataAtomic.getDataId(), "dataId");
+		assertEquals(spiderDataAtomic.getNameInData(), "nameInData");
 		assertEquals(spiderDataAtomic.getValue(), "value");
 	}
 }

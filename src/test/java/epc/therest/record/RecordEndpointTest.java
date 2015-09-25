@@ -131,8 +131,8 @@ public class RecordEndpointTest {
 	public void testUpdateRecordBadContentInJson() {
 		String type = "place";
 		String id = "place:0001";
-		String json = "{\"groupDataId\":{\"children\":[{\"atomicDataId\":\"atomicValue\""
-				+ ",\"atomicDataId2\":\"atomicValue2\"}]}}";
+		String json = "{\"groupNameInData\":{\"children\":[{\"atomicNameInData\":\"atomicValue\""
+				+ ",\"atomicNameInData2\":\"atomicValue2\"}]}}";
 		Response responseUpdate = recordEndpoint.updateRecord(type, id, json);
 		assertEquals(responseUpdate.getStatusInfo(), Response.Status.BAD_REQUEST);
 	}
@@ -163,8 +163,8 @@ public class RecordEndpointTest {
 	@Test
 	public void testCreateRecordBadContentInJson() {
 		String type = "place";
-		String json = "{\"groupDataId\":{\"children\":[{\"atomicDataId\":\"atomicValue\""
-				+ ",\"atomicDataId2\":\"atomicValue2\"}]}}";
+		String json = "{\"groupNameInData\":{\"children\":[{\"atomicNameInData\":\"atomicValue\""
+				+ ",\"atomicNameInData2\":\"atomicValue2\"}]}}";
 		Response responseCreated = recordEndpoint.createRecord(type, json);
 		assertEquals(responseCreated.getStatusInfo(), Response.Status.BAD_REQUEST);
 	}

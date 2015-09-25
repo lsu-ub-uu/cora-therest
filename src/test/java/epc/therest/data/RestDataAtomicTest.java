@@ -6,16 +6,16 @@ import org.testng.annotations.Test;
 public class RestDataAtomicTest {
 	@Test
 	public void testInit() {
-		RestDataAtomic restDataAtomic = RestDataAtomic.withDataIdAndValue("dataId", "value");
-		Assert.assertEquals(restDataAtomic.getDataId(), "dataId");
+		RestDataAtomic restDataAtomic = RestDataAtomic.withNameInDataAndValue("nameInData", "value");
+		Assert.assertEquals(restDataAtomic.getNameInData(), "nameInData");
 		Assert.assertEquals(restDataAtomic.getValue(), "value");
 	}
 
 	// @Test
 	// public void testCreateFromSpiderDataAtomic() {
-	// SpiderDataAtomic spiderDataAtomic = SpiderDataAtomic.withDataIdAndValue("dataId", "value");
+	// SpiderDataAtomic spiderDataAtomic = SpiderDataAtomic.withNameInDataAndValue("nameInData", "value");
 	// RestDataAtomic restDataAtomic = RestDataAtomic.fromSpiderDataAtomic(spiderDataAtomic);
-	// Assert.assertEquals(restDataAtomic.getDataId(), "dataId");
+	// Assert.assertEquals(restDataAtomic.getNameInData(), "nameInData");
 	// Assert.assertEquals(restDataAtomic.getValue(), "value");
 	// }
 }

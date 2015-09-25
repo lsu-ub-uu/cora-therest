@@ -18,7 +18,7 @@ public class RestDataRecordListTest {
 	@Test
 	public void testAddRecord() {
 		RestRecordList restRecordList = RestRecordList.withContainRecordsOfType("metadata");
-		RestDataGroup restDataGroup = RestDataGroup.withDataId("restDataGroupId");
+		RestDataGroup restDataGroup = RestDataGroup.withNameInData("restDataGroupId");
 		RestDataRecord record = RestDataRecord.withRestDataGroup(restDataGroup);
 		restRecordList.addRecord(record);
 		List<RestDataRecord> records = restRecordList.getRecords();

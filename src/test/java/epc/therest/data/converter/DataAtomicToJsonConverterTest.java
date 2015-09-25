@@ -22,22 +22,22 @@ public class DataAtomicToJsonConverterTest {
 
 	@Test
 	public void testToJson() {
-		RestDataElement restDataElement = RestDataAtomic.withDataIdAndValue("atomicDataId",
+		RestDataElement restDataElement = RestDataAtomic.withNameInDataAndValue("atomicNameInData",
 				"atomicValue");
 		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForRestDataElement(factory, restDataElement);
 		String json = dataToJsonConverter.toJson();
 
-		Assert.assertEquals(json, "{\"atomicDataId\":\"atomicValue\"}");
+		Assert.assertEquals(json, "{\"atomicNameInData\":\"atomicValue\"}");
 	}
 
 	@Test
 	public void testToJsonEmptyValue() {
-		RestDataElement restDataElement = RestDataAtomic.withDataIdAndValue("atomicDataId", "");
+		RestDataElement restDataElement = RestDataAtomic.withNameInDataAndValue("atomicNameInData", "");
 		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForRestDataElement(factory, restDataElement);
 		String json = dataToJsonConverter.toJson();
 
-		Assert.assertEquals(json, "{\"atomicDataId\":\"\"}");
+		Assert.assertEquals(json, "{\"atomicNameInData\":\"\"}");
 	}
 }

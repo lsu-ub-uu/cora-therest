@@ -60,7 +60,7 @@ public final class DataRecordSpiderToRestConverter {
 	private SpiderDataGroup findRecordInfo() {
 		SpiderDataGroup recordInfo = null;
 		for (SpiderDataElement spiderDataElement : spiderDataGroup.getChildren()) {
-			if ("recordInfo".equals(spiderDataElement.getDataId())) {
+			if ("recordInfo".equals(spiderDataElement.getNameInData())) {
 				recordInfo = (SpiderDataGroup) spiderDataElement;
 				break;
 			}
@@ -74,7 +74,7 @@ public final class DataRecordSpiderToRestConverter {
 	private String findId(SpiderDataGroup recordInfo) {
 		String id = "";
 		for (SpiderDataElement spiderDataElement : recordInfo.getChildren()) {
-			if ("id".equals(spiderDataElement.getDataId())) {
+			if ("id".equals(spiderDataElement.getNameInData())) {
 				id = ((SpiderDataAtomic) spiderDataElement).getValue();
 			}
 		}
@@ -87,7 +87,7 @@ public final class DataRecordSpiderToRestConverter {
 	private String findType(SpiderDataGroup recordInfo) {
 		String type = "";
 		for (SpiderDataElement spiderDataElement : recordInfo.getChildren()) {
-			if ("type".equals(spiderDataElement.getDataId())) {
+			if ("type".equals(spiderDataElement.getNameInData())) {
 				type = ((SpiderDataAtomic) spiderDataElement).getValue();
 			}
 		}

@@ -19,7 +19,7 @@ public class DataGroupSpiderToRestConverterTest {
 
 	@BeforeMethod
 	public void beforeMetod() {
-		spiderDataGroup = SpiderDataGroup.withDataId("dataId");
+		spiderDataGroup = SpiderDataGroup.withNameInData("nameInData");
 	}
 
 	@Test
@@ -27,12 +27,12 @@ public class DataGroupSpiderToRestConverterTest {
 		DataGroupSpiderToRestConverter dataGroupSpiderToRestConverter = DataGroupSpiderToRestConverter
 				.fromSpiderDataGroup(spiderDataGroup);
 		RestDataGroup restDataGroup = dataGroupSpiderToRestConverter.toRest();
-		assertEquals(restDataGroup.getDataId(), "dataId");
+		assertEquals(restDataGroup.getNameInData(), "nameInData");
 	}
 
 	@Test
 	public void testToRestWithAttributes() {
-		spiderDataGroup.addAttributeByIdWithValue("attributeDataId", "attributeValue");
+		spiderDataGroup.addAttributeByIdWithValue("attributeNameInData", "attributeValue");
 		DataGroupSpiderToRestConverter dataGroupSpiderToRestConverter = DataGroupSpiderToRestConverter
 				.fromSpiderDataGroup(spiderDataGroup);
 		RestDataGroup restDataGroup = dataGroupSpiderToRestConverter.toRest();
@@ -43,33 +43,33 @@ public class DataGroupSpiderToRestConverterTest {
 
 	@Test
 	public void testToRestWithAtomicChild() {
-		spiderDataGroup.addChild(SpiderDataAtomic.withDataIdAndValue("childDataId", "atomicValue"));
+		spiderDataGroup.addChild(SpiderDataAtomic.withNameInDataAndValue("childNameInData", "atomicValue"));
 		DataGroupSpiderToRestConverter dataGroupSpiderToRestConverter = DataGroupSpiderToRestConverter
 				.fromSpiderDataGroup(spiderDataGroup);
 		RestDataGroup restDataGroup = dataGroupSpiderToRestConverter.toRest();
 		RestDataAtomic restDataAtomic = (RestDataAtomic) restDataGroup.getChildren().iterator()
 				.next();
-		assertEquals(restDataAtomic.getDataId(), "childDataId");
+		assertEquals(restDataAtomic.getNameInData(), "childNameInData");
 		assertEquals(restDataAtomic.getValue(), "atomicValue");
 	}
 
 	@Test
 	public void testToRestWithGroupChild() {
-		spiderDataGroup.addChild(SpiderDataGroup.withDataId("childDataId"));
+		spiderDataGroup.addChild(SpiderDataGroup.withNameInData("childNameInData"));
 		DataGroupSpiderToRestConverter dataGroupSpiderToRestConverter = DataGroupSpiderToRestConverter
 				.fromSpiderDataGroup(spiderDataGroup);
 		RestDataGroup restDataGroup = dataGroupSpiderToRestConverter.toRest();
 		RestDataGroup restDataGroupChild = (RestDataGroup) restDataGroup.getChildren().iterator()
 				.next();
-		assertEquals(restDataGroupChild.getDataId(), "childDataId");
+		assertEquals(restDataGroupChild.getNameInData(), "childNameInData");
 	}
 
 	@Test
 	public void testToRestWithGroupLevelsOfChildren() {
 		spiderDataGroup
-				.addChild(SpiderDataAtomic.withDataIdAndValue("atomicDataId", "atomicValue"));
-		SpiderDataGroup dataGroup2 = SpiderDataGroup.withDataId("childDataId");
-		dataGroup2.addChild(SpiderDataGroup.withDataId("grandChildDataId"));
+				.addChild(SpiderDataAtomic.withNameInDataAndValue("atomicNameInData", "atomicValue"));
+		SpiderDataGroup dataGroup2 = SpiderDataGroup.withNameInData("childNameInData");
+		dataGroup2.addChild(SpiderDataGroup.withNameInData("grandChildNameInData"));
 		spiderDataGroup.addChild(dataGroup2);
 		DataGroupSpiderToRestConverter dataGroupSpiderToRestConverter = DataGroupSpiderToRestConverter
 				.fromSpiderDataGroup(spiderDataGroup);
@@ -78,15 +78,15 @@ public class DataGroupSpiderToRestConverterTest {
 		Assert.assertTrue(iterator.hasNext(), "dataGroupRest should have at least one child");
 
 		RestDataAtomic dataAtomicChild = (RestDataAtomic) iterator.next();
-		Assert.assertEquals(dataAtomicChild.getDataId(), "atomicDataId",
-				"DataId should be the one set in the DataAtomic, first child of dataGroup");
+		Assert.assertEquals(dataAtomicChild.getNameInData(), "atomicNameInData",
+				"NameInData should be the one set in the DataAtomic, first child of dataGroup");
 
 		RestDataGroup dataGroupChild = (RestDataGroup) iterator.next();
-		Assert.assertEquals(dataGroupChild.getDataId(), "childDataId",
-				"DataId should be the one set in dataGroup2");
+		Assert.assertEquals(dataGroupChild.getNameInData(), "childNameInData",
+				"NameInData should be the one set in dataGroup2");
 
-		Assert.assertEquals(dataGroupChild.getChildren().stream().findAny().get().getDataId(),
-				"grandChildDataId", "DataId should be the one set in the child of dataGroup2");
+		Assert.assertEquals(dataGroupChild.getChildren().stream().findAny().get().getNameInData(),
+				"grandChildNameInData", "NameInData should be the one set in the child of dataGroup2");
 	}
 
 }

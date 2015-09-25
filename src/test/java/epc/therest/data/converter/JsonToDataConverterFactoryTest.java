@@ -22,7 +22,7 @@ public class JsonToDataConverterFactoryTest {
 
 	@Test
 	public void testFactorOnJsonStringDataGroupEmptyChildren() {
-		String json = "{\"name\":\"groupDataId\", \"children\":[]}";
+		String json = "{\"name\":\"groupNameInData\", \"children\":[]}";
 		JsonValue jsonValue = jsonParser.parseString(json);
 		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
 				.createForJsonObject(jsonValue);
@@ -40,7 +40,7 @@ public class JsonToDataConverterFactoryTest {
 
 	@Test
 	public void testFactorOnJsonStringDataAtomic() {
-		String json = "{\"atomicDataId\":\"atomicValue\"}";
+		String json = "{\"atomicNameInData\":\"atomicValue\"}";
 		JsonValue jsonValue = jsonParser.parseString(json);
 		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
 				.createForJsonObject(jsonValue);

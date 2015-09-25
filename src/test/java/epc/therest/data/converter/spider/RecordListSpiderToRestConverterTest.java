@@ -15,7 +15,7 @@ public class RecordListSpiderToRestConverterTest {
 
 	@Test
 	public void testToRest() {
-		SpiderDataGroup spiderDataGroup = SpiderDataGroup.withDataId("groupId");
+		SpiderDataGroup spiderDataGroup = SpiderDataGroup.withNameInData("groupId");
 		SpiderDataRecord spiderDataRecord = SpiderDataRecord.withSpiderDataGroup(spiderDataGroup);
 		SpiderRecordList spiderRecordList = SpiderRecordList.withContainRecordsOfType("place");
 		spiderRecordList.addRecord(spiderDataRecord);
@@ -30,6 +30,6 @@ public class RecordListSpiderToRestConverterTest {
 
 		RestDataGroup restDataGroup = recordList.getRecords().get(0).getRestDataGroup();
 
-		assertEquals(restDataGroup.getDataId(), "groupId");
+		assertEquals(restDataGroup.getNameInData(), "groupId");
 	}
 }

@@ -21,7 +21,7 @@ public final class DataGroupSpiderToRestConverter {
 	}
 
 	public RestDataGroup toRest() {
-		restDataGroup = RestDataGroup.withDataId(spiderDataGroup.getDataId());
+		restDataGroup = RestDataGroup.withNameInData(spiderDataGroup.getNameInData());
 		restDataGroup.getAttributes().putAll(spiderDataGroup.getAttributes());
 		convertAndSetChildren();
 		return restDataGroup;

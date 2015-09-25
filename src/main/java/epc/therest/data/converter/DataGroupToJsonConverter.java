@@ -38,7 +38,7 @@ public final class DataGroupToJsonConverter extends DataToJsonConverter {
 		if (hasChildren()) {
 			addChildrenToGroup();
 		}
-		dataGroupJsonObjectBuilder.addKeyString("name", restDataGroup.getDataId());
+		dataGroupJsonObjectBuilder.addKeyString("name", restDataGroup.getNameInData());
 		return dataGroupJsonObjectBuilder;
 	}
 

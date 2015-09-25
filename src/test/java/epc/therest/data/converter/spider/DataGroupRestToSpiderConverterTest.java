@@ -12,16 +12,16 @@ import epc.therest.data.RestDataGroup;
 public class DataGroupRestToSpiderConverterTest {
 	@Test
 	public void testToSpider() {
-		RestDataGroup restDataGroup = RestDataGroup.withDataId("dataId");
+		RestDataGroup restDataGroup = RestDataGroup.withNameInData("nameInData");
 		DataGroupRestToSpiderConverter dataGroupRestToSpiderConverter = DataGroupRestToSpiderConverter
 				.fromRestDataGroup(restDataGroup);
 		SpiderDataGroup spiderDataGroup = dataGroupRestToSpiderConverter.toSpider();
-		assertEquals(spiderDataGroup.getDataId(), "dataId");
+		assertEquals(spiderDataGroup.getNameInData(), "nameInData");
 	}
 
 	@Test
 	public void testToSpiderWithAttribute() {
-		RestDataGroup restDataGroup = RestDataGroup.withDataId("dataId");
+		RestDataGroup restDataGroup = RestDataGroup.withNameInData("nameInData");
 		restDataGroup.addAttributeByIdWithValue("attributeId", "attributeValue");
 		DataGroupRestToSpiderConverter dataGroupRestToSpiderConverter = DataGroupRestToSpiderConverter
 				.fromRestDataGroup(restDataGroup);
@@ -32,32 +32,32 @@ public class DataGroupRestToSpiderConverterTest {
 
 	@Test
 	public void testToSpiderWithAtomicChild() {
-		RestDataGroup restDataGroup = RestDataGroup.withDataId("dataId");
-		restDataGroup.addChild(RestDataAtomic.withDataIdAndValue("atomicId", "atomicValue"));
+		RestDataGroup restDataGroup = RestDataGroup.withNameInData("nameInData");
+		restDataGroup.addChild(RestDataAtomic.withNameInDataAndValue("atomicId", "atomicValue"));
 		DataGroupRestToSpiderConverter dataGroupRestToSpiderConverter = DataGroupRestToSpiderConverter
 				.fromRestDataGroup(restDataGroup);
 		SpiderDataGroup spiderDataGroup = dataGroupRestToSpiderConverter.toSpider();
 		SpiderDataAtomic atomicChild = (SpiderDataAtomic) spiderDataGroup.getChildren().get(0);
-		assertEquals(atomicChild.getDataId(), "atomicId");
+		assertEquals(atomicChild.getNameInData(), "atomicId");
 		assertEquals(atomicChild.getValue(), "atomicValue");
 	}
 
 	@Test
 	public void testToSpiderWithGroupChild() {
-		RestDataGroup restDataGroup = RestDataGroup.withDataId("dataId");
-		restDataGroup.addChild(RestDataGroup.withDataId("groupId"));
+		RestDataGroup restDataGroup = RestDataGroup.withNameInData("nameInData");
+		restDataGroup.addChild(RestDataGroup.withNameInData("groupId"));
 		DataGroupRestToSpiderConverter dataGroupRestToSpiderConverter = DataGroupRestToSpiderConverter
 				.fromRestDataGroup(restDataGroup);
 		SpiderDataGroup spiderDataGroup = dataGroupRestToSpiderConverter.toSpider();
 		SpiderDataGroup groupChild = (SpiderDataGroup) spiderDataGroup.getChildren().get(0);
-		assertEquals(groupChild.getDataId(), "groupId");
+		assertEquals(groupChild.getNameInData(), "groupId");
 	}
 
 	@Test
 	public void testToSpiderWithGroupChildWithAtomicChild() {
-		RestDataGroup restDataGroup = RestDataGroup.withDataId("dataId");
-		RestDataGroup restGroupChild = RestDataGroup.withDataId("groupId");
-		restGroupChild.addChild(RestDataAtomic.withDataIdAndValue("grandChildAtomicId",
+		RestDataGroup restDataGroup = RestDataGroup.withNameInData("nameInData");
+		RestDataGroup restGroupChild = RestDataGroup.withNameInData("groupId");
+		restGroupChild.addChild(RestDataAtomic.withNameInDataAndValue("grandChildAtomicId",
 				"grandChildAtomicValue"));
 		restGroupChild.addAttributeByIdWithValue("groupChildAttributeId",
 				"groupChildAttributeValue");
@@ -69,7 +69,7 @@ public class DataGroupRestToSpiderConverterTest {
 		SpiderDataGroup groupChild = (SpiderDataGroup) spiderDataGroup.getChildren().get(0);
 		SpiderDataAtomic grandChildAtomic = (SpiderDataAtomic) groupChild.getChildren().get(0);
 
-		assertEquals(grandChildAtomic.getDataId(), "grandChildAtomicId");
+		assertEquals(grandChildAtomic.getNameInData(), "grandChildAtomicId");
 
 		String groupChildAttributeValue = restGroupChild.getAttributes().get(
 				"groupChildAttributeId");

@@ -17,19 +17,19 @@ public class DataRecordSpiderToRestConterterTest {
 
 	@Test
 	public void testToRest() {
-		SpiderDataGroup spiderDataGroup = SpiderDataGroup.withDataId("groupId");
+		SpiderDataGroup spiderDataGroup = SpiderDataGroup.withNameInData("groupId");
 		SpiderDataRecord spiderDataRecord = SpiderDataRecord.withSpiderDataGroup(spiderDataGroup);
 		DataRecordSpiderToRestConverter dataRecordSpiderToRestConverter = DataRecordSpiderToRestConverter
 				.fromSpiderDataRecordWithBaseURL(spiderDataRecord, baseURL);
 		RestDataRecord restDataRecord = dataRecordSpiderToRestConverter.toRest();
 		RestDataGroup restDataGroup = restDataRecord.getRestDataGroup();
-		assertEquals(restDataGroup.getDataId(), "groupId");
+		assertEquals(restDataGroup.getNameInData(), "groupId");
 	}
 
 	@Test(expectedExceptions = ConverterException.class)
 	public void testToRestWithActionLinkNoRecordInfoButOtherChild() {
-		SpiderDataGroup spiderDataGroup = SpiderDataGroup.withDataId("groupId");
-		spiderDataGroup.addChild(SpiderDataAtomic.withDataIdAndValue("type", "place"));
+		SpiderDataGroup spiderDataGroup = SpiderDataGroup.withNameInData("groupId");
+		spiderDataGroup.addChild(SpiderDataAtomic.withNameInDataAndValue("type", "place"));
 		SpiderDataRecord spiderDataRecord = SpiderDataRecord.withSpiderDataGroup(spiderDataGroup);
 		spiderDataRecord.addAction(Action.READ);
 
@@ -40,7 +40,7 @@ public class DataRecordSpiderToRestConterterTest {
 
 	@Test(expectedExceptions = ConverterException.class)
 	public void testToRestWithActionLinkNoRecordInfo() {
-		SpiderDataGroup spiderDataGroup = SpiderDataGroup.withDataId("groupId");
+		SpiderDataGroup spiderDataGroup = SpiderDataGroup.withNameInData("groupId");
 		SpiderDataRecord spiderDataRecord = SpiderDataRecord.withSpiderDataGroup(spiderDataGroup);
 		spiderDataRecord.addAction(Action.READ);
 		DataRecordSpiderToRestConverter dataRecordSpiderToRestConverter = DataRecordSpiderToRestConverter
@@ -50,13 +50,13 @@ public class DataRecordSpiderToRestConterterTest {
 
 	@Test(expectedExceptions = ConverterException.class)
 	public void testToRestWithActionLinkNoId() {
-		SpiderDataGroup spiderDataGroup = SpiderDataGroup.withDataId("groupId");
+		SpiderDataGroup spiderDataGroup = SpiderDataGroup.withNameInData("groupId");
 		SpiderDataRecord spiderDataRecord = SpiderDataRecord.withSpiderDataGroup(spiderDataGroup);
 		spiderDataRecord.addAction(Action.READ);
 
-		SpiderDataGroup recordInfo = SpiderDataGroup.withDataId("recordInfo");
-		recordInfo.addChild(SpiderDataAtomic.withDataIdAndValue("type", "place"));
-		recordInfo.addChild(SpiderDataAtomic.withDataIdAndValue("createdBy", "userId"));
+		SpiderDataGroup recordInfo = SpiderDataGroup.withNameInData("recordInfo");
+		recordInfo.addChild(SpiderDataAtomic.withNameInDataAndValue("type", "place"));
+		recordInfo.addChild(SpiderDataAtomic.withNameInDataAndValue("createdBy", "userId"));
 		spiderDataGroup.addChild(recordInfo);
 
 		DataRecordSpiderToRestConverter dataRecordSpiderToRestConverter = DataRecordSpiderToRestConverter
@@ -66,13 +66,13 @@ public class DataRecordSpiderToRestConterterTest {
 
 	@Test(expectedExceptions = ConverterException.class)
 	public void testToRestWithActionLinkNoType() {
-		SpiderDataGroup spiderDataGroup = SpiderDataGroup.withDataId("groupId");
+		SpiderDataGroup spiderDataGroup = SpiderDataGroup.withNameInData("groupId");
 		SpiderDataRecord spiderDataRecord = SpiderDataRecord.withSpiderDataGroup(spiderDataGroup);
 		spiderDataRecord.addAction(Action.READ);
 
-		SpiderDataGroup recordInfo = SpiderDataGroup.withDataId("recordInfo");
-		recordInfo.addChild(SpiderDataAtomic.withDataIdAndValue("id", "place:0001"));
-		recordInfo.addChild(SpiderDataAtomic.withDataIdAndValue("createdBy", "userId"));
+		SpiderDataGroup recordInfo = SpiderDataGroup.withNameInData("recordInfo");
+		recordInfo.addChild(SpiderDataAtomic.withNameInDataAndValue("id", "place:0001"));
+		recordInfo.addChild(SpiderDataAtomic.withNameInDataAndValue("createdBy", "userId"));
 		spiderDataGroup.addChild(recordInfo);
 
 		DataRecordSpiderToRestConverter dataRecordSpiderToRestConverter = DataRecordSpiderToRestConverter
@@ -82,14 +82,14 @@ public class DataRecordSpiderToRestConterterTest {
 
 	@Test
 	public void testToRestWithActionLinkREAD() {
-		SpiderDataGroup spiderDataGroup = SpiderDataGroup.withDataId("groupId");
+		SpiderDataGroup spiderDataGroup = SpiderDataGroup.withNameInData("groupId");
 		SpiderDataRecord spiderDataRecord = SpiderDataRecord.withSpiderDataGroup(spiderDataGroup);
 		spiderDataRecord.addAction(Action.READ);
 
-		SpiderDataGroup recordInfo = SpiderDataGroup.withDataId("recordInfo");
-		recordInfo.addChild(SpiderDataAtomic.withDataIdAndValue("id", "place:0001"));
-		recordInfo.addChild(SpiderDataAtomic.withDataIdAndValue("type", "place"));
-		recordInfo.addChild(SpiderDataAtomic.withDataIdAndValue("createdBy", "userId"));
+		SpiderDataGroup recordInfo = SpiderDataGroup.withNameInData("recordInfo");
+		recordInfo.addChild(SpiderDataAtomic.withNameInDataAndValue("id", "place:0001"));
+		recordInfo.addChild(SpiderDataAtomic.withNameInDataAndValue("type", "place"));
+		recordInfo.addChild(SpiderDataAtomic.withNameInDataAndValue("createdBy", "userId"));
 		spiderDataGroup.addChild(recordInfo);
 
 		DataRecordSpiderToRestConverter dataRecordSpiderToRestConverter = DataRecordSpiderToRestConverter
@@ -104,14 +104,14 @@ public class DataRecordSpiderToRestConterterTest {
 
 	@Test
 	public void testToRestWithActionLinkUPDATE() {
-		SpiderDataGroup spiderDataGroup = SpiderDataGroup.withDataId("groupId");
+		SpiderDataGroup spiderDataGroup = SpiderDataGroup.withNameInData("groupId");
 		SpiderDataRecord spiderDataRecord = SpiderDataRecord.withSpiderDataGroup(spiderDataGroup);
 		spiderDataRecord.addAction(Action.UPDATE);
 
-		SpiderDataGroup recordInfo = SpiderDataGroup.withDataId("recordInfo");
-		recordInfo.addChild(SpiderDataAtomic.withDataIdAndValue("id", "place:0001"));
-		recordInfo.addChild(SpiderDataAtomic.withDataIdAndValue("type", "place"));
-		recordInfo.addChild(SpiderDataAtomic.withDataIdAndValue("createdBy", "userId"));
+		SpiderDataGroup recordInfo = SpiderDataGroup.withNameInData("recordInfo");
+		recordInfo.addChild(SpiderDataAtomic.withNameInDataAndValue("id", "place:0001"));
+		recordInfo.addChild(SpiderDataAtomic.withNameInDataAndValue("type", "place"));
+		recordInfo.addChild(SpiderDataAtomic.withNameInDataAndValue("createdBy", "userId"));
 		spiderDataGroup.addChild(recordInfo);
 
 		DataRecordSpiderToRestConverter dataRecordSpiderToRestConverter = DataRecordSpiderToRestConverter
@@ -126,14 +126,14 @@ public class DataRecordSpiderToRestConterterTest {
 
 	@Test
 	public void testToRestWithActionLinkDELETE() {
-		SpiderDataGroup spiderDataGroup = SpiderDataGroup.withDataId("groupId");
+		SpiderDataGroup spiderDataGroup = SpiderDataGroup.withNameInData("groupId");
 		SpiderDataRecord spiderDataRecord = SpiderDataRecord.withSpiderDataGroup(spiderDataGroup);
 		spiderDataRecord.addAction(Action.DELETE);
 
-		SpiderDataGroup recordInfo = SpiderDataGroup.withDataId("recordInfo");
-		recordInfo.addChild(SpiderDataAtomic.withDataIdAndValue("id", "place:0001"));
-		recordInfo.addChild(SpiderDataAtomic.withDataIdAndValue("type", "place"));
-		recordInfo.addChild(SpiderDataAtomic.withDataIdAndValue("createdBy", "userId"));
+		SpiderDataGroup recordInfo = SpiderDataGroup.withNameInData("recordInfo");
+		recordInfo.addChild(SpiderDataAtomic.withNameInDataAndValue("id", "place:0001"));
+		recordInfo.addChild(SpiderDataAtomic.withNameInDataAndValue("type", "place"));
+		recordInfo.addChild(SpiderDataAtomic.withNameInDataAndValue("createdBy", "userId"));
 		spiderDataGroup.addChild(recordInfo);
 
 		DataRecordSpiderToRestConverter dataRecordSpiderToRestConverter = DataRecordSpiderToRestConverter
@@ -148,7 +148,7 @@ public class DataRecordSpiderToRestConterterTest {
 
 	@Test
 	public void testToRestWithKeys() {
-		SpiderDataGroup spiderDataGroup = SpiderDataGroup.withDataId("groupId");
+		SpiderDataGroup spiderDataGroup = SpiderDataGroup.withNameInData("groupId");
 		SpiderDataRecord spiderDataRecord = SpiderDataRecord.withSpiderDataGroup(spiderDataGroup);
 		spiderDataRecord.addKey("KEY1");
 

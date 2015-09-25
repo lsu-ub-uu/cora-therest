@@ -59,9 +59,9 @@
 	<br>
 	<b>Method:</b>POST
 	<br>
-	<b>data(generatedIdNew):</b>{"name":"metadata","attributes":{"type":"group"},"children":[{"name":"recordInfo","children":[{"id":"generatedIdNew"}]},{"dataId":"generatedId"},{"textId":"generatedIdTextId"},{"defTextId":"generatedIdDefTextId"},{"name":"childReferences","children":[{"name":"childReference","children":[{"ref":"id"},{"repeatMin":"1"},{"repeatMax":"1"}]}]}]}
+	<b>data(generatedIdNew):</b>{"name":"metadata","attributes":{"type":"group"},"children":[{"name":"recordInfo","children":[{"id":"generatedIdNew"}]},{"nameInData":"generatedId"},{"textId":"generatedIdTextId"},{"defTextId":"generatedIdDefTextId"},{"name":"childReferences","children":[{"name":"childReference","children":[{"ref":"id"},{"repeatMin":"1"},{"repeatMax":"1"}]}]}]}
 	<br>
-	<b>data(generatedId):</b>{"name":"metadata","attributes":{"type":"group"},"children":[{"name":"recordInfo","children":[{"id":"generatedId"}]},{"dataId":"generatedId"},{"textId":"generatedIdTextId"},{"defTextId":"generatedIdDefTextId"},{"name":"childReferences","children":[{"name":"childReference","children":[{"ref":"recordInfo"},{"repeatMin":"1"},{"repeatMax":"1"}]},{"name":"childReference","children":[{"ref":"id"},{"repeatMin":"1"},{"repeatMax":"1"}]}]}]}
+	<b>data(generatedId):</b>{"name":"metadata","attributes":{"type":"group"},"children":[{"name":"recordInfo","children":[{"id":"generatedId"}]},{"nameInData":"generatedId"},{"textId":"generatedIdTextId"},{"defTextId":"generatedIdDefTextId"},{"name":"childReferences","children":[{"name":"childReference","children":[{"ref":"recordInfo"},{"repeatMin":"1"},{"repeatMax":"1"}]},{"name":"childReference","children":[{"ref":"id"},{"repeatMin":"1"},{"repeatMax":"1"}]}]}]}
 
 	<h2>Create the recordType</h2>
 	<b>location:</b>http://localhost:8080/therest/rest/record/recordType
@@ -92,12 +92,12 @@
 	<h2>Use this information to create a new metadata(suppliedIdNew)</h2>
 	http://localhost:8080/therest/rest/record/metadata
 	<br> Content-Type application/uub+record+json
-	<br>{"metadata":{"attributes":{"type":"group"},"children":[{"recordInfo":{"children":[{"id":"suppliedIdNew"}]}},{"dataId":"suppliedId"},{"textId":"suppliedIdNewTextId"},{"defTextId":"suppliedIdNewTextId"},{"childReferences":{"children":[{"childReference":{"children":[{"ref":"recordInfoNew"},{"repeatMin":"1"},{"repeatMax":"1"}]}},{"childReference":{"children":[{"ref":"id"},{"repeatMin":"1"},{"repeatMax":"1"}]}}]}}]}}
+	<br>{"metadata":{"attributes":{"type":"group"},"children":[{"recordInfo":{"children":[{"id":"suppliedIdNew"}]}},{"nameInData":"suppliedId"},{"textId":"suppliedIdNewTextId"},{"defTextId":"suppliedIdNewTextId"},{"childReferences":{"children":[{"childReference":{"children":[{"ref":"recordInfoNew"},{"repeatMin":"1"},{"repeatMax":"1"}]}},{"childReference":{"children":[{"ref":"id"},{"repeatMin":"1"},{"repeatMax":"1"}]}}]}}]}}
 
 	<h2>Use this information to create a new metadata(suppliedId)</h2>
 	http://localhost:8080/therest/rest/record/metadata
 	<br> Content-Type application/uub+record+json
-	<br>{"metadata":{"attributes":{"type":"group"},"children":[{"recordInfo":{"children":[{"id":"suppliedId"}]}},{"dataId":"suppliedId"},{"textId":"suppliedIdTextId"},{"defTextId":"suppliedIdTextId"},{"childReferences":{"children":[{"childReference":{"children":[{"ref":"recordInfo"},{"repeatMin":"1"},{"repeatMax":"1"}]}},{"childReference":{"children":[{"ref":"id"},{"repeatMin":"1"},{"repeatMax":"1"}]}}]}}]}}
+	<br>{"metadata":{"attributes":{"type":"group"},"children":[{"recordInfo":{"children":[{"id":"suppliedId"}]}},{"nameInData":"suppliedId"},{"textId":"suppliedIdTextId"},{"defTextId":"suppliedIdTextId"},{"childReferences":{"children":[{"childReference":{"children":[{"ref":"recordInfo"},{"repeatMin":"1"},{"repeatMax":"1"}]}},{"childReference":{"children":[{"ref":"id"},{"repeatMin":"1"},{"repeatMax":"1"}]}}]}}]}}
 
 
 	<h2>Use this information to create a new recordType(suppliedId)</h2>
@@ -134,7 +134,7 @@
 	http://localhost:8080/therest/rest/record/metadata
 	<br> Content-Type application/uub+record+json
 	<br>
-	{"metadata":{"attributes":{"type":"group"},"children":[{"recordInfo":{"children":[{"id":"authority"}]}},{"dataId":"authority"},{"textId":"authorityTextId"},{"defTextId":"authorityDefTextId"},{"attributeReferences":{"children":[{"ref":"authorityType"}]}},{"childReferences":{"children":[{"childReference":{"children":[{"ref":"autocomplete"},{"repeatMin":"1"},{"repeatMax":"1"}]}},{"childReference":{"children":[{"ref":"existenceDatePeriod"},{"repeatMin":"1"},{"repeatMax":"1"}]}},{"childReference":{"children":[{"ref":"name"},{"repeatMin":"1"},{"repeatMax":"X"}]}},{"childReference":{"children":[{"ref":"other"},{"repeatMin":"1"},{"repeatMax":"3"}]}},{"childReference":{"children":[{"ref":"otherCollection"},{"repeatMin":"1"},{"repeatMax":"3"}]}}]}}]}}
+	{"metadata":{"attributes":{"type":"group"},"children":[{"recordInfo":{"children":[{"id":"authority"}]}},{"nameInData":"authority"},{"textId":"authorityTextId"},{"defTextId":"authorityDefTextId"},{"attributeReferences":{"children":[{"ref":"authorityType"}]}},{"childReferences":{"children":[{"childReference":{"children":[{"ref":"autocomplete"},{"repeatMin":"1"},{"repeatMax":"1"}]}},{"childReference":{"children":[{"ref":"existenceDatePeriod"},{"repeatMin":"1"},{"repeatMax":"1"}]}},{"childReference":{"children":[{"ref":"name"},{"repeatMin":"1"},{"repeatMax":"X"}]}},{"childReference":{"children":[{"ref":"other"},{"repeatMin":"1"},{"repeatMax":"3"}]}},{"childReference":{"children":[{"ref":"otherCollection"},{"repeatMin":"1"},{"repeatMax":"3"}]}}]}}]}}
 
 
 	<h2>Use this information for update</h2>
@@ -253,7 +253,7 @@ recordType
 		      ]
 		    }
 		  },
-		  {"dataId":"authority"},
+		  {"nameInData":"authority"},
 		  {"explanation": "Authority group"},
 		  {
 		    "attributeRefrence": {
@@ -383,7 +383,7 @@ recordType
 		      ]
 		    }
 		  },
-		  {"dataId":"authority"},
+		  {"nameInData":"authority"},
 		  {"explanation": "Authority group"},
 		  {
 		    "attributeRefrence": {
@@ -503,7 +503,7 @@ recordType
       {
       "record": {
 	  "data": {
-	      "groupDataId": {
+	      "groupNameInData": {
 		}			
 		
 	      }

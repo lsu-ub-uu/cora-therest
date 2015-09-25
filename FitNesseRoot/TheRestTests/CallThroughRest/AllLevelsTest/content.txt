@@ -17,11 +17,11 @@ Last, we will create a trainingProgram using the metadata groups specified. We c
 !***> Create Metadata
 
 | Table:smartrics.rest.fitnesse.fixture.RestFixture | http://localhost:8089/therest |
-| setBody | {"name":"metadata","attributes":{"type":"group"},"children":[{"name":"recordInfo","children":[{"id":"trainingProgram"}]},{"textId":"hereistextid"},{"defTextId":"hereisdeftext"},{"dataId":"trainingProgram"},{"name":"childReferences","children":[{"name":"childReference","children":[{"ref":"id"},{"repeatMin":"1"},{"repeatMax":"1"}]},{"name":"childReference","children":[{"ref":"createdBy"},{"repeatMin":"1"},{"repeatMax":"1"}]}]}]} |
+| setBody | {"name":"metadata","attributes":{"type":"group"},"children":[{"name":"recordInfo","children":[{"id":"trainingProgram"}]},{"textId":"hereistextid"},{"defTextId":"hereisdeftext"},{"nameInData":"trainingProgram"},{"name":"childReferences","children":[{"name":"childReference","children":[{"ref":"id"},{"repeatMin":"1"},{"repeatMax":"1"}]},{"name":"childReference","children":[{"ref":"createdBy"},{"repeatMin":"1"},{"repeatMax":"1"}]}]}]} |
 | POST | /rest/record/metadataGroup | 201 | | |
-| setBody | {"name":"metadata","attributes":{"type":"group"},"children":[{"name":"recordInfo","children":[{"id":"singleTrainingProgramNew"}]},{"textId":"hereistextid"},{"defTextId":"hereisdeftext"},{"dataId":"singleTrainingProgramNew"},{"name":"childReferences","children":[{"name":"childReference","children":[{"ref":"trainingProgram"},{"repeatMin":"1"},{"repeatMax":"1"}]}]}]} |
+| setBody | {"name":"metadata","attributes":{"type":"group"},"children":[{"name":"recordInfo","children":[{"id":"singleTrainingProgramNew"}]},{"textId":"hereistextid"},{"defTextId":"hereisdeftext"},{"nameInData":"singleTrainingProgramNew"},{"name":"childReferences","children":[{"name":"childReference","children":[{"ref":"trainingProgram"},{"repeatMin":"1"},{"repeatMax":"1"}]}]}]} |
 | POST | /rest/record/metadataGroup | 201 | | |
-| setBody | {"name":"metadata","attributes":{"type":"group"},"children":[{"name":"recordInfo","children":[{"id":"singleTrainingProgram"}]},{"textId":"hereistextid"},{"defTextId":"hereisdeftext"},{"dataId":"singleTrainingProgram"},{"name":"childReferences","children":[{"name":"childReference","children":[{"ref":"trainingProgram"},{"repeatMin":"1"},{"repeatMax":"1"}]},{"name":"childReference","children":[{"ref":"recordInfo"},{"repeatMin":"1"},{"repeatMax":"1"}]}]}]} |
+| setBody | {"name":"metadata","attributes":{"type":"group"},"children":[{"name":"recordInfo","children":[{"id":"singleTrainingProgram"}]},{"textId":"hereistextid"},{"defTextId":"hereisdeftext"},{"nameInData":"singleTrainingProgram"},{"name":"childReferences","children":[{"name":"childReference","children":[{"ref":"trainingProgram"},{"repeatMin":"1"},{"repeatMax":"1"}]},{"name":"childReference","children":[{"ref":"recordInfo"},{"repeatMin":"1"},{"repeatMax":"1"}]}]}]} |
 | POST | /rest/record/metadataGroup | 201 | | |
 
 *!

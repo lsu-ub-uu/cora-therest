@@ -23,17 +23,17 @@ public class JsonToDataAtomicConverterTest {
 
 	@Test
 	public void testToClass() {
-		String json = "{\"atomicDataId\":\"atomicValue\"}";
+		String json = "{\"atomicNameInData\":\"atomicValue\"}";
 		RestDataAtomic restDataAtomic = createRestDataAtomicForJsonString(json);
-		Assert.assertEquals(restDataAtomic.getDataId(), "atomicDataId");
+		Assert.assertEquals(restDataAtomic.getNameInData(), "atomicNameInData");
 		Assert.assertEquals(restDataAtomic.getValue(), "atomicValue");
 	}
 
 	@Test
 	public void testToClassEmptyValue() {
-		String json = "{\"atomicDataId\":\"\"}";
+		String json = "{\"atomicNameInData\":\"\"}";
 		RestDataAtomic restDataAtomic = createRestDataAtomicForJsonString(json);
-		Assert.assertEquals(restDataAtomic.getDataId(), "atomicDataId");
+		Assert.assertEquals(restDataAtomic.getNameInData(), "atomicNameInData");
 		Assert.assertEquals(restDataAtomic.getValue(), "");
 	}
 
@@ -58,7 +58,7 @@ public class JsonToDataAtomicConverterTest {
 
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testToClassWrongJsonExtraKeyValuePair() {
-		String json = "{\"atomicDataId\":\"atomicValue\",\"id2\":\"value2\"}";
+		String json = "{\"atomicNameInData\":\"atomicValue\",\"id2\":\"value2\"}";
 		JsonValue jsonValue = jsonParser.parseString(json);
 		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
 				.createForJsonObject(jsonValue);
@@ -67,7 +67,7 @@ public class JsonToDataAtomicConverterTest {
 
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testToClassWrongJsonExtraArray() {
-		String json = "{\"atomicDataId\":\"atomicValue\",\"id2\":[]}";
+		String json = "{\"atomicNameInData\":\"atomicValue\",\"id2\":[]}";
 		JsonValue jsonValue = jsonParser.parseString(json);
 		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
 				.createForJsonObject(jsonValue);

@@ -29,18 +29,18 @@ public final class JsonToDataAtomicConverter implements JsonToDataConverter {
 
 	private RestDataElement tryToInstantiate() {
 		validateJsonData();
-		String dataId = getDataIdFromJsonObject();
-		JsonString value = (JsonString) jsonObject.getValue(dataId);
-		return RestDataAtomic.withDataIdAndValue(dataId, value.getStringValue());
+		String nameInData = getNameInDataFromJsonObject();
+		JsonString value = (JsonString) jsonObject.getValue(nameInData);
+		return RestDataAtomic.withNameInDataAndValue(nameInData, value.getStringValue());
 	}
 
-	private String getDataIdFromJsonObject() {
+	private String getNameInDataFromJsonObject() {
 		return jsonObject.keySet().iterator().next();
 	}
 
 	private void validateJsonData() {
 		validateOnlyOneKeyValuePairAtTopLevel();
-		validateDataIdValueIsString();
+		validateNameInDataValueIsString();
 	}
 
 	private void validateOnlyOneKeyValuePairAtTopLevel() {
@@ -49,9 +49,9 @@ public final class JsonToDataAtomicConverter implements JsonToDataConverter {
 		}
 	}
 
-	private void validateDataIdValueIsString() {
-		String dataId = getDataIdFromJsonObject();
-		JsonValue value = jsonObject.getValue(dataId);
+	private void validateNameInDataValueIsString() {
+		String nameInData = getNameInDataFromJsonObject();
+		JsonValue value = jsonObject.getValue(nameInData);
 		if(!(value instanceof JsonString)){
 			throw new JsonParseException("Value of atomic data must be a String");
 		}

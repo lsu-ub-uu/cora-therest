@@ -22,7 +22,7 @@ public class DataToJsonConverterFactoryTest {
 
 	@Test
 	public void testJsonCreatorFactoryDataGroup() {
-		RestDataElement restDataElement = RestDataGroup.withDataId("groupDataId");
+		RestDataElement restDataElement = RestDataGroup.withNameInData("groupNameInData");
 
 		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForRestDataElement(factory, restDataElement);
@@ -32,7 +32,7 @@ public class DataToJsonConverterFactoryTest {
 
 	@Test
 	public void testJsonCreatorFactoryDataAtomic() {
-		RestDataElement restDataElement = RestDataAtomic.withDataIdAndValue("atomicDataId",
+		RestDataElement restDataElement = RestDataAtomic.withNameInDataAndValue("atomicNameInData",
 				"atomicValue");
 
 		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory

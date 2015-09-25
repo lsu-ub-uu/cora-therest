@@ -14,7 +14,7 @@ public class RecordListToJsonConverterTest {
 	@Test
 	public void testToJson() {
 		RestRecordList restRecordList = RestRecordList.withContainRecordsOfType("place");
-		RestDataGroup restDataGroup = RestDataGroup.withDataId("groupId");
+		RestDataGroup restDataGroup = RestDataGroup.withNameInData("groupId");
 		RestDataRecord restDataRecord = RestDataRecord.withRestDataGroup(restDataGroup);
 		restRecordList.addRecord(restDataRecord);
 		restRecordList.setTotalNo("1");

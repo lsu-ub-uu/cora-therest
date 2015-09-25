@@ -22,7 +22,7 @@ public final class DataGroupRestToSpiderConverter {
 	}
 
 	public SpiderDataGroup toSpider() {
-		spiderDataGroup = SpiderDataGroup.withDataId(restDataGroup.getDataId());
+		spiderDataGroup = SpiderDataGroup.withNameInData(restDataGroup.getNameInData());
 		addAttributesToSpiderGroup();
 		addChildrenToSpiderGroup();
 		return spiderDataGroup;

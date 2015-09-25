@@ -16,14 +16,14 @@ public class RestDataRecordTest {
 
 	@BeforeMethod
 	public void beforeMethod() {
-		RestDataGroup restDataGroup = RestDataGroup.withDataId("dataId");
+		RestDataGroup restDataGroup = RestDataGroup.withNameInData("nameInData");
 		restDataRecord = RestDataRecord.withRestDataGroup(restDataGroup);
 	}
 
 	@Test
-	public void testWithDataId() {
-		String dataId = restDataRecord.getRestDataGroup().getDataId();
-		assertEquals(dataId, "dataId");
+	public void testWithNameInData() {
+		String nameInData = restDataRecord.getRestDataGroup().getNameInData();
+		assertEquals(nameInData, "nameInData");
 	}
 
 	@Test

@@ -21,9 +21,9 @@ public class TestDataRecordInMemoryStorage {
 
 		records.put("place", new HashMap<String, DataGroup>());
 
-		DataGroup recordInfo = DataGroup.withDataId("recordInfo");
-		recordInfo.addChild(DataAtomic.withDataIdAndValue("type", "place"));
-		recordInfo.addChild(DataAtomic.withDataIdAndValue("id", "place:0001"));
+		DataGroup recordInfo = DataGroup.withNameInData("recordInfo");
+		recordInfo.addChild(DataAtomic.withNameInDataAndValue("type", "place"));
+		recordInfo.addChild(DataAtomic.withNameInDataAndValue("id", "place:0001"));
 
 		/**
 		 * <pre>
@@ -38,7 +38,7 @@ public class TestDataRecordInMemoryStorage {
 		 * </pre>
 		 */
 
-		DataGroup dataGroup = DataGroup.withDataId("authority");
+		DataGroup dataGroup = DataGroup.withNameInData("authority");
 		dataGroup.addChild(recordInfo);
 
 		records.get("place").put("place:0001", dataGroup);
@@ -49,192 +49,192 @@ public class TestDataRecordInMemoryStorage {
 
 	private static void addRecordTypeRecordType() {
 		String recordType = "recordType";
-		DataGroup dataGroup = DataGroup.withDataId(recordType);
+		DataGroup dataGroup = DataGroup.withNameInData(recordType);
 
-		DataGroup recordInfo = DataGroup.withDataId("recordInfo");
-		recordInfo.addChild(DataAtomic.withDataIdAndValue("id", "recordType"));
-		recordInfo.addChild(DataAtomic.withDataIdAndValue("type", recordType));
+		DataGroup recordInfo = DataGroup.withNameInData("recordInfo");
+		recordInfo.addChild(DataAtomic.withNameInDataAndValue("id", "recordType"));
+		recordInfo.addChild(DataAtomic.withNameInDataAndValue("type", recordType));
 		dataGroup.addChild(recordInfo);
 
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("id", "recordType"));
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("metadataId", "metadata:recordType"));
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("presentationViewId",
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("id", "recordType"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("metadataId", "metadata:recordType"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("presentationViewId",
 				"presentation:pgRecordTypeView"));
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("presentationFormId",
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("presentationFormId",
 				"presentation:pgRecordTypeForm"));
 		dataGroup
-				.addChild(DataAtomic.withDataIdAndValue("newMetadataId", "metadata:recordTypeNew"));
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("newPresentationFormId",
+				.addChild(DataAtomic.withNameInDataAndValue("newMetadataId", "metadata:recordTypeNew"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("newPresentationFormId",
 				"presentation:pgRecordTypeFormNew"));
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("listPresentationViewId",
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("listPresentationViewId",
 				"presentation:pgRecordTypeViewList"));
 		dataGroup.addChild(
-				DataAtomic.withDataIdAndValue("searchMetadataId", "metadata:recordTypeSearch"));
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("searchPresentationFormId",
+				DataAtomic.withNameInDataAndValue("searchMetadataId", "metadata:recordTypeSearch"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("searchPresentationFormId",
 				"presentation:pgRecordTypeSearchForm"));
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("userSuppliedId", "true"));
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("permissionKey", "RECORDTYPE_RECORDTYPE"));
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("selfPresentationViewId",
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("userSuppliedId", "true"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("permissionKey", "RECORDTYPE_RECORDTYPE"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("selfPresentationViewId",
 				"presentation:pgrecordTypeRecordType"));
 
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("abstract", "false"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("abstract", "false"));
 		records.get(recordType).put("recordType", dataGroup);
 
 	}
 
 	private static void addRecordTypePlace() {
 		String recordType = "recordType";
-		DataGroup dataGroup = DataGroup.withDataId(recordType);
+		DataGroup dataGroup = DataGroup.withNameInData(recordType);
 
-		DataGroup recordInfo = DataGroup.withDataId("recordInfo");
-		recordInfo.addChild(DataAtomic.withDataIdAndValue("id", "place"));
-		recordInfo.addChild(DataAtomic.withDataIdAndValue("type", recordType));
+		DataGroup recordInfo = DataGroup.withNameInData("recordInfo");
+		recordInfo.addChild(DataAtomic.withNameInDataAndValue("id", "place"));
+		recordInfo.addChild(DataAtomic.withNameInDataAndValue("type", recordType));
 		dataGroup.addChild(recordInfo);
 
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("id", "place"));
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("metadataId", "metadata:place"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("id", "place"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("metadataId", "metadata:place"));
 		dataGroup.addChild(
-				DataAtomic.withDataIdAndValue("presentationViewId", "presentation:pgPlaceView"));
+				DataAtomic.withNameInDataAndValue("presentationViewId", "presentation:pgPlaceView"));
 		dataGroup.addChild(
-				DataAtomic.withDataIdAndValue("presentationFormId", "presentation:pgPlaceForm"));
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("newMetadataId", "metadata:placeNew"));
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("newPresentationFormId",
+				DataAtomic.withNameInDataAndValue("presentationFormId", "presentation:pgPlaceForm"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("newMetadataId", "metadata:placeNew"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("newPresentationFormId",
 				"presentation:pgPlaceFormNew"));
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("listPresentationViewId",
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("listPresentationViewId",
 				"presentation:pgPlaceViewList"));
 		dataGroup.addChild(
-				DataAtomic.withDataIdAndValue("searchMetadataId", "metadata:placeSearch"));
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("searchPresentationFormId",
+				DataAtomic.withNameInDataAndValue("searchMetadataId", "metadata:placeSearch"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("searchPresentationFormId",
 				"presentation:pgPlaceSearchForm"));
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("userSuppliedId", "false"));
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("permissionKey", "RECORDTYPE_PLACE"));
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("selfPresentationViewId",
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("userSuppliedId", "false"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("permissionKey", "RECORDTYPE_PLACE"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("selfPresentationViewId",
 				"presentation:pgPlaceRecordType"));
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("abstract", "false"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("abstract", "false"));
 		records.get(recordType).put("place", dataGroup);
 
 	}
 
 	private static void addRecordTypeBadType() {
 		String recordType = "recordType";
-		DataGroup dataGroup = DataGroup.withDataId(recordType);
+		DataGroup dataGroup = DataGroup.withNameInData(recordType);
 
-		DataGroup recordInfo = DataGroup.withDataId("recordInfo");
-		recordInfo.addChild(DataAtomic.withDataIdAndValue("id", "place"));
-		recordInfo.addChild(DataAtomic.withDataIdAndValue("type", recordType));
+		DataGroup recordInfo = DataGroup.withNameInData("recordInfo");
+		recordInfo.addChild(DataAtomic.withNameInDataAndValue("id", "place"));
+		recordInfo.addChild(DataAtomic.withNameInDataAndValue("type", recordType));
 		dataGroup.addChild(recordInfo);
 
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("id", "place"));
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("metadataId", "metadata:place"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("id", "place"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("metadataId", "metadata:place"));
 		dataGroup.addChild(
-				DataAtomic.withDataIdAndValue("presentationViewId", "presentation:pgPlaceView"));
+				DataAtomic.withNameInDataAndValue("presentationViewId", "presentation:pgPlaceView"));
 		dataGroup.addChild(
-				DataAtomic.withDataIdAndValue("presentationFormId", "presentation:pgPlaceForm"));
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("newMetadataId", "metadata:placeNew"));
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("newPresentationFormId",
+				DataAtomic.withNameInDataAndValue("presentationFormId", "presentation:pgPlaceForm"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("newMetadataId", "metadata:placeNew"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("newPresentationFormId",
 				"presentation:pgPlaceFormNew"));
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("listPresentationViewId",
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("listPresentationViewId",
 				"presentation:pgPlaceViewList"));
 		dataGroup.addChild(
-				DataAtomic.withDataIdAndValue("searchMetadataId", "metadata:placeSearch"));
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("searchPresentationFormId",
+				DataAtomic.withNameInDataAndValue("searchMetadataId", "metadata:placeSearch"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("searchPresentationFormId",
 				"presentation:pgPlaceSearchForm"));
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("userSuppliedId", "false"));
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("permissionKey", "RECORDTYPE_PLACE"));
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("selfPresentationViewId",
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("userSuppliedId", "false"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("permissionKey", "RECORDTYPE_PLACE"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("selfPresentationViewId",
 				"presentation:pgPlaceRecordType"));
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("abstract", "false"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("abstract", "false"));
 		records.get(recordType).put("place&& &&\\\\", dataGroup);
 	}
 
 	private static void addAbstractRecordTypes() {
 		String recordType = "recordType";
-		DataGroup dataGroup = DataGroup.withDataId(recordType);
+		DataGroup dataGroup = DataGroup.withNameInData(recordType);
 
-		DataGroup recordInfo = DataGroup.withDataId("recordInfo");
-		recordInfo.addChild(DataAtomic.withDataIdAndValue("id", "abstract"));
-		recordInfo.addChild(DataAtomic.withDataIdAndValue("type", recordType));
+		DataGroup recordInfo = DataGroup.withNameInData("recordInfo");
+		recordInfo.addChild(DataAtomic.withNameInDataAndValue("id", "abstract"));
+		recordInfo.addChild(DataAtomic.withNameInDataAndValue("type", recordType));
 		dataGroup.addChild(recordInfo);
 
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("metadataId", "abstract"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("metadataId", "abstract"));
 		dataGroup.addChild(
-				DataAtomic.withDataIdAndValue("presentationViewId", "presentation:pgAbstractView"));
+				DataAtomic.withNameInDataAndValue("presentationViewId", "presentation:pgAbstractView"));
 		dataGroup.addChild(
-				DataAtomic.withDataIdAndValue("presentationFormId", "presentation:pgAbstractForm"));
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("newMetadataId", "metadata:abstractNew"));
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("newPresentationFormId",
+				DataAtomic.withNameInDataAndValue("presentationFormId", "presentation:pgAbstractForm"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("newMetadataId", "metadata:abstractNew"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("newPresentationFormId",
 				"presentation:pgAbstractFormNew"));
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("listPresentationViewId",
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("listPresentationViewId",
 				"presentation:pgAbstractViewList"));
 		dataGroup.addChild(
-				DataAtomic.withDataIdAndValue("searchMetadataId", "metadata:AbstractSearch"));
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("searchPresentationFormId",
+				DataAtomic.withNameInDataAndValue("searchMetadataId", "metadata:AbstractSearch"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("searchPresentationFormId",
 				"presentation:pgAbstractSearchForm"));
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("userSuppliedId", "false"));
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("permissionKey", "RECORDTYPE_ABSTRACT"));
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("selfPresentationViewId",
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("userSuppliedId", "false"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("permissionKey", "RECORDTYPE_ABSTRACT"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("selfPresentationViewId",
 				"presentation:pgAbstractRecordType"));
-		dataGroup.addChild(DataAtomic.withDataIdAndValue("abstract", "true"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("abstract", "true"));
 		records.get(recordType).put("abstract", dataGroup);
 
-		DataGroup dataGroup1 = DataGroup.withDataId(recordType);
+		DataGroup dataGroup1 = DataGroup.withNameInData(recordType);
 
-		DataGroup recordInfo1 = DataGroup.withDataId("recordInfo1");
-		recordInfo1.addChild(DataAtomic.withDataIdAndValue("id", "child1"));
-		recordInfo1.addChild(DataAtomic.withDataIdAndValue("type", recordType));
+		DataGroup recordInfo1 = DataGroup.withNameInData("recordInfo1");
+		recordInfo1.addChild(DataAtomic.withNameInDataAndValue("id", "child1"));
+		recordInfo1.addChild(DataAtomic.withNameInDataAndValue("type", recordType));
 		dataGroup1.addChild(recordInfo1);
 
-		dataGroup1.addChild(DataAtomic.withDataIdAndValue("metadataId", "child1"));
+		dataGroup1.addChild(DataAtomic.withNameInDataAndValue("metadataId", "child1"));
 		dataGroup1.addChild(
-				DataAtomic.withDataIdAndValue("presentationViewId", "presentation:pgChild1View"));
+				DataAtomic.withNameInDataAndValue("presentationViewId", "presentation:pgChild1View"));
 		dataGroup1.addChild(
-				DataAtomic.withDataIdAndValue("presentationFormId", "presentation:pgChild1Form"));
-		dataGroup1.addChild(DataAtomic.withDataIdAndValue("newMetadataId", "metadata:child1New"));
-		dataGroup1.addChild(DataAtomic.withDataIdAndValue("newPresentationFormId",
+				DataAtomic.withNameInDataAndValue("presentationFormId", "presentation:pgChild1Form"));
+		dataGroup1.addChild(DataAtomic.withNameInDataAndValue("newMetadataId", "metadata:child1New"));
+		dataGroup1.addChild(DataAtomic.withNameInDataAndValue("newPresentationFormId",
 				"presentation:pgChild1FormNew"));
-		dataGroup1.addChild(DataAtomic.withDataIdAndValue("listPresentationViewId",
+		dataGroup1.addChild(DataAtomic.withNameInDataAndValue("listPresentationViewId",
 				"presentation:pgChild1ViewList"));
 		dataGroup1.addChild(
-				DataAtomic.withDataIdAndValue("searchMetadataId", "metadata:Child1Search"));
-		dataGroup1.addChild(DataAtomic.withDataIdAndValue("searchPresentationFormId",
+				DataAtomic.withNameInDataAndValue("searchMetadataId", "metadata:Child1Search"));
+		dataGroup1.addChild(DataAtomic.withNameInDataAndValue("searchPresentationFormId",
 				"presentation:pgChild1SearchForm"));
-		dataGroup1.addChild(DataAtomic.withDataIdAndValue("userSuppliedId", "true"));
-		dataGroup1.addChild(DataAtomic.withDataIdAndValue("permissionKey", "RECORDTYPE_CHILD1"));
-		dataGroup1.addChild(DataAtomic.withDataIdAndValue("selfPresentationViewId",
+		dataGroup1.addChild(DataAtomic.withNameInDataAndValue("userSuppliedId", "true"));
+		dataGroup1.addChild(DataAtomic.withNameInDataAndValue("permissionKey", "RECORDTYPE_CHILD1"));
+		dataGroup1.addChild(DataAtomic.withNameInDataAndValue("selfPresentationViewId",
 				"presentation:pgChild1RecordType"));
 
-		dataGroup1.addChild(DataAtomic.withDataIdAndValue("abstract", "false"));
-		dataGroup1.addChild(DataAtomic.withDataIdAndValue("parentId", "abstract"));
+		dataGroup1.addChild(DataAtomic.withNameInDataAndValue("abstract", "false"));
+		dataGroup1.addChild(DataAtomic.withNameInDataAndValue("parentId", "abstract"));
 		records.get(recordType).put("child1", dataGroup1);
 
-		DataGroup dataGroup2 = DataGroup.withDataId(recordType);
+		DataGroup dataGroup2 = DataGroup.withNameInData(recordType);
 
-		DataGroup recordInfo2 = DataGroup.withDataId("recordInfo2");
-		recordInfo2.addChild(DataAtomic.withDataIdAndValue("id", "child2"));
-		recordInfo2.addChild(DataAtomic.withDataIdAndValue("type", recordType));
+		DataGroup recordInfo2 = DataGroup.withNameInData("recordInfo2");
+		recordInfo2.addChild(DataAtomic.withNameInDataAndValue("id", "child2"));
+		recordInfo2.addChild(DataAtomic.withNameInDataAndValue("type", recordType));
 		dataGroup2.addChild(recordInfo2);
 
-		dataGroup2.addChild(DataAtomic.withDataIdAndValue("metadataId", "child2"));
+		dataGroup2.addChild(DataAtomic.withNameInDataAndValue("metadataId", "child2"));
 		dataGroup2.addChild(
-				DataAtomic.withDataIdAndValue("presentationViewId", "presentation:pgChild2View"));
+				DataAtomic.withNameInDataAndValue("presentationViewId", "presentation:pgChild2View"));
 		dataGroup2.addChild(
-				DataAtomic.withDataIdAndValue("presentationFormId", "presentation:pgChild2Form"));
-		dataGroup2.addChild(DataAtomic.withDataIdAndValue("newMetadataId", "metadata:child2New"));
-		dataGroup2.addChild(DataAtomic.withDataIdAndValue("newPresentationFormId",
+				DataAtomic.withNameInDataAndValue("presentationFormId", "presentation:pgChild2Form"));
+		dataGroup2.addChild(DataAtomic.withNameInDataAndValue("newMetadataId", "metadata:child2New"));
+		dataGroup2.addChild(DataAtomic.withNameInDataAndValue("newPresentationFormId",
 				"presentation:pgChild2FormNew"));
-		dataGroup2.addChild(DataAtomic.withDataIdAndValue("listPresentationViewId",
+		dataGroup2.addChild(DataAtomic.withNameInDataAndValue("listPresentationViewId",
 				"presentation:pgChild2ViewList"));
 		dataGroup2.addChild(
-				DataAtomic.withDataIdAndValue("searchMetadataId", "metadata:Child2Search"));
-		dataGroup2.addChild(DataAtomic.withDataIdAndValue("searchPresentationFormId",
+				DataAtomic.withNameInDataAndValue("searchMetadataId", "metadata:Child2Search"));
+		dataGroup2.addChild(DataAtomic.withNameInDataAndValue("searchPresentationFormId",
 				"presentation:pgChild2SearchForm"));
-		dataGroup2.addChild(DataAtomic.withDataIdAndValue("userSuppliedId", "true"));
-		dataGroup2.addChild(DataAtomic.withDataIdAndValue("permissionKey", "RECORDTYPE_CHILD2"));
-		dataGroup2.addChild(DataAtomic.withDataIdAndValue("selfPresentationViewId",
+		dataGroup2.addChild(DataAtomic.withNameInDataAndValue("userSuppliedId", "true"));
+		dataGroup2.addChild(DataAtomic.withNameInDataAndValue("permissionKey", "RECORDTYPE_CHILD2"));
+		dataGroup2.addChild(DataAtomic.withNameInDataAndValue("selfPresentationViewId",
 				"presentation:pgChild2RecordType"));
 
-		dataGroup2.addChild(DataAtomic.withDataIdAndValue("abstract", "false"));
-		dataGroup2.addChild(DataAtomic.withDataIdAndValue("parentId", "abstract"));
+		dataGroup2.addChild(DataAtomic.withNameInDataAndValue("abstract", "false"));
+		dataGroup2.addChild(DataAtomic.withNameInDataAndValue("parentId", "abstract"));
 		records.get(recordType).put("child2", dataGroup2);
 
 	}

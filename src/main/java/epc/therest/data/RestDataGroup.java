@@ -7,29 +7,29 @@ import java.util.Map;
 
 public final class RestDataGroup implements RestDataElement {
 
-	private final String dataId;
+	private final String nameInData;
 	private Map<String, String> attributes = new HashMap<>();
 	private List<RestDataElement> children = new ArrayList<>();
 
-	public static RestDataGroup withDataId(String dataId) {
-		return new RestDataGroup(dataId);
+	public static RestDataGroup withNameInData(String nameInData) {
+		return new RestDataGroup(nameInData);
 	}
 
-	private RestDataGroup(String dataId) {
-		this.dataId = dataId;
+	private RestDataGroup(String nameInData) {
+		this.nameInData = nameInData;
 	}
 
 	@Override
-	public String getDataId() {
-		return dataId;
+	public String getNameInData() {
+		return nameInData;
 	}
 
 	public Map<String, String> getAttributes() {
 		return attributes;
 	}
 
-	public void addAttributeByIdWithValue(String dataId, String value) {
-		attributes.put(dataId, value);
+	public void addAttributeByIdWithValue(String nameInData, String value) {
+		attributes.put(nameInData, value);
 	}
 
 	public void addChild(RestDataElement restDataElement) {
