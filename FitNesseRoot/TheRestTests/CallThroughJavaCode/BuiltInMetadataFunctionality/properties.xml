@@ -2,13 +2,12 @@
 <properties>
 <Edit>true</Edit>
 <Files>true</Files>
-<Help>Test domain specific metadata (level 2b)</Help>
+<Help>Test built in metadata functionality (level 2b)</Help>
 <Properties>true</Properties>
 <RecentChanges>true</RecentChanges>
 <Refactor>true</Refactor>
 <Search>true</Search>
 <Suite>true</Suite>
-<Suites/>
 <Versions>true</Versions>
 <WhereUsed>true</WhereUsed>
 </properties>
