@@ -5,10 +5,10 @@
 !1 Record type for textVariable
 The metadata for textVariable has been created during system startup, so we should be able to use it right away.
 
-!***> Create a recordType(textVariable)
+!***> Create a textVariable
 
 !| RecordEndpointFixture |
 | type | json | testCreateRecord? | getStatusType? |
-| recordType | {"name":"recordType","children":[{"name":"recordInfo","children":[{"id":"metadataTextVariable"}]},{"metadataId":"metadataTextVariable"},{"abstract":"false"},{"presentationViewId":"pgMetadataTextVariableView"},{"presentationFormId":"pgMetadataTextVariableForm"},{"newMetadataId":"MetadataTextVariableNew"},{"newPresentationFormId":"pgMetadataTextVariableForm"},{"listPresentationViewId":"pgMetadataTextVariableList"},{"searchMetadataId":"MetadataTextVariableSearch"},{"searchPresentationFormId":"pgMetadataTextVariableSearchForm"},{"userSuppliedId":"true"},{"selfPresentationViewId":"pgMetadataTextVariableSelf"},{"permissionKey":"METADATATEXTVARIABLE"}]} | {"record":{"data":{"children":[{"children":[{"id":"metadataTextVariable"},{"type":"recordType"},{"createdBy":"userId"}],"name":"recordInfo"},{"metadataId":"metadataTextVariable"},{"abstract":"false"},{"presentationViewId":"pgMetadataTextVariableView"},{"presentationFormId":"pgMetadataTextVariableForm"},{"newMetadataId":"MetadataTextVariableNew"},{"newPresentationFormId":"pgMetadataTextVariableForm"},{"listPresentationViewId":"pgMetadataTextVariableList"},{"searchMetadataId":"MetadataTextVariableSearch"},{"searchPresentationFormId":"pgMetadataTextVariableSearchForm"},{"userSuppliedId":"true"},{"selfPresentationViewId":"pgMetadataTextVariableSelf"},{"permissionKey":"METADATATEXTVARIABLE"}],"name":"recordType"},"actionLinks":{"read":{"requestMethod":"GET","rel":"read","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/recordType/metadataTextVariable","accept":"application/uub+record+json"},"update":{"requestMethod":"POST","rel":"update","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/recordType/metadataTextVariable","accept":"application/uub+record+json"},"delete":{"requestMethod":"DELETE","rel":"delete","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/recordType/metadataTextVariable","accept":"application/uub+record+json"}}}} | CREATED |
+| metadataTextVariable | {"name":"pinCode","children":[{"name":"recordInfo","children":[{"id":"pinCode"}]}]} | | CREATED |
 
 *!
