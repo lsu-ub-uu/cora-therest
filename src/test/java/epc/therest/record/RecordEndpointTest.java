@@ -203,4 +203,19 @@ public class RecordEndpointTest {
 		Response responseCreated = recordEndpoint.createRecord(type, jsonToCreateFrom);
 		assertEquals(responseCreated.getStatusInfo(), Response.Status.METHOD_NOT_ALLOWED);
 	}
+
+	String duplicateTestJson="{\"name\":\"place\",\"children\":["
+			+ "{\"name\":\"recordInfo\",\"children\":["
+			+ "{\"id\":\"aPlace\"}]}"
+			+ ",{\"id\":\"anythingGoes\"}]}";
+	@Test
+	public void testCreateRecordDuplicateUserSuppliedId() {
+		String type = "place";
+		Response responseCreated = recordEndpoint.createRecord(type, duplicateTestJson);
+		assertEquals(responseCreated.getStatusInfo(), Response.Status.CREATED);
+		
+		Response responseCreated2 = recordEndpoint.createRecord(type, duplicateTestJson);
+		assertEquals(responseCreated2.getStatusInfo(), Response.Status.CONFLICT);
+		
+	}
 }
