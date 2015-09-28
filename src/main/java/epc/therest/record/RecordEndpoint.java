@@ -12,6 +12,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
 import epc.spider.data.DataMissingException;
@@ -22,6 +23,7 @@ import epc.spider.dependency.SpiderInstanceProvider;
 import epc.spider.record.AuthorizationException;
 import epc.spider.record.DataException;
 import epc.spider.record.MisuseException;
+import epc.spider.record.storage.RecordConflictException;
 import epc.spider.record.storage.RecordNotFoundException;
 import epc.therest.data.RestDataElement;
 import epc.therest.data.RestDataGroup;
@@ -71,17 +73,25 @@ public class RecordEndpoint {
 	public Response createRecordAsUserIdWithRecord(String userId, String type, String jsonRecord) {
 		try {
 			return tryCreateRecord(userId, type, jsonRecord);
-		} catch (MisuseException e) {
-			return Response.status(Response.Status.METHOD_NOT_ALLOWED).entity(e.getMessage())
-					.build();
-		} catch (JsonParseException | DataException e) {
-			return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
-		} catch (AuthorizationException e) {
+		} catch (RecordConflictException error) {
+			return buildResponse(error, Response.Status.CONFLICT);
+		} catch (MisuseException error) {
+			return buildResponse(error, Response.Status.METHOD_NOT_ALLOWED);
+		} catch (JsonParseException | DataException error) {
+			return buildResponse(error, Response.Status.BAD_REQUEST);
+		} catch (URISyntaxException error) {
+			return Response.status(Response.Status.BAD_REQUEST).build();
+		} catch (AuthorizationException error) {
 			return Response.status(Response.Status.UNAUTHORIZED).build();
 		}
 	}
 
-	private Response tryCreateRecord(String userId, String type, String jsonRecord) {
+	private Response buildResponse(Exception error, Status status) {
+		return Response.status(status).entity(error.getMessage()).build();
+	}
+
+	private Response tryCreateRecord(String userId, String type, String jsonRecord)
+			throws URISyntaxException {
 		SpiderDataGroup record = convertJsonStringToSpiderDataGroup(jsonRecord);
 		SpiderDataRecord createdRecord = SpiderInstanceProvider.getSpiderRecordCreator()
 				.createAndStoreRecord(userId, type, record);
@@ -92,12 +102,7 @@ public class RecordEndpoint {
 
 		String json = convertSpiderDataRecordToJsonString(createdRecord);
 
-		URI uri = null;
-		try {
-			uri = new URI("record/" + type + "/" + createdId);
-		} catch (URISyntaxException e) {
-			return Response.status(Response.Status.BAD_REQUEST).build();
-		}
+		URI uri = new URI("record/" + type + "/" + createdId);
 		return Response.created(uri).entity(json).build();
 	}
 
