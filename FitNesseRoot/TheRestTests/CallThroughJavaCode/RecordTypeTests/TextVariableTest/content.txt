@@ -5,10 +5,74 @@
 !1 Record type for textVariable
 The metadata for textVariable has been created during system startup, so we should be able to use it right away.
 
-!***> Create a textVariable
+!***> Create textVariable pinCode
 
 !| RecordEndpointFixture |
 | type | json | testCreateRecord? | getStatusType? |
-| metadataTextVariable | {"name":"pinCode","children":[{"name":"recordInfo","children":[{"id":"pinCode"}]}]} | | CREATED |
+| metadataTextVariable | {"name":"metadata","attributes":{"type":"textVariable"},"children":[{"name":"recordInfo","children":[{"id":"pinCode"}]},{"nameInData":"pinCode"},{"textId":"pinCodeText"},{"defTextId":"pinCodeDefText"},{"regEx":"^[0-9]{4,4}$"}]} | {"record":{"data":{"children":[{"children":[{"id":"pinCode"},{"type":"metadataTextVariable"},{"createdBy":"userId"}],"name":"recordInfo"},{"nameInData":"pinCode"},{"textId":"pinCodeText"},{"defTextId":"pinCodeDefText"},{"regEx":"^[0-9]{4,4}$"}],"name":"metadataTextVariable"},"actionLinks":{"read":{"requestMethod":"GET","rel":"read","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/metadataTextVariable/pinCode","accept":"application/uub+record+json"},"update":{"requestMethod":"POST","rel":"update","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/metadataTextVariable/pinCode","accept":"application/uub+record+json"},"delete":{"requestMethod":"DELETE","rel":"delete","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/metadataTextVariable/pinCode","accept":"application/uub+record+json"}}}} | CREATED |
+
+*!
+!***> Read textVariable pinCode
+
+!| RecordEndpointFixture |
+| type | id | testReadRecord? | getStatusType? |
+| metadataTextVariable | pinCode | {"record":{"data":{"children":[{"children":[{"id":"pinCode"},{"type":"metadataTextVariable"},{"createdBy":"userId"}],"name":"recordInfo"},{"nameInData":"pinCode"},{"textId":"pinCodeText"},{"defTextId":"pinCodeDefText"},{"regEx":"^[0-9]{4,4}$"}],"name":"metadataTextVariable"},"actionLinks":{"read":{"requestMethod":"GET","rel":"read","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/metadataTextVariable/pinCode","accept":"application/uub+record+json"},"update":{"requestMethod":"POST","rel":"update","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/metadataTextVariable/pinCode","accept":"application/uub+record+json"},"delete":{"requestMethod":"DELETE","rel":"delete","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/metadataTextVariable/pinCode","accept":"application/uub+record+json"}}}} | OK |
+
+*!
+!***> Create a metadataGroup(lock)
+
+!| RecordEndpointFixture |
+| type | json | testCreateRecord? | getStatusType? |
+| metadataGroup | {"name":"metadata","attributes":{"type":"group"},"children":[{"name":"recordInfo","children":[{"id":"lockNew"}]},{"textId":"lockText"},{"defTextId":"lockDefText"},{"nameInData":"lock"},{"name":"childReferences","children":[{"name":"childReference","children":[{"ref":"recordInfoNew"},{"repeatMin":"1"},{"repeatMax":"1"}]},{"name":"childReference","children":[{"ref":"id"},{"repeatMin":"1"},{"repeatMax":"1"}]}]}]} | {"record":{"data":{"children":[{"children":[{"id":"lockNew"},{"type":"metadataGroup"},{"createdBy":"userId"}],"name":"recordInfo"},{"textId":"lockText"},{"defTextId":"lockDefText"},{"nameInData":"lock"},{"children":[{"children":[{"ref":"recordInfoNew"},{"repeatMin":"1"},{"repeatMax":"1"}],"name":"childReference"},{"children":[{"ref":"id"},{"repeatMin":"1"},{"repeatMax":"1"}],"name":"childReference"}],"name":"childReferences"}],"name":"metadata","attributes":{"type":"group"}},"actionLinks":{"read":{"requestMethod":"GET","rel":"read","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/metadataGroup/lockNew","accept":"application/uub+record+json"},"update":{"requestMethod":"POST","rel":"update","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/metadataGroup/lockNew","accept":"application/uub+record+json"},"delete":{"requestMethod":"DELETE","rel":"delete","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/metadataGroup/lockNew","accept":"application/uub+record+json"}}}} | CREATED |
+| metadataGroup | {"name":"metadata","attributes":{"type":"group"},"children":[{"name":"recordInfo","children":[{"id":"lock"}]},{"textId":"lockText"},{"defTextId":"lockDefText"},{"nameInData":"lock"},{"name":"childReferences","children":[{"name":"childReference","children":[{"ref":"recordInfo"},{"repeatMin":"1"},{"repeatMax":"1"}]},{"name":"childReference","children":[{"ref":"id"},{"repeatMin":"1"},{"repeatMax":"1"}]}]}]} | {"record":{"data":{"children":[{"children":[{"id":"lock"},{"type":"metadataGroup"},{"createdBy":"userId"}],"name":"recordInfo"},{"textId":"lockText"},{"defTextId":"lockDefText"},{"nameInData":"lock"},{"children":[{"children":[{"ref":"recordInfo"},{"repeatMin":"1"},{"repeatMax":"1"}],"name":"childReference"},{"children":[{"ref":"id"},{"repeatMin":"1"},{"repeatMax":"1"}],"name":"childReference"}],"name":"childReferences"}],"name":"metadata","attributes":{"type":"group"}},"actionLinks":{"read":{"requestMethod":"GET","rel":"read","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/metadataGroup/lock","accept":"application/uub+record+json"},"update":{"requestMethod":"POST","rel":"update","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/metadataGroup/lock","accept":"application/uub+record+json"},"delete":{"requestMethod":"DELETE","rel":"delete","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/metadataGroup/lock","accept":"application/uub+record+json"}}}} | CREATED |
+
+*!
+!***> Create a recordType(lock)
+
+!| RecordEndpointFixture |
+| type | json | testCreateRecord? | getStatusType? |
+| recordType | {"name":"recordType","children":[{"name":"recordInfo","children":[{"id":"lock"}]},{"metadataId":"lock"},{"abstract":"false"},{"presentationViewId":"pgLockView"},{"presentationFormId":"pgLockForm"},{"newMetadataId":"lockNew"},{"newPresentationFormId":"pgLockForm"},{"listPresentationViewId":"pgLockList"},{"searchMetadataId":"lockSearch"},{"searchPresentationFormId":"pgLockSearchForm"},{"userSuppliedId":"true"},{"selfPresentationViewId":"pgLockSelf"},{"permissionKey":"PLANT"}]} | {"record":{"data":{"children":[{"children":[{"id":"lock"},{"type":"recordType"},{"createdBy":"userId"}],"name":"recordInfo"},{"metadataId":"lock"},{"abstract":"false"},{"presentationViewId":"pgLockView"},{"presentationFormId":"pgLockForm"},{"newMetadataId":"lockNew"},{"newPresentationFormId":"pgLockForm"},{"listPresentationViewId":"pgLockList"},{"searchMetadataId":"lockSearch"},{"searchPresentationFormId":"pgLockSearchForm"},{"userSuppliedId":"true"},{"selfPresentationViewId":"pgLockSelf"},{"permissionKey":"PLANT"}],"name":"recordType"},"actionLinks":{"read":{"requestMethod":"GET","rel":"read","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/recordType/lock","accept":"application/uub+record+json"},"update":{"requestMethod":"POST","rel":"update","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/recordType/lock","accept":"application/uub+record+json"},"delete":{"requestMethod":"DELETE","rel":"delete","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/recordType/lock","accept":"application/uub+record+json"}}}} | CREATED |
+
+*!
+!***> Create data on lock
+
+!| RecordEndpointFixture |
+| type | json | testCreateRecord? | getStatusType? |
+| lock | {"name":"lock","children":[{"name":"recordInfo","children":[{"id":"skoda"}]},{"id":"notRealyAnId"}]} | {"record":{"data":{"children":[{"children":[{"id":"skoda"},{"type":"lock"},{"createdBy":"userId"}],"name":"recordInfo"},{"id":"notRealyAnId"}],"name":"lock"},"actionLinks":{"read":{"requestMethod":"GET","rel":"read","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/lock/skoda","accept":"application/uub+record+json"},"update":{"requestMethod":"POST","rel":"update","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/lock/skoda","accept":"application/uub+record+json"},"delete":{"requestMethod":"DELETE","rel":"delete","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/lock/skoda","accept":"application/uub+record+json"}}}} | CREATED |
+
+*!
+!***> List data(lock)
+
+!| RecordEndpointFixture |
+| type | testReadRecordList? | getStatusType? |
+| lock | {"recordList":{"fromNo":"0","records":[{"record":{"data":{"children":[{"children":[{"id":"skoda"},{"type":"lock"},{"createdBy":"userId"}],"name":"recordInfo"},{"id":"notRealyAnId"}],"name":"lock"},"actionLinks":{"read":{"requestMethod":"GET","rel":"read","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/lock/skoda","accept":"application/uub+record+json"},"update":{"requestMethod":"POST","rel":"update","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/lock/skoda","accept":"application/uub+record+json"},"delete":{"requestMethod":"DELETE","rel":"delete","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/lock/skoda","accept":"application/uub+record+json"}}}}],"totalNo":"0","toNo":"0","containRecordsOfType":"lock"}} | OK |
+
+*!
+!***> Try to create data on lock using the same id, this should fail as it is a duplicate
+
+!| RecordEndpointFixture |
+| type | json | testCreateRecord? | getStatusType? |
+| lock | {"name":"lock","children":[{"name":"recordInfo","children":[{"id":"skoda"}]},{"id":"aFakeSkoda"}]} | Record with recordId: skoda already exists | CONFLICT |
+
+*!
+!***> Delete data on lock
+
+!| RecordEndpointFixture |
+| type | id | testDeleteRecord? | getStatusType? |
+| lock | skoda | | OK |
+
+*!
+!***> Create data on lock
+
+!| RecordEndpointFixture |
+| type | json | testCreateRecord? | getStatusType? |
+| lock | {"name":"lock","children":[{"name":"recordInfo","children":[{"id":"skoda"}]},{"id":"notRealyAnId"}]} | {"record":{"data":{"children":[{"children":[{"id":"skoda"},{"type":"lock"},{"createdBy":"userId"}],"name":"recordInfo"},{"id":"notRealyAnId"}],"name":"lock"},"actionLinks":{"read":{"requestMethod":"GET","rel":"read","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/lock/skoda","accept":"application/uub+record+json"},"update":{"requestMethod":"POST","rel":"update","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/lock/skoda","accept":"application/uub+record+json"},"delete":{"requestMethod":"DELETE","rel":"delete","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/lock/skoda","accept":"application/uub+record+json"}}}} | CREATED |
+
+*!
+!***> Read data on lock
+
+!| RecordEndpointFixture |
+| type | id | testReadRecord? | getStatusType? |
+| lock | skoda | {"record":{"data":{"children":[{"children":[{"id":"skoda"},{"type":"lock"},{"createdBy":"userId"}],"name":"recordInfo"},{"id":"notRealyAnId"}],"name":"lock"},"actionLinks":{"read":{"requestMethod":"GET","rel":"read","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/lock/skoda","accept":"application/uub+record+json"},"update":{"requestMethod":"POST","rel":"update","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/lock/skoda","accept":"application/uub+record+json"},"delete":{"requestMethod":"DELETE","rel":"delete","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/lock/skoda","accept":"application/uub+record+json"}}}} | OK |
 
 *!
