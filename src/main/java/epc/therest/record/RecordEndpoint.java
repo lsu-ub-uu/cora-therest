@@ -1,20 +1,5 @@
 package epc.therest.record;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriInfo;
-
 import epc.spider.data.DataMissingException;
 import epc.spider.data.SpiderDataGroup;
 import epc.spider.data.SpiderDataRecord;
@@ -29,11 +14,7 @@ import epc.therest.data.RestDataElement;
 import epc.therest.data.RestDataGroup;
 import epc.therest.data.RestDataRecord;
 import epc.therest.data.RestRecordList;
-import epc.therest.data.converter.DataRecordToJsonConverter;
-import epc.therest.data.converter.JsonToDataConverter;
-import epc.therest.data.converter.JsonToDataConverterFactory;
-import epc.therest.data.converter.JsonToDataConverterFactoryImp;
-import epc.therest.data.converter.RecordListToJsonConverter;
+import epc.therest.data.converter.*;
 import epc.therest.data.converter.spider.DataGroupRestToSpiderConverter;
 import epc.therest.data.converter.spider.DataRecordSpiderToRestConverter;
 import epc.therest.data.converter.spider.RecordListSpiderToRestConverter;
@@ -43,6 +24,14 @@ import epc.therest.json.parser.JsonParseException;
 import epc.therest.json.parser.JsonParser;
 import epc.therest.json.parser.JsonValue;
 import epc.therest.json.parser.org.OrgJsonParser;
+
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 @Path("record")
 public class RecordEndpoint {
@@ -73,21 +62,9 @@ public class RecordEndpoint {
 	public Response createRecordAsUserIdWithRecord(String userId, String type, String jsonRecord) {
 		try {
 			return tryCreateRecord(userId, type, jsonRecord);
-		} catch (RecordConflictException error) {
-			return buildResponse(error, Response.Status.CONFLICT);
-		} catch (MisuseException error) {
-			return buildResponse(error, Response.Status.METHOD_NOT_ALLOWED);
-		} catch (JsonParseException | DataException error) {
-			return buildResponse(error, Response.Status.BAD_REQUEST);
-		} catch (URISyntaxException error) {
-			return Response.status(Response.Status.BAD_REQUEST).build();
-		} catch (AuthorizationException error) {
-			return Response.status(Response.Status.UNAUTHORIZED).build();
+		}catch (Exception error){
+			return handleError(error);
 		}
-	}
-
-	private Response buildResponse(Exception error, Status status) {
-		return Response.status(status).entity(error.getMessage()).build();
 	}
 
 	private Response tryCreateRecord(String userId, String type, String jsonRecord)
@@ -104,6 +81,70 @@ public class RecordEndpoint {
 
 		URI uri = new URI("record/" + type + "/" + createdId);
 		return Response.created(uri).entity(json).build();
+	}
+
+	private SpiderDataGroup convertJsonStringToSpiderDataGroup(String jsonRecord) {
+		RestDataGroup restDataGroup = convertJsonStringToRestDataGroup(jsonRecord);
+		return DataGroupRestToSpiderConverter.fromRestDataGroup(restDataGroup).toSpider();
+	}
+
+	private RestDataGroup convertJsonStringToRestDataGroup(String jsonRecord) {
+		JsonParser jsonParser = new OrgJsonParser();
+		JsonValue jsonValue = jsonParser.parseString(jsonRecord);
+		JsonToDataConverterFactory jsonToDataConverterFactory = new JsonToDataConverterFactoryImp();
+		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
+				.createForJsonObject(jsonValue);
+		RestDataElement restDataElement = jsonToDataConverter.toInstance();
+		return (RestDataGroup) restDataElement;
+	}
+
+	private String convertSpiderDataRecordToJsonString(SpiderDataRecord record) {
+		RestDataRecord restDataRecord = convertSpiderDataRecordToRestDataRecord(record);
+		DataRecordToJsonConverter dataToJsonConverter = convertRestDataGroupToJson(restDataRecord);
+		return dataToJsonConverter.toJson();
+	}
+
+	private RestDataRecord convertSpiderDataRecordToRestDataRecord(SpiderDataRecord record) {
+
+		DataRecordSpiderToRestConverter converter = DataRecordSpiderToRestConverter
+				.fromSpiderDataRecordWithBaseURL(record, url);
+		return converter.toRest();
+	}
+
+
+	private DataRecordToJsonConverter convertRestDataGroupToJson(RestDataRecord restDataRecord) {
+		JsonBuilderFactory jsonBuilderFactory = new OrgJsonBuilderFactoryAdapter();
+		return DataRecordToJsonConverter.usingJsonFactoryForRestDataRecord(jsonBuilderFactory,
+				restDataRecord);
+	}
+
+	private Response handleError(Exception error){
+		Response response = buildResponse(Status. INTERNAL_SERVER_ERROR);
+
+		if(error instanceof RecordConflictException){
+			response = buildResponseIncludingMessage(error, Response.Status.CONFLICT);
+		}
+		if(error instanceof MisuseException) {
+			response = buildResponseIncludingMessage(error, Response.Status.METHOD_NOT_ALLOWED);
+		}
+		if(error instanceof JsonParseException || error instanceof DataException) {
+			response = buildResponseIncludingMessage(error, Response.Status.BAD_REQUEST);
+		}
+		if(error instanceof URISyntaxException) {
+			response = buildResponse(Response.Status.BAD_REQUEST);
+		}
+		if(error instanceof AuthorizationException){
+			response = buildResponse(Response.Status.UNAUTHORIZED);
+		}
+		return response;
+	}
+
+	private Response buildResponseIncludingMessage(Exception error, Status status) {
+		return Response.status(status).entity(error.getMessage()).build();
+	}
+
+	private Response buildResponse(Status status) {
+		return Response.status(status).build();
 	}
 
 	@GET
@@ -226,39 +267,4 @@ public class RecordEndpoint {
 		String json = convertSpiderDataRecordToJsonString(updatedRecord);
 		return Response.status(Response.Status.OK).entity(json).build();
 	}
-
-	private SpiderDataGroup convertJsonStringToSpiderDataGroup(String jsonRecord) {
-		RestDataGroup restDataGroup = convertJsonStringToRestDataGroup(jsonRecord);
-		return DataGroupRestToSpiderConverter.fromRestDataGroup(restDataGroup).toSpider();
-	}
-
-	private RestDataGroup convertJsonStringToRestDataGroup(String jsonRecord) {
-		JsonParser jsonParser = new OrgJsonParser();
-		JsonValue jsonValue = jsonParser.parseString(jsonRecord);
-		JsonToDataConverterFactory jsonToDataConverterFactory = new JsonToDataConverterFactoryImp();
-		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
-				.createForJsonObject(jsonValue);
-		RestDataElement restDataElement = jsonToDataConverter.toInstance();
-		return (RestDataGroup) restDataElement;
-	}
-
-	private String convertSpiderDataRecordToJsonString(SpiderDataRecord record) {
-		RestDataRecord restDataRecord = convertSpiderDataRecordToRestDataRecord(record);
-		DataRecordToJsonConverter dataToJsonConverter = convertRestDataGroupToJson(restDataRecord);
-		return dataToJsonConverter.toJson();
-	}
-
-	private RestDataRecord convertSpiderDataRecordToRestDataRecord(SpiderDataRecord record) {
-
-		DataRecordSpiderToRestConverter converter = DataRecordSpiderToRestConverter
-				.fromSpiderDataRecordWithBaseURL(record, url);
-		return converter.toRest();
-	}
-
-	private DataRecordToJsonConverter convertRestDataGroupToJson(RestDataRecord restDataRecord) {
-		JsonBuilderFactory jsonBuilderFactory = new OrgJsonBuilderFactoryAdapter();
-		return DataRecordToJsonConverter.usingJsonFactoryForRestDataRecord(jsonBuilderFactory,
-				restDataRecord);
-	}
-
 }
