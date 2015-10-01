@@ -19,3 +19,10 @@
 -! |
 
 *!
+
+!***> Remove metadata
+
+| Table:smartrics.rest.fitnesse.fixture.RestFixture | http://localhost:8089/therest |
+| DELETE | /rest/record/metadataGroup/generatedId | 200 | | |
+
+*!
