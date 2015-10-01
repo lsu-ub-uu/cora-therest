@@ -124,16 +124,16 @@ public class RecordEndpoint {
 		if(error instanceof RecordConflictException){
 			response = buildResponseIncludingMessage(error, Response.Status.CONFLICT);
 		}
-		if(error instanceof MisuseException) {
+		else if(error instanceof MisuseException) {
 			response = buildResponseIncludingMessage(error, Response.Status.METHOD_NOT_ALLOWED);
 		}
-		if(error instanceof JsonParseException || error instanceof DataException) {
+		else if(error instanceof JsonParseException || error instanceof DataException) {
 			response = buildResponseIncludingMessage(error, Response.Status.BAD_REQUEST);
 		}
-		if(error instanceof URISyntaxException) {
+		else if(error instanceof URISyntaxException) {
 			response = buildResponse(Response.Status.BAD_REQUEST);
 		}
-		if(error instanceof AuthorizationException){
+		else if(error instanceof AuthorizationException){
 			response = buildResponse(Response.Status.UNAUTHORIZED);
 		}
 		return response;

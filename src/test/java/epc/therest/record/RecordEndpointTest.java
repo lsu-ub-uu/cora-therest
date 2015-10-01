@@ -216,6 +216,17 @@ public class RecordEndpointTest {
 		
 		Response responseCreated2 = recordEndpoint.createRecord(type, duplicateTestJson);
 		assertEquals(responseCreated2.getStatusInfo(), Response.Status.CONFLICT);
-		
+
+	}
+
+	@Test
+	public void testCreateRecordUnexpectedError(){
+		DependencyProviderForTest spiderDependencyProvider = new DependencyProviderForTest();
+		spiderDependencyProvider.setDataValidator(new DataValidatorReturnNullPointer());
+		SpiderInstanceProvider.setSpiderDependencyProvider(spiderDependencyProvider);
+
+		String type = "place";
+		Response responseCreated = recordEndpoint.createRecord(type, jsonToCreateFrom);
+		assertEquals(responseCreated.getStatusInfo(), Response.Status.INTERNAL_SERVER_ERROR);
 	}
 }
