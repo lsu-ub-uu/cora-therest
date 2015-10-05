@@ -1,6 +1,6 @@
 !contents -R2 -g -p -f -h
 | import |
-| epc.therest.fitnesse |
+| se.uu.ub.cora.therest.fitnesse |
 
 !1 Abstract record type
 An abstract record type (the parent) is used to create a group of record type siblings (the children). Each child defines a subset of the data the parent defines.

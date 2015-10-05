@@ -1,6 +1,6 @@
 !contents -R2 -g -p -f -h
 | import |
-| epc.therest.fitnesse |
+| se.uu.ub.cora.therest.fitnesse |
 
 !***> Read a metadataVariable (id)
 

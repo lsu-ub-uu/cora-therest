@@ -1,6 +1,6 @@
 !contents -R2 -g -p -f -h
 | import |
-| epc.therest.fitnesse |
+| se.uu.ub.cora.therest.fitnesse |
 
 !1 Duplicate user supplied id
 A user should not be able to create a post with an id that already exists. This check is only applicable for record types that has userSuppliedId=true.

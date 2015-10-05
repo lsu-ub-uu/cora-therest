@@ -1,2 +1,2 @@
 |import|
-|epc.therest.fitnesse|
+|se.uu.ub.cora.therest.fitnesse|

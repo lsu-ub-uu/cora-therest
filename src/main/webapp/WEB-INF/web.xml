@@ -11,7 +11,7 @@
 		<!-- Register resources and providers under com.vogella.jersey.first package. -->
 		<init-param>
 			<param-name>jersey.config.server.provider.packages</param-name>
-			<param-value>epc.therest</param-value>
+			<param-value>se.uu.ub.cora.therest</param-value>
 		</init-param>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
