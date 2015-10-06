@@ -14,10 +14,14 @@ public class JsonToDataConverterFactoryImp implements JsonToDataConverterFactory
 		JsonObject jsonObject = (JsonObject) jsonValue;
 
 		boolean hasChildren = jsonObject.containsKey("children");
-
 		if (hasChildren) {
 			return JsonToDataGroupConverter.forJsonObject(jsonObject);
 		}
-		return JsonToDataAtomicConverter.forJsonObject(jsonObject);
+
+		boolean hasValue = jsonObject.containsKey("value");
+		if (hasValue) {
+			return JsonToDataAtomicConverter.forJsonObject(jsonObject);
+		}
+		return JsonToDataAttributeConverter.forJsonObject(jsonObject);
 	}
 }

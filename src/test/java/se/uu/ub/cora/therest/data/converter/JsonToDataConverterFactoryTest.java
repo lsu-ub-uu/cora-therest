@@ -5,11 +5,6 @@ import static org.testng.Assert.assertTrue;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.therest.data.converter.JsonToDataAtomicConverter;
-import se.uu.ub.cora.therest.data.converter.JsonToDataConverter;
-import se.uu.ub.cora.therest.data.converter.JsonToDataConverterFactory;
-import se.uu.ub.cora.therest.data.converter.JsonToDataConverterFactoryImp;
-import se.uu.ub.cora.therest.data.converter.JsonToDataGroupConverter;
 import se.uu.ub.cora.therest.json.parser.JsonParseException;
 import se.uu.ub.cora.therest.json.parser.JsonParser;
 import se.uu.ub.cora.therest.json.parser.JsonValue;
@@ -45,14 +40,14 @@ public class JsonToDataConverterFactoryTest {
 
 	@Test
 	public void testFactorOnJsonStringDataAtomic() {
-		String json = "{\"atomicNameInData\":\"atomicValue\"}";
+		String json = "{\"name\":\"atomicNameInData\",\"value\":\"atomicValue\"}";
 		JsonValue jsonValue = jsonParser.parseString(json);
 		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
 				.createForJsonObject(jsonValue);
 		assertTrue(jsonToDataConverter instanceof JsonToDataAtomicConverter);
 	}
 
-	@Test(enabled=false)
+	@Test()
 	public void testFactorOnJsonStringDataAttribute() {
 		String json = "{\"attributeNameInData\":\"attributeValue\"}";
 		JsonValue jsonValue = jsonParser.parseString(json);

@@ -7,8 +7,9 @@ import org.testng.annotations.Test;
 import se.uu.ub.cora.spider.data.SpiderDataAtomic;
 import se.uu.ub.cora.spider.data.SpiderDataGroup;
 import se.uu.ub.cora.therest.data.RestDataAtomic;
+import se.uu.ub.cora.therest.data.RestDataAttribute;
 import se.uu.ub.cora.therest.data.RestDataGroup;
-import se.uu.ub.cora.therest.data.converter.spider.DataGroupRestToSpiderConverter;
+import se.uu.ub.cora.therest.data.converter.ConverterException;
 
 public class DataGroupRestToSpiderConverterTest {
 	@Test
@@ -72,9 +73,20 @@ public class DataGroupRestToSpiderConverterTest {
 
 		assertEquals(grandChildAtomic.getNameInData(), "grandChildAtomicId");
 
-		String groupChildAttributeValue = restGroupChild.getAttributes().get(
-				"groupChildAttributeId");
+		String groupChildAttributeValue = restGroupChild.getAttributes()
+				.get("groupChildAttributeId");
 		assertEquals(groupChildAttributeValue, "groupChildAttributeValue");
 	}
 
+	@Test(expectedExceptions = ConverterException.class)
+	public void testToSpiderWithAttributeAsChild() {
+		RestDataGroup restDataGroup = RestDataGroup.withNameInData("nameInData");
+		restDataGroup.addChild(RestDataAttribute.withNameInDataAndValue("atomicId", "atomicValue"));
+		DataGroupRestToSpiderConverter dataGroupRestToSpiderConverter = DataGroupRestToSpiderConverter
+				.fromRestDataGroup(restDataGroup);
+		SpiderDataGroup spiderDataGroup = dataGroupRestToSpiderConverter.toSpider();
+		SpiderDataAtomic atomicChild = (SpiderDataAtomic) spiderDataGroup.getChildren().get(0);
+		assertEquals(atomicChild.getNameInData(), "atomicId");
+		assertEquals(atomicChild.getValue(), "atomicValue");
+	}
 }

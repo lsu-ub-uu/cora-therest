@@ -31,7 +31,7 @@ public class DataAtomicToJsonConverterTest {
 				.createForRestDataElement(factory, restDataElement);
 		String json = dataToJsonConverter.toJson();
 
-		Assert.assertEquals(json, "{\"atomicNameInData\":\"atomicValue\"}");
+		Assert.assertEquals(json, "{\"name\":\"atomicNameInData\",\"value\":\"atomicValue\"}");
 	}
 
 	@Test
@@ -41,6 +41,6 @@ public class DataAtomicToJsonConverterTest {
 				.createForRestDataElement(factory, restDataElement);
 		String json = dataToJsonConverter.toJson();
 
-		Assert.assertEquals(json, "{\"atomicNameInData\":\"\"}");
+		Assert.assertEquals(json, "{\"name\":\"atomicNameInData\",\"value\":\"\"}");
 	}
 }

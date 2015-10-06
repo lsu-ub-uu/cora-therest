@@ -1,5 +1,20 @@
 package se.uu.ub.cora.therest.record;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
+
 import se.uu.ub.cora.spider.data.DataMissingException;
 import se.uu.ub.cora.spider.data.SpiderDataGroup;
 import se.uu.ub.cora.spider.data.SpiderDataRecord;
@@ -14,7 +29,12 @@ import se.uu.ub.cora.therest.data.RestDataElement;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.RestDataRecord;
 import se.uu.ub.cora.therest.data.RestRecordList;
-import se.uu.ub.cora.therest.data.converter.*;
+import se.uu.ub.cora.therest.data.converter.ConverterException;
+import se.uu.ub.cora.therest.data.converter.DataRecordToJsonConverter;
+import se.uu.ub.cora.therest.data.converter.JsonToDataConverter;
+import se.uu.ub.cora.therest.data.converter.JsonToDataConverterFactory;
+import se.uu.ub.cora.therest.data.converter.JsonToDataConverterFactoryImp;
+import se.uu.ub.cora.therest.data.converter.RecordListToJsonConverter;
 import se.uu.ub.cora.therest.data.converter.spider.DataGroupRestToSpiderConverter;
 import se.uu.ub.cora.therest.data.converter.spider.DataRecordSpiderToRestConverter;
 import se.uu.ub.cora.therest.data.converter.spider.RecordListSpiderToRestConverter;
@@ -24,14 +44,6 @@ import se.uu.ub.cora.therest.json.parser.JsonParseException;
 import se.uu.ub.cora.therest.json.parser.JsonParser;
 import se.uu.ub.cora.therest.json.parser.JsonValue;
 import se.uu.ub.cora.therest.json.parser.org.OrgJsonParser;
-
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriInfo;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 @Path("record")
 public class RecordEndpoint {
@@ -62,7 +74,7 @@ public class RecordEndpoint {
 	public Response createRecordAsUserIdWithRecord(String userId, String type, String jsonRecord) {
 		try {
 			return tryCreateRecord(userId, type, jsonRecord);
-		}catch (Exception error){
+		} catch (Exception error) {
 			return handleError(error);
 		}
 	}
@@ -111,29 +123,25 @@ public class RecordEndpoint {
 		return converter.toRest();
 	}
 
-
 	private DataRecordToJsonConverter convertRestDataGroupToJson(RestDataRecord restDataRecord) {
 		JsonBuilderFactory jsonBuilderFactory = new OrgJsonBuilderFactoryAdapter();
 		return DataRecordToJsonConverter.usingJsonFactoryForRestDataRecord(jsonBuilderFactory,
 				restDataRecord);
 	}
 
-	private Response handleError(Exception error){
-		Response response = buildResponse(Status. INTERNAL_SERVER_ERROR);
+	private Response handleError(Exception error) {
+		Response response = buildResponse(Status.INTERNAL_SERVER_ERROR);
 
-		if(error instanceof RecordConflictException){
+		if (error instanceof RecordConflictException) {
 			response = buildResponseIncludingMessage(error, Response.Status.CONFLICT);
-		}
-		else if(error instanceof MisuseException) {
+		} else if (error instanceof MisuseException) {
 			response = buildResponseIncludingMessage(error, Response.Status.METHOD_NOT_ALLOWED);
-		}
-		else if(error instanceof JsonParseException || error instanceof DataException) {
+		} else if (error instanceof JsonParseException || error instanceof DataException
+				|| error instanceof ConverterException) {
 			response = buildResponseIncludingMessage(error, Response.Status.BAD_REQUEST);
-		}
-		else if(error instanceof URISyntaxException) {
+		} else if (error instanceof URISyntaxException) {
 			response = buildResponse(Response.Status.BAD_REQUEST);
-		}
-		else if(error instanceof AuthorizationException){
+		} else if (error instanceof AuthorizationException) {
 			response = buildResponse(Response.Status.UNAUTHORIZED);
 		}
 		return response;
@@ -251,7 +259,7 @@ public class RecordEndpoint {
 		} catch (MisuseException e) {
 			return Response.status(Response.Status.METHOD_NOT_ALLOWED).entity(e.getMessage())
 					.build();
-		} catch (JsonParseException | DataException | DataMissingException e) {
+		} catch (JsonParseException | DataException | DataMissingException | ConverterException e) {
 			return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
 		} catch (RecordNotFoundException e) {
 			return Response.status(Response.Status.NOT_FOUND).build();
