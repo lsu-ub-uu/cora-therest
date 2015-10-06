@@ -132,7 +132,7 @@
 							<port>8089</port>
 						</httpConnector>
 						<webAppConfig>
-							<contextPath>/therest</contextPath>
+							<contextPath>/cora</contextPath>
 						</webAppConfig>
 					</configuration>
 					<executions>

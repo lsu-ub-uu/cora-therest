@@ -9,7 +9,7 @@
 *!
 !***> Create Metadata
 
-| Table:smartrics.rest.fitnesse.fixture.RestFixture | http://localhost:8089/therest |
+| Table:smartrics.rest.fitnesse.fixture.RestFixture | http://localhost:8089/cora |
 | setBody | {"name":"metadata","attributes":{"type":"group"},"children":[{"name":"recordInfo","children":[{"id":"generatedId"}]},{"nameInData":"generatedId"},{"textId":"generatedIdTextId"},{"defTextId":"generatedIdDefTextId"},{"name":"childReferences","children":[{"name":"childReference","children":[{"ref":"recordInfo"},{"repeatMin":"1"},{"repeatMax":"1"}]},{"name":"childReference","children":[{"ref":"id"},{"repeatMin":"1"},{"repeatMax":"1"}]}]}]} |
 | POST | /rest/record/metadataGroup | 201 | Content-Type : application/uub\+record\+json | /* javascript */ !-
 -!!-
@@ -19,10 +19,9 @@
 -! |
 
 *!
-
 !***> Remove metadata
 
-| Table:smartrics.rest.fitnesse.fixture.RestFixture | http://localhost:8089/therest |
+| Table:smartrics.rest.fitnesse.fixture.RestFixture | http://localhost:8089/cora |
 | DELETE | /rest/record/metadataGroup/generatedId | 200 | | |
 
 *!
