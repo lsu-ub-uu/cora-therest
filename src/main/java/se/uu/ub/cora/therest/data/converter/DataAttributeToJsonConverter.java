@@ -4,7 +4,7 @@ import se.uu.ub.cora.therest.data.RestDataAttribute;
 import se.uu.ub.cora.therest.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.therest.json.builder.JsonObjectBuilder;
 
-public class DataAttributeToJsonConverter extends DataToJsonConverter {
+public final class DataAttributeToJsonConverter extends DataToJsonConverter {
 	private JsonBuilderFactory factory;
 	private RestDataAttribute restDataAttribute;
 

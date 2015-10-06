@@ -3,8 +3,9 @@ package se.uu.ub.cora.therest.data.converter.spider;
 import se.uu.ub.cora.spider.data.SpiderDataAttribute;
 import se.uu.ub.cora.therest.data.RestDataAttribute;
 
-public class DataAttributeRestToSpiderConverter {
-	public static DataAttributeRestToSpiderConverter fromRestDataAttribute(RestDataAttribute restDataAttribute) {
+public final class DataAttributeRestToSpiderConverter {
+	public static DataAttributeRestToSpiderConverter fromRestDataAttribute(
+			RestDataAttribute restDataAttribute) {
 		return new DataAttributeRestToSpiderConverter(restDataAttribute);
 	}
 
@@ -15,7 +16,7 @@ public class DataAttributeRestToSpiderConverter {
 	}
 
 	public SpiderDataAttribute toSpider() {
-		return SpiderDataAttribute.withNameInDataAndValue(
-				restDataAttribute.getNameInData(), restDataAttribute.getValue());
+		return SpiderDataAttribute.withNameInDataAndValue(restDataAttribute.getNameInData(),
+				restDataAttribute.getValue());
 	}
 }

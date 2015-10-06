@@ -7,7 +7,7 @@ import se.uu.ub.cora.therest.json.parser.JsonParseException;
 import se.uu.ub.cora.therest.json.parser.JsonString;
 import se.uu.ub.cora.therest.json.parser.JsonValue;
 
-public class JsonToDataAttributeConverter implements JsonToDataConverter {
+public final class JsonToDataAttributeConverter implements JsonToDataConverter {
 
 	private JsonObject jsonObject;
 

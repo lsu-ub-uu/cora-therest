@@ -1,7 +1,7 @@
 package se.uu.ub.cora.therest.data;
 
-public class RestDataAttribute implements RestDataElement {
-	
+public final class RestDataAttribute implements RestDataElement {
+
 	private String nameInData;
 	private String value;
 
@@ -14,6 +14,7 @@ public class RestDataAttribute implements RestDataElement {
 		this.value = value;
 	}
 
+	@Override
 	public String getNameInData() {
 		return nameInData;
 	}

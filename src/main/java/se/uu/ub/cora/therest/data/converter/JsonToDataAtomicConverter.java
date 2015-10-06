@@ -8,6 +8,7 @@ import se.uu.ub.cora.therest.json.parser.JsonString;
 import se.uu.ub.cora.therest.json.parser.JsonValue;
 
 public final class JsonToDataAtomicConverter implements JsonToDataConverter {
+	private static final int ALLOWED_NO_OF_ELEMENTS_AT_TOP_LEVEL = 2;
 	private static final String NAME = "name";
 	private static final String VALUE = "value";
 	private JsonObject jsonObject;
@@ -43,7 +44,7 @@ public final class JsonToDataAtomicConverter implements JsonToDataConverter {
 	}
 
 	private void validateOnlyNameAndValueAtTopLevel() {
-		if (jsonObject.size() != 2) {
+		if (jsonObject.size() != ALLOWED_NO_OF_ELEMENTS_AT_TOP_LEVEL) {
 			throw new JsonParseException("Atomic data can only contain name and value");
 		}
 		if (!jsonObject.containsKey(NAME)) {
