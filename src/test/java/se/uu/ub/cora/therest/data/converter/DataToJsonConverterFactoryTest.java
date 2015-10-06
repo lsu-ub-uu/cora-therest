@@ -5,6 +5,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.therest.data.RestDataAtomic;
+import se.uu.ub.cora.therest.data.RestDataAttribute;
 import se.uu.ub.cora.therest.data.RestDataElement;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.converter.DataAtomicToJsonConverter;
@@ -44,5 +45,16 @@ public class DataToJsonConverterFactoryTest {
 				.createForRestDataElement(factory, restDataElement);
 
 		Assert.assertTrue(dataToJsonConverter instanceof DataAtomicToJsonConverter);
+	}
+
+	@Test
+	public void testJsonCreatorFactoryDataAttribute() {
+		RestDataElement restDataElement = RestDataAttribute
+				.withNameInDataAndValue("attributeNameInData", "attributeValue");
+		
+		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
+				.createForRestDataElement(factory, restDataElement);
+		
+		Assert.assertTrue(dataToJsonConverter instanceof DataAttributeToJsonConverter);
 	}
 }

@@ -8,6 +8,7 @@ import se.uu.ub.cora.spider.data.SpiderDataGroup;
 import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataElement;
 import se.uu.ub.cora.therest.data.RestDataGroup;
+import se.uu.ub.cora.therest.data.converter.ConverterException;
 
 public final class DataGroupRestToSpiderConverter {
 	private RestDataGroup restDataGroup;
@@ -22,6 +23,15 @@ public final class DataGroupRestToSpiderConverter {
 	}
 
 	public SpiderDataGroup toSpider() {
+		try {
+			return tryToSpiderate();
+		} catch (ClassCastException e) {
+			throw new ConverterException("Data has missplaced data types, convertion not possible",
+					e);
+		}
+	}
+
+	private SpiderDataGroup tryToSpiderate() {
 		spiderDataGroup = SpiderDataGroup.withNameInData(restDataGroup.getNameInData());
 		addAttributesToSpiderGroup();
 		addChildrenToSpiderGroup();
@@ -50,14 +60,14 @@ public final class DataGroupRestToSpiderConverter {
 	}
 
 	private void addGroupChild(RestDataElement restDataElement) {
-		SpiderDataGroup spiderDataGroupChild = DataGroupRestToSpiderConverter.fromRestDataGroup(
-				(RestDataGroup) restDataElement).toSpider();
+		SpiderDataGroup spiderDataGroupChild = DataGroupRestToSpiderConverter
+				.fromRestDataGroup((RestDataGroup) restDataElement).toSpider();
 		spiderDataGroup.addChild(spiderDataGroupChild);
 	}
 
 	private void addAtomicChild(RestDataElement restDataElement) {
-		SpiderDataAtomic spiderDataAtomic = DataAtomicRestToSpiderConverter.fromRestDataAtomic(
-				(RestDataAtomic) restDataElement).toSpider();
+		SpiderDataAtomic spiderDataAtomic = DataAtomicRestToSpiderConverter
+				.fromRestDataAtomic((RestDataAtomic) restDataElement).toSpider();
 		spiderDataGroup.addChild(spiderDataAtomic);
 	}
 

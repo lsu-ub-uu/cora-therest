@@ -7,62 +7,65 @@ import se.uu.ub.cora.therest.json.parser.JsonParseException;
 import se.uu.ub.cora.therest.json.parser.JsonString;
 import se.uu.ub.cora.therest.json.parser.JsonValue;
 
-public final class JsonToDataAtomicConverter implements JsonToDataConverter
-{
-    private JsonObject jsonObject;
+public final class JsonToDataAtomicConverter implements JsonToDataConverter {
+	private static final int ALLOWED_NO_OF_ELEMENTS_AT_TOP_LEVEL = 2;
+	private static final String NAME = "name";
+	private static final String VALUE = "value";
+	private JsonObject jsonObject;
 
-    static JsonToDataAtomicConverter forJsonObject(JsonObject jsonObject)
-    {
-        return new JsonToDataAtomicConverter(jsonObject);
-    }
+	static JsonToDataAtomicConverter forJsonObject(JsonObject jsonObject) {
+		return new JsonToDataAtomicConverter(jsonObject);
+	}
 
-    private JsonToDataAtomicConverter(JsonObject jsonObject)
-    {
-        this.jsonObject = jsonObject;
-    }
+	private JsonToDataAtomicConverter(JsonObject jsonObject) {
+		this.jsonObject = jsonObject;
+	}
 
-    @Override
-    public RestDataElement toInstance()
-    {
-        try {
-            return tryToInstantiate();
-        } catch (Exception e) {
-            throw new JsonParseException("Error parsing jsonObject: " + e.getMessage(), e);
-        }
-    }
+	@Override
+	public RestDataElement toInstance() {
+		try {
+			return tryToInstantiate();
+		} catch (Exception e) {
+			throw new JsonParseException("Error parsing jsonObject: " + e.getMessage(), e);
+		}
+	}
 
-    private RestDataElement tryToInstantiate()
-    {
-        validateJsonData();
-        String nameInData = getNameInDataFromJsonObject();
-        JsonString value = (JsonString) jsonObject.getValue(nameInData);
-        return RestDataAtomic.withNameInDataAndValue(nameInData, value.getStringValue());
-    }
+	private RestDataElement tryToInstantiate() {
+		validateJsonData();
+		String nameInData = jsonObject.getValueAsJsonString(NAME).getStringValue();
+		String value = jsonObject.getValueAsJsonString(VALUE).getStringValue();
+		return RestDataAtomic.withNameInDataAndValue(nameInData, value);
+	}
 
-    private String getNameInDataFromJsonObject()
-    {
-        return jsonObject.keySet().iterator().next();
-    }
+	private void validateJsonData() {
+		validateOnlyNameAndValueAtTopLevel();
+		validateNameInDataValueIsString();
+		validateValueValueIsString();
+	}
 
-    private void validateJsonData()
-    {
-        validateOnlyOneKeyValuePairAtTopLevel();
-        validateNameInDataValueIsString();
-    }
+	private void validateOnlyNameAndValueAtTopLevel() {
+		if (jsonObject.size() != ALLOWED_NO_OF_ELEMENTS_AT_TOP_LEVEL) {
+			throw new JsonParseException("Atomic data can only contain name and value");
+		}
+		if (!jsonObject.containsKey(NAME)) {
+			throw new JsonParseException("Atomic data must contain name");
+		}
+		if (!jsonObject.containsKey(VALUE)) {
+			throw new JsonParseException("Atomic data must contain value");
+		}
+	}
 
-    private void validateOnlyOneKeyValuePairAtTopLevel()
-    {
-        if (jsonObject.size() != 1) {
-            throw new JsonParseException("Atomic data can only contain one key value pair");
-        }
-    }
+	private void validateNameInDataValueIsString() {
+		JsonValue value = jsonObject.getValue(NAME);
+		if (!(value instanceof JsonString)) {
+			throw new JsonParseException("Value of atomic data name must be a String");
+		}
+	}
 
-    private void validateNameInDataValueIsString()
-    {
-        String nameInData = getNameInDataFromJsonObject();
-        JsonValue value = jsonObject.getValue(nameInData);
-        if (!(value instanceof JsonString)) {
-            throw new JsonParseException("Value of atomic data \"" + nameInData + "\" must be a String");
-        }
-    }
+	private void validateValueValueIsString() {
+		JsonValue value = jsonObject.getValue(VALUE);
+		if (!(value instanceof JsonString)) {
+			throw new JsonParseException("Value of atomic data value must be a String");
+		}
+	}
 }

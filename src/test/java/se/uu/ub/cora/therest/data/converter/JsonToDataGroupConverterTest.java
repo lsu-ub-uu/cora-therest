@@ -11,10 +11,6 @@ import org.testng.annotations.Test;
 import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataElement;
 import se.uu.ub.cora.therest.data.RestDataGroup;
-import se.uu.ub.cora.therest.data.converter.JsonToDataConverter;
-import se.uu.ub.cora.therest.data.converter.JsonToDataConverterFactory;
-import se.uu.ub.cora.therest.data.converter.JsonToDataConverterFactoryImp;
-import se.uu.ub.cora.therest.data.converter.JsonToDataGroupConverter;
 import se.uu.ub.cora.therest.json.parser.JsonObject;
 import se.uu.ub.cora.therest.json.parser.JsonParseException;
 import se.uu.ub.cora.therest.json.parser.JsonParser;
@@ -63,7 +59,8 @@ public class JsonToDataGroupConverterTest {
 
 	@Test
 	public void testToClassWithAtomicChild() {
-		String json = "{\"name\":\"groupNameInData\",\"children\":[{\"atomicNameInData\":\"atomicValue\"}]}";
+		String json = "{\"name\":\"groupNameInData\","
+				+ "\"children\":[{\"name\":\"atomicNameInData\",\"value\":\"atomicValue\"}]}";
 
 		RestDataGroup restDataGroup = createRestDataGroupForJsonString(json);
 		assertEquals(restDataGroup.getNameInData(), "groupNameInData");
@@ -77,8 +74,9 @@ public class JsonToDataGroupConverterTest {
 		String json = "{";
 		json += "\"name\":\"groupNameInData\",";
 		json += "\"children\":[";
-		json += "{\"atomicNameInData\":\"atomicValue\"},";
-		json += "{\"name\":\"groupNameInData2\",\"children\":[{\"atomicNameInData2\":\"atomicValue2\"}]}";
+		json += "{\"name\":\"atomicNameInData\",\"value\":\"atomicValue\"},";
+		json += "{\"name\":\"groupNameInData2\","
+				+ "\"children\":[{\"name\":\"atomicNameInData2\",\"value\":\"atomicValue2\"}]}";
 		json += "]";
 		json += "}";
 
@@ -102,10 +100,10 @@ public class JsonToDataGroupConverterTest {
 		json += "\"attributes\":{" + "\"attributeNameInData\":\"attributeValue\","
 				+ "\"attributeNameInData2\":\"attributeValue2\"" + "},";
 		json += "\"children\":[";
-		json += "{\"atomicNameInData\":\"atomicValue\"},";
+		json += "{\"name\":\"atomicNameInData\",\"value\":\"atomicValue\"},";
 		json += "{\"name\":\"groupNameInData2\",";
 		json += "\"attributes\":{\"g2AttributeNameInData\":\"g2AttributeValue\"},";
-		json += "\"children\":[{\"atomicNameInData2\":\"atomicValue2\"}]}";
+		json += "\"children\":[{\"name\":\"atomicNameInData2\",\"value\":\"atomicValue2\"}]}";
 		json += "]";
 		json += "}";
 
@@ -152,7 +150,8 @@ public class JsonToDataGroupConverterTest {
 		String json = "{\"name\":\"id\",\"attributes\":{}}";
 		JsonValue jsonValue = jsonParser.parseString(json);
 
-		JsonToDataConverter jsonToDataConverter = JsonToDataGroupConverter.forJsonObject((JsonObject) jsonValue);
+		JsonToDataConverter jsonToDataConverter = JsonToDataGroupConverter
+				.forJsonObject((JsonObject) jsonValue);
 		jsonToDataConverter.toInstance();
 	}
 
@@ -164,7 +163,6 @@ public class JsonToDataGroupConverterTest {
 				.createForJsonObject(jsonValue);
 		jsonToDataConverter.toInstance();
 	}
-
 
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testToClassWrongJsonKeyTopLevelWithAttributes() {

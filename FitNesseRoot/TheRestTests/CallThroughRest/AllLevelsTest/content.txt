@@ -17,30 +17,30 @@ Last, we will create a trainingProgram using the metadata groups specified. We c
 !***> Create Metadata
 
 | Table:smartrics.rest.fitnesse.fixture.RestFixture | http://localhost:8089/cora |
-| setBody | {"name":"metadata","attributes":{"type":"group"},"children":[{"name":"recordInfo","children":[{"id":"trainingProgram"}]},{"textId":"hereistextid"},{"defTextId":"hereisdeftext"},{"nameInData":"trainingProgram"},{"name":"childReferences","children":[{"name":"childReference","children":[{"ref":"id"},{"repeatMin":"1"},{"repeatMax":"1"}]},{"name":"childReference","children":[{"ref":"createdBy"},{"repeatMin":"1"},{"repeatMax":"1"}]}]}]} |
+| setBody | {"name":"metadata","attributes":{"type":"group"},"children":[{"name":"recordInfo","children":[{"name":"id","value":"trainingProgram"}]},{"name":"textId","value":"hereistextid"},{"name":"defTextId","value":"hereisdeftext"},{"name":"nameInData","value":"trainingProgram"},{"name":"childReferences","children":[{"name":"childReference","children":[{"name":"ref","value":"id"},{"name":"repeatMin","value":"1"},{"name":"repeatMax","value":"1"}]},{"name":"childReference","children":[{"name":"ref","value":"createdBy"},{"name":"repeatMin","value":"1"},{"name":"repeatMax","value":"1"}]}]}]} |
 | POST | /rest/record/metadataGroup | 201 | | |
-| setBody | {"name":"metadata","attributes":{"type":"group"},"children":[{"name":"recordInfo","children":[{"id":"singleTrainingProgramNew"}]},{"textId":"hereistextid"},{"defTextId":"hereisdeftext"},{"nameInData":"singleTrainingProgramNew"},{"name":"childReferences","children":[{"name":"childReference","children":[{"ref":"trainingProgram"},{"repeatMin":"1"},{"repeatMax":"1"}]}]}]} |
+| setBody | {"name":"metadata","attributes":{"type":"group"},"children":[{"name":"recordInfo","children":[{"name":"id","value":"singleTrainingProgramNew"}]},{"name":"textId","value":"hereistextid"},{"name":"defTextId","value":"hereisdeftext"},{"name":"nameInData","value":"singleTrainingProgramNew"},{"name":"childReferences","children":[{"name":"childReference","children":[{"name":"ref","value":"trainingProgram"},{"name":"repeatMin","value":"1"},{"name":"repeatMax","value":"1"}]}]}]} |
 | POST | /rest/record/metadataGroup | 201 | | |
-| setBody | {"name":"metadata","attributes":{"type":"group"},"children":[{"name":"recordInfo","children":[{"id":"singleTrainingProgram"}]},{"textId":"hereistextid"},{"defTextId":"hereisdeftext"},{"nameInData":"singleTrainingProgram"},{"name":"childReferences","children":[{"name":"childReference","children":[{"ref":"trainingProgram"},{"repeatMin":"1"},{"repeatMax":"1"}]},{"name":"childReference","children":[{"ref":"recordInfo"},{"repeatMin":"1"},{"repeatMax":"1"}]}]}]} |
+| setBody | {"name":"metadata","attributes":{"type":"group"},"children":[{"name":"recordInfo","children":[{"name":"id","value":"singleTrainingProgram"}]},{"name":"textId","value":"hereistextid"},{"name":"defTextId","value":"hereisdeftext"},{"name":"nameInData","value":"singleTrainingProgram"},{"name":"childReferences","children":[{"name":"childReference","children":[{"name":"ref","value":"trainingProgram"},{"name":"repeatMin","value":"1"},{"name":"repeatMax","value":"1"}]},{"name":"childReference","children":[{"name":"ref","value":"recordInfo"},{"name":"repeatMin","value":"1"},{"name":"repeatMax","value":"1"}]}]}]} |
 | POST | /rest/record/metadataGroup | 201 | | |
 
 *!
 !***> Create recordType
 
 | Table:smartrics.rest.fitnesse.fixture.RestFixture | http://localhost:8089/cora |
-| setBody | {"name":"recordType","children":[{"name":"recordInfo","children":[{"id":"singleTrainingProgramRecordType"}]},{"metadataId":"singleTrainingProgram"},{"abstract":"false"},{"presentationViewId":"trainingAsPresentedWhenViewing"},{"presentationFormId":"trainingAsPresentedWhenEditing"},{"newMetadataId":"singleTrainingProgramNew"},{"newPresentationFormId":"trainingAsPresentedWhenCreatingNew"},{"listPresentationViewId":"trainingAsPresentedInList"},{"searchMetadataId":"singleTrainingProgramSearch"},{"searchPresentationFormId":"trainingAsPresentedWhenSearching"},{"userSuppliedId":"false"},{"selfPresentationViewId":"trainingPresentingItself"},{"permissionKey":"SINGLETRAINING_TEST"}]} |
+| setBody | {"name":"recordType","children":[{"name":"recordInfo","children":[{"name":"id","value":"singleTrainingProgramRecordType"}]},{"name":"metadataId","value":"singleTrainingProgram"},{"name":"abstract","value":"false"},{"name":"presentationViewId","value":"trainingAsPresentedWhenViewing"},{"name":"presentationFormId","value":"trainingAsPresentedWhenEditing"},{"name":"newMetadataId","value":"singleTrainingProgramNew"},{"name":"newPresentationFormId","value":"trainingAsPresentedWhenCreatingNew"},{"name":"listPresentationViewId","value":"trainingAsPresentedInList"},{"name":"searchMetadataId","value":"singleTrainingProgramSearch"},{"name":"searchPresentationFormId","value":"trainingAsPresentedWhenSearching"},{"name":"userSuppliedId","value":"false"},{"name":"selfPresentationViewId","value":"trainingPresentingItself"},{"name":"permissionKey","value":"SINGLETRAINING_TEST"}]} |
 | POST | /rest/record/recordType | 201 | | |
 
 *!
 !***> Create data
 
 | Table:smartrics.rest.fitnesse.fixture.RestFixture | http://localhost:8089/cora |
-| setBody | {"name":"singleTrainingProgramNew","children":[{"name":"trainingProgram","children":[{"createdBy":"asta_kask"}]}]} |
+| setBody | {"name":"singleTrainingProgramNew","children":[{"name":"trainingProgram","children":[{"name":"createdBy","value":"asta_kask"}]}]} |
 | POST | /rest/record/singleTrainingProgramRecordType | 400 | | |
 | setBody | {"name":"singleTrainingProgramNew","children":[]} |
 | POST | /rest/record/singleTrainingProgramRecordType | 400 | | |
-| setBody | {"name":"singleTrainingProgramNew","children":[{"name":"trainingProgram","children":[{"id":"x1"},{"createdBy":"asta_kask"}]}]} |
-| POST | /rest/record/singleTrainingProgramRecordType | 201 | Location:/rest/record/singleTrainingProgramRecordType | /* javascript */ jsonbody.record.data.children[0].children[0].id == 'x1' && jsonbody.record.data.children[0].children[1].createdBy == 'asta_kask'; |
+| setBody | {"name":"singleTrainingProgramNew","children":[{"name":"trainingProgram","children":[{"name":"id","value":"x1"},{"name":"createdBy","value":"asta_kask"}]}]} |
+| POST | /rest/record/singleTrainingProgramRecordType | 201 | Location:/rest/record/singleTrainingProgramRecordType | /* javascript */ jsonbody.record.data.children[0].children[0].value == 'x1' && jsonbody.record.data.children[0].children[1].value == 'asta_kask'; |
 
 *!
 !***> Remove metadata
