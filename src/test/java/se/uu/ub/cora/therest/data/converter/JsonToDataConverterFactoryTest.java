@@ -52,11 +52,19 @@ public class JsonToDataConverterFactoryTest {
 		assertTrue(jsonToDataConverter instanceof JsonToDataAtomicConverter);
 	}
 
+	@Test(enabled=false)
+	public void testFactorOnJsonStringDataAttribute() {
+		String json = "{\"attributeNameInData\":\"attributeValue\"}";
+		JsonValue jsonValue = jsonParser.parseString(json);
+		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
+				.createForJsonObject(jsonValue);
+		assertTrue(jsonToDataConverter instanceof JsonToDataAttributeConverter);
+	}
+
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testFactorOnJsonObjectNullJson() {
 		jsonToDataConverterFactory.createForJsonObject(null);
 	}
-
 
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testClassCreatorGroupNotAGroup() {

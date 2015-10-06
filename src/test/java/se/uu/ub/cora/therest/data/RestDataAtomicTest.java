@@ -12,12 +12,4 @@ public class RestDataAtomicTest {
 		Assert.assertEquals(restDataAtomic.getNameInData(), "nameInData");
 		Assert.assertEquals(restDataAtomic.getValue(), "value");
 	}
-
-	// @Test
-	// public void testCreateFromSpiderDataAtomic() {
-	// SpiderDataAtomic spiderDataAtomic = SpiderDataAtomic.withNameInDataAndValue("nameInData", "value");
-	// RestDataAtomic restDataAtomic = RestDataAtomic.fromSpiderDataAtomic(spiderDataAtomic);
-	// Assert.assertEquals(restDataAtomic.getNameInData(), "nameInData");
-	// Assert.assertEquals(restDataAtomic.getValue(), "value");
-	// }
 }
