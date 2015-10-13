@@ -9,12 +9,16 @@ public class RestDataRecordLink implements RestDataElement {
 	private String recordType;
 	private String recordId;
 
-	public static RestDataRecordLink withNameInData(String nameInData) {
-		return new RestDataRecordLink(nameInData);
+	public static RestDataRecordLink withNameInDataAndRecordTypeAndRecordId(String nameInData,
+			String recordType, String recordId) {
+		return new RestDataRecordLink(nameInData, recordType, recordId);
 	}
 
-	private RestDataRecordLink(String nameInData) {
+	private RestDataRecordLink(String nameInData, String recordType, String recordId) {
 		this.nameInData = nameInData;
+		this.recordType = recordType;
+		this.recordId = recordId;
+
 	}
 
 	@Override
@@ -32,16 +36,6 @@ public class RestDataRecordLink implements RestDataElement {
 
 	public Map<String, ActionLink> getActionLinks() {
 		return actionLinks;
-	}
-
-	public void setRecordType(String recordType) {
-		this.recordType = recordType;
-
-	}
-
-	public void setRecordId(String recordId) {
-		this.recordId = recordId;
-
 	}
 
 	public String getRecordType() {

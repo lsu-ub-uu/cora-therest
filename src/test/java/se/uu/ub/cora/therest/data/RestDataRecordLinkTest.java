@@ -10,10 +10,8 @@ import se.uu.ub.cora.spider.data.Action;
 public class RestDataRecordLinkTest {
 	@Test
 	public void testInit() {
-		String nameInData = "nameInData";
-		RestDataRecordLink recordLink = RestDataRecordLink.withNameInData(nameInData);
-		recordLink.setRecordType("aRecordType");
-		recordLink.setRecordId("aRecordId");
+		RestDataRecordLink recordLink = RestDataRecordLink
+				.withNameInDataAndRecordTypeAndRecordId("nameInData", "aRecordType", "aRecordId");
 		assertEquals(recordLink.getRecordType(), "aRecordType");
 		assertEquals(recordLink.getRecordId(), "aRecordId");
 
@@ -21,7 +19,8 @@ public class RestDataRecordLinkTest {
 
 	@Test
 	public void testWithActionLinks() {
-		RestDataRecordLink recordLink = RestDataRecordLink.withNameInData("nameInData");
+		RestDataRecordLink recordLink = RestDataRecordLink
+				.withNameInDataAndRecordTypeAndRecordId("nameInData", "aRecordType", "aRecordId");
 		ActionLink actionLink = ActionLink.withAction(Action.READ);
 		recordLink.addActionLink("read", actionLink);
 		assertEquals(recordLink.getActionLink("read"), actionLink);

@@ -13,14 +13,13 @@ import se.uu.ub.cora.therest.json.builder.org.OrgJsonBuilderFactoryAdapter;
 public class DataRecordLinkToJsonConverterTest {
 	@Test
 	public void testToJson() {
-		RestDataRecordLink dataLink = RestDataRecordLink.withNameInData("nameInData");
-		dataLink.setRecordType("aRecordType");
-		dataLink.setRecordId("aRecordId");
+		RestDataRecordLink recordLink = RestDataRecordLink
+				.withNameInDataAndRecordTypeAndRecordId("nameInData", "aRecordType", "aRecordId");
 
 		JsonBuilderFactory jsonFactory = new OrgJsonBuilderFactoryAdapter();
 
 		DataRecordLinkToJsonConverter dataRecordLinkToJsonConverter = DataRecordLinkToJsonConverter
-				.usingJsonFactoryForRestDataLink(jsonFactory, dataLink);
+				.usingJsonFactoryForRestDataLink(jsonFactory, recordLink);
 
 		String jsonString = dataRecordLinkToJsonConverter.toJson();
 
@@ -31,15 +30,14 @@ public class DataRecordLinkToJsonConverterTest {
 
 	@Test
 	public void testToJsonWithActionLink() {
-		RestDataRecordLink dataLink = RestDataRecordLink.withNameInData("nameInData");
-		dataLink.setRecordType("aRecordType");
-		dataLink.setRecordId("aRecordId");
-		dataLink.addActionLink("read", createReadActionLink());
+		RestDataRecordLink recordLink = RestDataRecordLink
+				.withNameInDataAndRecordTypeAndRecordId("nameInData", "aRecordType", "aRecordId");
+		recordLink.addActionLink("read", createReadActionLink());
 
 		JsonBuilderFactory jsonFactory = new OrgJsonBuilderFactoryAdapter();
 
 		DataRecordLinkToJsonConverter dataRecordLinkToJsonConverter = DataRecordLinkToJsonConverter
-				.usingJsonFactoryForRestDataLink(jsonFactory, dataLink);
+				.usingJsonFactoryForRestDataLink(jsonFactory, recordLink);
 
 		String jsonString = dataRecordLinkToJsonConverter.toJson();
 

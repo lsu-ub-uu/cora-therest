@@ -57,7 +57,8 @@ public class DataToJsonConverterFactoryTest {
 
 	@Test
 	public void testJsonCreateFactoryDataRecordLink() {
-		RestDataElement restDataElement = RestDataRecordLink.withNameInData("recordLinkNameInData");
+		RestDataElement restDataElement = RestDataRecordLink.withNameInDataAndRecordTypeAndRecordId(
+				"recordLinkNameInData", "someRecordType", "someRecordId");
 		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForRestDataElement(factory, restDataElement);
 

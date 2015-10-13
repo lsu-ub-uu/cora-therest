@@ -47,13 +47,23 @@ public class JsonToDataConverterFactoryTest {
 		assertTrue(jsonToDataConverter instanceof JsonToDataAtomicConverter);
 	}
 
-	@Test()
+	@Test
 	public void testFactorOnJsonStringDataAttribute() {
 		String json = "{\"attributeNameInData\":\"attributeValue\"}";
 		JsonValue jsonValue = jsonParser.parseString(json);
 		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
 				.createForJsonObject(jsonValue);
 		assertTrue(jsonToDataConverter instanceof JsonToDataAttributeConverter);
+	}
+
+	@Test
+	public void testFactorOnJsonStringDataRecordLink() {
+		String json = "{\"recordId\":\"aRecordId\",\"recordType\":\"aRecordType\""
+				+ ",\"name\":\"nameInData\"}";
+		JsonValue jsonValue = jsonParser.parseString(json);
+		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
+				.createForJsonObject(jsonValue);
+		assertTrue(jsonToDataConverter instanceof JsonToDataRecordLinkConverter);
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)
