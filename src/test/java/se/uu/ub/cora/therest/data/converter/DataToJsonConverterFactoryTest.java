@@ -1,6 +1,7 @@
 package se.uu.ub.cora.therest.data.converter;
 
-import org.testng.Assert;
+import static org.testng.Assert.assertTrue;
+
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -8,11 +9,7 @@ import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataAttribute;
 import se.uu.ub.cora.therest.data.RestDataElement;
 import se.uu.ub.cora.therest.data.RestDataGroup;
-import se.uu.ub.cora.therest.data.converter.DataAtomicToJsonConverter;
-import se.uu.ub.cora.therest.data.converter.DataGroupToJsonConverter;
-import se.uu.ub.cora.therest.data.converter.DataToJsonConverter;
-import se.uu.ub.cora.therest.data.converter.DataToJsonConverterFactory;
-import se.uu.ub.cora.therest.data.converter.DataToJsonConverterFactoryImp;
+import se.uu.ub.cora.therest.data.RestDataRecordLink;
 import se.uu.ub.cora.therest.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.therest.json.builder.org.OrgJsonBuilderFactoryAdapter;
 
@@ -33,7 +30,7 @@ public class DataToJsonConverterFactoryTest {
 		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForRestDataElement(factory, restDataElement);
 
-		Assert.assertTrue(dataToJsonConverter instanceof DataGroupToJsonConverter);
+		assertTrue(dataToJsonConverter instanceof DataGroupToJsonConverter);
 	}
 
 	@Test
@@ -44,17 +41,27 @@ public class DataToJsonConverterFactoryTest {
 		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForRestDataElement(factory, restDataElement);
 
-		Assert.assertTrue(dataToJsonConverter instanceof DataAtomicToJsonConverter);
+		assertTrue(dataToJsonConverter instanceof DataAtomicToJsonConverter);
 	}
 
 	@Test
 	public void testJsonCreatorFactoryDataAttribute() {
 		RestDataElement restDataElement = RestDataAttribute
 				.withNameInDataAndValue("attributeNameInData", "attributeValue");
-		
+
 		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForRestDataElement(factory, restDataElement);
-		
-		Assert.assertTrue(dataToJsonConverter instanceof DataAttributeToJsonConverter);
+
+		assertTrue(dataToJsonConverter instanceof DataAttributeToJsonConverter);
+	}
+
+	@Test
+	public void testJsonCreateFactoryDataRecordLink() {
+		RestDataElement restDataElement = RestDataRecordLink.withNameInData("recordLinkNameInData");
+		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
+				.createForRestDataElement(factory, restDataElement);
+
+		assertTrue(dataToJsonConverter instanceof DataRecordLinkToJsonConverter);
+
 	}
 }

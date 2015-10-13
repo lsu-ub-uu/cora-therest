@@ -9,7 +9,7 @@ public final class DataAtomicToJsonConverter extends DataToJsonConverter {
 	private RestDataAtomic restDataAtomic;
 	private JsonBuilderFactory factory;
 
-	public static DataToJsonConverter forRestDataAtomic(JsonBuilderFactory factory,
+	public static DataToJsonConverter usingJsonFactoryForRestDataAtomic(JsonBuilderFactory factory,
 			RestDataAtomic dataAtomic) {
 		return new DataAtomicToJsonConverter(factory, dataAtomic);
 	}
