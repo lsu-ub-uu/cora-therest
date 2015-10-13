@@ -14,7 +14,7 @@ import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertEquals;
 
-public class DataRecordSpiderToRestConterterTest {
+public class DataRecordSpiderToRestConverterTest {
 	private String baseURL = "http://localhost:8080/therest/rest/record/";
 
 	@Test

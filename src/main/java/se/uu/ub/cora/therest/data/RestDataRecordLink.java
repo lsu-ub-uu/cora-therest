@@ -5,6 +5,7 @@ import java.util.Map;
 
 public class RestDataRecordLink implements RestDataElement {
 	private String nameInData;
+
 	private Map<String, ActionLink> actionLinks = new LinkedHashMap<>();
 	private String recordType;
 	private String recordId;
@@ -44,6 +45,10 @@ public class RestDataRecordLink implements RestDataElement {
 
 	public String getRecordId() {
 		return recordId;
+	}
+
+	public void setActionLinks(Map<String, ActionLink> actionLinks) {
+		this.actionLinks = actionLinks;
 	}
 
 }

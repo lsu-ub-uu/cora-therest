@@ -1,11 +1,9 @@
 package se.uu.ub.cora.therest.data.converter.spider;
 
-import se.uu.ub.cora.spider.data.Action;
 import se.uu.ub.cora.spider.data.SpiderDataAtomic;
 import se.uu.ub.cora.spider.data.SpiderDataElement;
 import se.uu.ub.cora.spider.data.SpiderDataGroup;
 import se.uu.ub.cora.spider.data.SpiderDataRecord;
-import se.uu.ub.cora.therest.data.ActionLink;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.RestDataRecord;
 import se.uu.ub.cora.therest.data.converter.ConverterException;
@@ -54,7 +52,7 @@ public final class DataRecordSpiderToRestConverter {
 		SpiderDataGroup recordInfo = findRecordInfo();
 		String id = findId(recordInfo);
 		String type = findType(recordInfo);
-		createRestLinks(id, type);
+		createRestLinks(type, id);
 	}
 
 	private SpiderDataGroup findRecordInfo() {
@@ -97,25 +95,11 @@ public final class DataRecordSpiderToRestConverter {
 		return type;
 	}
 
-	private void createRestLinks(String id, String type) {
-		String url = type + "/" + id;
+	private void createRestLinks(String recordType, String recordId) {
+		ActionSpiderToRestConverter actionSpiderToRestConverter = ActionSpiderToRestConverter
+				.fromSpiderActionsWithBaseURLAndRecordTypeAndRecordId(spiderDataRecord.getActions(),
+						baseURL, recordType, recordId);
+		restDataRecord.setActionLinks(actionSpiderToRestConverter.toRest());
 
-		for (Action action : spiderDataRecord.getActions()) {
-			ActionLink actionLink = ActionLink.withAction(action);
-
-			actionLink.setURL(baseURL + url);
-			// TODO: add path etc.
-			if (Action.READ.equals(action)) {
-				actionLink.setRequestMethod("GET");
-			} else if (Action.UPDATE.equals(action)) {
-				actionLink.setRequestMethod("POST");
-			} else {
-				actionLink.setRequestMethod("DELETE");
-			}
-
-			actionLink.setAccept("application/uub+record+json");
-			actionLink.setContentType("application/uub+record+json");
-			restDataRecord.addActionLink(action.name().toLowerCase(), actionLink);
-		}
 	}
 }
