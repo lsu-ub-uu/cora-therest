@@ -1,5 +1,8 @@
 package se.uu.ub.cora.therest.data.converter;
 
+import java.util.Map;
+
+import se.uu.ub.cora.therest.data.ActionLink;
 import se.uu.ub.cora.therest.data.RestDataRecordLink;
 import se.uu.ub.cora.therest.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.therest.json.builder.JsonObjectBuilder;
@@ -30,20 +33,32 @@ public final class DataRecordLinkToJsonConverter extends DataToJsonConverter {
 	@Override
 	JsonObjectBuilder toJsonObjectBuilder() {
 		recordLinkBuilder.addKeyString("name", recordLink.getNameInData());
-		addIdentifierToLink();
+		addRecordTypeAndRecordIdToRecordLink();
+		possiblyAddActionLinksToRecordLink();
 		return recordLinkBuilder;
 	}
 
-	private void addIdentifierToLink() {
-		DataToJsonConverterFactory dataToJsonConverterFactory = new DataToJsonConverterFactoryImp();
-
-		JsonObjectBuilder identifier = jsonFactory.createObjectBuilder();
-		identifier.addKeyString("recordType", recordLink.getRecordType());
-		identifier.addKeyString("recordId", recordLink.getRecordId());
-
-		// dataToJsonConverterFactory.createForRestDataElement(jsonFactory,
-		// dataLink.getIdentifier())
-		// .toJsonObjectBuilder();
-		recordLinkBuilder.addKeyJsonObjectBuilder("identifier", identifier);
+	private void addRecordTypeAndRecordIdToRecordLink() {
+		recordLinkBuilder.addKeyString("recordType", recordLink.getRecordType());
+		recordLinkBuilder.addKeyString("recordId", recordLink.getRecordId());
 	}
+
+	private void possiblyAddActionLinksToRecordLink() {
+		if (recordLinkHasActionLinks()) {
+			addActionLinksToRecordLink();
+		}
+	}
+
+	private boolean recordLinkHasActionLinks() {
+		return !recordLink.getActionLinks().isEmpty();
+	}
+
+	private void addActionLinksToRecordLink() {
+		Map<String, ActionLink> actionLinks = recordLink.getActionLinks();
+		ActionLinksToJsonConverter actionLinkConverter = new ActionLinksToJsonConverter(jsonFactory,
+				actionLinks);
+		JsonObjectBuilder actionLinksObject = actionLinkConverter.toJsonObjectBuilder();
+		recordLinkBuilder.addKeyJsonObjectBuilder("actionLinks", actionLinksObject);
+	}
+
 }
