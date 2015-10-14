@@ -41,20 +41,20 @@
 	<br>
 	<h2>Use these tools</h2>
 	Use the firefox addon RESTClient to play with this...
-	<br> and the site: http://www.jsoneditoronline.org/ might also
+	<br> and the site: <a href="http://www.jsoneditoronline.org/">http://www.jsoneditoronline.org/</a> might also
 	help
 	<br>
 
 
 	<h1>Examples</h1>
 
-	Examples can be found in our acceptance tests: http://epc.ub.uu.se/fitnesse/TheRestTests
+	Examples can be found in our <a href="http://epc.ub.uu.se/fitnesse/TheRestTests">acceptance tests</a>
 	<h3>Create</h3>
 	To create data, use: <br> POST http://epc.ub.uu.se/cora/rest/record/theTypeYouWantToCreate
 	<br>
 	<br>
-	Examples of what the body should look like can be found at (for example): <br>
-	http://epc.ub.uu.se/fitnesse/TheRestTests.CallThroughJavaCode.RecordTypeTests.AbstractRecordType
+	Examples of what the body should look like can be found here: <br>
+	<a href="http://epc.ub.uu.se/fitnesse/TheRestTests.CallThroughJavaCode.RecordTypeTests.AbstractRecordType">AbstractRecordType</a>
 	<br>
 	<h3>Read</h3>
 	To read a list of types, use: <br> GET http://epc.ub.uu.se/cora/rest/record/theTypeYouWantToRead
@@ -66,8 +66,8 @@
 	To update data use: <br> POST http://epc.ub.uu.se/cora/rest/record/theTypeYouWantToUpdate/theIdOfTheDataYouWantToUpdate
 	<br>
 	<br>
-	Examples of what the body should look like can be found at (for example): <br>
-	http://epc.ub.uu.se/fitnesse/TheRestTests.CallThroughJavaCode.RecordTypeTests.AbstractRecordType
+	Examples of what the body should look like can be found here: <br>
+	<a href="http://epc.ub.uu.se/fitnesse/TheRestTests.CallThroughJavaCode.RecordTypeTests.AbstractRecordType">AbstractRecordType</a>
 	<br>
 	<h3>Delete</h3>
 	To delete data use: <br> DELETE http://epc.ub.uu.se/cora/rest/record/theTypeYouWantToUpdate/theIdOfTheDataYouWantToDelete
