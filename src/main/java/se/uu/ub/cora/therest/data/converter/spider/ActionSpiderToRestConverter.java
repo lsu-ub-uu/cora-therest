@@ -7,7 +7,7 @@ import java.util.Set;
 import se.uu.ub.cora.spider.data.Action;
 import se.uu.ub.cora.therest.data.ActionLink;
 
-public class ActionSpiderToRestConverter {
+public final class ActionSpiderToRestConverter {
 
 	private String baseURL;
 	private Set<Action> actions;

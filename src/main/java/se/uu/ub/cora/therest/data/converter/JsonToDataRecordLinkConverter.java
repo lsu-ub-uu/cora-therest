@@ -5,11 +5,10 @@ import se.uu.ub.cora.therest.data.RestDataRecordLink;
 import se.uu.ub.cora.therest.json.parser.JsonObject;
 import se.uu.ub.cora.therest.json.parser.JsonParseException;
 
-public class JsonToDataRecordLinkConverter implements JsonToDataConverter {
+public final class JsonToDataRecordLinkConverter implements JsonToDataConverter {
 
 	private JsonObject jsonObject;
 	private static final int NUM_OF_ALLOWED_KEYS_AT_TOP_LEVEL = 4;
-	private RestDataRecordLink restDataRecordLink;
 
 	public static JsonToDataRecordLinkConverter forJsonObject(JsonObject jsonObject) {
 		return new JsonToDataRecordLinkConverter(jsonObject);
@@ -35,15 +34,7 @@ public class JsonToDataRecordLinkConverter implements JsonToDataConverter {
 
 	private void validateOnlyCorrectKeysAtTopLevel() {
 
-		if (!jsonObject.containsKey("name")) {
-			throw new JsonParseException("Group data must contain key \"name\"");
-		}
-		if (!jsonObject.containsKey("recordType")) {
-			throw new JsonParseException("Group data must contain key \"recordType\"");
-		}
-		if (!jsonObject.containsKey("recordId")) {
-			throw new JsonParseException("Group data must contain key \"recordId\"");
-		}
+		validateMandatoryKeys();
 
 		if (maxKeysAtTopLevelButActionLinksIsMissing()) {
 			throw new JsonParseException("Group data may contain key \"actionLinks\"");
@@ -53,6 +44,18 @@ public class JsonToDataRecordLinkConverter implements JsonToDataConverter {
 					+ "\"recordId\" and \"actionLinks\" ");
 		}
 
+	}
+
+	private void validateMandatoryKeys() {
+		if (!jsonObject.containsKey("name")) {
+			throw new JsonParseException("Group data must contain key \"name\"");
+		}
+		if (!jsonObject.containsKey("recordType")) {
+			throw new JsonParseException("Group data must contain key \"recordType\"");
+		}
+		if (!jsonObject.containsKey("recordId")) {
+			throw new JsonParseException("Group data must contain key \"recordId\"");
+		}
 	}
 
 	private boolean maxKeysAtTopLevelButActionLinksIsMissing() {
@@ -71,10 +74,8 @@ public class JsonToDataRecordLinkConverter implements JsonToDataConverter {
 		String nameInData = getNameInDataFromJsonObject();
 		String recordType = getRecordTypeFromJsonObject();
 		String recordId = getRecordIdFromJsonObject();
-		restDataRecordLink = RestDataRecordLink.withNameInDataAndRecordTypeAndRecordId(nameInData,
-				recordType, recordId);
-
-		return restDataRecordLink;
+		return RestDataRecordLink
+				.withNameInDataAndRecordTypeAndRecordId(nameInData, recordType, recordId);
 	}
 
 	private String getNameInDataFromJsonObject() {

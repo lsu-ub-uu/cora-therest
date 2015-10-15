@@ -3,7 +3,7 @@ package se.uu.ub.cora.therest.data.converter.spider;
 import se.uu.ub.cora.spider.data.SpiderDataRecordLink;
 import se.uu.ub.cora.therest.data.RestDataRecordLink;
 
-public class DataRecordLinkSpiderToRestConverter {
+public final class DataRecordLinkSpiderToRestConverter {
 	private SpiderDataRecordLink spiderDataRecordLink;
 	private String baseURL;
 	private RestDataRecordLink restDataRecordLink;

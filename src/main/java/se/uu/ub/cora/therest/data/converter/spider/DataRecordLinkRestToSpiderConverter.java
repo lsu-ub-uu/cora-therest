@@ -3,9 +3,8 @@ package se.uu.ub.cora.therest.data.converter.spider;
 import se.uu.ub.cora.spider.data.SpiderDataRecordLink;
 import se.uu.ub.cora.therest.data.RestDataRecordLink;
 
-public class DataRecordLinkRestToSpiderConverter {
+public final class DataRecordLinkRestToSpiderConverter {
 	private RestDataRecordLink restDataRecordLink;
-	private SpiderDataRecordLink spiderDataRecordLink;
 
 	public static DataRecordLinkRestToSpiderConverter fromRestDataRecordLink(
 			RestDataRecordLink restDataRecordLink) {
@@ -17,10 +16,9 @@ public class DataRecordLinkRestToSpiderConverter {
 	}
 
 	public SpiderDataRecordLink toSpider() {
-		spiderDataRecordLink = SpiderDataRecordLink.withNameInDataAndRecordTypeAndRecordId(
-				restDataRecordLink.getNameInData(), restDataRecordLink.getRecordType(),
-				restDataRecordLink.getRecordId());
-		return spiderDataRecordLink;
+		return SpiderDataRecordLink
+				.withNameInDataAndRecordTypeAndRecordId(restDataRecordLink.getNameInData(),
+						restDataRecordLink.getRecordType(), restDataRecordLink.getRecordId());
 	}
 
 }

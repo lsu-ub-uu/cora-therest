@@ -3,7 +3,7 @@ package se.uu.ub.cora.therest.data;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class RestDataRecordLink implements RestDataElement {
+public final class RestDataRecordLink implements RestDataElement {
 	private String nameInData;
 
 	private Map<String, ActionLink> actionLinks = new LinkedHashMap<>();
