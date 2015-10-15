@@ -10,23 +10,26 @@ import org.testng.annotations.Test;
 
 import se.uu.ub.cora.spider.data.SpiderDataAtomic;
 import se.uu.ub.cora.spider.data.SpiderDataGroup;
+import se.uu.ub.cora.spider.data.SpiderDataRecordLink;
 import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataElement;
 import se.uu.ub.cora.therest.data.RestDataGroup;
-import se.uu.ub.cora.therest.data.converter.spider.DataGroupSpiderToRestConverter;
+import se.uu.ub.cora.therest.data.RestDataRecordLink;
 
 public class DataGroupSpiderToRestConverterTest {
+	private String baseURL = "http://localhost:8080/therest/rest/record/";
 	private SpiderDataGroup spiderDataGroup;
+	private DataGroupSpiderToRestConverter dataGroupSpiderToRestConverter;
 
 	@BeforeMethod
 	public void beforeMetod() {
 		spiderDataGroup = SpiderDataGroup.withNameInData("nameInData");
+		dataGroupSpiderToRestConverter = DataGroupSpiderToRestConverter
+				.fromSpiderDataGroupWithBaseURL(spiderDataGroup, baseURL);
 	}
 
 	@Test
 	public void testToRest() {
-		DataGroupSpiderToRestConverter dataGroupSpiderToRestConverter = DataGroupSpiderToRestConverter
-				.fromSpiderDataGroup(spiderDataGroup);
 		RestDataGroup restDataGroup = dataGroupSpiderToRestConverter.toRest();
 		assertEquals(restDataGroup.getNameInData(), "nameInData");
 	}
@@ -34,8 +37,6 @@ public class DataGroupSpiderToRestConverterTest {
 	@Test
 	public void testToRestWithAttributes() {
 		spiderDataGroup.addAttributeByIdWithValue("attributeNameInData", "attributeValue");
-		DataGroupSpiderToRestConverter dataGroupSpiderToRestConverter = DataGroupSpiderToRestConverter
-				.fromSpiderDataGroup(spiderDataGroup);
 		RestDataGroup restDataGroup = dataGroupSpiderToRestConverter.toRest();
 		String attributeId = restDataGroup.getAttributes().keySet().iterator().next();
 		String attributeValue = restDataGroup.getAttributes().get(attributeId);
@@ -44,9 +45,8 @@ public class DataGroupSpiderToRestConverterTest {
 
 	@Test
 	public void testToRestWithAtomicChild() {
-		spiderDataGroup.addChild(SpiderDataAtomic.withNameInDataAndValue("childNameInData", "atomicValue"));
-		DataGroupSpiderToRestConverter dataGroupSpiderToRestConverter = DataGroupSpiderToRestConverter
-				.fromSpiderDataGroup(spiderDataGroup);
+		spiderDataGroup.addChild(
+				SpiderDataAtomic.withNameInDataAndValue("childNameInData", "atomicValue"));
 		RestDataGroup restDataGroup = dataGroupSpiderToRestConverter.toRest();
 		RestDataAtomic restDataAtomic = (RestDataAtomic) restDataGroup.getChildren().iterator()
 				.next();
@@ -55,10 +55,20 @@ public class DataGroupSpiderToRestConverterTest {
 	}
 
 	@Test
+	public void testToRestWithRecordLinkChild() {
+		spiderDataGroup.addChild(SpiderDataRecordLink.withNameInDataAndRecordTypeAndRecordId(
+				"childNameInData", "someRecordType", "someRecordId"));
+		RestDataGroup restDataGroup = dataGroupSpiderToRestConverter.toRest();
+		RestDataRecordLink restDataRecordLink = (RestDataRecordLink) restDataGroup.getChildren()
+				.iterator().next();
+		assertEquals(restDataRecordLink.getNameInData(), "childNameInData");
+		assertEquals(restDataRecordLink.getRecordType(), "someRecordType");
+		assertEquals(restDataRecordLink.getRecordId(), "someRecordId");
+	}
+
+	@Test
 	public void testToRestWithGroupChild() {
 		spiderDataGroup.addChild(SpiderDataGroup.withNameInData("childNameInData"));
-		DataGroupSpiderToRestConverter dataGroupSpiderToRestConverter = DataGroupSpiderToRestConverter
-				.fromSpiderDataGroup(spiderDataGroup);
 		RestDataGroup restDataGroup = dataGroupSpiderToRestConverter.toRest();
 		RestDataGroup restDataGroupChild = (RestDataGroup) restDataGroup.getChildren().iterator()
 				.next();
@@ -67,13 +77,11 @@ public class DataGroupSpiderToRestConverterTest {
 
 	@Test
 	public void testToRestWithGroupLevelsOfChildren() {
-		spiderDataGroup
-				.addChild(SpiderDataAtomic.withNameInDataAndValue("atomicNameInData", "atomicValue"));
+		spiderDataGroup.addChild(
+				SpiderDataAtomic.withNameInDataAndValue("atomicNameInData", "atomicValue"));
 		SpiderDataGroup dataGroup2 = SpiderDataGroup.withNameInData("childNameInData");
 		dataGroup2.addChild(SpiderDataGroup.withNameInData("grandChildNameInData"));
 		spiderDataGroup.addChild(dataGroup2);
-		DataGroupSpiderToRestConverter dataGroupSpiderToRestConverter = DataGroupSpiderToRestConverter
-				.fromSpiderDataGroup(spiderDataGroup);
 		RestDataGroup restDataGroup = dataGroupSpiderToRestConverter.toRest();
 		Iterator<RestDataElement> iterator = restDataGroup.getChildren().iterator();
 		Assert.assertTrue(iterator.hasNext(), "dataGroupRest should have at least one child");
@@ -87,7 +95,8 @@ public class DataGroupSpiderToRestConverterTest {
 				"NameInData should be the one set in dataGroup2");
 
 		Assert.assertEquals(dataGroupChild.getChildren().stream().findAny().get().getNameInData(),
-				"grandChildNameInData", "NameInData should be the one set in the child of dataGroup2");
+				"grandChildNameInData",
+				"NameInData should be the one set in the child of dataGroup2");
 	}
 
 }

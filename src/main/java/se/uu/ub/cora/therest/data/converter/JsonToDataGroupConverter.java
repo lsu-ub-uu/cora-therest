@@ -4,7 +4,11 @@ import java.util.Map.Entry;
 
 import se.uu.ub.cora.therest.data.RestDataElement;
 import se.uu.ub.cora.therest.data.RestDataGroup;
-import se.uu.ub.cora.therest.json.parser.*;
+import se.uu.ub.cora.therest.json.parser.JsonArray;
+import se.uu.ub.cora.therest.json.parser.JsonObject;
+import se.uu.ub.cora.therest.json.parser.JsonParseException;
+import se.uu.ub.cora.therest.json.parser.JsonString;
+import se.uu.ub.cora.therest.json.parser.JsonValue;
 
 public final class JsonToDataGroupConverter implements JsonToDataConverter {
 
@@ -27,7 +31,7 @@ public final class JsonToDataGroupConverter implements JsonToDataConverter {
 		try {
 			return tryToInstanciate();
 		} catch (Exception e) {
-			throw new JsonParseException("Error parsing jsonObject: "+e.getMessage(), e);
+			throw new JsonParseException("Error parsing jsonObject: " + e.getMessage(), e);
 		}
 	}
 
@@ -47,16 +51,25 @@ public final class JsonToDataGroupConverter implements JsonToDataConverter {
 		}
 
 		if (!hasChildren()) {
-			throw new JsonParseException("Group data must contain key \""+CHILDREN+"\"");
+			throw new JsonParseException("Group data must contain key \"" + CHILDREN + "\"");
 		}
 
-		if(jsonObject.keySet().size() == NUM_OF_ALLOWED_KEYS_AT_TOP_LEVEL && !hasAttributes()){
-			throw new JsonParseException("Group data must contain key \""+ATTRIBUTES+"\"");
+		if (maxKeysAtTopLevelButAttributeIsMissing()) {
+			throw new JsonParseException("Group data must contain key \"" + ATTRIBUTES + "\"");
 		}
 
-		if(jsonObject.keySet().size() > NUM_OF_ALLOWED_KEYS_AT_TOP_LEVEL){
-			throw new JsonParseException("Group data can only contain keys \"name\", \""+CHILDREN+"\" and \""+ATTRIBUTES+"\"");
+		if (moreKeysAtTopLevelThanAllowed()) {
+			throw new JsonParseException("Group data can only contain keys \"name\", \"" + CHILDREN
+					+ "\" and \"" + ATTRIBUTES + "\"");
 		}
+	}
+
+	private boolean maxKeysAtTopLevelButAttributeIsMissing() {
+		return jsonObject.keySet().size() == NUM_OF_ALLOWED_KEYS_AT_TOP_LEVEL && !hasAttributes();
+	}
+
+	private boolean moreKeysAtTopLevelThanAllowed() {
+		return jsonObject.keySet().size() > NUM_OF_ALLOWED_KEYS_AT_TOP_LEVEL;
 	}
 
 	private RestDataElement createDataGroupInstance() {

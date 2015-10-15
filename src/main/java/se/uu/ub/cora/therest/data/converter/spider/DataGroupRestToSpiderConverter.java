@@ -5,9 +5,11 @@ import java.util.Map.Entry;
 
 import se.uu.ub.cora.spider.data.SpiderDataAtomic;
 import se.uu.ub.cora.spider.data.SpiderDataGroup;
+import se.uu.ub.cora.spider.data.SpiderDataRecordLink;
 import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataElement;
 import se.uu.ub.cora.therest.data.RestDataGroup;
+import se.uu.ub.cora.therest.data.RestDataRecordLink;
 import se.uu.ub.cora.therest.data.converter.ConverterException;
 
 public final class DataGroupRestToSpiderConverter {
@@ -54,6 +56,8 @@ public final class DataGroupRestToSpiderConverter {
 	private void addChildToSpiderGroup(RestDataElement restDataElement) {
 		if (restDataElement instanceof RestDataGroup) {
 			addGroupChild(restDataElement);
+		} else if (restDataElement instanceof RestDataRecordLink) {
+			addLinkChild(restDataElement);
 		} else {
 			addAtomicChild(restDataElement);
 		}
@@ -63,6 +67,12 @@ public final class DataGroupRestToSpiderConverter {
 		SpiderDataGroup spiderDataGroupChild = DataGroupRestToSpiderConverter
 				.fromRestDataGroup((RestDataGroup) restDataElement).toSpider();
 		spiderDataGroup.addChild(spiderDataGroupChild);
+	}
+
+	private void addLinkChild(RestDataElement restDataElement) {
+		SpiderDataRecordLink spiderDataRecordLink = DataRecordLinkRestToSpiderConverter
+				.fromRestDataRecordLink((RestDataRecordLink) restDataElement).toSpider();
+		spiderDataGroup.addChild(spiderDataRecordLink);
 	}
 
 	private void addAtomicChild(RestDataElement restDataElement) {

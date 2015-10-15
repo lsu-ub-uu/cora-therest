@@ -14,7 +14,7 @@ public final class DataGroupToJsonConverter extends DataToJsonConverter {
 	private JsonObjectBuilder dataGroupJsonObjectBuilder;
 	private JsonBuilderFactory jsonBuilderFactory;
 
-	public static DataToJsonConverter forRestDataGroup(
+	public static DataToJsonConverter usingJsonFactoryForRestDataGroup(
 			se.uu.ub.cora.therest.json.builder.JsonBuilderFactory factory, RestDataGroup restDataGroup) {
 		return new DataGroupToJsonConverter(factory, restDataGroup);
 	}

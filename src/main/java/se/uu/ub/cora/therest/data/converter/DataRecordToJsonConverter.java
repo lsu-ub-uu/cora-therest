@@ -1,7 +1,6 @@
 package se.uu.ub.cora.therest.data.converter;
 
 import java.util.Map;
-import java.util.Map.Entry;
 
 import se.uu.ub.cora.therest.data.ActionLink;
 import se.uu.ub.cora.therest.data.RestDataRecord;
@@ -11,69 +10,81 @@ import se.uu.ub.cora.therest.json.builder.JsonObjectBuilder;
 
 public final class DataRecordToJsonConverter {
 
+	private JsonBuilderFactory jsonBuilderFactory;
+	private RestDataRecord restDataRecord;
+	private JsonObjectBuilder recordJsonObjectBuilder;
+
 	public static DataRecordToJsonConverter usingJsonFactoryForRestDataRecord(
 			JsonBuilderFactory jsonFactory, RestDataRecord restDataRecord) {
 		return new DataRecordToJsonConverter(jsonFactory, restDataRecord);
 	}
 
-	private JsonBuilderFactory jsonBuilderFactory;
-	private RestDataRecord restDataRecord;
-	private JsonObjectBuilder recordJsonObjectBuilder;
-
-	private DataRecordToJsonConverter(JsonBuilderFactory jsonFactory, RestDataRecord restDataRecord) {
+	private DataRecordToJsonConverter(JsonBuilderFactory jsonFactory,
+			RestDataRecord restDataRecord) {
 		this.jsonBuilderFactory = jsonFactory;
 		this.restDataRecord = restDataRecord;
 		recordJsonObjectBuilder = jsonFactory.createObjectBuilder();
 	}
 
 	public String toJson() {
-
 		return toJsonObjectBuilder().toJsonFormattedString();
 	}
 
 	JsonObjectBuilder toJsonObjectBuilder() {
-		// convert restDataGroup using existing converter
+		convertMainRestDataGroup();
+		convertActionLinks();
+		convertKeys();
+		return createTopLevelJsonObjectWithRecordAsChild();
+	}
+
+	private void convertMainRestDataGroup() {
 		DataToJsonConverterFactory dataToJsonConverterFactory = new DataToJsonConverterFactoryImp();
 		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForRestDataElement(jsonBuilderFactory, restDataRecord.getRestDataGroup());
 		JsonObjectBuilder jsonDataGroupObjectBuilder = dataToJsonConverter.toJsonObjectBuilder();
 		recordJsonObjectBuilder.addKeyJsonObjectBuilder("data", jsonDataGroupObjectBuilder);
+	}
 
-		// move actionLinks to this class
-		if (!restDataRecord.getActionLinks().isEmpty()) {
+	private void convertActionLinks() {
+		if (recordHasActionLinks()) {
 			addActionLinksToRecord();
 		}
+	}
 
-		// add key support
-		if (!restDataRecord.getKeys().isEmpty()) {
-			JsonArrayBuilder keyBuilder = jsonBuilderFactory.createArrayBuilder();
-			for (String key : restDataRecord.getKeys()) {
-				keyBuilder.addString(key);
-			}
-			recordJsonObjectBuilder.addKeyJsonArrayBuilder("keys", keyBuilder);
+	private boolean recordHasActionLinks() {
+		return !restDataRecord.getActionLinks().isEmpty();
+	}
+
+	private void addActionLinksToRecord() {
+		Map<String, ActionLink> actionLinks = restDataRecord.getActionLinks();
+		ActionLinksToJsonConverter actionLinkConverter = new ActionLinksToJsonConverter(
+				jsonBuilderFactory, actionLinks);
+		JsonObjectBuilder actionLinksObject = actionLinkConverter.toJsonObjectBuilder();
+		recordJsonObjectBuilder.addKeyJsonObjectBuilder("actionLinks", actionLinksObject);
+	}
+
+	private void convertKeys() {
+		if (recordHasKeys()) {
+			addKeysToRecord();
 		}
+	}
 
-		// create surrounding json object that only has "record" as its child
+	private boolean recordHasKeys() {
+		return !restDataRecord.getKeys().isEmpty();
+	}
+
+	private void addKeysToRecord() {
+		JsonArrayBuilder keyBuilder = jsonBuilderFactory.createArrayBuilder();
+		for (String key : restDataRecord.getKeys()) {
+			keyBuilder.addString(key);
+		}
+		recordJsonObjectBuilder.addKeyJsonArrayBuilder("keys", keyBuilder);
+	}
+
+	private JsonObjectBuilder createTopLevelJsonObjectWithRecordAsChild() {
 		JsonObjectBuilder rootWrappingJsonObjectBuilder = jsonBuilderFactory.createObjectBuilder();
 		rootWrappingJsonObjectBuilder.addKeyJsonObjectBuilder("record", recordJsonObjectBuilder);
 		return rootWrappingJsonObjectBuilder;
 	}
 
-	private void addActionLinksToRecord() {
-		JsonObjectBuilder actionLinksObject = jsonBuilderFactory.createObjectBuilder();
-		Map<String, ActionLink> actionLinks = restDataRecord.getActionLinks();
-
-		for (Entry<String, ActionLink> actionLinkEntry : actionLinks.entrySet()) {
-			ActionLink actionLink = actionLinkEntry.getValue();
-			JsonObjectBuilder internalLinkBuilder = jsonBuilderFactory.createObjectBuilder();
-			String actionString = actionLink.getAction().toString().toLowerCase();
-			internalLinkBuilder.addKeyString("rel", actionString);
-			internalLinkBuilder.addKeyString("url", actionLink.getURL());
-			internalLinkBuilder.addKeyString("requestMethod", actionLink.getRequestMethod());
-			internalLinkBuilder.addKeyString("accept", actionLink.getAccept());
-			internalLinkBuilder.addKeyString("contentType", actionLink.getContentType());
-			actionLinksObject.addKeyJsonObjectBuilder(actionString, internalLinkBuilder);
-		}
-		recordJsonObjectBuilder.addKeyJsonObjectBuilder("actionLinks", actionLinksObject);
-	}
 }

@@ -8,7 +8,7 @@ public final class DataAttributeToJsonConverter extends DataToJsonConverter {
 	private JsonBuilderFactory factory;
 	private RestDataAttribute restDataAttribute;
 
-	public static DataToJsonConverter forRestDataAttribute(JsonBuilderFactory factory,
+	public static DataToJsonConverter usingJsonFactoryForRestDataAttribute(JsonBuilderFactory factory,
 			RestDataAttribute dataAttribute) {
 		return new DataAttributeToJsonConverter(factory, dataAttribute);
 	}

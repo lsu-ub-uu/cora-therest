@@ -41,4 +41,9 @@ public final class RestDataRecord {
 	public ActionLink getActionLink(String key) {
 		return actionLinks.get(key);
 	}
+
+	public void setActionLinks(Map<String, ActionLink> actionLinks) {
+		this.actionLinks = actionLinks;
+	}
+
 }
