@@ -30,12 +30,15 @@ import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.RestDataRecord;
 import se.uu.ub.cora.therest.data.RestRecordList;
 import se.uu.ub.cora.therest.data.converter.ConverterException;
+import se.uu.ub.cora.therest.data.converter.DataGroupToJsonConverter;
 import se.uu.ub.cora.therest.data.converter.DataRecordToJsonConverter;
+import se.uu.ub.cora.therest.data.converter.DataToJsonConverter;
 import se.uu.ub.cora.therest.data.converter.JsonToDataConverter;
 import se.uu.ub.cora.therest.data.converter.JsonToDataConverterFactory;
 import se.uu.ub.cora.therest.data.converter.JsonToDataConverterFactoryImp;
 import se.uu.ub.cora.therest.data.converter.RecordListToJsonConverter;
 import se.uu.ub.cora.therest.data.converter.spider.DataGroupRestToSpiderConverter;
+import se.uu.ub.cora.therest.data.converter.spider.DataGroupSpiderToRestConverter;
 import se.uu.ub.cora.therest.data.converter.spider.DataRecordSpiderToRestConverter;
 import se.uu.ub.cora.therest.data.converter.spider.RecordListSpiderToRestConverter;
 import se.uu.ub.cora.therest.json.builder.JsonBuilderFactory;
@@ -218,6 +221,42 @@ public class RecordEndpoint {
 		return Response.status(Response.Status.OK).entity(json).build();
 	}
 
+	@GET
+	@Path("{type}/{id}/incomingLinks")
+	@Produces("application/uub+record+json")
+	public Response readIncomingRecordLinks(@PathParam("type") String type,
+			@PathParam("id") String id) {
+		// set user directly here until we have decided how to authenticate user
+		return readIncomingRecordLinksAsUserIdByTypeAndId(USER_ID, type, id);
+	}
+
+	Response readIncomingRecordLinksAsUserIdByTypeAndId(String userId, String type, String id) {
+		try {
+			return tryReadIncomingRecordLinks(userId, type, id);
+		} catch (MisuseException e) {
+			return Response.status(Response.Status.METHOD_NOT_ALLOWED).entity(e.getMessage())
+					.build();
+		} catch (RecordNotFoundException e) {
+			return Response.status(Response.Status.NOT_FOUND).build();
+		} catch (AuthorizationException e) {
+			return Response.status(Response.Status.UNAUTHORIZED).build();
+		}
+	}
+
+	private Response tryReadIncomingRecordLinks(String userId, String type, String id) {
+		SpiderDataGroup dataGroup = SpiderInstanceProvider.getSpiderRecordReader()
+				.readIncomingLinks(userId, type, id);
+
+		DataGroupSpiderToRestConverter converter = DataGroupSpiderToRestConverter
+				.fromSpiderDataGroupWithBaseURL(dataGroup, url);
+		RestDataGroup restDataGroup = converter.toRest();
+		JsonBuilderFactory jsonBuilderFactory = new OrgJsonBuilderFactoryAdapter();
+		DataToJsonConverter jsonConverter = DataGroupToJsonConverter
+				.usingJsonFactoryForRestDataGroup(jsonBuilderFactory, restDataGroup);
+		String json = jsonConverter.toJson();
+		return Response.status(Response.Status.OK).entity(json).build();
+	}
+
 	@DELETE
 	@Path("{type}/{id}")
 	public Response deleteRecord(@PathParam("type") String type, @PathParam("id") String id) {
@@ -275,4 +314,5 @@ public class RecordEndpoint {
 		String json = convertSpiderDataRecordToJsonString(updatedRecord);
 		return Response.status(Response.Status.OK).entity(json).build();
 	}
+
 }

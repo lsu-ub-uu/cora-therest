@@ -66,15 +66,48 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testReadRecordNotFound() {
-		Response response = recordEndpoint.readRecordAsUserIdByTypeAndId("userId", "place",
-				"place:0001_NOT_FOUND");
+		Response response = recordEndpoint.readRecord("place", "place:0001_NOT_FOUND");
 		assertEquals(response.getStatusInfo(), Response.Status.NOT_FOUND);
 	}
 
 	@Test
 	public void testReadRecordAbstractRecordType() {
 		String type = "abstract";
-		Response responseRead = recordEndpoint.readRecord(type, jsonToCreateFrom);
+		Response responseRead = recordEndpoint.readRecord(type, "canBeWhatEverIdTypeIsChecked");
+		assertEquals(responseRead.getStatusInfo(), Response.Status.METHOD_NOT_ALLOWED);
+	}
+
+	@Test
+	public void testReadIncomingRecordLinks() {
+		Response response = recordEndpoint.readIncomingRecordLinks("place", "place:0001");
+		String entity = (String) response.getEntity();
+
+		assertNotNull(entity, "An entity in json format should be returned");
+		assertEquals(entity,
+				"{\"children\":[{\"children\":["
+						+ "{\"recordId\":\"place:0002\",\"recordType\":\"place\",\"name\":\"from\"},"
+						+ "{\"recordId\":\"place:0001\",\"recordType\":\"place\",\"name\":\"to\"}],"
+						+ "\"name\":\"recordToRecordLink\"}],\"name\":\"incomingRecordLinks\"}");
+	}
+
+	@Test
+	public void testReadIncomingLinksUnauthorized() {
+		Response response = recordEndpoint.readIncomingRecordLinksAsUserIdByTypeAndId(
+				"unauthorizedUserId", "place", "place:0001");
+		assertEquals(response.getStatusInfo(), Response.Status.UNAUTHORIZED);
+	}
+
+	@Test
+	public void testReadIncomingLinksNotFound() {
+		Response response = recordEndpoint.readIncomingRecordLinks("place", "place:0001_NOT_FOUND");
+		assertEquals(response.getStatusInfo(), Response.Status.NOT_FOUND);
+	}
+
+	@Test
+	public void testReadIncomingLinksAbstractRecordType() {
+		String type = "abstract";
+		Response responseRead = recordEndpoint.readIncomingRecordLinks(type,
+				"canBeWhatEverIdTypeIsChecked");
 		assertEquals(responseRead.getStatusInfo(), Response.Status.METHOD_NOT_ALLOWED);
 	}
 
@@ -101,7 +134,8 @@ public class RecordEndpointTest {
 	@Test
 	public void testDeleteRecordAbstractRecordType() {
 		String type = "abstract";
-		Response responseDeleted = recordEndpoint.deleteRecord(type, jsonToCreateFrom);
+		Response responseDeleted = recordEndpoint.deleteRecord(type,
+				"canBeWhatEverIdTypeIsChecked");
 		assertEquals(responseDeleted.getStatusInfo(), Response.Status.METHOD_NOT_ALLOWED);
 	}
 

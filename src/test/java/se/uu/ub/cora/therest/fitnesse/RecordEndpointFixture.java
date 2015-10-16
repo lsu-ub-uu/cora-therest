@@ -5,7 +5,6 @@ import javax.ws.rs.core.Response.StatusType;
 import javax.ws.rs.core.UriInfo;
 
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
-import se.uu.ub.cora.systemone.SystemOneDependencyProvider;
 import se.uu.ub.cora.therest.record.RecordEndpoint;
 import se.uu.ub.cora.therest.record.TestUri;
 
@@ -37,6 +36,17 @@ public class RecordEndpointFixture {
 				DependencyProviderForMultipleTestsWorkingTogether.spiderDependencyProvider);
 		RecordEndpoint recordEndpoint = new RecordEndpoint(uriInfo);
 		Response response = recordEndpoint.readRecord(type, id);
+		String entity = (String) response.getEntity();
+		statusType = response.getStatusInfo();
+		return entity;
+	}
+
+	public String testReadIncomingLinks() {
+		UriInfo uriInfo = new TestUri();
+		SpiderInstanceProvider.setSpiderDependencyProvider(
+				DependencyProviderForMultipleTestsWorkingTogether.spiderDependencyProvider);
+		RecordEndpoint recordEndpoint = new RecordEndpoint(uriInfo);
+		Response response = recordEndpoint.readIncomingRecordLinks(type, id);
 		String entity = (String) response.getEntity();
 		statusType = response.getStatusInfo();
 		return entity;
@@ -82,7 +92,7 @@ public class RecordEndpointFixture {
 		RecordEndpoint recordEndpoint = new RecordEndpoint(uriInfo);
 		Response response = recordEndpoint.deleteRecord(type, id);
 		statusType = response.getStatusInfo();
-		if(null==response.getEntity()){
+		if (null == response.getEntity()) {
 			return "";
 		}
 		return (String) response.getEntity();
