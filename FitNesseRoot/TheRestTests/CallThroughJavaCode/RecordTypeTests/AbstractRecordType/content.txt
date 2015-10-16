@@ -92,7 +92,7 @@ An abstract record type (the parent) is used to create a group of record type si
 
 !| RecordEndpointFixture |
 | type | id | testReadRecord? | getStatusType? |
-| plant | flower1 | Reading record: flower1 on the abstract recordType:plant is not allowed | METHOD_NOT_ALLOWED |
+| plant | flower1 | Reading for record: flower1 on the abstract recordType:plant is not allowed | METHOD_NOT_ALLOWED |
 
 *!
 !***> Delete data(tree1, flower1)
