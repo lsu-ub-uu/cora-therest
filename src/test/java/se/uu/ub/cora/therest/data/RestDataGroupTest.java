@@ -1,35 +1,45 @@
 package se.uu.ub.cora.therest.data;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
 
-import org.testng.Assert;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.therest.data.RestDataElement;
-import se.uu.ub.cora.therest.data.RestDataGroup;
-
 public class RestDataGroupTest {
+	private RestDataGroup restDataGroup;
+
+	@BeforeMethod
+	public void setUp() {
+		restDataGroup = RestDataGroup.withNameInData("nameInData");
+	}
+
 	@Test
 	public void testInit() {
-		RestDataGroup restDataGroup = RestDataGroup.withNameInData("nameInData");
 		assertEquals(restDataGroup.getNameInData(), "nameInData",
 				"NameInData shold be the one set in the constructor");
 
-		Assert.assertNotNull(restDataGroup.getAttributes(),
+		assertNotNull(restDataGroup.getAttributes(),
 				"Attributes should not be null for a new DataGroup");
 
 		restDataGroup.addAttributeByIdWithValue("nameInData", "Value");
 
-		Assert.assertEquals(restDataGroup.getAttributes().get("nameInData"), "Value",
+		assertEquals(restDataGroup.getAttributes().get("nameInData"), "Value",
 				"Attribute with nameInData nameInData should have value Value");
 
-		Assert.assertNotNull(restDataGroup.getChildren(),
+		assertNotNull(restDataGroup.getChildren(),
 				"Children should not be null for a new DataGroup");
 
 		RestDataElement restDataElement = RestDataGroup.withNameInData("nameInData2");
 		restDataGroup.addChild(restDataElement);
-		Assert.assertEquals(restDataGroup.getChildren().stream().findAny().get(), restDataElement,
+		assertEquals(restDataGroup.getChildren().stream().findAny().get(), restDataElement,
 				"Child should be the same as the one we added");
 
+	}
+
+	@Test
+	public void testInitWithRepeatId() {
+		restDataGroup.setRepeatId("x1");
+		assertEquals(restDataGroup.getRepeatId(), "x1");
 	}
 }
