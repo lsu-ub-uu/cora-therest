@@ -1,11 +1,11 @@
 package se.uu.ub.cora.therest.data.converter.spider;
 
+import se.uu.ub.cora.spider.data.Action;
+import se.uu.ub.cora.therest.data.ActionLink;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
-
-import se.uu.ub.cora.spider.data.Action;
-import se.uu.ub.cora.therest.data.ActionLink;
 
 public final class ActionSpiderToRestConverter {
 
@@ -29,19 +29,22 @@ public final class ActionSpiderToRestConverter {
 
 	public Map<String, ActionLink> toRest() {
 		Map<String, ActionLink> actionLinks = new LinkedHashMap<>();
-		String url = recordType + "/" + recordId;
 		for (Action action : actions) {
+			String url = recordType + "/" + recordId;
 			ActionLink actionLink = ActionLink.withAction(action);
 
-			actionLink.setURL(baseURL + url);
 			if (Action.READ.equals(action)) {
 				actionLink.setRequestMethod("GET");
 			} else if (Action.UPDATE.equals(action)) {
 				actionLink.setRequestMethod("POST");
-			} else {
+			}else if(Action.READ_INCOMING_LINKS.equals(action)){
+				actionLink.setRequestMethod("GET");
+				url = url + "/incomingLinks";
+			}else {
 				actionLink.setRequestMethod("DELETE");
 			}
 
+			actionLink.setURL(baseURL + url);
 			actionLink.setAccept("application/uub+record+json");
 			actionLink.setContentType("application/uub+record+json");
 			actionLinks.put(action.name().toLowerCase(), actionLink);
