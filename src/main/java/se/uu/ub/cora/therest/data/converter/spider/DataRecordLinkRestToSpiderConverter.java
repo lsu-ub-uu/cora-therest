@@ -16,9 +16,11 @@ public final class DataRecordLinkRestToSpiderConverter {
 	}
 
 	public SpiderDataRecordLink toSpider() {
-		return SpiderDataRecordLink
+		SpiderDataRecordLink spiderDataRecordLink = SpiderDataRecordLink
 				.withNameInDataAndRecordTypeAndRecordId(restDataRecordLink.getNameInData(),
 						restDataRecordLink.getRecordType(), restDataRecordLink.getRecordId());
+		spiderDataRecordLink.setRepeatId(restDataRecordLink.getRepeatId());
+		return spiderDataRecordLink;
 	}
 
 }

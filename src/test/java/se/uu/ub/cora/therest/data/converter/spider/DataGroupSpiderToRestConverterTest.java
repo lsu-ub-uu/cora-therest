@@ -35,6 +35,14 @@ public class DataGroupSpiderToRestConverterTest {
 	}
 
 	@Test
+	public void testToRestWithRepeatId() {
+		spiderDataGroup.setRepeatId("2");
+		RestDataGroup restDataGroup = dataGroupSpiderToRestConverter.toRest();
+		assertEquals(restDataGroup.getNameInData(), "nameInData");
+		assertEquals(restDataGroup.getRepeatId(), "2");
+	}
+
+	@Test
 	public void testToRestWithAttributes() {
 		spiderDataGroup.addAttributeByIdWithValue("attributeNameInData", "attributeValue");
 		RestDataGroup restDataGroup = dataGroupSpiderToRestConverter.toRest();

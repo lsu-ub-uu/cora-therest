@@ -2,6 +2,7 @@ package se.uu.ub.cora.therest.data.converter.spider;
 
 import static org.testng.Assert.assertEquals;
 
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.spider.data.Action;
@@ -11,13 +12,20 @@ import se.uu.ub.cora.therest.data.RestDataRecordLink;
 
 public class DataRecordLinkSpiderToRestConverterTest {
 	private String baseURL = "http://localhost:8080/therest/rest/record/";
+	private SpiderDataRecordLink spiderDataRecordLink;
+	private DataRecordLinkSpiderToRestConverter dataRecordLinkSpiderToRestConverter;
+
+	@BeforeMethod
+	public void setUp() {
+		spiderDataRecordLink = SpiderDataRecordLink
+				.withNameInDataAndRecordTypeAndRecordId("nameInData", "recordType", "recordId");
+		dataRecordLinkSpiderToRestConverter = DataRecordLinkSpiderToRestConverter
+				.fromSpiderDataRecordLinkWithBaseURL(spiderDataRecordLink, baseURL);
+
+	}
 
 	@Test
 	public void testToRest() {
-		SpiderDataRecordLink spiderDataRecordLink = SpiderDataRecordLink
-				.withNameInDataAndRecordTypeAndRecordId("nameInData", "recordType", "recordId");
-		DataRecordLinkSpiderToRestConverter dataRecordLinkSpiderToRestConverter = DataRecordLinkSpiderToRestConverter
-				.fromSpiderDataRecordLinkWithBaseURL(spiderDataRecordLink, baseURL);
 		RestDataRecordLink restDataRecordLink = dataRecordLinkSpiderToRestConverter.toRest();
 		assertEquals(restDataRecordLink.getNameInData(), "nameInData");
 		assertEquals(restDataRecordLink.getRecordType(), "recordType");
@@ -25,12 +33,18 @@ public class DataRecordLinkSpiderToRestConverterTest {
 	}
 
 	@Test
+	public void testToRestWithRepeatId() {
+		spiderDataRecordLink.setRepeatId("j");
+		RestDataRecordLink restDataRecordLink = dataRecordLinkSpiderToRestConverter.toRest();
+		assertEquals(restDataRecordLink.getNameInData(), "nameInData");
+		assertEquals(restDataRecordLink.getRecordType(), "recordType");
+		assertEquals(restDataRecordLink.getRecordId(), "recordId");
+		assertEquals(restDataRecordLink.getRepeatId(), "j");
+	}
+
+	@Test
 	public void testToRestWithAction() {
-		SpiderDataRecordLink spiderDataRecordLink = SpiderDataRecordLink
-				.withNameInDataAndRecordTypeAndRecordId("nameInData", "recordType", "recordId");
 		spiderDataRecordLink.addAction(Action.READ);
-		DataRecordLinkSpiderToRestConverter dataRecordLinkSpiderToRestConverter = DataRecordLinkSpiderToRestConverter
-				.fromSpiderDataRecordLinkWithBaseURL(spiderDataRecordLink, baseURL);
 		RestDataRecordLink restDataRecordLink = dataRecordLinkSpiderToRestConverter.toRest();
 		assertEquals(restDataRecordLink.getNameInData(), "nameInData");
 		assertEquals(restDataRecordLink.getRecordType(), "recordType");

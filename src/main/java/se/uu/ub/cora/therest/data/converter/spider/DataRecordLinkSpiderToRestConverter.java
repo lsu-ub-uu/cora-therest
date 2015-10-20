@@ -23,6 +23,7 @@ public final class DataRecordLinkSpiderToRestConverter {
 		restDataRecordLink = RestDataRecordLink.withNameInDataAndRecordTypeAndRecordId(
 				spiderDataRecordLink.getNameInData(), spiderDataRecordLink.getRecordType(),
 				spiderDataRecordLink.getRecordId());
+		restDataRecordLink.setRepeatId(spiderDataRecordLink.getRepeatId());
 		createRestLinks(restDataRecordLink.getRecordType(), restDataRecordLink.getRecordId());
 		return restDataRecordLink;
 	}

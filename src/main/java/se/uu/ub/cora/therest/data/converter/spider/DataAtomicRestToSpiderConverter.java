@@ -5,7 +5,8 @@ import se.uu.ub.cora.therest.data.RestDataAtomic;
 
 public final class DataAtomicRestToSpiderConverter {
 
-	public static DataAtomicRestToSpiderConverter fromRestDataAtomic(RestDataAtomic restDataAtomic) {
+	public static DataAtomicRestToSpiderConverter fromRestDataAtomic(
+			RestDataAtomic restDataAtomic) {
 		return new DataAtomicRestToSpiderConverter(restDataAtomic);
 	}
 
@@ -16,8 +17,10 @@ public final class DataAtomicRestToSpiderConverter {
 	}
 
 	public SpiderDataAtomic toSpider() {
-		return SpiderDataAtomic.withNameInDataAndValue(
-				restDataAtomic.getNameInData(), restDataAtomic.getValue());
+		SpiderDataAtomic spiderDataAtomic = SpiderDataAtomic
+				.withNameInDataAndValue(restDataAtomic.getNameInData(), restDataAtomic.getValue());
+		spiderDataAtomic.setRepeatId(restDataAtomic.getRepeatId());
+		return spiderDataAtomic;
 	}
 
 }
