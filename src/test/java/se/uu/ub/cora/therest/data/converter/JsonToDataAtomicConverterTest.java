@@ -75,7 +75,14 @@ public class JsonToDataAtomicConverterTest {
 
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testToClassWrongJsonExtraKey() {
-		String json = "{\"name\":\"id\",\"value\":\"atomicValue\",\"extra\":\"extra\"}";
+		String json = "{\"name\":\"id\",\"value\":\"atomicValue\",\"repeatId\":\"5\""
+				+ ",\"extra\":\"extra\"}";
+		createRestDataAtomicForJsonString(json);
+	}
+
+	@Test(expectedExceptions = JsonParseException.class)
+	public void testToClassWrongJsonExtraKeyMissingRepeatId() {
+		String json = "{\"name\":\"id\",\"value\":\"atomicValue\",\"NOTrepeatId\":\"5\"" + "}";
 		createRestDataAtomicForJsonString(json);
 	}
 
