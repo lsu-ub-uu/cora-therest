@@ -1,34 +1,28 @@
 package se.uu.ub.cora.therest.data.converter;
 
-import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
+import static org.testng.Assert.assertEquals;
+
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataElement;
 import se.uu.ub.cora.therest.json.parser.JsonObject;
 import se.uu.ub.cora.therest.json.parser.JsonParseException;
-import se.uu.ub.cora.therest.json.parser.JsonParser;
 import se.uu.ub.cora.therest.json.parser.JsonValue;
 import se.uu.ub.cora.therest.json.parser.org.OrgJsonParser;
 
 public class JsonToDataAtomicConverterTest {
-	private JsonParser jsonParser;
-
-	@BeforeMethod
-	public void beforeMethod() {
-		jsonParser = new OrgJsonParser();
-	}
 
 	@Test
 	public void testToClass() {
 		String json = "{\"name\":\"atomicNameInData\",\"value\":\"atomicValue\"}";
 		RestDataAtomic restDataAtomic = createRestDataAtomicForJsonString(json);
-		Assert.assertEquals(restDataAtomic.getNameInData(), "atomicNameInData");
-		Assert.assertEquals(restDataAtomic.getValue(), "atomicValue");
+		assertEquals(restDataAtomic.getNameInData(), "atomicNameInData");
+		assertEquals(restDataAtomic.getValue(), "atomicValue");
 	}
 
 	private RestDataAtomic createRestDataAtomicForJsonString(String json) {
+		OrgJsonParser jsonParser = new OrgJsonParser();
 		JsonValue jsonValue = jsonParser.parseString(json);
 		JsonToDataConverter jsonToDataConverter = JsonToDataAtomicConverter
 				.forJsonObject((JsonObject) jsonValue);
@@ -39,11 +33,20 @@ public class JsonToDataAtomicConverterTest {
 	}
 
 	@Test
+	public void testToClassWithRepeatId() {
+		String json = "{\"name\":\"atomicNameInData\",\"value\":\"atomicValue\",\"repeatId\":\"5\"}";
+		RestDataAtomic restDataAtomic = createRestDataAtomicForJsonString(json);
+		assertEquals(restDataAtomic.getNameInData(), "atomicNameInData");
+		assertEquals(restDataAtomic.getValue(), "atomicValue");
+		assertEquals(restDataAtomic.getRepeatId(), "5");
+	}
+
+	@Test
 	public void testToClassEmptyValue() {
 		String json = "{\"name\":\"atomicNameInData\",\"value\":\"\"}";
 		RestDataAtomic restDataAtomic = createRestDataAtomicForJsonString(json);
-		Assert.assertEquals(restDataAtomic.getNameInData(), "atomicNameInData");
-		Assert.assertEquals(restDataAtomic.getValue(), "");
+		assertEquals(restDataAtomic.getNameInData(), "atomicNameInData");
+		assertEquals(restDataAtomic.getValue(), "");
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)

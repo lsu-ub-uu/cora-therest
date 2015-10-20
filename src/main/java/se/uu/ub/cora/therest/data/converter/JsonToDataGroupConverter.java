@@ -14,7 +14,7 @@ public final class JsonToDataGroupConverter implements JsonToDataConverter {
 
 	private static final String CHILDREN = "children";
 	private static final String ATTRIBUTES = "attributes";
-	private static final int NUM_OF_ALLOWED_KEYS_AT_TOP_LEVEL = 3;
+	private static final int NUM_OF_ALLOWED_KEYS_AT_TOP_LEVEL = 4;
 	private JsonObject jsonObject;
 	private RestDataGroup restDataGroup;
 
@@ -54,18 +54,28 @@ public final class JsonToDataGroupConverter implements JsonToDataConverter {
 			throw new JsonParseException("Group data must contain key \"" + CHILDREN + "\"");
 		}
 
-		if (maxKeysAtTopLevelButAttributeIsMissing()) {
+		if (threeKeysAtTopLevelButAttributeAndRepeatIdIsMissing()) {
+			throw new JsonParseException(
+					"Group data must contain name and children, and may contain "
+							+ "attributes or repeatId");
+		}
+		if (maxKeysAtTopLevelButAttributeOrRepeatIdIsMissing()) {
 			throw new JsonParseException("Group data must contain key \"" + ATTRIBUTES + "\"");
 		}
 
 		if (moreKeysAtTopLevelThanAllowed()) {
-			throw new JsonParseException("Group data can only contain keys \"name\", \"" + CHILDREN
+			throw new JsonParseException("Group data can only contain  keys \"name\", \"" + CHILDREN
 					+ "\" and \"" + ATTRIBUTES + "\"");
 		}
 	}
 
-	private boolean maxKeysAtTopLevelButAttributeIsMissing() {
-		return jsonObject.keySet().size() == NUM_OF_ALLOWED_KEYS_AT_TOP_LEVEL && !hasAttributes();
+	private boolean threeKeysAtTopLevelButAttributeAndRepeatIdIsMissing() {
+		return jsonObject.keySet().size() == 3 && !hasAttributes() && !hasRepeatId();
+	}
+
+	private boolean maxKeysAtTopLevelButAttributeOrRepeatIdIsMissing() {
+		return jsonObject.keySet().size() == NUM_OF_ALLOWED_KEYS_AT_TOP_LEVEL
+				&& (!hasAttributes() || !hasRepeatId());
 	}
 
 	private boolean moreKeysAtTopLevelThanAllowed() {
@@ -75,6 +85,7 @@ public final class JsonToDataGroupConverter implements JsonToDataConverter {
 	private RestDataElement createDataGroupInstance() {
 		String nameInData = getNameInDataFromJsonObject();
 		restDataGroup = RestDataGroup.withNameInData(nameInData);
+		addRepeatIdToGroup();
 		if (hasAttributes()) {
 			addAttributesToGroup();
 		}
@@ -82,8 +93,19 @@ public final class JsonToDataGroupConverter implements JsonToDataConverter {
 		return restDataGroup;
 	}
 
+	private void addRepeatIdToGroup() {
+		if (hasRepeatId()) {
+			restDataGroup.setRepeatId(jsonObject.getValueAsJsonString("repeatId").getStringValue());
+		}
+
+	}
+
 	private boolean hasAttributes() {
 		return jsonObject.containsKey(ATTRIBUTES);
+	}
+
+	private boolean hasRepeatId() {
+		return jsonObject.containsKey("repeatId");
 	}
 
 	private void addAttributesToGroup() {
