@@ -12,6 +12,7 @@ import se.uu.ub.cora.therest.json.parser.JsonValue;
 
 public final class JsonToDataGroupConverter implements JsonToDataConverter {
 
+	private static final int ONE_OPTIONAL_KEY_IS_PRESENT = 3;
 	private static final String CHILDREN = "children";
 	private static final String ATTRIBUTES = "attributes";
 	private static final int NUM_OF_ALLOWED_KEYS_AT_TOP_LEVEL = 4;
@@ -47,30 +48,36 @@ public final class JsonToDataGroupConverter implements JsonToDataConverter {
 	private void validateOnlyCorrectKeysAtTopLevel() {
 
 		if (!jsonObject.containsKey("name")) {
-			throw new JsonParseException("Group data must contain key \"name\"");
+			throw new JsonParseException("Group data must contain key: name");
 		}
 
 		if (!hasChildren()) {
-			throw new JsonParseException("Group data must contain key \"" + CHILDREN + "\"");
+			throw new JsonParseException("Group data must contain key: children");
 		}
 
+		validateNoOfKeysAtTopLevel();
+	}
+
+	private void validateNoOfKeysAtTopLevel() {
 		if (threeKeysAtTopLevelButAttributeAndRepeatIdIsMissing()) {
 			throw new JsonParseException(
 					"Group data must contain name and children, and may contain "
 							+ "attributes or repeatId");
 		}
 		if (maxKeysAtTopLevelButAttributeOrRepeatIdIsMissing()) {
-			throw new JsonParseException("Group data must contain key \"" + ATTRIBUTES + "\"");
+			throw new JsonParseException("Group data must contain key: attributes");
 		}
 
 		if (moreKeysAtTopLevelThanAllowed()) {
-			throw new JsonParseException("Group data can only contain  keys \"name\", \"" + CHILDREN
-					+ "\" and \"" + ATTRIBUTES + "\"");
+			throw new JsonParseException(
+					"Group data can only contain keys: name, children and attributes");
 		}
 	}
 
 	private boolean threeKeysAtTopLevelButAttributeAndRepeatIdIsMissing() {
-		return jsonObject.keySet().size() == 3 && !hasAttributes() && !hasRepeatId();
+		int oneOptionalKeyPresent = ONE_OPTIONAL_KEY_IS_PRESENT;
+		return jsonObject.keySet().size() == oneOptionalKeyPresent && !hasAttributes()
+				&& !hasRepeatId();
 	}
 
 	private boolean maxKeysAtTopLevelButAttributeOrRepeatIdIsMissing() {

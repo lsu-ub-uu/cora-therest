@@ -33,9 +33,7 @@ public final class DataGroupToJsonConverter extends DataToJsonConverter {
 
 	@Override
 	JsonObjectBuilder toJsonObjectBuilder() {
-		if (restDataGroup.getRepeatId() != null && !restDataGroup.getRepeatId().equals("")) {
-			dataGroupJsonObjectBuilder.addKeyString("repeatId", restDataGroup.getRepeatId());
-		}
+		possiblyAddRepeatId();
 		if (hasAttributes()) {
 			addAttributesToGroup();
 		}
@@ -44,6 +42,16 @@ public final class DataGroupToJsonConverter extends DataToJsonConverter {
 		}
 		dataGroupJsonObjectBuilder.addKeyString("name", restDataGroup.getNameInData());
 		return dataGroupJsonObjectBuilder;
+	}
+
+	private void possiblyAddRepeatId() {
+		if (hasNonEmptyRepeatId()) {
+			dataGroupJsonObjectBuilder.addKeyString("repeatId", restDataGroup.getRepeatId());
+		}
+	}
+
+	private boolean hasNonEmptyRepeatId() {
+		return restDataGroup.getRepeatId() != null && !restDataGroup.getRepeatId().equals("");
 	}
 
 	private boolean hasAttributes() {

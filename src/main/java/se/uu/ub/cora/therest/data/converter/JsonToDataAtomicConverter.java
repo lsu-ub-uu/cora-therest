@@ -81,8 +81,7 @@ public final class JsonToDataAtomicConverter implements JsonToDataConverter {
 	private RestDataAtomic createFromJsonWithNameInDataAndValue() {
 		String nameInData = getStringFromJson(NAME);
 		String value = getStringFromJson(VALUE);
-		RestDataAtomic restDataAtomic = RestDataAtomic.withNameInDataAndValue(nameInData, value);
-		return restDataAtomic;
+		return RestDataAtomic.withNameInDataAndValue(nameInData, value);
 	}
 
 	private String getStringFromJson(String key) {

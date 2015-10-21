@@ -7,6 +7,7 @@ import se.uu.ub.cora.therest.json.parser.JsonParseException;
 
 public final class JsonToDataRecordLinkConverter implements JsonToDataConverter {
 
+	private static final int ONE_OPTIONAL_KEY_IS_PRESENT = 4;
 	private JsonObject jsonObject;
 	private static final int NUM_OF_ALLOWED_KEYS_AT_TOP_LEVEL = 5;
 
@@ -36,15 +37,9 @@ public final class JsonToDataRecordLinkConverter implements JsonToDataConverter 
 
 		validateMandatoryKeys();
 
-		if (threeKeysAtTopLevelButAttributeAndRepeatIdIsMissing()) {
-			throw new JsonParseException("Group data can only contain keys name, repeatId, "
-					+ "recordType, recordId and actionLinks");
-		}
-		if (maxKeysAtTopLevelButRepeatIdOrActionLinksIsMissing()) {
-			throw new JsonParseException("Group data can only contain keys name, repeatId, "
-					+ "recordType, recordId and actionLinks");
-		}
-		if (moreKeysAtTopLevelThanAllowed()) {
+		if (threeKeysAtTopLevelButActionLinksAndRepeatIdIsMissing()
+				|| maxKeysAtTopLevelButRepeatIdOrActionLinksIsMissing()
+				|| moreKeysAtTopLevelThanAllowed()) {
 			throw new JsonParseException("Group data can only contain keys name, repeatId, "
 					+ "recordType, recordId and actionLinks");
 		}
@@ -63,8 +58,9 @@ public final class JsonToDataRecordLinkConverter implements JsonToDataConverter 
 		}
 	}
 
-	private boolean threeKeysAtTopLevelButAttributeAndRepeatIdIsMissing() {
-		return jsonObject.keySet().size() == 4 && !hasActionLinks() && !hasRepeatId();
+	private boolean threeKeysAtTopLevelButActionLinksAndRepeatIdIsMissing() {
+		return jsonObject.keySet().size() == ONE_OPTIONAL_KEY_IS_PRESENT && !hasActionLinks()
+				&& !hasRepeatId();
 	}
 
 	private boolean hasRepeatId() {
