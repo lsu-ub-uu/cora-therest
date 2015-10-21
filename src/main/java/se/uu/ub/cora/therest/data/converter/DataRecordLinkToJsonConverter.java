@@ -51,24 +51,35 @@ public final class DataRecordLinkToJsonConverter extends DataToJsonConverter {
 
 	@Override
 	JsonObjectBuilder toJsonObjectBuilder() {
+		possiblyAddRepeatId();
 		recordLinkBuilder.addKeyString("name", recordLink.getNameInData());
-		addRecordTypeAndRecordIdToRecordLink();
-		possiblyAddActionLinksToRecordLink();
+		addRecordTypeAndRecordId();
+		possiblyAddActionLinks();
 		return recordLinkBuilder;
 	}
 
-	private void addRecordTypeAndRecordIdToRecordLink() {
+	private void possiblyAddRepeatId() {
+		if (hasNonEmptyRepeatId()) {
+			recordLinkBuilder.addKeyString("repeatId", recordLink.getRepeatId());
+		}
+	}
+
+	private boolean hasNonEmptyRepeatId() {
+		return recordLink.getRepeatId() != null && !recordLink.getRepeatId().equals("");
+	}
+
+	private void addRecordTypeAndRecordId() {
 		recordLinkBuilder.addKeyString("recordType", recordLink.getRecordType());
 		recordLinkBuilder.addKeyString("recordId", recordLink.getRecordId());
 	}
 
-	private void possiblyAddActionLinksToRecordLink() {
-		if (recordLinkHasActionLinks()) {
+	private void possiblyAddActionLinks() {
+		if (hasActionLinks()) {
 			addActionLinksToRecordLink();
 		}
 	}
 
-	private boolean recordLinkHasActionLinks() {
+	private boolean hasActionLinks() {
 		return !recordLink.getActionLinks().isEmpty();
 	}
 

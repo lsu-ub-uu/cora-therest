@@ -29,6 +29,8 @@ public final class RestDataRecordLink implements RestDataElement {
 	private String recordType;
 	private String recordId;
 
+	private String repeatId;
+
 	public static RestDataRecordLink withNameInDataAndRecordTypeAndRecordId(String nameInData,
 			String recordType, String recordId) {
 		return new RestDataRecordLink(nameInData, recordType, recordId);
@@ -68,6 +70,14 @@ public final class RestDataRecordLink implements RestDataElement {
 
 	public void setActionLinks(Map<String, ActionLink> actionLinks) {
 		this.actionLinks = actionLinks;
+	}
+
+	public void setRepeatId(String repeatId) {
+		this.repeatId = repeatId;
+	}
+
+	public String getRepeatId() {
+		return repeatId;
 	}
 
 }

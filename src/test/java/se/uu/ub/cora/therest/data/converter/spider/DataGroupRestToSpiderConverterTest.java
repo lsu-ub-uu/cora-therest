@@ -32,6 +32,14 @@ public class DataGroupRestToSpiderConverterTest {
 	}
 
 	@Test
+	public void testToSpiderWithRepeatId() {
+		restDataGroup.setRepeatId("34");
+		SpiderDataGroup spiderDataGroup = dataGroupRestToSpiderConverter.toSpider();
+		assertEquals(spiderDataGroup.getNameInData(), "nameInData");
+		assertEquals(spiderDataGroup.getRepeatId(), "34");
+	}
+
+	@Test
 	public void testToSpiderWithAttribute() {
 		restDataGroup.addAttributeByIdWithValue("attributeId", "attributeValue");
 

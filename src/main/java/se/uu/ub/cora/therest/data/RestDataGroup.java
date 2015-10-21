@@ -29,6 +29,7 @@ public final class RestDataGroup implements RestDataElement {
 	private final String nameInData;
 	private Map<String, String> attributes = new HashMap<>();
 	private List<RestDataElement> children = new ArrayList<>();
+	private String repeatId;
 
 	public static RestDataGroup withNameInData(String nameInData) {
 		return new RestDataGroup(nameInData);
@@ -57,5 +58,13 @@ public final class RestDataGroup implements RestDataElement {
 
 	public List<RestDataElement> getChildren() {
 		return children;
+	}
+
+	public void setRepeatId(String repeatId) {
+		this.repeatId = repeatId;
+	}
+
+	public String getRepeatId() {
+		return repeatId;
 	}
 }

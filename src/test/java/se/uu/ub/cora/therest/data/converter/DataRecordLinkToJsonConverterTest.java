@@ -2,6 +2,7 @@ package se.uu.ub.cora.therest.data.converter;
 
 import static org.testng.Assert.assertEquals;
 
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.spider.data.Action;
@@ -11,42 +12,58 @@ import se.uu.ub.cora.therest.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.therest.json.builder.org.OrgJsonBuilderFactoryAdapter;
 
 public class DataRecordLinkToJsonConverterTest {
-	@Test
-	public void testToJson() {
-		RestDataRecordLink recordLink = RestDataRecordLink
-				.withNameInDataAndRecordTypeAndRecordId("nameInData", "aRecordType", "aRecordId");
+	private RestDataRecordLink recordLink;
+	private DataRecordLinkToJsonConverter converter;
+
+	@BeforeMethod
+	public void setUp() {
+		recordLink = RestDataRecordLink.withNameInDataAndRecordTypeAndRecordId("nameInData",
+				"aRecordType", "aRecordId");
 
 		JsonBuilderFactory jsonFactory = new OrgJsonBuilderFactoryAdapter();
 
-		DataRecordLinkToJsonConverter dataRecordLinkToJsonConverter = DataRecordLinkToJsonConverter
-				.usingJsonFactoryForRestDataLink(jsonFactory, recordLink);
-
-		String jsonString = dataRecordLinkToJsonConverter.toJson();
-
-		assertEquals(jsonString, "{\"recordId\":\"aRecordId\",\"recordType\":\"aRecordType\""
-				+ ",\"name\":\"nameInData\"}");
+		converter = DataRecordLinkToJsonConverter.usingJsonFactoryForRestDataLink(jsonFactory,
+				recordLink);
 
 	}
 
 	@Test
+	public void testToJson() {
+		String jsonString = converter.toJson();
+
+		assertEquals(jsonString, "{\"recordId\":\"aRecordId\",\"recordType\":\"aRecordType\""
+				+ ",\"name\":\"nameInData\"}");
+	}
+
+	@Test
+	public void testToJsonWithRepeatId() {
+		recordLink.setRepeatId("22");
+		String jsonString = converter.toJson();
+
+		assertEquals(jsonString, "{\"recordId\":\"aRecordId\",\"repeatId\":\"22\""
+				+ ",\"recordType\":\"aRecordType\"" + ",\"name\":\"nameInData\"}");
+	}
+
+	@Test
+	public void testToJsonWithEmptyRepeatId() {
+		recordLink.setRepeatId("");
+		String jsonString = converter.toJson();
+
+		assertEquals(jsonString, "{\"recordId\":\"aRecordId\"" + ",\"recordType\":\"aRecordType\""
+				+ ",\"name\":\"nameInData\"}");
+	}
+
+	@Test
 	public void testToJsonWithActionLink() {
-		RestDataRecordLink recordLink = RestDataRecordLink
-				.withNameInDataAndRecordTypeAndRecordId("nameInData", "aRecordType", "aRecordId");
 		recordLink.addActionLink("read", createReadActionLink());
 
-		JsonBuilderFactory jsonFactory = new OrgJsonBuilderFactoryAdapter();
-
-		DataRecordLinkToJsonConverter dataRecordLinkToJsonConverter = DataRecordLinkToJsonConverter
-				.usingJsonFactoryForRestDataLink(jsonFactory, recordLink);
-
-		String jsonString = dataRecordLinkToJsonConverter.toJson();
+		String jsonString = converter.toJson();
 
 		assertEquals(jsonString, "{\"recordId\":\"aRecordId\",\"recordType\":\"aRecordType\""
 				+ ",\"actionLinks\":{\"read\":{\"requestMethod\":\"GET\",\"rel\":\"read\""
 				+ ",\"contentType\":\"application/metadata_record+json\""
 				+ ",\"url\":\"http://localhost:8080/therest/rest/record/place/place:0001\""
 				+ ",\"accept\":\"application/metadata_record+json\"}},\"name\":\"nameInData\"}");
-
 	}
 
 	private ActionLink createReadActionLink() {

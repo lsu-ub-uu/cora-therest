@@ -54,6 +54,7 @@ public final class DataGroupRestToSpiderConverter {
 
 	private SpiderDataGroup tryToSpiderate() {
 		spiderDataGroup = SpiderDataGroup.withNameInData(restDataGroup.getNameInData());
+		spiderDataGroup.setRepeatId(restDataGroup.getRepeatId());
 		addAttributesToSpiderGroup();
 		addChildrenToSpiderGroup();
 		return spiderDataGroup;

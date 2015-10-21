@@ -26,8 +26,9 @@ import se.uu.ub.cora.therest.json.parser.JsonParseException;
 
 public final class JsonToDataRecordLinkConverter implements JsonToDataConverter {
 
+	private static final int ONE_OPTIONAL_KEY_IS_PRESENT = 4;
 	private JsonObject jsonObject;
-	private static final int NUM_OF_ALLOWED_KEYS_AT_TOP_LEVEL = 4;
+	private static final int NUM_OF_ALLOWED_KEYS_AT_TOP_LEVEL = 5;
 
 	public static JsonToDataRecordLinkConverter forJsonObject(JsonObject jsonObject) {
 		return new JsonToDataRecordLinkConverter(jsonObject);
@@ -55,12 +56,11 @@ public final class JsonToDataRecordLinkConverter implements JsonToDataConverter 
 
 		validateMandatoryKeys();
 
-		if (maxKeysAtTopLevelButActionLinksIsMissing()) {
-			throw new JsonParseException("Group data may contain key \"actionLinks\"");
-		}
-		if (moreKeysAtTopLevelThanAllowed()) {
-			throw new JsonParseException("Group data can only contain keys \"name\",\"recordType\","
-					+ "\"recordId\" and \"actionLinks\" ");
+		if (threeKeysAtTopLevelButActionLinksAndRepeatIdIsMissing()
+				|| maxKeysAtTopLevelButRepeatIdOrActionLinksIsMissing()
+				|| moreKeysAtTopLevelThanAllowed()) {
+			throw new JsonParseException("Group data can only contain keys name, repeatId, "
+					+ "recordType, recordId and actionLinks");
 		}
 
 	}
@@ -77,8 +77,18 @@ public final class JsonToDataRecordLinkConverter implements JsonToDataConverter 
 		}
 	}
 
-	private boolean maxKeysAtTopLevelButActionLinksIsMissing() {
-		return jsonObject.keySet().size() == NUM_OF_ALLOWED_KEYS_AT_TOP_LEVEL && !hasActionLinks();
+	private boolean threeKeysAtTopLevelButActionLinksAndRepeatIdIsMissing() {
+		return jsonObject.keySet().size() == ONE_OPTIONAL_KEY_IS_PRESENT && !hasActionLinks()
+				&& !hasRepeatId();
+	}
+
+	private boolean hasRepeatId() {
+		return jsonObject.containsKey("repeatId");
+	}
+
+	private boolean maxKeysAtTopLevelButRepeatIdOrActionLinksIsMissing() {
+		return jsonObject.keySet().size() == NUM_OF_ALLOWED_KEYS_AT_TOP_LEVEL
+				&& (!hasActionLinks() || !hasRepeatId());
 	}
 
 	private boolean hasActionLinks() {
@@ -93,8 +103,14 @@ public final class JsonToDataRecordLinkConverter implements JsonToDataConverter 
 		String nameInData = getNameInDataFromJsonObject();
 		String recordType = getRecordTypeFromJsonObject();
 		String recordId = getRecordIdFromJsonObject();
-		return RestDataRecordLink
+		RestDataRecordLink restDataRecordLink = RestDataRecordLink
 				.withNameInDataAndRecordTypeAndRecordId(nameInData, recordType, recordId);
+		if (hasRepeatId()) {
+			restDataRecordLink
+					.setRepeatId(jsonObject.getValueAsJsonString("repeatId").getStringValue());
+		}
+		return restDataRecordLink;
+
 	}
 
 	private String getNameInDataFromJsonObject() {

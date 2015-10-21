@@ -1,15 +1,31 @@
 package se.uu.ub.cora.therest.data;
 
-import org.testng.Assert;
+import static org.testng.Assert.assertEquals;
+
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.therest.data.RestDataAtomic;
-
 public class RestDataAtomicTest {
+	private RestDataAtomic restDataAtomic;
+
+	@BeforeMethod
+	public void setUp() {
+		restDataAtomic = RestDataAtomic.withNameInDataAndValue("nameInData", "value");
+
+	}
+
 	@Test
 	public void testInit() {
-		RestDataAtomic restDataAtomic = RestDataAtomic.withNameInDataAndValue("nameInData", "value");
-		Assert.assertEquals(restDataAtomic.getNameInData(), "nameInData");
-		Assert.assertEquals(restDataAtomic.getValue(), "value");
+		assertEquals(restDataAtomic.getNameInData(), "nameInData");
+		assertEquals(restDataAtomic.getValue(), "value");
+	}
+
+	@Test
+	public void testInitWithRepeatId() {
+		restDataAtomic.setRepeatId("x1");
+		assertEquals(restDataAtomic.getNameInData(), "nameInData");
+		assertEquals(restDataAtomic.getValue(), "value");
+		assertEquals(restDataAtomic.getRepeatId(), "x1");
+
 	}
 }

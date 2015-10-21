@@ -36,8 +36,10 @@ public final class DataAtomicSpiderToRestConverter {
 	}
 
 	public RestDataAtomic toRest() {
-		return RestDataAtomic.withNameInDataAndValue(
+		RestDataAtomic restDataAtomic = RestDataAtomic.withNameInDataAndValue(
 				spiderDataAtomic.getNameInData(), spiderDataAtomic.getValue());
+		restDataAtomic.setRepeatId(spiderDataAtomic.getRepeatId());
+		return restDataAtomic;
 	}
 
 }
