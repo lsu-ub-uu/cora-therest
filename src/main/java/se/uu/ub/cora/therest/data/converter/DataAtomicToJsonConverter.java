@@ -29,8 +29,11 @@ public final class DataAtomicToJsonConverter extends DataToJsonConverter {
 	JsonObjectBuilder toJsonObjectBuilder() {
 		JsonObjectBuilder jsonObjectBuilder = factory.createObjectBuilder();
 
-		jsonObjectBuilder.addKeyString("name",restDataAtomic.getNameInData());
+		jsonObjectBuilder.addKeyString("name", restDataAtomic.getNameInData());
 		jsonObjectBuilder.addKeyString("value", restDataAtomic.getValue());
+		if (restDataAtomic.getRepeatId() != null && !restDataAtomic.getRepeatId().equals("")) {
+			jsonObjectBuilder.addKeyString("repeatId", restDataAtomic.getRepeatId());
+		}
 		return jsonObjectBuilder;
 	}
 }

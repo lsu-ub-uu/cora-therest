@@ -32,6 +32,9 @@ public final class DataRecordLinkToJsonConverter extends DataToJsonConverter {
 
 	@Override
 	JsonObjectBuilder toJsonObjectBuilder() {
+		if (recordLink.getRepeatId() != null && !recordLink.getRepeatId().equals("")) {
+			recordLinkBuilder.addKeyString("repeatId", recordLink.getRepeatId());
+		}
 		recordLinkBuilder.addKeyString("name", recordLink.getNameInData());
 		addRecordTypeAndRecordIdToRecordLink();
 		possiblyAddActionLinksToRecordLink();

@@ -32,6 +32,26 @@ public class DataGroupToJsonConverterTest {
 	}
 
 	@Test
+	public void testToJsonWithRepeatId() {
+		restDataGroup.setRepeatId("4");
+		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
+				.createForRestDataElement(factory, restDataGroup);
+		String json = dataToJsonConverter.toJson();
+
+		assertEquals(json, "{\"repeatId\":\"4\",\"name\":\"groupNameInData\"}");
+	}
+
+	@Test
+	public void testToJsonWithEmptyRepeatId() {
+		restDataGroup.setRepeatId("");
+		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
+				.createForRestDataElement(factory, restDataGroup);
+		String json = dataToJsonConverter.toJson();
+
+		assertEquals(json, "{\"name\":\"groupNameInData\"}");
+	}
+
+	@Test
 	public void testToJsonGroupWithAttribute() {
 		restDataGroup.addAttributeByIdWithValue("attributeNameInData", "attributeValue");
 

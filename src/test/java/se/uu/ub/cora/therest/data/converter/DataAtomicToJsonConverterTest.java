@@ -5,41 +5,52 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.therest.data.RestDataAtomic;
-import se.uu.ub.cora.therest.data.RestDataElement;
-import se.uu.ub.cora.therest.data.converter.DataToJsonConverter;
-import se.uu.ub.cora.therest.data.converter.DataToJsonConverterFactory;
-import se.uu.ub.cora.therest.data.converter.DataToJsonConverterFactoryImp;
-import se.uu.ub.cora.therest.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.therest.json.builder.org.OrgJsonBuilderFactoryAdapter;
 
 public class DataAtomicToJsonConverterTest {
-	private DataToJsonConverterFactory dataToJsonConverterFactory;
-	private JsonBuilderFactory factory;
+	private RestDataAtomic restDataAtomic;
+	private DataToJsonConverter converter;
 
 	@BeforeMethod
 	public void beforeMethod() {
-		dataToJsonConverterFactory = new DataToJsonConverterFactoryImp();
-		factory = new OrgJsonBuilderFactoryAdapter();
-
+		restDataAtomic = RestDataAtomic.withNameInDataAndValue("atomicNameInData", "atomicValue");
+		OrgJsonBuilderFactoryAdapter factory = new OrgJsonBuilderFactoryAdapter();
+		converter = DataAtomicToJsonConverter.usingJsonFactoryForRestDataAtomic(factory,
+				restDataAtomic);
 	}
 
 	@Test
 	public void testToJson() {
-		RestDataElement restDataElement = RestDataAtomic.withNameInDataAndValue("atomicNameInData",
-				"atomicValue");
-		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
-				.createForRestDataElement(factory, restDataElement);
-		String json = dataToJsonConverter.toJson();
+		String json = converter.toJson();
+
+		Assert.assertEquals(json, "{\"name\":\"atomicNameInData\",\"value\":\"atomicValue\"}");
+	}
+
+	@Test
+	public void testToJsonWithRepeatId() {
+		restDataAtomic.setRepeatId("2");
+		String json = converter.toJson();
+
+		Assert.assertEquals(json,
+				"{\"repeatId\":\"2\",\"name\":\"atomicNameInData\",\"value\":\"atomicValue\"}");
+	}
+
+	@Test
+	public void testToJsonWithEmptyRepeatId() {
+		restDataAtomic.setRepeatId("");
+		String json = converter.toJson();
 
 		Assert.assertEquals(json, "{\"name\":\"atomicNameInData\",\"value\":\"atomicValue\"}");
 	}
 
 	@Test
 	public void testToJsonEmptyValue() {
-		RestDataElement restDataElement = RestDataAtomic.withNameInDataAndValue("atomicNameInData", "");
-		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
-				.createForRestDataElement(factory, restDataElement);
-		String json = dataToJsonConverter.toJson();
+		RestDataAtomic restDataAtomic = RestDataAtomic.withNameInDataAndValue("atomicNameInData",
+				"");
+		OrgJsonBuilderFactoryAdapter factory = new OrgJsonBuilderFactoryAdapter();
+		converter = DataAtomicToJsonConverter.usingJsonFactoryForRestDataAtomic(factory,
+				restDataAtomic);
+		String json = converter.toJson();
 
 		Assert.assertEquals(json, "{\"name\":\"atomicNameInData\",\"value\":\"\"}");
 	}

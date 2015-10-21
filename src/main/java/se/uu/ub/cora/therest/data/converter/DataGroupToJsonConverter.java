@@ -15,7 +15,8 @@ public final class DataGroupToJsonConverter extends DataToJsonConverter {
 	private JsonBuilderFactory jsonBuilderFactory;
 
 	public static DataToJsonConverter usingJsonFactoryForRestDataGroup(
-			se.uu.ub.cora.therest.json.builder.JsonBuilderFactory factory, RestDataGroup restDataGroup) {
+			se.uu.ub.cora.therest.json.builder.JsonBuilderFactory factory,
+			RestDataGroup restDataGroup) {
 		return new DataGroupToJsonConverter(factory, restDataGroup);
 	}
 
@@ -32,6 +33,9 @@ public final class DataGroupToJsonConverter extends DataToJsonConverter {
 
 	@Override
 	JsonObjectBuilder toJsonObjectBuilder() {
+		if (restDataGroup.getRepeatId() != null && !restDataGroup.getRepeatId().equals("")) {
+			dataGroupJsonObjectBuilder.addKeyString("repeatId", restDataGroup.getRepeatId());
+		}
 		if (hasAttributes()) {
 			addAttributesToGroup();
 		}
@@ -62,8 +66,9 @@ public final class DataGroupToJsonConverter extends DataToJsonConverter {
 		DataToJsonConverterFactory dataToJsonConverterFactory = new DataToJsonConverterFactoryImp();
 		JsonArrayBuilder childrenArray = jsonBuilderFactory.createArrayBuilder();
 		for (RestDataElement restDataElement : restDataGroup.getChildren()) {
-			childrenArray.addJsonObjectBuilder(dataToJsonConverterFactory.createForRestDataElement(
-					jsonBuilderFactory, restDataElement).toJsonObjectBuilder());
+			childrenArray.addJsonObjectBuilder(dataToJsonConverterFactory
+					.createForRestDataElement(jsonBuilderFactory, restDataElement)
+					.toJsonObjectBuilder());
 		}
 		dataGroupJsonObjectBuilder.addKeyJsonArrayBuilder("children", childrenArray);
 	}
