@@ -6,11 +6,12 @@ Record type for dataToDataLink
 
 The metadata for dataToDataLink has been created during system startup, so we should be able to use it right away.
 
-!***> Create dataToDataLink testLink
+!***> Create dataToDataLinks testLink and testLinkPath
 
 !| RecordEndpointFixture |
 | type | json | testCreateRecord? | getStatusType? |
 | metadataDataToDataLink | {"name":"metadata","attributes":{"type":"dataToDataLink"},"children":[{"name":"recordInfo","children":[{"name":"id","value":"testLink"}]},{"name":"nameInData","value":"testLink"},{"name":"textId","value":"testLinkText"},{"name":"defTextId","value":"testLinkDefText"},{"name":"targetRecordType","value":"bush"}]} | {"record":{"data":{"children":[{"children":[{"name":"id","value":"testLink"},{"name":"type","value":"metadataDataToDataLink"},{"name":"createdBy","value":"userId"}],"name":"recordInfo"},{"name":"nameInData","value":"testLink"},{"name":"textId","value":"testLinkText"},{"name":"defTextId","value":"testLinkDefText"},{"name":"targetRecordType","value":"bush"}],"name":"metadata","attributes":{"type":"dataToDataLink"}},"actionLinks":{"read":{"requestMethod":"GET","rel":"read","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/metadataDataToDataLink/testLink","accept":"application/uub+record+json"},"read_incoming_links":{"requestMethod":"GET","rel":"read_incoming_links","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/metadataDataToDataLink/testLink/incomingLinks","accept":"application/uub+record+json"},"update":{"requestMethod":"POST","rel":"update","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/metadataDataToDataLink/testLink","accept":"application/uub+record+json"},"delete":{"requestMethod":"DELETE","rel":"delete","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/metadataDataToDataLink/testLink","accept":"application/uub+record+json"}}}} | CREATED |
+| metadataDataToDataLink | {"name":"metadata","attributes":{"type":"dataToDataLink"},"children":[{"name":"recordInfo","children":[{"name":"id","value":"testLinkPath"}]},{"name":"nameInData","value":"testLinkPath"},{"name":"textId","value":"testLinkText"},{"name":"defTextId","value":"testLinkDefText"},{"name":"targetRecordType","value":"bush"},{"name":"linkedPath","children":[{"name":"nameInData","value":"name"},{"name":"attributes","children":[{"name":"attribute","repeatId":"1","children":[{"name":"attributeName","value":"nameForm"},{"name":"attributeValue","value":"alternative"}]}]}]}]} | | CREATED |
 
 *!
 !***> Read dataToDataLink testLink
