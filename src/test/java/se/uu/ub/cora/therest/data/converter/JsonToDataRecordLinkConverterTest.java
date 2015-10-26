@@ -1,16 +1,16 @@
 package se.uu.ub.cora.therest.data.converter;
 
-import static org.testng.Assert.assertEquals;
-
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
 import se.uu.ub.cora.therest.data.RestDataElement;
 import se.uu.ub.cora.therest.data.RestDataRecordLink;
 import se.uu.ub.cora.therest.json.parser.JsonObject;
 import se.uu.ub.cora.therest.json.parser.JsonParseException;
 import se.uu.ub.cora.therest.json.parser.JsonValue;
 import se.uu.ub.cora.therest.json.parser.org.OrgJsonParser;
+
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNull;
 
 public class JsonToDataRecordLinkConverterTest {
 	private OrgJsonParser jsonParser;
@@ -47,6 +47,14 @@ public class JsonToDataRecordLinkConverterTest {
 	}
 
 	@Test
+	public void testToClassWithLinkedRepeatId(){
+		String json = "{\"recordId\":\"aRecordId\",\"recordType\":\"aRecordType\""
+				+ ",\"name\":\"nameInData\",\"linkedRepeatId\":\"linkedOne\"}";
+		RestDataRecordLink restDataRecordLink = createRestDataRecordLinkForJsonString(json);
+		assertEquals(restDataRecordLink.getLinkedRepeatId(), "linkedOne");
+	}
+
+	@Test
 	public void testToClassAnActionLink() {
 		String json = "{\"recordId\":\"aRecordId\",\"recordType\":\"aRecordType\""
 				+ ",\"name\":\"nameInData\",\"actionLinks\":\"someActionLink\"}";
@@ -63,11 +71,21 @@ public class JsonToDataRecordLinkConverterTest {
 		assertEquals(restDataRecordLink.getRepeatId(), "7");
 	}
 
+	@Test
+	public void testToClassWithLinkedPath() {
+		String json = "{\"recordId\":\"aRecordId\",\"recordType\":\"aRecordType\""
+				+ ",\"name\":\"nameInData\",\"actionLinks\":\"someActionLink\""
+				+",\"repeatId\":\"7\",\"linkedPath\":{\"name\":\"someLinkedPath\"}}";
+		RestDataRecordLink restDataRecordLink = createRestDataRecordLinkForJsonString(json);
+		assertEquals(restDataRecordLink.getNameInData(), "nameInData");
+		assertNull(restDataRecordLink.getLinkedPath());
+	}
+
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testToClassMaxNoOfKeysButRepeatIdMissing() {
 		String json = "{\"recordId\":\"aRecordId\",\"recordType\":\"aRecordType\""
 				+ ",\"name\":\"nameInData\",\"actionLinks\":\"someActionLink\""
-				+ ",\"NOTrepeatId\":\"7\"}";
+				+ ",\"NOTrepeatId\":\"7\",\"linkedRepeatId\":\"linkedOne\"}";
 		createRestDataRecordLinkForJsonString(json);
 	}
 
@@ -75,7 +93,15 @@ public class JsonToDataRecordLinkConverterTest {
 	public void testToClassMaxNoOfKeysButActionLinksMissing() {
 		String json = "{\"recordId\":\"aRecordId\",\"recordType\":\"aRecordType\""
 				+ ",\"name\":\"nameInData\",\"NOTactionLinks\":\"someActionLink\""
-				+ ",\"repeatId\":\"7\"}";
+				+ ",\"repeatId\":\"7\",\"linkedRepeatId\":\"linkedOne\"}";
+		createRestDataRecordLinkForJsonString(json);
+	}
+
+	@Test(expectedExceptions = JsonParseException.class)
+	public void testToClassMaxNoOfKeysButLinkedRepeatIdMissing(){
+		String json = "{\"recordId\":\"aRecordId\",\"recordType\":\"aRecordType\""
+				+ ",\"name\":\"nameInData\",\"NOTactionLinks\":\"someActionLink\""
+				+ ",\"repeatId\":\"7\",\"actionLinks\":\"someActionLink\"}";
 		createRestDataRecordLinkForJsonString(json);
 	}
 
@@ -101,6 +127,14 @@ public class JsonToDataRecordLinkConverterTest {
 	public void testToClassNotAnActionLink() {
 		String json = "{\"recordId\":\"aRecordId\",\"recordType\":\"aRecordType\""
 				+ ",\"name\":\"nameInData\",\"notActionLinks\":\"somethingElse\"}";
+		createRestDataRecordLinkForJsonString(json);
+	}
+
+	@Test(expectedExceptions = JsonParseException.class)
+	public void testToClassTwoMoreKeysThanMandatoryButNoOptionalKeyPresent() {
+		String json = "{\"recordId\":\"aRecordId\",\"repeatIdWrong\":\"x\""
+				+ ",\"recordType\":\"aRecordType\""
+				+ ",\"name\":\"nameInData\",\"notAnActionLink\":\"somethingElse\"}";
 		createRestDataRecordLinkForJsonString(json);
 	}
 

@@ -19,12 +19,12 @@
 
 package se.uu.ub.cora.therest.data.converter;
 
-import java.util.Map;
-
 import se.uu.ub.cora.therest.data.ActionLink;
 import se.uu.ub.cora.therest.data.RestDataRecordLink;
 import se.uu.ub.cora.therest.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.therest.json.builder.JsonObjectBuilder;
+
+import java.util.Map;
 
 public final class DataRecordLinkToJsonConverter extends DataToJsonConverter {
 
@@ -54,6 +54,8 @@ public final class DataRecordLinkToJsonConverter extends DataToJsonConverter {
 		possiblyAddRepeatId();
 		recordLinkBuilder.addKeyString("name", recordLink.getNameInData());
 		addRecordTypeAndRecordId();
+		possiblyAddLinkedRepeatId();
+		possiblyAddLinkedPath();
 		possiblyAddActionLinks();
 		return recordLinkBuilder;
 	}
@@ -71,6 +73,25 @@ public final class DataRecordLinkToJsonConverter extends DataToJsonConverter {
 	private void addRecordTypeAndRecordId() {
 		recordLinkBuilder.addKeyString("recordType", recordLink.getRecordType());
 		recordLinkBuilder.addKeyString("recordId", recordLink.getRecordId());
+	}
+
+	private void possiblyAddLinkedRepeatId() {
+		if(hasNonEmptyLinkedRepeatId()){
+			recordLinkBuilder.addKeyString("linkedRepeatId", recordLink.getLinkedRepeatId());
+		}
+	}
+
+	private boolean hasNonEmptyLinkedRepeatId() {
+		return recordLink.getLinkedRepeatId() != null && !recordLink.getLinkedRepeatId().equals("");
+	}
+
+
+	private void possiblyAddLinkedPath() {
+		if(recordLink.getLinkedPath() != null) {
+			DataToJsonConverter dataGroupConverter = DataGroupToJsonConverter.usingJsonFactoryForRestDataGroup(jsonFactory, recordLink.getLinkedPath());
+			JsonObjectBuilder dataGroupObject = dataGroupConverter.toJsonObjectBuilder();
+			recordLinkBuilder.addKeyJsonObjectBuilder("linkedPath", dataGroupObject);
+		}
 	}
 
 	private void possiblyAddActionLinks() {

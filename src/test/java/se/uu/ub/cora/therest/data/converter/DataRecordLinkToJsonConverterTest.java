@@ -1,15 +1,15 @@
 package se.uu.ub.cora.therest.data.converter;
 
-import static org.testng.Assert.assertEquals;
-
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
 import se.uu.ub.cora.spider.data.Action;
 import se.uu.ub.cora.therest.data.ActionLink;
+import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.RestDataRecordLink;
 import se.uu.ub.cora.therest.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.therest.json.builder.org.OrgJsonBuilderFactoryAdapter;
+
+import static org.testng.Assert.assertEquals;
 
 public class DataRecordLinkToJsonConverterTest {
 	private RestDataRecordLink recordLink;
@@ -51,6 +51,34 @@ public class DataRecordLinkToJsonConverterTest {
 
 		assertEquals(jsonString, "{\"recordId\":\"aRecordId\"" + ",\"recordType\":\"aRecordType\""
 				+ ",\"name\":\"nameInData\"}");
+	}
+
+	@Test
+	public void testToJsonWithLinkedRepeatId(){
+		recordLink.setLinkedRepeatId("linkedOne");
+		String jsonString = converter.toJson();
+
+		assertEquals(jsonString, "{\"recordId\":\"aRecordId\""
+				+ ",\"recordType\":\"aRecordType\"" + ",\"name\":\"nameInData\",\"linkedRepeatId\":\"linkedOne\"}");
+	}
+
+	@Test
+	public void testToJsonWithEmptyLinkedRepeatId() {
+		recordLink.setLinkedRepeatId("");
+		String jsonString = converter.toJson();
+
+		assertEquals(jsonString, "{\"recordId\":\"aRecordId\"" + ",\"recordType\":\"aRecordType\""
+				+ ",\"name\":\"nameInData\"}");
+	}
+
+	@Test
+	public void testToJsonWithLinkedPath(){
+		RestDataGroup linkedPathDataGroup = RestDataGroup.withNameInData("linkedPath");
+		recordLink.setLinkedPath(linkedPathDataGroup);
+		String jsonString = converter.toJson();
+
+		assertEquals(jsonString, "{\"recordId\":\"aRecordId\"" + ",\"recordType\":\"aRecordType\""
+				+ ",\"linkedPath\":{\"name\":\"linkedPath\"},\"name\":\"nameInData\"}");
 	}
 
 	@Test
