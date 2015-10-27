@@ -57,7 +57,6 @@ public final class JsonToDataRecordLinkConverter implements JsonToDataConverter 
 		validateMandatoryKeys();
 
 		if (moreKeysAtTopLevelThanMandatoryButEnoughOptionalKeysNotFound()
-				|| maxKeysAtTopLevelButOneOptionalKeyMissing()
 				|| moreKeysAtTopLevelThanAllowed()) {
 			throw new JsonParseException("Group data can only contain keys name, repeatId, "
 					+ "recordType, recordId, linkedRepeatId and actionLinks");
@@ -117,11 +116,6 @@ public final class JsonToDataRecordLinkConverter implements JsonToDataConverter 
 
 	private boolean hasLinkedPath() {
 		return jsonObject.containsKey("linkedPath");
-	}
-
-	private boolean maxKeysAtTopLevelButOneOptionalKeyMissing() {
-		return jsonObject.keySet().size() == NUM_OF_ALLOWED_KEYS_AT_TOP_LEVEL
-				&& (!hasActionLinks() || !hasRepeatId() || !hasLinkedRepeatId());
 	}
 
 	private boolean moreKeysAtTopLevelThanAllowed() {

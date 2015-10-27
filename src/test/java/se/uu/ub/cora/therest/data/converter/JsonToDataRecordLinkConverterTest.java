@@ -85,7 +85,8 @@ public class JsonToDataRecordLinkConverterTest {
 	public void testToClassMaxNoOfKeysButRepeatIdMissing() {
 		String json = "{\"recordId\":\"aRecordId\",\"recordType\":\"aRecordType\""
 				+ ",\"name\":\"nameInData\",\"actionLinks\":\"someActionLink\""
-				+ ",\"NOTrepeatId\":\"7\",\"linkedRepeatId\":\"linkedOne\"}";
+				+ ",\"NOTrepeatId\":\"7\",\"linkedRepeatId\":\"linkedOne\"},"
+				+"\"linkedPath\":{\"name\":\"someLinkedPath\"}";
 		createRestDataRecordLinkForJsonString(json);
 	}
 
@@ -93,15 +94,35 @@ public class JsonToDataRecordLinkConverterTest {
 	public void testToClassMaxNoOfKeysButActionLinksMissing() {
 		String json = "{\"recordId\":\"aRecordId\",\"recordType\":\"aRecordType\""
 				+ ",\"name\":\"nameInData\",\"NOTactionLinks\":\"someActionLink\""
-				+ ",\"repeatId\":\"7\",\"linkedRepeatId\":\"linkedOne\"}";
+				+ ",\"repeatId\":\"7\",\"linkedRepeatId\":\"linkedOne\"},"
+				+"\"linkedPath\":{\"name\":\"someLinkedPath\"}";
 		createRestDataRecordLinkForJsonString(json);
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testToClassMaxNoOfKeysButLinkedRepeatIdMissing(){
 		String json = "{\"recordId\":\"aRecordId\",\"recordType\":\"aRecordType\""
+				+ ",\"name\":\"nameInData\",\"actionLinks\":\"someActionLink\""
+				+ ",\"repeatId\":\"7\",\"NOTlinkedRepeatId\":\"linkedOne\"},"
+				+"\"linkedPath\":{\"name\":\"someLinkedPath\"}";
+		createRestDataRecordLinkForJsonString(json);
+	}
+
+	@Test(expectedExceptions = JsonParseException.class)
+	public void testToClassMaxNoOfKeysButLinkedPathMissing(){
+		String json = "{\"recordId\":\"aRecordId\",\"recordType\":\"aRecordType\""
+				+ ",\"name\":\"nameInData\",\"actionLinks\":\"someActionLink\""
+				+ ",\"repeatId\":\"7\",\"linkedRepeatId\":\"linkedOne\"},"
+				+"\"NOTlinkedPath\":{\"name\":\"someLinkedPath\"}";
+		createRestDataRecordLinkForJsonString(json);
+	}
+
+	@Test(expectedExceptions = JsonParseException.class)
+	public void testToClassMaxNoOfKeysButAllOptionalKeysMissing(){
+		String json = "{\"recordId\":\"aRecordId\",\"recordType\":\"aRecordType\""
 				+ ",\"name\":\"nameInData\",\"NOTactionLinks\":\"someActionLink\""
-				+ ",\"repeatId\":\"7\",\"actionLinks\":\"someActionLink\"}";
+				+ ",\"NOTrepeatId\":\"7\",\"NOTlinkedRepeatId\":\"someRepeatId\"},"
+				+"\"NOTlinkedPath\":{\"name\":\"someLinkedPath\"}";
 		createRestDataRecordLinkForJsonString(json);
 	}
 
