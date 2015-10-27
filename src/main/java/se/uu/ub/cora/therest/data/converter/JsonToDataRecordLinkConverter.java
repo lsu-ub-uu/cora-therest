@@ -26,9 +26,9 @@ import se.uu.ub.cora.therest.json.parser.JsonParseException;
 
 public final class JsonToDataRecordLinkConverter implements JsonToDataConverter {
 
-	private static final int ONE_OPTIONAL_KEY_IS_PRESENT = 4;
+	private static final int NUM_OF_MANDATORY_KEYS = 3;
 	private JsonObject jsonObject;
-	private static final int NUM_OF_ALLOWED_KEYS_AT_TOP_LEVEL = 5;
+	private static final int NUM_OF_ALLOWED_KEYS_AT_TOP_LEVEL = 7;
 
 	public static JsonToDataRecordLinkConverter forJsonObject(JsonObject jsonObject) {
 		return new JsonToDataRecordLinkConverter(jsonObject);
@@ -56,11 +56,10 @@ public final class JsonToDataRecordLinkConverter implements JsonToDataConverter 
 
 		validateMandatoryKeys();
 
-		if (threeKeysAtTopLevelButActionLinksAndRepeatIdIsMissing()
-				|| maxKeysAtTopLevelButRepeatIdOrActionLinksIsMissing()
+		if (moreKeysAtTopLevelThanMandatoryButEnoughOptionalKeysNotFound()
 				|| moreKeysAtTopLevelThanAllowed()) {
 			throw new JsonParseException("Group data can only contain keys name, repeatId, "
-					+ "recordType, recordId and actionLinks");
+					+ "recordType, recordId, linkedRepeatId and actionLinks");
 		}
 
 	}
@@ -77,22 +76,46 @@ public final class JsonToDataRecordLinkConverter implements JsonToDataConverter 
 		}
 	}
 
-	private boolean threeKeysAtTopLevelButActionLinksAndRepeatIdIsMissing() {
-		return jsonObject.keySet().size() == ONE_OPTIONAL_KEY_IS_PRESENT && !hasActionLinks()
-				&& !hasRepeatId();
+	private boolean moreKeysAtTopLevelThanMandatoryButEnoughOptionalKeysNotFound() {
+		int numOfOptionalKeysPresent = countNumOfPresentOptionalKeys();
+
+		int keySize = jsonObject.keySet().size();
+		int totalNumOfCorrectKeys = numOfOptionalKeysPresent + NUM_OF_MANDATORY_KEYS;
+
+		return keySize != totalNumOfCorrectKeys;
+	}
+
+	private int countNumOfPresentOptionalKeys() {
+		int numOfOptionalKeysPresent = 0;
+		if(hasActionLinks()){
+			numOfOptionalKeysPresent++;
+		}
+		if(hasRepeatId()){
+			numOfOptionalKeysPresent++;
+		}
+		if(hasLinkedRepeatId()){
+			numOfOptionalKeysPresent++;
+		}
+		if(hasLinkedPath()){
+			numOfOptionalKeysPresent++;
+		}
+		return numOfOptionalKeysPresent;
+	}
+
+	private boolean hasActionLinks() {
+		return jsonObject.containsKey("actionLinks");
 	}
 
 	private boolean hasRepeatId() {
 		return jsonObject.containsKey("repeatId");
 	}
 
-	private boolean maxKeysAtTopLevelButRepeatIdOrActionLinksIsMissing() {
-		return jsonObject.keySet().size() == NUM_OF_ALLOWED_KEYS_AT_TOP_LEVEL
-				&& (!hasActionLinks() || !hasRepeatId());
+	private boolean hasLinkedRepeatId() {
+		return jsonObject.containsKey("linkedRepeatId");
 	}
 
-	private boolean hasActionLinks() {
-		return jsonObject.containsKey("actionLinks");
+	private boolean hasLinkedPath() {
+		return jsonObject.containsKey("linkedPath");
 	}
 
 	private boolean moreKeysAtTopLevelThanAllowed() {
@@ -100,28 +123,22 @@ public final class JsonToDataRecordLinkConverter implements JsonToDataConverter 
 	}
 
 	private RestDataElement createDataGroupInstance() {
-		String nameInData = getNameInDataFromJsonObject();
-		String recordType = getRecordTypeFromJsonObject();
-		String recordId = getRecordIdFromJsonObject();
+		String nameInData = getStringValueFromJsonObject("name");
+		String recordType = getStringValueFromJsonObject("recordType");
+		String recordId = getStringValueFromJsonObject("recordId");
 		RestDataRecordLink restDataRecordLink = RestDataRecordLink
 				.withNameInDataAndRecordTypeAndRecordId(nameInData, recordType, recordId);
 		if (hasRepeatId()) {
-			restDataRecordLink
-					.setRepeatId(jsonObject.getValueAsJsonString("repeatId").getStringValue());
+			restDataRecordLink.setRepeatId(getStringValueFromJsonObject("repeatId"));
+		}
+
+		if(hasLinkedRepeatId()) {
+			restDataRecordLink.setLinkedRepeatId(getStringValueFromJsonObject("linkedRepeatId"));
 		}
 		return restDataRecordLink;
-
 	}
 
-	private String getNameInDataFromJsonObject() {
-		return jsonObject.getValueAsJsonString("name").getStringValue();
-	}
-
-	private String getRecordTypeFromJsonObject() {
-		return jsonObject.getValueAsJsonString("recordType").getStringValue();
-	}
-
-	private String getRecordIdFromJsonObject() {
-		return jsonObject.getValueAsJsonString("recordId").getStringValue();
+	private String getStringValueFromJsonObject(String linkedRepeatId) {
+		return jsonObject.getValueAsJsonString(linkedRepeatId).getStringValue();
 	}
 }

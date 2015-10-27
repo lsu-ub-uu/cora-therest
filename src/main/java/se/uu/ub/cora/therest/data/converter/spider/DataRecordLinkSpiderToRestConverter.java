@@ -19,7 +19,9 @@
 
 package se.uu.ub.cora.therest.data.converter.spider;
 
+import se.uu.ub.cora.spider.data.SpiderDataGroup;
 import se.uu.ub.cora.spider.data.SpiderDataRecordLink;
+import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.RestDataRecordLink;
 
 public final class DataRecordLinkSpiderToRestConverter {
@@ -43,8 +45,22 @@ public final class DataRecordLinkSpiderToRestConverter {
 				spiderDataRecordLink.getNameInData(), spiderDataRecordLink.getRecordType(),
 				spiderDataRecordLink.getRecordId());
 		restDataRecordLink.setRepeatId(spiderDataRecordLink.getRepeatId());
+		restDataRecordLink.setLinkedRepeatId(spiderDataRecordLink.getLinkedRepeatId());
+
+		addLinkedPathIfItExists();
 		createRestLinks(restDataRecordLink.getRecordType(), restDataRecordLink.getRecordId());
 		return restDataRecordLink;
+	}
+
+	private void addLinkedPathIfItExists() {
+		if(spiderDataRecordLink.getLinkedPath() != null) {
+			SpiderDataGroup spiderLinkedPath = spiderDataRecordLink.getLinkedPath();
+			DataGroupSpiderToRestConverter dataGroupSpiderToRestConverter =
+					DataGroupSpiderToRestConverter.fromSpiderDataGroupWithBaseURL(spiderLinkedPath, baseURL);
+			RestDataGroup restLinkedPath = dataGroupSpiderToRestConverter.toRest();
+
+			restDataRecordLink.setLinkedPath(restLinkedPath);
+		}
 	}
 
 	private void createRestLinks(String recordType, String recordId) {

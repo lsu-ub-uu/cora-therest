@@ -1,12 +1,13 @@
 package se.uu.ub.cora.therest.data.converter.spider;
 
-import static org.testng.Assert.assertEquals;
-
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
 import se.uu.ub.cora.spider.data.SpiderDataRecordLink;
+import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.RestDataRecordLink;
+
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNull;
 
 public class DataRecordLinkRestToSpiderConverterTest {
 	private RestDataRecordLink restDataRecordLink;
@@ -26,6 +27,7 @@ public class DataRecordLinkRestToSpiderConverterTest {
 		assertEquals(spiderDataRecordLink.getNameInData(), "nameInData");
 		assertEquals(spiderDataRecordLink.getRecordType(), "recordType");
 		assertEquals(spiderDataRecordLink.getRecordId(), "recordId");
+		assertNull(spiderDataRecordLink.getLinkedPath());
 	}
 
 	@Test
@@ -36,5 +38,19 @@ public class DataRecordLinkRestToSpiderConverterTest {
 		assertEquals(spiderDataRecordLink.getRecordType(), "recordType");
 		assertEquals(spiderDataRecordLink.getRecordId(), "recordId");
 		assertEquals(spiderDataRecordLink.getRepeatId(), "45");
+	}
+
+	@Test
+	public void testToSpiderWithLinkedRepeatId(){
+		restDataRecordLink.setLinkedRepeatId("linkedOne");
+		SpiderDataRecordLink spiderDataRecordLink = converter.toSpider();
+		assertEquals(spiderDataRecordLink.getLinkedRepeatId(), "linkedOne");
+	}
+
+	@Test
+	public void testToSpiderWithLinkedPath(){
+		restDataRecordLink.setLinkedPath(RestDataGroup.withNameInData("linkedPath"));
+		SpiderDataRecordLink spiderDataRecordLink = converter.toSpider();
+		assertEquals(spiderDataRecordLink.getLinkedPath().getNameInData(), "linkedPath");
 	}
 }

@@ -39,7 +39,19 @@ public final class DataRecordLinkRestToSpiderConverter {
 				.withNameInDataAndRecordTypeAndRecordId(restDataRecordLink.getNameInData(),
 						restDataRecordLink.getRecordType(), restDataRecordLink.getRecordId());
 		spiderDataRecordLink.setRepeatId(restDataRecordLink.getRepeatId());
+		spiderDataRecordLink.setLinkedRepeatId(restDataRecordLink.getLinkedRepeatId());
+
+		addLinkedPathIfItExists(spiderDataRecordLink);
 		return spiderDataRecordLink;
+	}
+
+	private void addLinkedPathIfItExists(SpiderDataRecordLink spiderDataRecordLink) {
+		if(restDataRecordLink.getLinkedPath() != null) {
+			DataGroupRestToSpiderConverter linkedPathConverter =
+					DataGroupRestToSpiderConverter.fromRestDataGroup(restDataRecordLink.getLinkedPath());
+
+			spiderDataRecordLink.setLinkedPath(linkedPathConverter.toSpider());
+		}
 	}
 
 }

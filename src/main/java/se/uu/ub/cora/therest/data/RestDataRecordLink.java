@@ -19,6 +19,7 @@
 
 package se.uu.ub.cora.therest.data;
 
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -30,6 +31,8 @@ public final class RestDataRecordLink implements RestDataElement {
 	private String recordId;
 
 	private String repeatId;
+	private String linkedRepeatId;
+	private RestDataGroup linkedPath;
 
 	public static RestDataRecordLink withNameInDataAndRecordTypeAndRecordId(String nameInData,
 			String recordType, String recordId) {
@@ -80,4 +83,19 @@ public final class RestDataRecordLink implements RestDataElement {
 		return repeatId;
 	}
 
+	public String getLinkedRepeatId() {
+		return linkedRepeatId;
+	}
+
+	public void setLinkedRepeatId(String linkedRepeatId) {
+		this.linkedRepeatId = linkedRepeatId;
+	}
+
+	public RestDataGroup getLinkedPath() {
+		return linkedPath;
+	}
+
+	public void setLinkedPath(RestDataGroup linkedPath) {
+		this.linkedPath = linkedPath;
+	}
 }
