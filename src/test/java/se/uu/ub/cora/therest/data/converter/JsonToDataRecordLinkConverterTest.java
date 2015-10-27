@@ -85,8 +85,8 @@ public class JsonToDataRecordLinkConverterTest {
 	public void testToClassMaxNoOfKeysButRepeatIdMissing() {
 		String json = "{\"recordId\":\"aRecordId\",\"recordType\":\"aRecordType\""
 				+ ",\"name\":\"nameInData\",\"actionLinks\":\"someActionLink\""
-				+ ",\"NOTrepeatId\":\"7\",\"linkedRepeatId\":\"linkedOne\"},"
-				+"\"linkedPath\":{\"name\":\"someLinkedPath\"}";
+				+ ",\"NOTrepeatId\":\"7\",\"linkedRepeatId\":\"linkedOne\","
+				+"\"linkedPath\":{\"name\":\"someLinkedPath\"}}";
 		createRestDataRecordLinkForJsonString(json);
 	}
 
@@ -94,8 +94,8 @@ public class JsonToDataRecordLinkConverterTest {
 	public void testToClassMaxNoOfKeysButActionLinksMissing() {
 		String json = "{\"recordId\":\"aRecordId\",\"recordType\":\"aRecordType\""
 				+ ",\"name\":\"nameInData\",\"NOTactionLinks\":\"someActionLink\""
-				+ ",\"repeatId\":\"7\",\"linkedRepeatId\":\"linkedOne\"},"
-				+"\"linkedPath\":{\"name\":\"someLinkedPath\"}";
+				+ ",\"repeatId\":\"7\",\"linkedRepeatId\":\"linkedOne\","
+				+"\"linkedPath\":{\"name\":\"someLinkedPath\"}}";
 		createRestDataRecordLinkForJsonString(json);
 	}
 
@@ -103,8 +103,8 @@ public class JsonToDataRecordLinkConverterTest {
 	public void testToClassMaxNoOfKeysButLinkedRepeatIdMissing(){
 		String json = "{\"recordId\":\"aRecordId\",\"recordType\":\"aRecordType\""
 				+ ",\"name\":\"nameInData\",\"actionLinks\":\"someActionLink\""
-				+ ",\"repeatId\":\"7\",\"NOTlinkedRepeatId\":\"linkedOne\"},"
-				+"\"linkedPath\":{\"name\":\"someLinkedPath\"}";
+				+ ",\"repeatId\":\"7\",\"NOTlinkedRepeatId\":\"linkedOne\","
+				+"\"linkedPath\":{\"name\":\"someLinkedPath\"}}";
 		createRestDataRecordLinkForJsonString(json);
 	}
 
@@ -112,8 +112,8 @@ public class JsonToDataRecordLinkConverterTest {
 	public void testToClassMaxNoOfKeysButLinkedPathMissing(){
 		String json = "{\"recordId\":\"aRecordId\",\"recordType\":\"aRecordType\""
 				+ ",\"name\":\"nameInData\",\"actionLinks\":\"someActionLink\""
-				+ ",\"repeatId\":\"7\",\"linkedRepeatId\":\"linkedOne\"},"
-				+"\"NOTlinkedPath\":{\"name\":\"someLinkedPath\"}";
+				+ ",\"repeatId\":\"7\",\"linkedRepeatId\":\"linkedOne\","
+				+"\"NOTlinkedPath\":\"someLinkedPath\"}";
 		createRestDataRecordLinkForJsonString(json);
 	}
 
@@ -121,8 +121,8 @@ public class JsonToDataRecordLinkConverterTest {
 	public void testToClassMaxNoOfKeysButAllOptionalKeysMissing(){
 		String json = "{\"recordId\":\"aRecordId\",\"recordType\":\"aRecordType\""
 				+ ",\"name\":\"nameInData\",\"NOTactionLinks\":\"someActionLink\""
-				+ ",\"NOTrepeatId\":\"7\",\"NOTlinkedRepeatId\":\"someRepeatId\"},"
-				+"\"NOTlinkedPath\":{\"name\":\"someLinkedPath\"}";
+				+ ",\"NOTrepeatId\":\"7\",\"NOTlinkedRepeatId\":\"someRepeatId\","
+				+"\"NOTlinkedPath\":\"name\"}";
 		createRestDataRecordLinkForJsonString(json);
 	}
 
@@ -161,10 +161,11 @@ public class JsonToDataRecordLinkConverterTest {
 
 	@Test(expectedExceptions = JsonParseException.class)
 	public void testToClassMoreKeysThanAllowed() {
-		String json = "{\"recordId\":\"aRecordId\",\"repeatId\":\"x\""
-				+ ",\"recordType\":\"aRecordType\""
-				+ ",\"name\":\"nameInData\",\"notAnActionLink\":\"somethingElse\""
-				+ ",\"anExtraKey\":\"somethingElse2\", ,\"anExtraKey2\":\"somethingElse2\", ,\"anExtraKey2\":\"somethingElse2\"}";
+		String json = "{\"recordId\":\"aRecordId\",\"recordType\":\"aRecordType\""
+				+ ",\"name\":\"nameInData\",\"actionLinks\":\"someActionLink\""
+				+",\"repeatId\":\"7\",\"linkedRepeatId\":\"linkedOne\"," +
+				"\"linkedRepeatId2\":\"linkedOne\"," +
+				"\"linkedPath\":{\"name\":\"someLinkedPath\"}}";
 		createRestDataRecordLinkForJsonString(json);
 	}
 

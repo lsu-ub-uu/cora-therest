@@ -56,8 +56,8 @@ public final class JsonToDataRecordLinkConverter implements JsonToDataConverter 
 
 		validateMandatoryKeys();
 
-		if (moreKeysAtTopLevelThanMandatoryButEnoughOptionalKeysNotFound()
-				|| moreKeysAtTopLevelThanAllowed()) {
+		if (moreKeysAtTopLevelThanAllowed()
+				|| moreKeysAtTopLevelThanMandatoryButEnoughOptionalKeysNotFound()) {
 			throw new JsonParseException("Group data can only contain keys name, repeatId, "
 					+ "recordType, recordId, linkedRepeatId and actionLinks");
 		}
