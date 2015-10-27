@@ -164,7 +164,7 @@ public class JsonToDataRecordLinkConverterTest {
 		String json = "{\"recordId\":\"aRecordId\",\"repeatId\":\"x\""
 				+ ",\"recordType\":\"aRecordType\""
 				+ ",\"name\":\"nameInData\",\"notAnActionLink\":\"somethingElse\""
-				+ ",\"anExtraKey\":\"somethingElse2\"}";
+				+ ",\"anExtraKey\":\"somethingElse2\", ,\"anExtraKey2\":\"somethingElse2\", ,\"anExtraKey2\":\"somethingElse2\"}";
 		createRestDataRecordLinkForJsonString(json);
 	}
 
