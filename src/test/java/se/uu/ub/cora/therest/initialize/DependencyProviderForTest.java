@@ -2,8 +2,8 @@ package se.uu.ub.cora.therest.initialize;
 
 import se.uu.ub.cora.beefeater.Authorizator;
 import se.uu.ub.cora.beefeater.AuthorizatorImp;
-import se.uu.ub.cora.metadataformat.linkcollector.DataRecordLinkCollector;
-import se.uu.ub.cora.metadataformat.validator.DataValidator;
+import se.uu.ub.cora.bookkeeper.linkcollector.DataRecordLinkCollector;
+import se.uu.ub.cora.bookkeeper.validator.DataValidator;
 import se.uu.ub.cora.spider.dependency.SpiderDependencyProvider;
 import se.uu.ub.cora.spider.record.PermissionKeyCalculator;
 import se.uu.ub.cora.spider.record.RecordPermissionKeyCalculator;
