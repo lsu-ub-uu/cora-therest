@@ -36,8 +36,8 @@ public final class DataRecordLinkRestToSpiderConverter {
 
 	public SpiderDataRecordLink toSpider() {
 		SpiderDataRecordLink spiderDataRecordLink = SpiderDataRecordLink
-				.withNameInDataAndRecordTypeAndRecordId(restDataRecordLink.getNameInData(),
-						restDataRecordLink.getRecordType(), restDataRecordLink.getRecordId());
+				.withNameInDataAndLinkedRecordTypeAndLinkedRecordId(restDataRecordLink.getNameInData(),
+						restDataRecordLink.getLinkedRecordType(), restDataRecordLink.getLinkedRecordId());
 		spiderDataRecordLink.setRepeatId(restDataRecordLink.getRepeatId());
 		spiderDataRecordLink.setLinkedRepeatId(restDataRecordLink.getLinkedRepeatId());
 

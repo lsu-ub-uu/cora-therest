@@ -55,6 +55,6 @@ public class JsonToDataConverterFactoryImp implements JsonToDataConverterFactory
 	}
 
 	private boolean isRecordLink() {
-		return jsonObject.containsKey("recordType");
+		return jsonObject.containsKey("linkedRecordType");
 	}
 }

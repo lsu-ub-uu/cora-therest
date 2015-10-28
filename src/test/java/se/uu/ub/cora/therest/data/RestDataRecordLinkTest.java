@@ -1,26 +1,25 @@
 package se.uu.ub.cora.therest.data;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNull;
-
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
 import se.uu.ub.cora.spider.data.Action;
+
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNull;
 
 public class RestDataRecordLinkTest {
 	private RestDataRecordLink recordLink;
 
 	@BeforeMethod
 	public void setUp() {
-		recordLink = RestDataRecordLink.withNameInDataAndRecordTypeAndRecordId("nameInData",
+		recordLink = RestDataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId("nameInData",
 				"aRecordType", "aRecordId");
 	}
 
 	@Test
 	public void testInit() {
-		assertEquals(recordLink.getRecordType(), "aRecordType");
-		assertEquals(recordLink.getRecordId(), "aRecordId");
+		assertEquals(recordLink.getLinkedRecordType(), "aRecordType");
+		assertEquals(recordLink.getLinkedRecordId(), "aRecordId");
 	}
 
 	@Test

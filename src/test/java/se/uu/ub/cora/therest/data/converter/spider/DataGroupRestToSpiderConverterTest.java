@@ -1,10 +1,7 @@
 package se.uu.ub.cora.therest.data.converter.spider;
 
-import static org.testng.Assert.assertEquals;
-
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
 import se.uu.ub.cora.spider.data.SpiderDataAtomic;
 import se.uu.ub.cora.spider.data.SpiderDataGroup;
 import se.uu.ub.cora.spider.data.SpiderDataRecordLink;
@@ -13,6 +10,8 @@ import se.uu.ub.cora.therest.data.RestDataAttribute;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.RestDataRecordLink;
 import se.uu.ub.cora.therest.data.converter.ConverterException;
+
+import static org.testng.Assert.assertEquals;
 
 public class DataGroupRestToSpiderConverterTest {
 	private RestDataGroup restDataGroup;
@@ -63,7 +62,7 @@ public class DataGroupRestToSpiderConverterTest {
 	@Test
 	public void testToSpiderWithRecordLinkChild() {
 		RestDataRecordLink restDataRecordLink = RestDataRecordLink
-				.withNameInDataAndRecordTypeAndRecordId("aLink", "someRecordType", "someRecordId");
+				.withNameInDataAndLinkedRecordTypeAndLinkedRecordId("aLink", "someRecordType", "someRecordId");
 		restDataGroup.addChild(restDataRecordLink);
 
 		SpiderDataGroup spiderDataGroup = dataGroupRestToSpiderConverter.toSpider();
@@ -71,8 +70,8 @@ public class DataGroupRestToSpiderConverterTest {
 		SpiderDataRecordLink spiderDataRecordLink = (SpiderDataRecordLink) spiderDataGroup
 				.getFirstChildWithNameInData("aLink");
 		assertEquals(spiderDataRecordLink.getNameInData(), "aLink");
-		assertEquals(spiderDataRecordLink.getRecordType(), "someRecordType");
-		assertEquals(spiderDataRecordLink.getRecordId(), "someRecordId");
+		assertEquals(spiderDataRecordLink.getLinkedRecordType(), "someRecordType");
+		assertEquals(spiderDataRecordLink.getLinkedRecordId(), "someRecordId");
 	}
 
 	@Test

@@ -1,17 +1,12 @@
 package se.uu.ub.cora.therest.data.converter;
 
-import static org.testng.Assert.assertTrue;
-
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import se.uu.ub.cora.therest.data.RestDataAtomic;
-import se.uu.ub.cora.therest.data.RestDataAttribute;
-import se.uu.ub.cora.therest.data.RestDataElement;
-import se.uu.ub.cora.therest.data.RestDataGroup;
-import se.uu.ub.cora.therest.data.RestDataRecordLink;
+import se.uu.ub.cora.therest.data.*;
 import se.uu.ub.cora.therest.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.therest.json.builder.org.OrgJsonBuilderFactoryAdapter;
+
+import static org.testng.Assert.assertTrue;
 
 public class DataToJsonConverterFactoryTest {
 	private DataToJsonConverterFactory dataToJsonConverterFactory;
@@ -57,7 +52,7 @@ public class DataToJsonConverterFactoryTest {
 
 	@Test
 	public void testJsonCreateFactoryDataRecordLink() {
-		RestDataElement restDataElement = RestDataRecordLink.withNameInDataAndRecordTypeAndRecordId(
+		RestDataElement restDataElement = RestDataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId(
 				"recordLinkNameInData", "someRecordType", "someRecordId");
 		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForRestDataElement(factory, restDataElement);

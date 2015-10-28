@@ -19,7 +19,7 @@ public class DataRecordLinkSpiderToRestConverterTest {
 	@BeforeMethod
 	public void setUp() {
 		spiderDataRecordLink = SpiderDataRecordLink
-				.withNameInDataAndRecordTypeAndRecordId("nameInData", "recordType", "recordId");
+				.withNameInDataAndLinkedRecordTypeAndLinkedRecordId("nameInData", "linkedRecordType", "linkedRecordId");
 		dataRecordLinkSpiderToRestConverter = DataRecordLinkSpiderToRestConverter
 				.fromSpiderDataRecordLinkWithBaseURL(spiderDataRecordLink, baseURL);
 
@@ -29,8 +29,8 @@ public class DataRecordLinkSpiderToRestConverterTest {
 	public void testToRest() {
 		RestDataRecordLink restDataRecordLink = dataRecordLinkSpiderToRestConverter.toRest();
 		assertEquals(restDataRecordLink.getNameInData(), "nameInData");
-		assertEquals(restDataRecordLink.getRecordType(), "recordType");
-		assertEquals(restDataRecordLink.getRecordId(), "recordId");
+		assertEquals(restDataRecordLink.getLinkedRecordType(), "linkedRecordType");
+		assertEquals(restDataRecordLink.getLinkedRecordId(), "linkedRecordId");
 		assertNull(restDataRecordLink.getLinkedPath());
 	}
 
@@ -39,8 +39,8 @@ public class DataRecordLinkSpiderToRestConverterTest {
 		spiderDataRecordLink.setRepeatId("j");
 		RestDataRecordLink restDataRecordLink = dataRecordLinkSpiderToRestConverter.toRest();
 		assertEquals(restDataRecordLink.getNameInData(), "nameInData");
-		assertEquals(restDataRecordLink.getRecordType(), "recordType");
-		assertEquals(restDataRecordLink.getRecordId(), "recordId");
+		assertEquals(restDataRecordLink.getLinkedRecordType(), "linkedRecordType");
+		assertEquals(restDataRecordLink.getLinkedRecordId(), "linkedRecordId");
 		assertEquals(restDataRecordLink.getRepeatId(), "j");
 	}
 
@@ -64,12 +64,12 @@ public class DataRecordLinkSpiderToRestConverterTest {
 		spiderDataRecordLink.addAction(Action.READ);
 		RestDataRecordLink restDataRecordLink = dataRecordLinkSpiderToRestConverter.toRest();
 		assertEquals(restDataRecordLink.getNameInData(), "nameInData");
-		assertEquals(restDataRecordLink.getRecordType(), "recordType");
-		assertEquals(restDataRecordLink.getRecordId(), "recordId");
+		assertEquals(restDataRecordLink.getLinkedRecordType(), "linkedRecordType");
+		assertEquals(restDataRecordLink.getLinkedRecordId(), "linkedRecordId");
 		ActionLink actionLink = restDataRecordLink.getActionLink("read");
 		assertEquals(actionLink.getAction(), Action.READ);
 		assertEquals(actionLink.getURL(),
-				"http://localhost:8080/therest/rest/record/recordType/recordId");
+				"http://localhost:8080/therest/rest/record/linkedRecordType/linkedRecordId");
 		assertEquals(actionLink.getRequestMethod(), "GET");
 	}
 
