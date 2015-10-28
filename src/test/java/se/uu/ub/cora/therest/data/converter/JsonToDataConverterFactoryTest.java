@@ -1,14 +1,13 @@
 package se.uu.ub.cora.therest.data.converter;
 
-import static org.testng.Assert.assertTrue;
-
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
 import se.uu.ub.cora.therest.json.parser.JsonParseException;
 import se.uu.ub.cora.therest.json.parser.JsonParser;
 import se.uu.ub.cora.therest.json.parser.JsonValue;
 import se.uu.ub.cora.therest.json.parser.org.OrgJsonParser;
+
+import static org.testng.Assert.assertTrue;
 
 public class JsonToDataConverterFactoryTest {
 	private JsonToDataConverterFactory jsonToDataConverterFactory;
@@ -58,7 +57,7 @@ public class JsonToDataConverterFactoryTest {
 
 	@Test
 	public void testFactorOnJsonStringDataRecordLink() {
-		String json = "{\"recordId\":\"aRecordId\",\"recordType\":\"aRecordType\""
+		String json = "{\"linkedRecordId\":\"aRecordId\",\"linkedRecordType\":\"aRecordType\""
 				+ ",\"name\":\"nameInData\"}";
 		JsonValue jsonValue = jsonParser.parseString(json);
 		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory

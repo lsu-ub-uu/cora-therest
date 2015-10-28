@@ -71,8 +71,8 @@ public final class DataRecordLinkToJsonConverter extends DataToJsonConverter {
 	}
 
 	private void addRecordTypeAndRecordId() {
-		recordLinkBuilder.addKeyString("recordType", recordLink.getRecordType());
-		recordLinkBuilder.addKeyString("recordId", recordLink.getRecordId());
+		recordLinkBuilder.addKeyString("linkedRecordType", recordLink.getLinkedRecordType());
+		recordLinkBuilder.addKeyString("linkedRecordId", recordLink.getLinkedRecordId());
 	}
 
 	private void possiblyAddLinkedRepeatId() {

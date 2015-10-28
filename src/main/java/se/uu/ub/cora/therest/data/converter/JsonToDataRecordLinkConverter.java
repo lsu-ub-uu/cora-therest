@@ -41,13 +41,13 @@ public final class JsonToDataRecordLinkConverter implements JsonToDataConverter 
 	@Override
 	public RestDataElement toInstance() {
 		try {
-			return tryToInstanciate();
+			return tryToInstantiate();
 		} catch (Exception e) {
 			throw new JsonParseException("Error parsing jsonObject: " + e.getMessage(), e);
 		}
 	}
 
-	private RestDataElement tryToInstanciate() {
+	private RestDataElement tryToInstantiate() {
 		validateOnlyCorrectKeysAtTopLevel();
 		return createDataGroupInstance();
 	}
@@ -59,7 +59,7 @@ public final class JsonToDataRecordLinkConverter implements JsonToDataConverter 
 		if (moreKeysAtTopLevelThanAllowed()
 				|| moreKeysAtTopLevelThanMandatoryButEnoughOptionalKeysNotFound()) {
 			throw new JsonParseException("Group data can only contain keys name, repeatId, "
-					+ "recordType, recordId, linkedRepeatId and actionLinks");
+					+ "linkedRecordType, linkedRecordId, linkedRepeatId and actionLinks");
 		}
 
 	}
@@ -68,11 +68,11 @@ public final class JsonToDataRecordLinkConverter implements JsonToDataConverter 
 		if (!jsonObject.containsKey("name")) {
 			throw new JsonParseException("Group data must contain key \"name\"");
 		}
-		if (!jsonObject.containsKey("recordType")) {
-			throw new JsonParseException("Group data must contain key \"recordType\"");
+		if (!jsonObject.containsKey("linkedRecordType")) {
+			throw new JsonParseException("Group data must contain key \"linkedRecordType\"");
 		}
-		if (!jsonObject.containsKey("recordId")) {
-			throw new JsonParseException("Group data must contain key \"recordId\"");
+		if (!jsonObject.containsKey("linkedRecordId")) {
+			throw new JsonParseException("Group data must contain key \"linkedRecordId\"");
 		}
 	}
 
@@ -124,10 +124,10 @@ public final class JsonToDataRecordLinkConverter implements JsonToDataConverter 
 
 	private RestDataElement createDataGroupInstance() {
 		String nameInData = getStringValueFromJsonObject("name");
-		String recordType = getStringValueFromJsonObject("recordType");
-		String recordId = getStringValueFromJsonObject("recordId");
+		String linkedRecordType = getStringValueFromJsonObject("linkedRecordType");
+		String linkedRecordId = getStringValueFromJsonObject("linkedRecordId");
 		RestDataRecordLink restDataRecordLink = RestDataRecordLink
-				.withNameInDataAndRecordTypeAndRecordId(nameInData, recordType, recordId);
+				.withNameInDataAndLinkedRecordTypeAndLinkedRecordId(nameInData, linkedRecordType, linkedRecordId);
 		if (hasRepeatId()) {
 			restDataRecordLink.setRepeatId(getStringValueFromJsonObject("repeatId"));
 		}

@@ -15,8 +15,8 @@ public class DataRecordLinkRestToSpiderConverterTest {
 
 	@BeforeMethod
 	public void setUp() {
-		restDataRecordLink = RestDataRecordLink.withNameInDataAndRecordTypeAndRecordId("nameInData",
-				"recordType", "recordId");
+		restDataRecordLink = RestDataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId("nameInData",
+				"linkedRecordType", "linkedRecordId");
 		converter = DataRecordLinkRestToSpiderConverter.fromRestDataRecordLink(restDataRecordLink);
 
 	}
@@ -25,8 +25,8 @@ public class DataRecordLinkRestToSpiderConverterTest {
 	public void testToSpider() {
 		SpiderDataRecordLink spiderDataRecordLink = converter.toSpider();
 		assertEquals(spiderDataRecordLink.getNameInData(), "nameInData");
-		assertEquals(spiderDataRecordLink.getRecordType(), "recordType");
-		assertEquals(spiderDataRecordLink.getRecordId(), "recordId");
+		assertEquals(spiderDataRecordLink.getLinkedRecordType(), "linkedRecordType");
+		assertEquals(spiderDataRecordLink.getLinkedRecordId(), "linkedRecordId");
 		assertNull(spiderDataRecordLink.getLinkedPath());
 	}
 
@@ -35,8 +35,8 @@ public class DataRecordLinkRestToSpiderConverterTest {
 		restDataRecordLink.setRepeatId("45");
 		SpiderDataRecordLink spiderDataRecordLink = converter.toSpider();
 		assertEquals(spiderDataRecordLink.getNameInData(), "nameInData");
-		assertEquals(spiderDataRecordLink.getRecordType(), "recordType");
-		assertEquals(spiderDataRecordLink.getRecordId(), "recordId");
+		assertEquals(spiderDataRecordLink.getLinkedRecordType(), "linkedRecordType");
+		assertEquals(spiderDataRecordLink.getLinkedRecordId(), "linkedRecordId");
 		assertEquals(spiderDataRecordLink.getRepeatId(), "45");
 	}
 

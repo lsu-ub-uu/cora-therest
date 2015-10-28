@@ -41,14 +41,14 @@ public final class DataRecordLinkSpiderToRestConverter {
 	}
 
 	public RestDataRecordLink toRest() {
-		restDataRecordLink = RestDataRecordLink.withNameInDataAndRecordTypeAndRecordId(
-				spiderDataRecordLink.getNameInData(), spiderDataRecordLink.getRecordType(),
-				spiderDataRecordLink.getRecordId());
+		restDataRecordLink = RestDataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId(
+				spiderDataRecordLink.getNameInData(), spiderDataRecordLink.getLinkedRecordType(),
+				spiderDataRecordLink.getLinkedRecordId());
 		restDataRecordLink.setRepeatId(spiderDataRecordLink.getRepeatId());
 		restDataRecordLink.setLinkedRepeatId(spiderDataRecordLink.getLinkedRepeatId());
 
 		addLinkedPathIfItExists();
-		createRestLinks(restDataRecordLink.getRecordType(), restDataRecordLink.getRecordId());
+		createRestLinks(restDataRecordLink.getLinkedRecordType(), restDataRecordLink.getLinkedRecordId());
 		return restDataRecordLink;
 	}
 

@@ -17,7 +17,7 @@ public class DataRecordLinkToJsonConverterTest {
 
 	@BeforeMethod
 	public void setUp() {
-		recordLink = RestDataRecordLink.withNameInDataAndRecordTypeAndRecordId("nameInData",
+		recordLink = RestDataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId("nameInData",
 				"aRecordType", "aRecordId");
 
 		JsonBuilderFactory jsonFactory = new OrgJsonBuilderFactoryAdapter();
@@ -31,7 +31,7 @@ public class DataRecordLinkToJsonConverterTest {
 	public void testToJson() {
 		String jsonString = converter.toJson();
 
-		assertEquals(jsonString, "{\"recordId\":\"aRecordId\",\"recordType\":\"aRecordType\""
+		assertEquals(jsonString, "{\"linkedRecordType\":\"aRecordType\",\"linkedRecordId\":\"aRecordId\""
 				+ ",\"name\":\"nameInData\"}");
 	}
 
@@ -40,8 +40,8 @@ public class DataRecordLinkToJsonConverterTest {
 		recordLink.setRepeatId("22");
 		String jsonString = converter.toJson();
 
-		assertEquals(jsonString, "{\"recordId\":\"aRecordId\",\"repeatId\":\"22\""
-				+ ",\"recordType\":\"aRecordType\"" + ",\"name\":\"nameInData\"}");
+		assertEquals(jsonString, "{\"linkedRecordType\":\"aRecordType\",\"repeatId\":\"22\""
+				+ ",\"linkedRecordId\":\"aRecordId\"" + ",\"name\":\"nameInData\"}");
 	}
 
 	@Test
@@ -49,7 +49,7 @@ public class DataRecordLinkToJsonConverterTest {
 		recordLink.setRepeatId("");
 		String jsonString = converter.toJson();
 
-		assertEquals(jsonString, "{\"recordId\":\"aRecordId\"" + ",\"recordType\":\"aRecordType\""
+		assertEquals(jsonString, "{\"linkedRecordType\":\"aRecordType\",\"linkedRecordId\":\"aRecordId\"" + ""
 				+ ",\"name\":\"nameInData\"}");
 	}
 
@@ -58,8 +58,8 @@ public class DataRecordLinkToJsonConverterTest {
 		recordLink.setLinkedRepeatId("linkedOne");
 		String jsonString = converter.toJson();
 
-		assertEquals(jsonString, "{\"recordId\":\"aRecordId\""
-				+ ",\"recordType\":\"aRecordType\"" + ",\"name\":\"nameInData\",\"linkedRepeatId\":\"linkedOne\"}");
+		assertEquals(jsonString, "{\"linkedRecordType\":\"aRecordType\",\"linkedRecordId\":\"aRecordId\""
+				 + ",\"name\":\"nameInData\",\"linkedRepeatId\":\"linkedOne\"}");
 	}
 
 	@Test
@@ -67,7 +67,7 @@ public class DataRecordLinkToJsonConverterTest {
 		recordLink.setLinkedRepeatId("");
 		String jsonString = converter.toJson();
 
-		assertEquals(jsonString, "{\"recordId\":\"aRecordId\"" + ",\"recordType\":\"aRecordType\""
+		assertEquals(jsonString, "{\"linkedRecordType\":\"aRecordType\",\"linkedRecordId\":\"aRecordId\"" + ""
 				+ ",\"name\":\"nameInData\"}");
 	}
 
@@ -77,7 +77,7 @@ public class DataRecordLinkToJsonConverterTest {
 		recordLink.setLinkedPath(linkedPathDataGroup);
 		String jsonString = converter.toJson();
 
-		assertEquals(jsonString, "{\"recordId\":\"aRecordId\"" + ",\"recordType\":\"aRecordType\""
+		assertEquals(jsonString, "{\"linkedRecordType\":\"aRecordType\",\"linkedRecordId\":\"aRecordId\"" + ""
 				+ ",\"linkedPath\":{\"name\":\"linkedPath\"},\"name\":\"nameInData\"}");
 	}
 
@@ -87,7 +87,7 @@ public class DataRecordLinkToJsonConverterTest {
 
 		String jsonString = converter.toJson();
 
-		assertEquals(jsonString, "{\"recordId\":\"aRecordId\",\"recordType\":\"aRecordType\""
+		assertEquals(jsonString, "{\"linkedRecordType\":\"aRecordType\",\"linkedRecordId\":\"aRecordId\""
 				+ ",\"actionLinks\":{\"read\":{\"requestMethod\":\"GET\",\"rel\":\"read\""
 				+ ",\"contentType\":\"application/metadata_record+json\""
 				+ ",\"url\":\"http://localhost:8080/therest/rest/record/place/place:0001\""

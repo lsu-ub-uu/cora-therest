@@ -27,22 +27,22 @@ public final class RestDataRecordLink implements RestDataElement {
 	private String nameInData;
 
 	private Map<String, ActionLink> actionLinks = new LinkedHashMap<>();
-	private String recordType;
-	private String recordId;
+	private String linkedRecordType;
+	private String linkedRecordId;
 
 	private String repeatId;
 	private String linkedRepeatId;
 	private RestDataGroup linkedPath;
 
-	public static RestDataRecordLink withNameInDataAndRecordTypeAndRecordId(String nameInData,
-			String recordType, String recordId) {
-		return new RestDataRecordLink(nameInData, recordType, recordId);
+	public static RestDataRecordLink withNameInDataAndLinkedRecordTypeAndLinkedRecordId(
+			String nameInData, String linkedRecordType, String linkedRecordId) {
+		return new RestDataRecordLink(nameInData, linkedRecordType, linkedRecordId);
 	}
 
-	private RestDataRecordLink(String nameInData, String recordType, String recordId) {
+	private RestDataRecordLink(String nameInData, String linkedRecordType, String linkedRecordId) {
 		this.nameInData = nameInData;
-		this.recordType = recordType;
-		this.recordId = recordId;
+		this.linkedRecordType = linkedRecordType;
+		this.linkedRecordId = linkedRecordId;
 
 	}
 
@@ -63,12 +63,12 @@ public final class RestDataRecordLink implements RestDataElement {
 		return actionLinks;
 	}
 
-	public String getRecordType() {
-		return recordType;
+	public String getLinkedRecordType() {
+		return linkedRecordType;
 	}
 
-	public String getRecordId() {
-		return recordId;
+	public String getLinkedRecordId() {
+		return linkedRecordId;
 	}
 
 	public void setActionLinks(Map<String, ActionLink> actionLinks) {
