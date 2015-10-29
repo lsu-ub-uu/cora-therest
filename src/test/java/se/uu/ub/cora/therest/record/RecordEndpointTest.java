@@ -163,6 +163,15 @@ public class RecordEndpointTest {
 	}
 
 	@Test
+	public void testUpdateRecordTypeNotFound() {
+		String type = "place";
+		String id = "place:0001";
+		Response responseUpdate = recordEndpoint.updateRecord(type + "_NOT_FOUND", id,
+				jsonToUpdateWithNotFound);
+		assertEquals(responseUpdate.getStatusInfo(), Response.Status.NOT_FOUND);
+	}
+
+	@Test
 	public void testUpdateRecordBadContentInJson() {
 		String type = "place";
 		String id = "place:0001";
@@ -226,7 +235,7 @@ public class RecordEndpointTest {
 		String type = "recordType_NON_EXCISTING";
 		Response responseUpdate = recordEndpoint
 				.createRecordAsUserIdWithRecord("unauthorizedUserId", type, jsonToCreateFrom);
-		assertEquals(responseUpdate.getStatusInfo(), Response.Status.BAD_REQUEST);
+		assertEquals(responseUpdate.getStatusInfo(), Response.Status.NOT_FOUND);
 	}
 
 	@Test

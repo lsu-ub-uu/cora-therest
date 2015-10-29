@@ -19,21 +19,6 @@
 
 package se.uu.ub.cora.therest.record;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriInfo;
-
 import se.uu.ub.cora.spider.data.DataMissingException;
 import se.uu.ub.cora.spider.data.SpiderDataGroup;
 import se.uu.ub.cora.spider.data.SpiderDataRecord;
@@ -48,14 +33,7 @@ import se.uu.ub.cora.therest.data.RestDataElement;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.RestDataRecord;
 import se.uu.ub.cora.therest.data.RestRecordList;
-import se.uu.ub.cora.therest.data.converter.ConverterException;
-import se.uu.ub.cora.therest.data.converter.DataGroupToJsonConverter;
-import se.uu.ub.cora.therest.data.converter.DataRecordToJsonConverter;
-import se.uu.ub.cora.therest.data.converter.DataToJsonConverter;
-import se.uu.ub.cora.therest.data.converter.JsonToDataConverter;
-import se.uu.ub.cora.therest.data.converter.JsonToDataConverterFactory;
-import se.uu.ub.cora.therest.data.converter.JsonToDataConverterFactoryImp;
-import se.uu.ub.cora.therest.data.converter.RecordListToJsonConverter;
+import se.uu.ub.cora.therest.data.converter.*;
 import se.uu.ub.cora.therest.data.converter.spider.DataGroupRestToSpiderConverter;
 import se.uu.ub.cora.therest.data.converter.spider.DataGroupSpiderToRestConverter;
 import se.uu.ub.cora.therest.data.converter.spider.DataRecordSpiderToRestConverter;
@@ -66,6 +44,14 @@ import se.uu.ub.cora.therest.json.parser.JsonParseException;
 import se.uu.ub.cora.therest.json.parser.JsonParser;
 import se.uu.ub.cora.therest.json.parser.JsonValue;
 import se.uu.ub.cora.therest.json.parser.org.OrgJsonParser;
+
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 @Path("record")
 public class RecordEndpoint {
@@ -165,6 +151,8 @@ public class RecordEndpoint {
 			response = buildResponse(Response.Status.BAD_REQUEST);
 		} else if (error instanceof AuthorizationException) {
 			response = buildResponse(Response.Status.UNAUTHORIZED);
+		} else if(error instanceof RecordNotFoundException){
+			response = buildResponseIncludingMessage(error, Response.Status.NOT_FOUND);
 		}
 		return response;
 	}
@@ -227,7 +215,8 @@ public class RecordEndpoint {
 			return Response.status(Response.Status.METHOD_NOT_ALLOWED).entity(e.getMessage())
 					.build();
 		} catch (RecordNotFoundException e) {
-			return Response.status(Response.Status.NOT_FOUND).build();
+			return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+//			return Response.status(Response.Status.NOT_FOUND).build();
 		} catch (AuthorizationException e) {
 			return Response.status(Response.Status.UNAUTHORIZED).build();
 		}
@@ -320,7 +309,7 @@ public class RecordEndpoint {
 		} catch (JsonParseException | DataException | DataMissingException | ConverterException e) {
 			return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
 		} catch (RecordNotFoundException e) {
-			return Response.status(Response.Status.NOT_FOUND).build();
+			return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
 		} catch (AuthorizationException e) {
 			return Response.status(Response.Status.UNAUTHORIZED).build();
 		}
