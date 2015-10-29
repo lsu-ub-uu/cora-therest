@@ -216,7 +216,6 @@ public class RecordEndpoint {
 					.build();
 		} catch (RecordNotFoundException e) {
 			return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
-//			return Response.status(Response.Status.NOT_FOUND).build();
 		} catch (AuthorizationException e) {
 			return Response.status(Response.Status.UNAUTHORIZED).build();
 		}
