@@ -183,7 +183,7 @@ public class RecordEndpoint {
 	}
 
 	private Response tryReadRecordList(String userId, String type) {
-		SpiderRecordList readRecordList = SpiderInstanceProvider.getSpiderRecordReader()
+		SpiderRecordList readRecordList = SpiderInstanceProvider.getSpiderRecordListReader()
 				.readRecordList(userId, type);
 		String json = convertSpiderRecordListToJsonString(readRecordList);
 		return Response.status(Response.Status.OK).entity(json).build();
