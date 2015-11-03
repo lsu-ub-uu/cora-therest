@@ -34,7 +34,7 @@
 	<name>The Rest</name>
 
 	<properties>
-		<systemone.version>0.3-SNAPSHOT</systemone.version>
+		<systemone.version>0.4-SNAPSHOT</systemone.version>
 		<javax.ws.rs.version>2.0.1</javax.ws.rs.version>
 		<jersey.version>2.16</jersey.version>
 		<org.json.version>20141113</org.json.version>
