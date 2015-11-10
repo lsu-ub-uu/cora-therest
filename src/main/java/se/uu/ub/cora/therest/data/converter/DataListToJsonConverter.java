@@ -19,19 +19,21 @@
 
 package se.uu.ub.cora.therest.data.converter;
 
+import se.uu.ub.cora.therest.data.RestData;
+import se.uu.ub.cora.therest.data.RestDataGroup;
+import se.uu.ub.cora.therest.data.RestDataList;
 import se.uu.ub.cora.therest.data.RestDataRecord;
-import se.uu.ub.cora.therest.data.RestRecordList;
 import se.uu.ub.cora.therest.json.builder.JsonArrayBuilder;
 import se.uu.ub.cora.therest.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.therest.json.builder.JsonObjectBuilder;
 
-public class RecordListToJsonConverter {
+public class DataListToJsonConverter {
 
 	private JsonBuilderFactory jsonBuilderFactory;
-	private RestRecordList restRecordList;
+	private RestDataList restRecordList;
 	private JsonObjectBuilder recordListJsonObjectBuilder;
 
-	public RecordListToJsonConverter(JsonBuilderFactory jsonFactory, RestRecordList restRecordList) {
+	public DataListToJsonConverter(JsonBuilderFactory jsonFactory, RestDataList restRecordList) {
 		this.jsonBuilderFactory = jsonFactory;
 		this.restRecordList = restRecordList;
 		recordListJsonObjectBuilder = jsonFactory.createObjectBuilder();
@@ -46,24 +48,43 @@ public class RecordListToJsonConverter {
 		recordListJsonObjectBuilder.addKeyString("totalNo", restRecordList.getTotalNo());
 		recordListJsonObjectBuilder.addKeyString("fromNo", restRecordList.getFromNo());
 		recordListJsonObjectBuilder.addKeyString("toNo", restRecordList.getToNo());
-		recordListJsonObjectBuilder.addKeyString("containRecordsOfType",
-				restRecordList.getContainRecordsOfType());
+		recordListJsonObjectBuilder.addKeyString("containDataOfType",
+				restRecordList.getContainDataOfType());
 
 		JsonArrayBuilder recordsJsonBuilder = jsonBuilderFactory.createArrayBuilder();
 
-		for (RestDataRecord restDataRecord : restRecordList.getRecords()) {
-			DataRecordToJsonConverter converter = DataRecordToJsonConverter
-					.usingJsonFactoryForRestDataRecord(jsonBuilderFactory, restDataRecord);
-			recordsJsonBuilder.addJsonObjectBuilder(converter.toJsonObjectBuilder());
+		for (RestData restData : restRecordList.getDataList()) {
+			convertRestToJsonBuilder(recordsJsonBuilder, restData);
 		}
 
-		recordListJsonObjectBuilder.addKeyJsonArrayBuilder("records", recordsJsonBuilder);
+		recordListJsonObjectBuilder.addKeyJsonArrayBuilder("data", recordsJsonBuilder);
 
-		// create surrounding json object that only has "recordList"and noOfRecords as its child
 		JsonObjectBuilder rootWrappingJsonObjectBuilder = jsonBuilderFactory.createObjectBuilder();
-		rootWrappingJsonObjectBuilder.addKeyJsonObjectBuilder("recordList",
+		rootWrappingJsonObjectBuilder.addKeyJsonObjectBuilder("dataList",
 				recordListJsonObjectBuilder);
 		return rootWrappingJsonObjectBuilder;
+	}
+
+	private void convertRestToJsonBuilder(JsonArrayBuilder recordsJsonBuilder, RestData restData) {
+		if (restData instanceof RestDataRecord) {
+			convertRestRecordToJsonBuilder(recordsJsonBuilder, restData);
+		} else {
+			convertRestGroupToJsonBuilder(recordsJsonBuilder, restData);
+		}
+	}
+
+	private void convertRestRecordToJsonBuilder(JsonArrayBuilder recordsJsonBuilder,
+			RestData restData) {
+		DataRecordToJsonConverter converter = DataRecordToJsonConverter
+				.usingJsonFactoryForRestDataRecord(jsonBuilderFactory, (RestDataRecord) restData);
+		recordsJsonBuilder.addJsonObjectBuilder(converter.toJsonObjectBuilder());
+	}
+
+	private void convertRestGroupToJsonBuilder(JsonArrayBuilder recordsJsonBuilder,
+			RestData restData) {
+		DataGroupToJsonConverter converter = DataGroupToJsonConverter
+				.usingJsonFactoryForRestDataGroup(jsonBuilderFactory, (RestDataGroup) restData);
+		recordsJsonBuilder.addJsonObjectBuilder(converter.toJsonObjectBuilder());
 	}
 
 }

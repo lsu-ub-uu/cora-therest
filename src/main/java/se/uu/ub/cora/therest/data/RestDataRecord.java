@@ -24,7 +24,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
-public final class RestDataRecord {
+public final class RestDataRecord implements RestData {
 	private RestDataGroup restDataGroup;
 	private Set<String> keys = new LinkedHashSet<>();
 	private Map<String, ActionLink> actionLinks = new LinkedHashMap<>();

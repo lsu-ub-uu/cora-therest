@@ -22,7 +22,7 @@ package se.uu.ub.cora.therest.record;
 import se.uu.ub.cora.spider.data.DataMissingException;
 import se.uu.ub.cora.spider.data.SpiderDataGroup;
 import se.uu.ub.cora.spider.data.SpiderDataRecord;
-import se.uu.ub.cora.spider.data.SpiderRecordList;
+import se.uu.ub.cora.spider.data.SpiderDataList;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
 import se.uu.ub.cora.spider.record.AuthorizationException;
 import se.uu.ub.cora.spider.record.DataException;
@@ -32,12 +32,12 @@ import se.uu.ub.cora.spider.record.storage.RecordNotFoundException;
 import se.uu.ub.cora.therest.data.RestDataElement;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.RestDataRecord;
-import se.uu.ub.cora.therest.data.RestRecordList;
+import se.uu.ub.cora.therest.data.RestDataList;
 import se.uu.ub.cora.therest.data.converter.*;
 import se.uu.ub.cora.therest.data.converter.spider.DataGroupRestToSpiderConverter;
 import se.uu.ub.cora.therest.data.converter.spider.DataGroupSpiderToRestConverter;
 import se.uu.ub.cora.therest.data.converter.spider.DataRecordSpiderToRestConverter;
-import se.uu.ub.cora.therest.data.converter.spider.RecordListSpiderToRestConverter;
+import se.uu.ub.cora.therest.data.converter.spider.DataListSpiderToRestConverter;
 import se.uu.ub.cora.therest.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.therest.json.builder.org.OrgJsonBuilderFactoryAdapter;
 import se.uu.ub.cora.therest.json.parser.JsonParseException;
@@ -183,19 +183,19 @@ public class RecordEndpoint {
 	}
 
 	private Response tryReadRecordList(String userId, String type) {
-		SpiderRecordList readRecordList = SpiderInstanceProvider.getSpiderRecordListReader()
+		SpiderDataList readRecordList = SpiderInstanceProvider.getSpiderRecordListReader()
 				.readRecordList(userId, type);
 		String json = convertSpiderRecordListToJsonString(readRecordList);
 		return Response.status(Response.Status.OK).entity(json).build();
 	}
 
-	private String convertSpiderRecordListToJsonString(SpiderRecordList readRecordList) {
-		RecordListSpiderToRestConverter listSpiderToRestConverter = RecordListSpiderToRestConverter
-				.fromSpiderRecordListWithBaseURL(readRecordList, url);
-		RestRecordList restRecordList = listSpiderToRestConverter.toRest();
+	private String convertSpiderRecordListToJsonString(SpiderDataList readRecordList) {
+		DataListSpiderToRestConverter listSpiderToRestConverter = DataListSpiderToRestConverter
+				.fromSpiderDataListWithBaseURL(readRecordList, url);
+		RestDataList restRecordList = listSpiderToRestConverter.toRest();
 
 		JsonBuilderFactory jsonBuilderFactory = new OrgJsonBuilderFactoryAdapter();
-		RecordListToJsonConverter recordListToJsonConverter = new RecordListToJsonConverter(
+		DataListToJsonConverter recordListToJsonConverter = new DataListToJsonConverter(
 				jsonBuilderFactory, restRecordList);
 		return recordListToJsonConverter.toJson();
 	}

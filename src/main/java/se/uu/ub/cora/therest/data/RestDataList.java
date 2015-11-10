@@ -22,32 +22,32 @@ package se.uu.ub.cora.therest.data;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class RestRecordList {
+public final class RestDataList {
 
-	private String containRecordsOfType;
-	private List<RestDataRecord> records = new ArrayList<>();
+	private String containDataOfType;
+	private List<RestData> dataList = new ArrayList<>();
 	private String totalNo;
 	private String fromNo;
 	private String toNo;
 
-	public static RestRecordList withContainRecordsOfType(String containRecordsOfType) {
-		return new RestRecordList(containRecordsOfType);
+	public static RestDataList withContainDataOfType(String containDataOfType) {
+		return new RestDataList(containDataOfType);
 	}
 
-	private RestRecordList(String containRecordsOfType) {
-		this.containRecordsOfType = containRecordsOfType;
+	private RestDataList(String containDataOfType) {
+		this.containDataOfType = containDataOfType;
 	}
 
-	public String getContainRecordsOfType() {
-		return containRecordsOfType;
+	public String getContainDataOfType() {
+		return containDataOfType;
 	}
 
-	public void addRecord(RestDataRecord record) {
-		records.add(record);
+	public void addData(RestData data) {
+		dataList.add(data);
 	}
 
-	public List<RestDataRecord> getRecords() {
-		return records;
+	public List<RestData> getDataList() {
+		return dataList;
 	}
 
 	public void setTotalNo(String totalNo) {

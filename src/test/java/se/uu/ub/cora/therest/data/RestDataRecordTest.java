@@ -19,15 +19,16 @@
 
 package se.uu.ub.cora.therest.data;
 
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
+
 import java.util.Map;
 import java.util.Set;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import se.uu.ub.cora.spider.data.Action;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
+import se.uu.ub.cora.spider.data.Action;
 
 public class RestDataRecordTest {
 	private RestDataRecord restDataRecord;
@@ -36,6 +37,11 @@ public class RestDataRecordTest {
 	public void beforeMethod() {
 		RestDataGroup restDataGroup = RestDataGroup.withNameInData("nameInData");
 		restDataRecord = RestDataRecord.withRestDataGroup(restDataGroup);
+	}
+
+	@Test
+	public void testRecordIsRestData() {
+		assertTrue(restDataRecord instanceof RestData);
 	}
 
 	@Test

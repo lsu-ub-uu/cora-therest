@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public final class RestDataGroup implements RestDataElement {
+public final class RestDataGroup implements RestDataElement, RestData {
 
 	private final String nameInData;
 	private Map<String, String> attributes = new HashMap<>();

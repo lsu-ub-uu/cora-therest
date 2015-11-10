@@ -19,11 +19,12 @@
 
 package se.uu.ub.cora.therest.data;
 
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
-
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertTrue;
+
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
 public class RestDataGroupTest {
 	private RestDataGroup restDataGroup;
@@ -31,6 +32,11 @@ public class RestDataGroupTest {
 	@BeforeMethod
 	public void setUp() {
 		restDataGroup = RestDataGroup.withNameInData("nameInData");
+	}
+
+	@Test
+	public void testGropuIsRestData() {
+		assertTrue(restDataGroup instanceof RestData);
 	}
 
 	@Test
