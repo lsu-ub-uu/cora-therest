@@ -41,8 +41,7 @@ public class DataListToJsonConverterTest {
 		restDataList.setToNo("1");
 
 		JsonBuilderFactory jsonFactory = new OrgJsonBuilderFactoryAdapter();
-		DataListToJsonConverter recordListToJsonConverter = new DataListToJsonConverter(jsonFactory,
-				restDataList);
+		DataListToJsonConverter recordListToJsonConverter = DataListToJsonConverter.usingJsonFactoryForRestDataList(jsonFactory, restDataList);
 		String jsonString = recordListToJsonConverter.toJson();
 		assertEquals(jsonString,
 				"{\"dataList\":{\"fromNo\":\"0\",\""
@@ -60,8 +59,7 @@ public class DataListToJsonConverterTest {
 		restDataList.setToNo("1");
 
 		JsonBuilderFactory jsonFactory = new OrgJsonBuilderFactoryAdapter();
-		DataListToJsonConverter recordListToJsonConverter = new DataListToJsonConverter(jsonFactory,
-				restDataList);
+		DataListToJsonConverter recordListToJsonConverter = DataListToJsonConverter.usingJsonFactoryForRestDataList(jsonFactory, restDataList);
 		String jsonString = recordListToJsonConverter.toJson();
 		assertEquals(jsonString,
 				"{\"dataList\":{\"fromNo\":\"0\",\"" + "data\":[{\"name\":\"groupId\"}],"

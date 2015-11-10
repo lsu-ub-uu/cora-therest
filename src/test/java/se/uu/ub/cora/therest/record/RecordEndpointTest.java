@@ -103,15 +103,16 @@ public class RecordEndpointTest {
 
 		assertNotNull(entity, "An entity in json format should be returned");
 		assertEquals(entity,
-				"{\"children\":[{\"children\":["
-						+ "{\"linkedRecordType\":\"place\",\"linkedRecordId\":\"place:0002\""
+				"{\"dataList\":{\"fromNo\":\"0\",\"data\":["
+						+ "{\"children\":[{\"linkedRecordType\":\"place\""
+						+ ",\"linkedRecordId\":\"place:0002\""
 						+ ",\"actionLinks\":{\"read\":{\"requestMethod\":\"GET\",\"rel\":\"read\""
 						+ ",\"contentType\":\"application/uub+record+json\""
 						+ ",\"url\":\"http://localhost:8080/therest/rest/record/place/place:0002\""
 						+ ",\"accept\":\"application/uub+record+json\"}},\"name\":\"from\"}"
 						+ ",{\"linkedRecordType\":\"place\",\"linkedRecordId\":\"place:0001\""
-						+ ",\"name\":\"to\"}],\"name\":\"recordToRecordLink\"}]"
-						+ ",\"name\":\"incomingRecordLinks\"}");
+						+ ",\"name\":\"to\"}],\"name\":\"recordToRecordLink\"}],\"totalNo\":\"1\""
+						+ ",\"containDataOfType\":\"recordToRecordLink\",\"toNo\":\"1\"}}");
 	}
 
 	@Test

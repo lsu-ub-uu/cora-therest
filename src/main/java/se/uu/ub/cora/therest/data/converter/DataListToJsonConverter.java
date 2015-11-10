@@ -27,13 +27,18 @@ import se.uu.ub.cora.therest.json.builder.JsonArrayBuilder;
 import se.uu.ub.cora.therest.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.therest.json.builder.JsonObjectBuilder;
 
-public class DataListToJsonConverter {
+public final class DataListToJsonConverter {
+
+	public static DataListToJsonConverter usingJsonFactoryForRestDataList(
+			JsonBuilderFactory jsonFactory, RestDataList restRecordList) {
+		return new DataListToJsonConverter(jsonFactory, restRecordList);
+	}
 
 	private JsonBuilderFactory jsonBuilderFactory;
 	private RestDataList restRecordList;
 	private JsonObjectBuilder recordListJsonObjectBuilder;
 
-	public DataListToJsonConverter(JsonBuilderFactory jsonFactory, RestDataList restRecordList) {
+	private DataListToJsonConverter(JsonBuilderFactory jsonFactory, RestDataList restRecordList) {
 		this.jsonBuilderFactory = jsonFactory;
 		this.restRecordList = restRecordList;
 		recordListJsonObjectBuilder = jsonFactory.createObjectBuilder();
