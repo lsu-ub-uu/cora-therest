@@ -53,6 +53,7 @@ public class RecordEndpointTest {
 		Response response = recordEndpoint.readRecordList(type);
 		String entity = (String) response.getEntity();
 		assertNotNull(entity, "An entity in json format should be returned");
+		assertEquals(response.getStatusInfo(), Response.Status.OK);
 	}
 
 	@Test
@@ -74,6 +75,7 @@ public class RecordEndpointTest {
 		String entity = (String) response.getEntity();
 
 		assertNotNull(entity, "An entity in json format should be returned");
+		assertEquals(response.getStatusInfo(), Response.Status.OK);
 	}
 
 	@Test
@@ -101,9 +103,8 @@ public class RecordEndpointTest {
 		Response response = recordEndpoint.readIncomingRecordLinks("place", "place:0001");
 		String entity = (String) response.getEntity();
 
-		assertNotNull(entity, "An entity in json format should be returned");
 		assertEquals(entity,
-				"{\"dataList\":{\"fromNo\":\"0\",\"data\":["
+				"{\"dataList\":{\"fromNo\":\"1\",\"data\":["
 						+ "{\"children\":[{\"linkedRecordType\":\"place\""
 						+ ",\"linkedRecordId\":\"place:0002\""
 						+ ",\"actionLinks\":{\"read\":{\"requestMethod\":\"GET\",\"rel\":\"read\""
@@ -113,6 +114,7 @@ public class RecordEndpointTest {
 						+ ",{\"linkedRecordType\":\"place\",\"linkedRecordId\":\"place:0001\""
 						+ ",\"name\":\"to\"}],\"name\":\"recordToRecordLink\"}],\"totalNo\":\"1\""
 						+ ",\"containDataOfType\":\"recordToRecordLink\",\"toNo\":\"1\"}}");
+		assertEquals(response.getStatusInfo(), Response.Status.OK);
 	}
 
 	@Test
