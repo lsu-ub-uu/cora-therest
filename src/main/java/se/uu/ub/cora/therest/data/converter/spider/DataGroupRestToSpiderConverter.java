@@ -47,7 +47,7 @@ public final class DataGroupRestToSpiderConverter {
 		try {
 			return tryToSpiderate();
 		} catch (ClassCastException e) {
-			throw new ConverterException("Data has missplaced data types, convertion not possible",
+			throw new ConverterException("Data has misplaced data types, conversion not possible",
 					e);
 		}
 	}
