@@ -24,6 +24,7 @@ import javax.ws.rs.core.Response.StatusType;
 import javax.ws.rs.core.UriInfo;
 
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
+import se.uu.ub.cora.systemone.SystemOneDependencyProvider;
 import se.uu.ub.cora.therest.record.RecordEndpoint;
 import se.uu.ub.cora.therest.record.TestUri;
 
@@ -47,6 +48,11 @@ public class RecordEndpointFixture {
 
 	public StatusType getStatusType() {
 		return statusType;
+	}
+
+	public String resetDependencyProvider() {
+		DependencyProviderForMultipleTestsWorkingTogether.spiderDependencyProvider = new SystemOneDependencyProvider();
+		return "OK";
 	}
 
 	public String testReadRecord() {
