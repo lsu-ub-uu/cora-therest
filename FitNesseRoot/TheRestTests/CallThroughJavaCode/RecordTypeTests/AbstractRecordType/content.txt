@@ -5,7 +5,7 @@
 !1 Abstract record type
 An abstract record type (the parent) is used to create a group of record type siblings (the children). Each child defines a subset of the data the parent defines.
 
-!2 Attribute definition (collectionItems, itemCollection, collectionVariable, collectionVariableChild)
+!2 Attribute definition (collectionItems, itemCollection, collectionVariable)
 !***> Create collectionItems (tree, flower)
 
 !| RecordEndpointFixture |
@@ -28,12 +28,12 @@ An abstract record type (the parent) is used to create a group of record type si
 | metadataCollectionVariable | {"name":"metadata","children":[{"name":"recordInfo","children":[{"name":"id","value":"plantTypeVar"}]},{"name":"nameInData","value":"type"},{"name":"textId","value":"plantTypeVarText"},{"name":"defTextId","value":"plantTypeVarDefText"},{"name":"refCollectionId","value":"plantTypeCollection"}],"attributes":{"type":"collectionVariable"}} | | CREATED |
 
 *!
-!***> Create collectionVariableChild (treeTypeVar, flowerTypeVar)
+!***> Create collectionVariable (treeTypeVar, flowerTypeVar)
 
 !| RecordEndpointFixture |
 | type | json | testCreateRecord? | getStatusType? |
-| metadataCollectionVariableChild | {"name":"metadata","children":[{"name":"recordInfo","children":[{"name":"id","value":"treeTypeVar"}]},{"name":"nameInData","value":"type"},{"name":"textId","value":"treeTypeVarText"},{"name":"defTextId","value":"treeTypeVarDefText"},{"name":"refCollectionId","value":"plantTypeCollection"},{"name":"refParentId","value":"plantTypeVar"},{"name":"finalValue","value":"tree"}],"attributes":{"type":"collectionVariableChild"}} | | CREATED |
-| metadataCollectionVariableChild | {"name":"metadata","children":[{"name":"recordInfo","children":[{"name":"id","value":"flowerTypeVar"}]},{"name":"nameInData","value":"type"},{"name":"textId","value":"flowerTypeVarText"},{"name":"defTextId","value":"flowerTypeVarDefText"},{"name":"refCollectionId","value":"plantTypeCollection"},{"name":"refParentId","value":"plantTypeVar"},{"name":"finalValue","value":"flower"}],"attributes":{"type":"collectionVariableChild"}} | | CREATED |
+| metadataCollectionVariable | {"name":"metadata","children":[{"name":"recordInfo","children":[{"name":"id","value":"treeTypeVar"}]},{"name":"nameInData","value":"type"},{"name":"textId","value":"treeTypeVarText"},{"name":"defTextId","value":"treeTypeVarDefText"},{"name":"refCollectionId","value":"plantTypeCollection"},{"name":"refParentId","value":"plantTypeVar"},{"name":"finalValue","value":"tree"}],"attributes":{"type":"collectionVariable"}} | | CREATED |
+| metadataCollectionVariable | {"name":"metadata","children":[{"name":"recordInfo","children":[{"name":"id","value":"flowerTypeVar"}]},{"name":"nameInData","value":"type"},{"name":"textId","value":"flowerTypeVarText"},{"name":"defTextId","value":"flowerTypeVarDefText"},{"name":"refCollectionId","value":"plantTypeCollection"},{"name":"refParentId","value":"plantTypeVar"},{"name":"finalValue","value":"flower"}],"attributes":{"type":"collectionVariable"}} | | CREATED |
 
 *!
 !2 Variable definition
