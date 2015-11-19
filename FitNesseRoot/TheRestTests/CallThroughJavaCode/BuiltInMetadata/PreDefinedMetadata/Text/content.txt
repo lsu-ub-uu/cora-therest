@@ -2,54 +2,126 @@
 | import |
 | se.uu.ub.cora.therest.fitnesse |
 
+Read metadata defined in code to make sure it is correct
+
+!***> Read collectionItems (defaultItem, alternativeItem)
+
+!| RecordEndpointFixture |
+| type | id | testReadRecord? | getStatusType? |
+| metadataCollectionItem | defaultItem | | OK |
+| metadataCollectionItem | alternativeItem | | OK |
+
+*!
+!***> Read itemCollection (textPartTypeCollection)
+
+!| RecordEndpointFixture |
+| type | id | testReadRecord? | getStatusType? |
+| metadataItemCollection | textPartTypeCollection | | OK |
+
+*!
+!***> Read collectionVariables (textPartTypeCollectionVar, textPartTypeDefaultCollectionVar, textPartTypeAlternativeCollectionVar)
+
+!| RecordEndpointFixture |
+| type | id | testReadRecord? | getStatusType? |
+| metadataCollectionVariable | textPartTypeCollectionVar | | OK |
+| metadataCollectionVariable | textPartTypeDefaultCollectionVar | | OK |
+| metadataCollectionVariable | textPartTypeAlternativeCollectionVar | | OK |
+
+*!
+!***> Read collectionItems (svItem, enItem)
+
+!| RecordEndpointFixture |
+| type | id | testReadRecord? | getStatusType? |
+| metadataCollectionItem | svItem | | OK |
+| metadataCollectionItem | enItem | | OK |
+
+*!
+!***> Read itemCollection (systemLanguagesCollection)
+
+!| RecordEndpointFixture |
+| type | id | testReadRecord? | getStatusType? |
+| metadataItemCollection | systemLanguagesCollection | | OK |
+
+*!
+!***> Read collectionVariables (systemLanguagesCollectionVar, systemLanguageSvCollectionVar, systemLanguageEnCollectionVar)
+
+!| RecordEndpointFixture |
+| type | id | testReadRecord? | getStatusType? |
+| metadataCollectionVariable | systemLanguagesCollectionVar | | OK |
+| metadataCollectionVariable | systemLanguageSvCollectionVar | | OK |
+| metadataCollectionVariable | systemLanguageEnCollectionVar | | OK |
+
+*!
+!***> Read textVariable (textVar)
+
+!| RecordEndpointFixture |
+| type | id | testReadRecord? | getStatusType? |
+| metadataTextVariable | textTextVar | | OK |
+
+*!
+!***> Read metadataGroups (textPart, textPartDefault, textPartSv, textPartAlternative, textPartEn)
+
+!| RecordEndpointFixture |
+| type | id | testReadRecord? | getStatusType? |
+| metadataGroup | textPartGroup | | OK |
+| metadataGroup | textPartDefaultGroup | | OK |
+| metadataGroup | textPartSvGroup | | OK |
+| metadataGroup | textPartAlternativeGroup | | OK |
+| metadataGroup | textPartEnGroup | | OK |
+
+*!
+!***> Read metadataGroups (text, textDefaultAlternative, textSystemOne)
+
+!| RecordEndpointFixture |
+| type | id | testReadRecord? | getStatusType? |
+| metadataGroup | textGroup | | OK |
+| metadataGroup | textDefaultAlternativeGroup | | OK |
+| metadataGroup | textSystemOneGroup | | OK |
+
+*!
+!***> Read recordType (text, textSystemOne)
+
+!| RecordEndpointFixture |
+| type | id | testReadRecord? | getStatusType? |
+| recordType | text | | OK |
+| recordType | textSystemOne | | OK |
+
+*!
+Test with new texts
+
 !***> Create data of recordType text (textSystemOne)
 
 !| RecordEndpointFixture |
 | type | json | testCreateRecord? | getStatusType? |
-| textSystemOne | {"name":"text","children":[{"name":"recordInfo","children":[{"name":"id","value":"myText"}]},{"name":"textPart","attributes":{"type":"default"},"children":[{"name":"lang","value":"sv"},{"name":"text","value":"Min svenska text"}]}]} | | CREATED |
-| textSystemOne | {"name":"text","children":[{"name":"recordInfo","children":[{"name":"id","value":"myText2"}]},{"name":"textPart","attributes":{"type":"default"},"children":[{"name":"lang","value":"sv"},{"name":"text","value":"Min andra text på svenska"}]},{"name":"textPart","attributes":{"type":"alternative"},"children":[{"name":"lang","value":"en"},{"name":"text","value":"My second text in english"}]}]} | | CREATED |
+| textSystemOne | {"name":"text","children":[{"name":"recordInfo","children":[{"name":"id","value":"myText"}]},{"name":"textPart","attributes":{"type":"default","lang":"sv"} ,"children":[{"name":"text","value":"Min svenska text"}]}]} | | CREATED |
+| textSystemOne | {"name":"text","children":[{"name":"recordInfo","children":[{"name":"id","value":"myText2"}]},{"name":"textPart","attributes":{"type":"default","lang":"sv"},"children":[{"name":"text","value":"Min andra text på svenska"}]},{"name":"textPart","attributes":{"type":"alternative","lang":"en"},"children":[{"name":"text","value":"My second text in english"}]}]} | | CREATED |
 
 *!
 !***> List data(text, textSystemOne)
 
 !| RecordEndpointFixture |
 | type | testReadRecordList? | getStatusType? |
-| text | [{"dataList":{"fromNo":"1","data":[{"record":{"data":{"children":[{"children":[{"name":"id","value":"myText"},{"name":"type","value":"textSystemOne"},{"name":"createdBy","value":"userId"}],"name":"recordInfo"},{"children":[{"name":"lang","value":"sv"},{"name":"text","value":"Min  svenska  text"}],"name":"textPart","attributes":{"type":"default"}}],"name":"text"},"actionLinks":{"read":{"requestMethod":"GET","rel":"read","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/textSystemOne/myText","accept":"application/uub+record+json"},"update":{"requestMethod":"POST","rel":"update","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/textSystemOne/myText","accept":"application/uub+record+json"},"delete":{"requestMethod":"DELETE","rel":"delete","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/textSystemOne/myText","accept":"application/uub+record+json"}}}},{"record":{"data":{"children":[{"children":[{"name":"id","value":"myText2"},{"name":"type","value":"textSystemOne"},{"name":"createdBy","value":"userId"}],"name":"recordInfo"},{"children":[{"name":"lang","value":"sv"},{"name":"text","value":"Min  andra text på  svenska"}],"name":"textPart","attributes":{"type":"default"}},{"children":[{"name":"lang","value":"en"},{"name":"text","value":"My  second text in  english"}],"name":"textPart","attributes":{"type":"alternative"}}],"name":"text"},"actionLinks":{"read":{"requestMethod":"GET","rel":"read","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/textSystemOne/myText2","accept":"application/uub+record+json"},"update":{"requestMethod":"POST","rel":"update","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/textSystemOne/myText2","accept":"application/uub+record+json"},"delete":{"requestMethod":"DELETE","rel":"delete","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/textSystemOne/myText2","accept":"application/uub+record+json"}}}}],"totalNo":"2","containDataOfType":"text","toNo":"2"}} | OK |
-| textSystemOne | {"dataList":{"fromNo":"1","data":[{"record":{"data":{"children":[{"children":[{"name":"id","value":"flower1"},{"name":"type","value":"flower"},{"name":"createdBy","value":"userId"}],"name":"recordInfo"},{"name":"id","value":"theRose"},{"name":"petalColour","value":"pink"}],"name":"plant","attributes":{"type":"flower"}},"actionLinks":{"read":{"requestMethod":"GET","rel":"read","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/flower/flower1","accept":"application/uub+record+json"},"update":{"requestMethod":"POST","rel":"update","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/flower/flower1","accept":"application/uub+record+json"},"delete":{"requestMethod":"DELETE","rel":"delete","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/flower/flower1","accept":"application/uub+record+json"}}}}],"totalNo":"1","containDataOfType":"flower","toNo":"1"}} | OK |
+| text | {"dataList":{"fromNo":"1","data":[{"record":{"data":{"children":[{"children":[{"name":"id","value":"myText"},{"name":"type","value":"textSystemOne"},{"name":"createdBy","value":"userId"}],"name":"recordInfo"},{"children":[{"name":"text","value":"Min svenska text"}],"name":"textPart","attributes":{"type":"default","lang":"sv"}}],"name":"text"},"actionLinks":{"read":{"requestMethod":"GET","rel":"read","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/textSystemOne/myText","accept":"application/uub+record+json"},"update":{"requestMethod":"POST","rel":"update","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/textSystemOne/myText","accept":"application/uub+record+json"},"delete":{"requestMethod":"DELETE","rel":"delete","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/textSystemOne/myText","accept":"application/uub+record+json"}}}},{"record":{"data":{"children":[{"children":[{"name":"id","value":"myText2"},{"name":"type","value":"textSystemOne"},{"name":"createdBy","value":"userId"}],"name":"recordInfo"},{"children":[{"name":"text","value":"Min andra text på svenska"}],"name":"textPart","attributes":{"type":"default","lang":"sv"}},{"children":[{"name":"text","value":"My second text in english"}],"name":"textPart","attributes":{"type":"alternative","lang":"en"}}],"name":"text"},"actionLinks":{"read":{"requestMethod":"GET","rel":"read","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/textSystemOne/myText2","accept":"application/uub+record+json"},"update":{"requestMethod":"POST","rel":"update","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/textSystemOne/myText2","accept":"application/uub+record+json"},"delete":{"requestMethod":"DELETE","rel":"delete","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/textSystemOne/myText2","accept":"application/uub+record+json"}}}}],"totalNo":"2","containDataOfType":"text","toNo":"2"}} | OK |
+| textSystemOne | {"dataList":{"fromNo":"1","data":[{"record":{"data":{"children":[{"children":[{"name":"id","value":"myText"},{"name":"type","value":"textSystemOne"},{"name":"createdBy","value":"userId"}],"name":"recordInfo"},{"children":[{"name":"text","value":"Min svenska text"}],"name":"textPart","attributes":{"type":"default","lang":"sv"}}],"name":"text"},"actionLinks":{"read":{"requestMethod":"GET","rel":"read","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/textSystemOne/myText","accept":"application/uub+record+json"},"update":{"requestMethod":"POST","rel":"update","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/textSystemOne/myText","accept":"application/uub+record+json"},"delete":{"requestMethod":"DELETE","rel":"delete","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/textSystemOne/myText","accept":"application/uub+record+json"}}}},{"record":{"data":{"children":[{"children":[{"name":"id","value":"myText2"},{"name":"type","value":"textSystemOne"},{"name":"createdBy","value":"userId"}],"name":"recordInfo"},{"children":[{"name":"text","value":"Min andra text på svenska"}],"name":"textPart","attributes":{"type":"default","lang":"sv"}},{"children":[{"name":"text","value":"My second text in english"}],"name":"textPart","attributes":{"type":"alternative","lang":"en"}}],"name":"text"},"actionLinks":{"read":{"requestMethod":"GET","rel":"read","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/textSystemOne/myText2","accept":"application/uub+record+json"},"update":{"requestMethod":"POST","rel":"update","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/textSystemOne/myText2","accept":"application/uub+record+json"},"delete":{"requestMethod":"DELETE","rel":"delete","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/textSystemOne/myText2","accept":"application/uub+record+json"}}}}],"totalNo":"2","containDataOfType":"textSystemOne","toNo":"2"}} | OK |
 
 *!
 !***> Update data of recordType text
 
 !| RecordEndpointFixture |
 | type | id | json | testUpdateRecord? | getStatusType? |
-| textSystemOne | myText | {"children":[{"children":[{"name":"id","value":"myText"},{"name":"type","value":"textSystemOne"},{"name":"createdBy","value":"userId"}],"name":"recordInfo"},{"children":[{"name":"lang","value":"sv"},{"name":"text","value":"Min svenska text uppdaterad"}],"name":"textPart","attributes":{"type":"default"}}],"name":"text"} | | OK |
-| textSystemOne | myText2 | {"children":[{"children":[{"name":"id","value":"myText2"},{"name":"type","value":"textSystemOne"},{"name":"createdBy","value":"userId"}],"name":"recordInfo"},{"children":[{"name":"lang","value":"sv"},{"name":"text","value":"Min andra text på svenska uppdaterad"}],"name":"textPart","attributes":{"type":"default"}},{"children":[{"name":"lang","value":"en"},{"name":"text","value":"My second text in english updated"}],"name":"textPart","attributes":{"type":"alternative"}}],"name":"text"} | | OK |
+| textSystemOne | myText | {"children":[{"children":[{"name":"id","value":"myText"},{"name":"type","value":"textSystemOne"},{"name":"createdBy","value":"userId"}],"name":"recordInfo"},{"children":[{"name":"text","value":"Min svenska text uppdaterad"}],"name":"textPart","attributes":{"type":"default","lang":"sv"}}],"name":"text"} | | OK |
+| textSystemOne | myText2 | {"children":[{"children":[{"name":"id","value":"myText2"},{"name":"type","value":"textSystemOne"},{"name":"createdBy","value":"userId"}],"name":"recordInfo"},{"children":[{"name":"text","value":"Min andra text på svenska uppdaterad"}],"name":"textPart","attributes":{"type":"default","lang":"sv"}},{"children":[{"name":"text","value":"My second text in english updated"}],"name":"textPart","attributes":{"type":"alternative","lang":"en"}}],"name":"text"} | | OK |
 
 *!
 !***> Try to create data of recordType text (this should fail as the data is incorrect)
 
 !| RecordEndpointFixture |
 | type | json | testCreateRecord? | getStatusType? |
-| textSystemOne | {"name":"text","children":[{"name":"recordInfo","children":[{"name":"id","value":"myNonWorkingText"}]},{"name":"textPart","attributes":{"type":"default"},"children":[{"name":"lang","value":"en"},{"name":"text","value":"English is not default language"}]}]} | | BAD_REQUEST |
-| textSystemOne | {"name":"text","children":[{"name":"recordInfo","children":[{"name":"id","value":"myNonWorkingText"}]},{"name":"textPart","attributes":{"type":"alternative"},"children":[{"name":"lang","value":"en"},{"name":"text","value":"Only english as language is not allowed"}]}]} | | |
-| textSystemOne | {"name":"text","children":[{"name":"recordInfo","children":[{"name":"id","value":"myNonWorkingText"}]},{"name":"textPart","attributes":{"type":"alternative"},"children":[{"name":"lang","value":"sv"},{"name":"text","value":"Att ha samma språk(svenska) två gånger på en text fungerar inte"}]},{"name":"textPart","attributes":{"type":"alternative"},"children":[{"name":"lang","value":"sv"},{"name":"text","value":"Något annat på svenska"}]}]} | | BAD_REQUEST |
-| textSystemOne | {"name":"text","children":[{"name":"recordInfo","children":[{"name":"id","value":"myNonWorkingText"}]},{"name":"textPart","attributes":{"type":"default"},"children":[{"name":"lang","value":"en"},{"name":"text","value":"It does not work to have the same language(english) twice in the same text"}]},{"name":"textPart","attributes":{"type":"alternative"},"children":[{"name":"lang","value":"en"},{"name":"text","value":"Some other text in english"}]}]} | | BAD_REQUEST |
-| textSystemOne | {"name":"text","children":[{"name":"recordInfo","children":[{"name":"id","value":"myNonWorkingText"}]},{"name":"textPart","attributes":{"type":"default"},"children":[{"name":"lang","value":"sv"},{"name":"text","value":"Att ha flera av samma språk(engelska) på en text fungerar inte"}]},{"name":"textPart","attributes":{"type":"alternative"},"children":[{"name":"lang","value":"en"},{"name":"text","value":"It does not work to have the same language(english) twice in the same text"}]},{"name":"textPart","attributes":{"type":"alternative"},"children":[{"name":"lang","value":"en"},{"name":"text","value":"Some other text in english"}]}]} | | BAD_REQUEST |
-| textSystemOne | {"name":"text","children":[{"name":"recordInfo","children":[{"name":"id","value":"myNonWorkingText"}]},{"name":"textPart","attributes":{"type":"default"},"children":[{"name":"lang","value":"sv"},{"name":"text","value":"Att ha språk som inte är definierade(norska) på en text fungerar inte"}]},{"name":"textPart","attributes":{"type":"alternative"},"children":[{"name":"lang","value":"en"},{"name":"text","value":"An ok english text"}]},{"name":"textPart","attributes":{"type":"alternative"},"children":[{"name":"lang","value":"no"},{"name":"text","value":"Dette går ikke"}]}]} | | BAD_REQUEST |
-
-*!
-!***> Try to create data of recordType yesNoUnknown (this should fail as the data is malformed)
-
-!| RecordEndpointFixture |
-| type | json | testCreateRecord? | getStatusType? |
-| yesNoUnknown | {"name":"yesNoUnknown","children":[{"name":"recordInfo","children":[{"name":"id","value":"myYesNoUnknown"}]},{"name":"yesNoUnknownVar","repeatId":"1","value":"might"}]} | | BAD_REQUEST |
-| yesNoUnknown | {"name":"yesNoUnknown2","children":[{"name":"recordInfo","children":[{"name":"id","value":"myYesNoUnknown"}]},{"name":"yesNoUnknownVar","repeatId":"1","value":"yes"}]} | | BAD_REQUEST |
-
-*!
-!***> Read data of recordType yesNoUnknown to make sure it was stored ok
-
-!| RecordEndpointFixture |
-| type | id | testReadRecord? | getStatusType? |
-| textSystemOne | myYesNoUnknown | {"record":{"data":{"children":[{"children":[{"name":"id","value":"myYesNoUnknown"},{"name":"type","value":"yesNoUnknown"},{"name":"createdBy","value":"userId"}],"name":"recordInfo"},{"repeatId":"1","name":"yesNoUnknownVar","value":"no"}],"name":"yesNoUnknown"},"actionLinks":{"read":{"requestMethod":"GET","rel":"read","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/yesNoUnknown/myYesNoUnknown","accept":"application/uub+record+json"},"update":{"requestMethod":"POST","rel":"update","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/yesNoUnknown/myYesNoUnknown","accept":"application/uub+record+json"},"delete":{"requestMethod":"DELETE","rel":"delete","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/yesNoUnknown/myYesNoUnknown","accept":"application/uub+record+json"}}}} | OK |
+| textSystemOne | {"name":"text","children":[{"name":"recordInfo","children":[{"name":"id","value":"myNonWorkingText"}]},{"name":"textPart","attributes":{"type":"default","lang":"en"},"children":[{"name":"text","value":"English is not default language"}]}]} | | BAD_REQUEST |
+| textSystemOne | {"name":"text","children":[{"name":"recordInfo","children":[{"name":"id","value":"myNonWorkingText"}]},{"name":"textPart","attributes":{"type":"alternative","lang":"en"},"children":[{"name":"text","value":"Only english as language is not allowed"}]}]} | | BAD_REQUEST |
+| textSystemOne | {"name":"text","children":[{"name":"recordInfo","children":[{"name":"id","value":"myNonWorkingText"}]},{"name":"textPart","attributes":{"type":"default","lang":"sv"},"children":[{"name":"text","value":"Att ha samma språk(svenska) två gånger på en text fungerar inte"}]},{"name":"textPart","attributes":{"type":"alternative","lang":"sv"},"children":[{"name":"text","value":"Något annat på svenska"}]}]} | | BAD_REQUEST |
+| textSystemOne | {"name":"text","children":[{"name":"recordInfo","children":[{"name":"id","value":"myNonWorkingText"}]},{"name":"textPart","attributes":{"type":"default","lang":"en"},"children":[{"name":"text","value":"It does not work to have the same language(english) twice in the same text"}]},{"name":"textPart","attributes":{"type":"alternative","lang":"en"},"children":[{"name":"text","value":"Some other text in english"}]}]} | | BAD_REQUEST |
+| textSystemOne | {"name":"text","children":[{"name":"recordInfo","children":[{"name":"id","value":"myNonWorkingText"}]},{"name":"textPart","attributes":{"type":"default","lang":"sv"},"children":[{"name":"text","value":"Att ha flera av samma språk(engelska) på en text fungerar inte"}]},{"name":"textPart","attributes":{"type":"alternative","lang":"en"},"children":[{"name":"text","value":"It does not work to have the same language(english) twice in the same text"}]},{"name":"textPart","attributes":{"type":"alternative","lang":"en"},"children":[{"name":"text","value":"Some other text in english"}]}]} | | BAD_REQUEST |
+| textSystemOne | {"name":"text","children":[{"name":"recordInfo","children":[{"name":"id","value":"myNonWorkingText"}]},{"name":"textPart","attributes":{"type":"default","lang":"sv"},"children":[{"name":"text","value":"Att ha språk som inte är definierade(norska) på en text fungerar inte"}]},{"name":"textPart","attributes":{"type":"alternative","lang":"en"},"children":[{"name":"text","value":"An ok english text"}]},{"name":"textPart","attributes":{"type":"alternative","lang":"no"},"children":[{"name":"text","value":"Dette går ikke"}]}]} | | BAD_REQUEST |
 
 *!
