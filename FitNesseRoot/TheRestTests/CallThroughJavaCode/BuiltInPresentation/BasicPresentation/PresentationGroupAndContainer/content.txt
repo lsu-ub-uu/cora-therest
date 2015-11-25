@@ -1,0 +1,175 @@
+!contents -R2 -g -p -f -h
+| import |
+| se.uu.ub.cora.therest.fitnesse |
+
+!1 !-PresentationGroupAndContainerTest-!
+A test that first reads all predefined metadata needed to be able to add presentationGroups and Containers to the system, and then tests adding and updating presentationGroups and containers.
+
+!2 Read metadata defined in code to make sure it is correct
+!***> Read collectionItems (thisItem, childrenItem, inputItem, outputItem, pGroupItem, pVarItem, containerItem, refItem, refMinimizedItem)
+
+!| RecordEndpointFixture |
+| type | id | testReadRecord? | getStatusType? |
+| metadataCollectionItem | thisItem | | OK |
+| metadataCollectionItem | childrenItem | | OK |
+| metadataCollectionItem | inputItem | | OK |
+| metadataCollectionItem | outputItem | | OK |
+| metadataCollectionItem | pGroupItem | | OK |
+| metadataCollectionItem | pVarItem | | OK |
+| metadataCollectionItem | containerItem | | OK |
+| metadataCollectionItem | refItem | | OK |
+| metadataCollectionItem | refMinimizedItem | | OK |
+
+*!
+!***> Read itemCollection (repeatCollection, modeCollection, presentationTypeCollection)
+
+!| RecordEndpointFixture |
+| type | id | testReadRecord? | getStatusType? |
+| metadataItemCollection | repeatCollection | | OK |
+| metadataItemCollection | modeCollection | | OK |
+| metadataItemCollection | presentationTypeCollection | | OK |
+| metadataItemCollection | defaultPresentationCollection | | OK |
+
+*!
+!***> Read collectionVariables (repeatCollectionVar, modeCollectionVar, presentationTypeCollectionVar, presentationTypePGroupCollectionVar, presentationTypePVarCollectionVar, presentationTypeContainerCollectionVar)
+
+!| RecordEndpointFixture |
+| type | id | testReadRecord? | getStatusType? |
+| metadataCollectionVariable | repeatCollectionVar | | OK |
+| metadataCollectionVariable | modeCollectionVar | | OK |
+| metadataCollectionVariable | presentationTypeCollectionVar | | OK |
+| metadataCollectionVariable | presentationTypePGroupCollectionVar | | OK |
+| metadataCollectionVariable | presentationTypePVarCollectionVar | | OK |
+| metadataCollectionVariable | presentationTypeContainerCollectionVar | | OK |
+| metadataCollectionVariable | defaultPresentationCollectionVar | | OK |
+
+*!
+!***> Read textVariable (idPVarTextVar, idPGroupTextVar, idPGroupTextVar, presentationOfTextVar)
+
+!| RecordEndpointFixture |
+| type | id | testReadRecord? | getStatusType? |
+| metadataTextVariable | idPVarTextVar | | OK |
+| metadataTextVariable | idPGroupTextVar | | OK |
+| metadataTextVariable | idContainerTextVar | | OK |
+| metadataTextVariable | presentationOfTextVar | | OK |
+| metadataTextVariable | presentationRef | | OK |
+| metadataTextVariable | presentationRefMinimized | | OK |
+
+*!
+!***> Read metadataGroups (recordInfos, presentationChildReference, presentationChildReferences)
+
+!| RecordEndpointFixture |
+| type | id | testReadRecord? | getStatusType? |
+| metadataGroup | recordInfoPVarGroup | | OK |
+| metadataGroup | recordInfoNewPVarGroup | | OK |
+| metadataGroup | recordInfoPGroupGroup | | OK |
+| metadataGroup | recordInfoNewPGroupGroup | | OK |
+| metadataGroup | recordInfoContainerGroup | | OK |
+| metadataGroup | recordInfoSurroundingContainerGroup | | OK |
+| metadataGroup | recordInfoNewSurroundingContainerGroup | | OK |
+| metadataGroup | recordInfoRepeatingContainerGroup | | OK |
+| metadataGroup | recordInfoNewRepeatingContainerGroup | | OK |
+| metadataGroup | presentationChildReferenceGroup | | OK |
+| metadataGroup | presentationChildReferencesGroup | | OK |
+
+*!
+!***> Read metadataGroups (presentationGroup, presentationGroupGroup, presentationVarGroup, presentationContainerGroup)
+
+!| RecordEndpointFixture |
+| type | id | testReadRecord? | getStatusType? |
+| metadataGroup | presentationGroup | | OK |
+| metadataGroup | presentationGroupGroup | | OK |
+| metadataGroup | presentationVarGroup | | OK |
+| metadataGroup | presentationContainerGroup | | OK |
+| metadataGroup | presentationSurroundingContainerGroup | | OK |
+| metadataGroup | presentationRepeatingContainerGroup | | OK |
+
+*!
+!***> Read recordType ( presentation,  presentationGroup,  presentationVar,  presentationContainer)
+
+!| RecordEndpointFixture |
+| type | id | testReadRecord? | getStatusType? |
+| recordType | presentation | | OK |
+| recordType | presentationGroup | | OK |
+| recordType | presentationVar | | OK |
+| recordType | presentationSurroundingContainer | | OK |
+| recordType | presentationRepeatingContainer | | OK |
+
+*!
+!2 Test with presentationVar
+!***> Create data of recordType presentationVar (myPVar, my2PVar)
+
+!| RecordEndpointFixture |
+| type | json | testCreateRecord? | getStatusType? |
+| presentationVar | {"name":"presentation","attributes":{"type":"pVar"},"children":[{"name":"recordInfo","children":[{"name":"id","value":"myPVar"}]},{"name":"presentationOf","value":"myVar"},{"name":"mode","value":"input"}]} | | CREATED |
+| presentationVar | {"name":"presentation","attributes":{"type":"pVar"},"children":[{"name":"recordInfo","children":[{"name":"id","value":"my2PVar"}]},{"name":"presentationOf","value":"myVar"},{"name":"mode","value":"output"}]} | | CREATED |
+
+*!
+!***> Update data of recordType presentationVar
+
+!| RecordEndpointFixture |
+| type | id | json | testUpdateRecord? | getStatusType? |
+| presentationVar | myPVar | {"name":"presentation","attributes":{"type":"pVar"},"children":[{"name":"recordInfo","children":[{"name":"id","value":"myPVar"},{"name":"type","value":"presentationVar"},{"name":"createdBy","value":"userId"}]},{"name":"presentationOf","value":"myVar"},{"name":"mode","value":"output"}]} | | OK |
+| presentationVar | my2PVar | {"name":"presentation","attributes":{"type":"pVar"},"children":[{"name":"recordInfo","children":[{"name":"id","value":"my2PVar"},{"name":"type","value":"presentationVar"},{"name":"createdBy","value":"userId"}]},{"name":"presentationOf","value":"myVar"},{"name":"mode","value":"input"}]} | | OK |
+
+*!
+!2 Test with presentationSurroundingContainer, presentationRepeatingContainer
+!***> Create data of recordType presentationContainer (mySContainer, myRContainer)
+
+!| RecordEndpointFixture |
+| type | json | testCreateRecord? | getStatusType? |
+| presentationSurroundingContainer | {"name":"presentation","attributes":{"type":"container","repeat":"children"},"children":[{"name":"recordInfo","children":[{"name":"id","value":"mySContainer"}]},{"name":"presentationsOf","children":[{"repeatId":"1","name":"presentationOf","value":"myGroup"},{"repeatId":"2","name":"presentationOf","value":"my2Group"}]},{"name":"childReferences","children":[{"name":"childReference","repeatId":"1","children":[{"name":"ref","value":"myHeadlineText"},{"name":"default","value":"ref"}]},{"name":"childReference","repeatId":"2","children":[{"name":"ref","value":"myGroup"},{"name":"default","value":"ref"}]},{"name":"childReference","repeatId":"3","children":[{"name":"ref","value":"my2Group"},{"name":"default","value":"ref"}]}]}]} | | CREATED |
+| presentationRepeatingContainer | {"name":"presentation","attributes":{"type":"container","repeat":"this"},"children":[{"name":"recordInfo","children":[{"name":"id","value":"myRContainer"}]},{"name":"presentationOf","value":"myGroup"},{"name":"childReferences","children":[{"name":"childReference","repeatId":"1","children":[{"name":"ref","value":"myHeadlineText"},{"name":"default","value":"ref"}]},{"name":"childReference","repeatId":"2","children":[{"name":"ref","value":"myGroup"},{"name":"default","value":"ref"}]}]}]} | | CREATED |
+
+*!
+!***> Update data of recordType presentationContainer
+
+!| RecordEndpointFixture |
+| type | id | json | testUpdateRecord? | getStatusType? |
+| presentationSurroundingContainer | mySContainer | {"name":"presentation","attributes":{"type":"container","repeat":"children"},"children":[{"name":"recordInfo","children":[{"name":"id","value":"mySContainer"},{"name":"type","value":"presentationSurroundingContainer"},{"name":"createdBy","value":"userId"}]},{"name":"presentationsOf","children":[{"repeatId":"1","name":"presentationOf","value":"myGroup"},{"repeatId":"2","name":"presentationOf","value":"my2Group"}]},{"name":"childReferences","children":[{"name":"childReference","repeatId":"2","children":[{"name":"ref","value":"myGroup"},{"name":"default","value":"ref"}]},{"name":"childReference","repeatId":"1","children":[{"name":"ref","value":"myHeadlineText"},{"name":"default","value":"ref"}]},{"name":"childReference","repeatId":"3","children":[{"name":"ref","value":"my2Group"},{"name":"default","value":"ref"}]}]}]} | | OK |
+| presentationRepeatingContainer | myRContainer | {"name":"presentation","attributes":{"type":"container","repeat":"this"},"children":[{"name":"recordInfo","children":[{"name":"id","value":"myRContainer"},{"name":"type","value":"presentationRepeatingContainer"},{"name":"createdBy","value":"userId"}]},{"name":"presentationOf","value":"myGroup"},{"name":"childReferences","children":[{"name":"childReference","repeatId":"2","children":[{"name":"ref","value":"myGroup"},{"name":"default","value":"ref"}]},{"name":"childReference","repeatId":"1","children":[{"name":"ref","value":"myHeadlineText"},{"name":"default","value":"ref"}]}]}]} | | OK |
+
+*!
+!2 Test with  presentationGroup
+!***> Create data of recordType presentationContainer (myContainer, my2Container)
+
+!| RecordEndpointFixture |
+| type | json | testCreateRecord? | getStatusType? |
+| presentationGroup | {"name":"presentation","attributes":{"type":"pGroup"},"children":[{"name":"recordInfo","children":[{"name":"id","value":"myPGroup"}]},{"name":"presentationOf","value":"myGroup"},{"name":"childReferences","children":[{"name":"childReference","repeatId":"1","children":[{"name":"ref","value":"myHeadlineText"},{"name":"default","value":"ref"}]},{"name":"childReference","repeatId":"2","children":[{"name":"ref","value":"myChildPVar"},{"name":"default","value":"ref"}]},{"name":"childReference","repeatId":"3","children":[{"name":"ref","value":"myChildPGroup"},{"name":"refMinimized","value":"myChildMinPGroup"},{"name":"default","value":"refMinimized"}]}]}]} | | CREATED |
+
+*!
+!***> Update data of recordType presentationGroup
+
+!| RecordEndpointFixture |
+| type | id | json | testUpdateRecord? | getStatusType? |
+| presentationGroup | myPGroup | {"name":"presentation","attributes":{"type":"pGroup"},"children":[{"name":"recordInfo","children":[{"name":"id","value":"myPGroup"},{"name":"type","value":"presentationGroup"},{"name":"createdBy","value":"userId"}]},{"name":"presentationOf","value":"myGroup"},{"name":"childReferences","children":[{"name":"childReference","repeatId":"2","children":[{"name":"ref","value":"myChildPVar"},{"name":"default","value":"ref"}]},{"name":"childReference","repeatId":"1","children":[{"name":"ref","value":"myHeadlineText"},{"name":"default","value":"ref"}]},{"name":"childReference","repeatId":"3","children":[{"name":"ref","value":"myChildPGroup"},{"name":"refMinimized","value":"myChildMinPGroup"},{"name":"default","value":"refMinimized"}]}]}]} | | OK |
+
+*!
+!2 List presentation data
+!***> List data(text, textSystemOne)
+
+!| RecordEndpointFixture |
+| type | testReadRecordList? | getStatusType? |
+| presentation | | OK |
+| presentationVar | | OK |
+| presentationSurroundingContainer | | OK |
+| presentationRepeatingContainer | | OK |
+| presentationGroup | | OK |
+
+*!
+!2 Incorrect data
+!***> Try to create data of recordType text (this should fail as the data is incorrect)
+
+!| RecordEndpointFixture |
+| type | json | testCreateRecord? | getStatusType? |
+| presentation | {"name":"presentation","attributes":{"type":"pVar"},"children":[{"name":"recordInfo","children":[{"name":"id","value":"myPVar"}]},{"name":"presentationOf","value":"myVar"},{"name":"mode","value":"someOtherMode"}]} | | METHOD_NOT_ALLOWED |
+| presentationVar | {"name":"presentation","attributes":{"type":"pVar"},"children":[{"name":"recordInfo","children":[{"name":"id","value":"myPVar"}]},{"name":"presentationOf","value":"myVar"},{"name":"mode","value":"someOtherMode"}]} | | BAD_REQUEST |
+| presentationVar | {"name":"presentation","attributes":{"type":"pVar"},"children":[{"name":"recordInfo","children":[{"name":"id","value":"myPVarNotCorrectEnd"}]},{"name":"presentationOf","value":"myVar"},{"name":"mode","value":"input"}]} | | BAD_REQUEST |
+| presentationSurroundingContainer | {"name":"presentation","attributes":{"type":"container","repeat":"children"},"children":[{"name":"recordInfo","children":[{"name":"id","value":"mySContainerNotCorrectEnd"}]},{"name":"presentationsOf","children":[{"repeatId":"1","name":"presentationOf","value":"myGroup"},{"repeatId":"2","name":"presentationOf","value":"my2Group"}]},{"name":"childReferences","children":[{"name":"childReference","repeatId":"1","children":[{"name":"ref","value":"myHeadlineText"},{"name":"default","value":"ref"}]},{"name":"childReference","repeatId":"2","children":[{"name":"ref","value":"myGroup"},{"name":"default","value":"ref"}]},{"name":"childReference","repeatId":"3","children":[{"name":"ref","value":"my2Group"},{"name":"default","value":"ref"}]}]}]} | | BAD_REQUEST |
+| presentationSurroundingContainer | {"name":"presentation","attributes":{"type":"container","repeat":"children"},"children":[{"name":"recordInfo","children":[{"name":"id","value":"mySContainer"}]},{"name":"presentationsOf","children":[{"repeatId":"1","name":"presentationOf","value":"myGroup"},{"repeatId":"2","name":"presentationOf","value":"my2Group"}]},{"name":"childReferences","children":[{"name":"childReference","repeatId":"1","children":[{"name":"ref","value":"myHeadlineText"},{"name":"default","value":"ref"}]},{"name":"childReference","repeatId":"2","children":[{"name":"ref","value":"myGroup"},{"name":"default","value":"ref"}]},{"name":"childReference","repeatId":"3","children":[{"name":"ref","value":"my2Group"}]}]}]} | | BAD_REQUEST |
+| presentationRepeatingContainer | {"name":"presentation","attributes":{"type":"container","repeat":"this"},"children":[{"name":"recordInfo","children":[{"name":"id","value":"myRContainerNotCorrectEnd"}]},{"name":"presentationOf","value":"myGroup"},{"name":"childReferences","children":[{"name":"childReference","repeatId":"1","children":[{"name":"ref","value":"myHeadlineText"},{"name":"default","value":"ref"}]},{"name":"childReference","repeatId":"2","children":[{"name":"ref","value":"myGroup"},{"name":"default","value":"ref"}]}]}]} | | BAD_REQUEST |
+| presentationRepeatingContainer | {"name":"presentation","attributes":{"type":"container","repeat":"this"},"children":[{"name":"recordInfo","children":[{"name":"id","value":"myRContainer"}]},{"name":"childReferences","children":[{"name":"childReference","repeatId":"1","children":[{"name":"ref","value":"myHeadlineText"},{"name":"default","value":"ref"}]},{"name":"childReference","repeatId":"2","children":[{"name":"ref","value":"myGroup"},{"name":"default","value":"ref"}]}]}]} | | BAD_REQUEST |
+| presentationGroup | {"name":"presentation","attributes":{"type":"pGroup"},"children":[{"name":"recordInfo","children":[{"name":"id","value":"myPGroupNotCorrectEnd"}]},{"name":"presentationOf","value":"myGroup"},{"name":"childReferences","children":[{"name":"childReference","repeatId":"1","children":[{"name":"ref","value":"myHeadlineText"},{"name":"default","value":"ref"}]},{"name":"childReference","repeatId":"2","children":[{"name":"ref","value":"myChildPVar"},{"name":"default","value":"ref"}]},{"name":"childReference","repeatId":"3","children":[{"name":"ref","value":"myChildPGroup"},{"name":"refMinimized","value":"myChildMinPGroup"},{"name":"default","value":"refMinimized"}]}]}]} | | BAD_REQUEST |
+| presentationGroup | {"name":"presentation","attributes":{"type":"pGroup"},"children":[{"name":"recordInfo","children":[{"name":"id","value":"myPGroup"}]},{"name":"presentationOf","value":"myGroup"},{"name":"childReferences","children":[{"name":"childReference","repeatId":"1","children":[{"name":"ref","value":"myHeadlineText"},{"name":"default","value":"ref"}]},{"name":"childReference","repeatId":"2","children":[{"name":"ref","value":"myChildPVar"},{"name":"default","value":"ref"}]},{"name":"childReference","repeatId":"3","children":[{"name":"ref","value":"myChildPGroup"},{"name":"refMinimized","value":"myChildMinPGroup"},{"name":"default","value":"refMaximized"}]}]}]} | | BAD_REQUEST |
+
+*!
