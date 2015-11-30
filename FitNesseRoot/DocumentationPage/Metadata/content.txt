@@ -256,10 +256,10 @@ Group is a collection of elements and/or other groups.
 | |
 
 !4 attributes
-Attributes är en  lista med referenser över gruppens attribut, dessa referenser pekar på  andra element i elementpoolen. Det vanligaste användningsområdet är att  peka på en lista som beskriver typen av element, som i exemplet ovan.
+Attributes is an object containing at least one attribute reference. The attribute refers to other elements in the pool of elements. A common usage of attributes is as a reference to a list desribing the type of the element.
 
 !4 children
-Children är en lista med referenser över gruppens barn, dessa referenser pekar på andra element i elementpoolen.
+Children is a list of references to the children of the group. The children are other elements in the pool.
 
 !5 ref
 Ref, är en referens till ett annat element i poolen, referensen pekar på det andra elementets id.
@@ -380,7 +380,7 @@ CollectionItem beskriver ett möljligt val ur en collection (vanligtvis en lista
 -!  "type": "collectionIteem",!-
 -!  "textId": "personText",!-
 -!  "defTextId" : "personDefText"}!-
--!childVar--------------------------
+-!childVar------------------------------
 
 ChildVar är en variabel som minskar valmöjligheterna utifrån vad som går att välja på dens förälder!-
 -!"givenNamePartType": {!-
@@ -457,7 +457,7 @@ En childGroup används för att begränsa eller speciallisera en grupp. Det går
 -!      "repeatMax": "1"!-
 -!    }!-
 -!  ]}!-
--!Parent------------------------------------------
+-!Parent----------------------------------------------
 
 Parent är en referens till en annan grupp som är förälder till denna barngrupp. Den refererade föräldragruppen kan vara av typen group eller childGroup.!-
 -!Attributes (för en childGroup)
