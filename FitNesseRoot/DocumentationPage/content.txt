@@ -1,0 +1,6 @@
+The system handles data, metadata and presentation. The system also contains a data format that is used to "transport" the data, metadata and presentation through the system. 
+
+Metadata describes the different kinds of data representations that exists in the system, for example variables, lists and groups. Presentation describes in what way the data should be presented. To be able to present data, we need all three parts; data, metatdata and presentation.
+
+
+!contents -R2 -g -p -f -h

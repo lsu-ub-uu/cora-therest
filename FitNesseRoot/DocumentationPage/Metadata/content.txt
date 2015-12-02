@@ -1,0 +1,274 @@
+!1 Metadata
+Metadata consists of a pool of defined elements that refers to each other.  The elements are referenced by id, which means that all ids must be unique.
+
+From the metadata pool we can combine elements to create metadatatypes.
+
+!3 Common parts
+Common parts for (almost) all types of elements are the following:
+
+!4 id
+A unique id that the element can be referenced by.
+
+!4 nameInData
+!-NameInData-! is used for the parameter "name" in Cora data format. !-NameInData-! does not have to be unique.
+
+!4 type
+The type of the element.
+
+!4 textId
+A reference to the text that is used as the name or short description of the element. If a user request a definition of the element, the text referenced by the textId would be the headline of the definition of the element.
+
+!4 defTextId
+A reference to the text that is used as the definition of the element. If a user request a definition of the element the text referenced by the defTextId would be the main text in the definition.
+
+!3 textVar
+A variable describing a text.
+
+| {{{
+  "name": "metadata",
+  "attributes": {
+    "type": "textVariable"
+  },
+  "children": [
+    {
+      "name": "recordInfo",
+      "children": [
+        {
+          "name": "id",
+          "value": "myTextVar"
+        }
+      ]
+    },
+    {
+      "name": "nameInData",
+      "value": "myText"
+    },
+    {
+      "name": "textId",
+      "value": "textForMyTextVar"
+    },
+    {
+      "name": "defTextId",
+      "value": "defTextForMyTextVar"
+    },
+    {
+      "name": "regEx",
+      "value": "^[0-9]{4}$"
+    }
+  ]
+}
+}}} |
+
+!4 regEx
+A regular expression describing allowed format of the entered data.
+
+!3 !-CollectionVar-!
+A variable describing a collection, usually a list, from which the user can choose an option.
+
+| {{{  
+{
+  "name": "metadata",
+  "children": [
+    {
+      "name": "recordInfo",
+      "children": [
+        {
+          "name": "id",
+          "value": "yesNoUnknownVar"
+        }
+      ]
+    },
+    {
+      "name": "nameInData",
+      "value": "yesNoUnknownVar"
+    },
+    {
+      "name": "textId",
+      "value": "itemYesNoUnknownVarText"
+    },
+    {
+      "name": "defTextId",
+      "value": "itemYesNoUnknownVarDefText"
+    },
+    {
+      "name": "refCollectionId",
+      "value": "yesNoUnknown"
+    }
+  ],
+  "attributes": {
+    "type": "collectionVariable"
+  }
+}
+}}} |
+
+!4 refCollectionId
+!-RefCollectionId-! is a reference to a collection in the pool of elements.
+
+!3 itemCollection
+An itemCollection is a collection, usually a list, that combines options (collectionItems) into a predefined list, which can be referenced from a collectionVar.
+
+| {{{
+{
+  "name": "metadata",
+  "attributes": {
+    "type": "itemCollection"
+  },
+  "children": [
+    {
+      "name": "recordInfo",
+      "children": [
+        {
+          "name": "id",
+          "value": "yesNoUnknown"
+        }
+      ]
+    },
+    {
+      "name": "nameInData",
+      "value": "yesNoUnknown"
+    },
+    {
+      "name": "textId",
+      "value": "itemYesNoUnknownText"
+    },
+    {
+      "name": "defTextId",
+      "value": "itemYesNoUnknownDefText"
+    },
+    {
+      "name": "collectionItemReferences",
+      "children": [
+        {
+          "name": "ref",
+          "repeatId": "0",
+          "value": "itemYes"
+        },
+        {
+          "name": "ref",
+          "repeatId": "1",
+          "value": "itemNo"
+        },
+        {
+          "name": "ref",
+          "repeatId": "2",
+          "value": "itemUnknown"
+        }
+      ]
+    }
+  ]
+}}}} |
+
+!3 !-CollectionItem-!
+!-CollectionItem-! describes a possible option in a collection.
+
+| {{{
+{
+  "name": "metadata",
+  "attributes": {
+    "type": "collectionItem"
+  },
+  "children": [
+    {
+      "name": "recordInfo",
+      "children": [
+        {
+          "name": "id",
+          "value": "itemYes"
+        }
+      ]
+    },
+    {
+      "name": "nameInData",
+      "value": "yes"
+    },
+    {
+      "name": "textId",
+      "value": "itemYesText"
+    },
+    {
+      "name": "defTextId",
+      "value": "itemYesDefText"
+    }
+  ]
+}
+}}} |
+
+!3 group
+Group is a collection of elements and/or other groups.
+
+| {{{  
+{
+"name": "metadata",
+  "attributes": {
+    "type": "group"
+  },
+  "children": [
+    {
+      "name": "recordInfo",
+      "children": [
+        {
+          "name": "id",
+          "value": "namePartGroup"
+        }
+      ]
+    },
+    {
+      "name": "refParentId",
+      "value": "namePartParent"
+    },
+    {
+      "name": "textId",
+      "value": "namePartText"
+    },
+    {
+      "name": "defTextId",
+      "value": "namePartDefText"
+    },
+    {
+      "name": "nameInData",
+      "value": "namePart"
+    },
+    {
+      "name": "childReferences",
+      "children": [
+        {
+          "name": "childReference",
+          "repeatId": "1",
+          "children": [
+            {
+              "name": "ref",
+              "value": "namePartValue"
+            },
+            {
+              "name": "repeatMin",
+              "value": "1"
+            },
+            {
+              "name": "repeatMax",
+              "value": "1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+}}} |
+
+!4 attributes
+Attributes is an object containing at least one attribute reference. The attribute refers to other elements in the pool of elements. A common usage of attributes is as a reference to a list desribing the type of the element.
+
+!4 refParentId
+!-RefParentId -!is used if the group is a subset of another group. The refParentId is a reference to that other group. The subgroup can only contain parts that is present in the main group.
+
+!4 children
+Children is a list of references to the children of the group. The children are other elements in the pool.
+
+!4 ref
+Ref is a reference to another element in the pool. The reference points to the id of the other element.
+
+!4 repeatMin
+!-RepeatMin-! describes the minimum number of times the referred element has to be present.
+
+!4 repeatMax
+!-RepeatMax-! describes the maximum number of times the referred element is allowed to be present.
