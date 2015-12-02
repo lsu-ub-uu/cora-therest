@@ -349,7 +349,3 @@ Children is a list of dataGroups or dataAtomic, which is an object consisting of
   ]
 }
 }}} |
-| |
-| |
-
-!1 Presentation

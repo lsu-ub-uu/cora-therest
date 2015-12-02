@@ -1,9 +1,7 @@
 !1 Metadata
 Metadata consists of a pool of defined elements that refers to each other.  The elements are referenced by id, which means that all ids must be unique.
 
-From the metadata pool we can combine elements to create metadatatypes
-
-describes different kinds of metadata types, and is based on a pool of defined elements that refers to each other. The elements are referenced by id, which means that all ids must be unique.
+From the metadata pool we can combine elements to create metadatatypes.
 
 !3 Common parts
 Common parts for (almost) all types of elements are the following:
@@ -215,6 +213,10 @@ Group is a collection of elements and/or other groups.
       ]
     },
     {
+      "name": "refParentId",
+      "value": "namePartParent"
+    },
+    {
       "name": "textId",
       "value": "namePartText"
     },
@@ -252,219 +254,21 @@ Group is a collection of elements and/or other groups.
   ]
 }
 }}} |
-| |
-| |
 
 !4 attributes
 Attributes is an object containing at least one attribute reference. The attribute refers to other elements in the pool of elements. A common usage of attributes is as a reference to a list desribing the type of the element.
 
+!4 refParentId
+!-RefParentId -!is used if the group is a subset of another group. The refParentId is a reference to that other group. The subgroup can only contain parts that is present in the main group.
+
 !4 children
 Children is a list of references to the children of the group. The children are other elements in the pool.
 
-!5 ref
-Ref, är en referens till ett annat element i poolen, referensen pekar på det andra elementets id.
+!4 ref
+Ref is a reference to another element in the pool. The reference points to the id of the other element.
 
-!5 repeatMin
-RepeatMin beskriver hur många gånger det refererade elementet som minst måste förekomma.
+!4 repeatMin
+!-RepeatMin-! describes the minimum number of times the referred element has to be present.
 
-!5 repeatMax
-RepeatMax, beskriver hur många gånger det refererade elementet som mest får förekomma.
-
-!3 childGroup
-En  childGroup används för att begränsa eller speciallisera en grupp. Det  går bara lägga till de element, eller barn till elementen, som finns i  föräldragruppen, för attribut och children listorna. Ett exempel är   Auktoritetspost --> plats, där platsen är en auktoritetspost men har  färre val och begränsade listor i förhållande till auktoritetsposten.--
-
-| {{{"givenNamePart": {
-  "id":"givenNamePart", 
-  "type": "childGroup",
-  "parent":"namePart",
-  "explanation": "givenNamePart group",
-  "attributes": [
-    {"ref": "givenNamePartType"}
-  ], 
-  "children": [
-    {
-      "ref": "namePartValue",
-      "repeatMin": "1",
-      "repeatMax": "1"
-    }
-  ]
-}}}} |
-
-!4 Parent
-Parent är en referens  till en annan grupp som är förälder till denna barngrupp. Den  refererade föräldragruppen kan vara av typen group eller childGroup.
-
-!4 Attributes (för en childGroup)
-Attributes  innehåller samma element eller barn till attribut elementen som sin  föräldra grupp. Det normala är att man har ett barnElement som pekar ut  ett specifikt val ur en lista tex givenNamePartType pekar ut valet  "givenName" ur listan på namePartTypes. Denna utpekning gör att  barnGruppen nu kans sägas vara av typen givenName. Attributen kan inte  fyllas vid inmatning, utan används endast för att skapa barngrupper vid  konfigurationen av metadataFormatet.
-
-!4 Children (för en childGroup)
-Children  är en lista med referenser över gruppens barn, dessa referenser pekar  på andra element i elementpoolen, presis som för en group. Men barnen  till en childGroup måste antingen finnas som barn till föräldragruppen  eller vara barn till de som finns i föräldragruppen.
-
-Detta gör det  möjligt att tex specifiera namn som ett barn i auktoritetspost  (repeatMin:1, repeatMax:X), och att sedan som barn till plats (som är en  barngrupp till auktoritetspost), specifiera auktoriseratNamn(som är ett  barn till namn) (repeatMin:1, repeatMax:1)  och att specifiera  alternativtNamn (som är ett barn till namn)(repeatMin:0, repeatMax:X).
-
-Metadataformat
-
-Metadataformatet består i grunden av en pool av definierade element eller elementgrupper som hänvisar till varandra genom referenser. Dessa referenser baseras på id, vilket innebär att alla element har ett unikt id.
-
-Formatet presenteras här som JSON.!-
--!Gemensamma delar
-
-Gemensamt för (nästan) alla elementtyper är följande ingående delar:!-
--!id
-
-Ett unikt id som elementet kan refereras genom. Id måste vara unikt över alla element.!-
--!dataId
-
-Den identifierare som data för elementet använder i en datamängd. DataId behöver inte vara unikt.!-
--!type
-
-Vilken elementtyp elementet är.!-
--!textId
-
-En referens till en text som är elementets namn eller korta beskrivning. Tar man ut en definition över element skulle textId fungera som rubrik på definitionen för elementet. Denna information är tänkt att kunna presenteras för användarna av systemet.!-
--!defTextId
-
-En referens till en text som är elementets definition. Tar man ut en definition över element skulle defTextId fungera som brödtext på definitionen för elementet. Denna information är tänkt att kunna presenteras för användarna av systemet.!-
--!regExVar
-
-En variabel som beskriver ett reguljärt uttryck!-
--!"regEx": {!-
--!  "id":"regEx",!-
--!  "dataId": "regExValue",!-
--!  "type": "regExVar",!-
--!  "textId": "regExText",!-
--!  "defTextId": "regExDefText",!-
--!  "regEx": "((^(([0-1][0-9])
-
-| ([2][0-3])):[0-5][0-9]$ | ^$){1}" |
-
-}!-
--!regEx
-
-Ett reguljärt uttryck som beskriver hur data som matas in får se ut.CollectionVar
-
-En variabel som beskriver en collection, vanligtvis en lista, där det är möjligt för användaren att välja ett var ur listan.!-
--!"authorityType": {!-
--!  "id":"authorityType",!-
--!  "dataId":"type",!-
--!  "type": "collectionVar",!-
--!  "textId": "authorityTypeText",!-
--!  "refCollection": "authorityTypeCollection"}!-
--!refCollection
-
-refCollection, är en referens till en collection i poolen (ska vi ha en egen pool för collections?), referensen pekar på collectionens id.!-
--!Collection
-
-Collection är en samling (vanligtvis en lista) som gör det möjligt att specifiera en förutbestämd lista med val som en användare kan välja från.!-
--!"authorityTypeCollection": {!-
--!  "id":"authorityTypeCollection",!-
--!  "type": "collection",!-
--!  "subType": "list",!-
--!  "explanation": "authority type collection",!-
--!  "children": [!-
--!    {!-
--!      "ref": "personItem"!-
--!    },!-
--!    {!-
--!      "ref": "organisationItem"!-
--!    },!-
--!    {!-
--!      "ref": "placeItem"!-
--!    }!-
--! ]}
-
-Stefan: explanation motsvarar defTextId?CollectionItem
-
-CollectionItem beskriver ett möljligt val ur en collection (vanligtvis en lista)!--!"personItemv": {!-
--!  "id":"personItem",!-
--!  "dataId":"person",!-
--!  "type": "collectionIteem",!-
--!  "textId": "personText",!-
--!  "defTextId" : "personDefText"}!-
--!childVar------------------------------
-
-ChildVar är en variabel som minskar valmöjligheterna utifrån vad som går att välja på dens förälder!-
--!"givenNamePartType": {!-
--!  "id":"givenNamePartType",!-
--!  "type": "childVar",!-
--!  "parent":"namePartType",!-
--!  "finalValue": "givenname"}
-
-group
-
-Beskriver en grupp av element, gruppen kan bestå av element eller andra grupper.!-
--!1!-
--!2!-
--!3!-
--!4!-
--!5!-
--!6!-
--!7!-
--!8!-
--!9!-
--!10!-
--!11!-
--!12!-
--!13!-
--!14!-
--!15!-
--!16!-
--!        !-
--!"namePart": {!-
--!  "id":"namePart",!-
--!  "dataId": "namepart",!-
--!  "type": "group",!-
--!  "explanation": "Name part group",!-
--!  "attributes": [!-
--!    {"ref": "namePartType"}!-
--!  ],!-
--!  "children": [!-
--!    {!-
--!      "ref": "namePartValue",!-
--!      "repeatMin": "1",!-
--!      "repeatMax": "1"!-
--!    }!-
--!  ]}!-
--!attributes
-
-Attributes är en lista med referenser över gruppens attribut, dessa referenser pekar på andra element i elementpoolen. Det vanligaste användningsområdet är att peka på en lista som beskriver typen av element, som i exemplet ovan.!-
--!children
-
-Children är en lista med referenser över gruppens barn, dessa referenser pekar på andra element i elementpoolen.!-
--!ref
-
-Ref, är en referens till ett annat element i poolen, referensen pekar på det andra elementets id.!-
--!repeatMin
-
-RepeatMin beskriver hur många gånger det refererade elementet som minst måste förekomma.!-
--!repeatMax
-
-RepeatMax, beskriver hur många gånger det refererade elementet som mest får förekomma.!-
--!childGroup
-
-En childGroup används för att begränsa eller speciallisera en grupp. Det går bara lägga till de element, eller barn till elementen, som finns i föräldragruppen, för attribut och children listorna. Ett exempel är  Auktoritetspost --> plats, där platsen är en auktoritetspost men har färre val och begränsade listor i förhållande till auktoritetsposten.!-
--!"givenNamePart": {!-
--!  "id":"givenNamePart",!-
--!  "type": "childGroup",!-
--!  "parent":"namePart",!-
--!  "explanation": "givenNamePart group",!-
--!  "attributes": [!-
--!    {"ref": "givenNamePartType"}!-
--!  ],!-
--!  "children": [!-
--!    {!-
--!      "ref": "namePartValue",!-
--!      "repeatMin": "1",!-
--!      "repeatMax": "1"!-
--!    }!-
--!  ]}!-
--!Parent----------------------------------------------
-
-Parent är en referens till en annan grupp som är förälder till denna barngrupp. Den refererade föräldragruppen kan vara av typen group eller childGroup.!-
--!Attributes (för en childGroup)
-
-Attributes innehåller samma element eller barn till attribut elementen som sin föräldra grupp. Det normala är att man har ett barnElement som pekar ut ett specifikt val ur en lista tex givenNamePartType pekar ut valet "givenName" ur listan på namePartTypes. Denna utpekning gör att barnGruppen nu kans sägas vara av typen givenName. Attributen kan inte fyllas vid inmatning, utan används endast för att skapa barngrupper vid konfigurationen av metadataFormatet.!-
--!Children (för en childGroup)
-
-Children är en lista med referenser över gruppens barn, dessa referenser pekar på andra element i elementpoolen, presis som för en group. Men barnen till en childGroup måste antingen finnas som barn till föräldragruppen eller vara barn till de som finns i föräldragruppen.
-
-Detta gör det möjligt att tex specifiera namn som ett barn i auktoritetspost (repeatMin:1, repeatMax:X), och att sedan som barn till plats (som är en barngrupp till auktoritetspost), specifiera auktoriseratNamn(som är ett barn till namn) (repeatMin:1, repeatMax:1)  och att specifiera alternativtNamn (som är ett barn till namn)(repeatMin:0, repeatMax:X).
+!4 repeatMax
+!-RepeatMax-! describes the maximum number of times the referred element is allowed to be present.
