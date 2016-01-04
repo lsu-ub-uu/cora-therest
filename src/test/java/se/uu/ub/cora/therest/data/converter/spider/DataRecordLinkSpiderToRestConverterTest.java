@@ -24,7 +24,7 @@ import org.testng.annotations.Test;
 import se.uu.ub.cora.spider.data.Action;
 import se.uu.ub.cora.spider.data.SpiderDataAtomic;
 import se.uu.ub.cora.spider.data.SpiderDataGroup;
-import se.uu.ub.cora.spider.data.SpiderDataGroupRecordLink;
+import se.uu.ub.cora.spider.data.SpiderDataRecordLink;
 import se.uu.ub.cora.therest.data.ActionLink;
 import se.uu.ub.cora.therest.data.RestDataRecordLink;
 
@@ -33,12 +33,12 @@ import static org.testng.Assert.assertNull;
 
 public class DataRecordLinkSpiderToRestConverterTest {
 	private String baseURL = "http://localhost:8080/therest/rest/record/";
-	private SpiderDataGroupRecordLink spiderDataRecordLink;
+	private SpiderDataRecordLink spiderDataRecordLink;
 	private DataRecordLinkSpiderToRestConverter dataRecordLinkSpiderToRestConverter;
 
 	@BeforeMethod
 	public void setUp() {
-		spiderDataRecordLink = SpiderDataGroupRecordLink.withNameInData("nameInData");
+		spiderDataRecordLink = SpiderDataRecordLink.withNameInData("nameInData");
 
 		SpiderDataAtomic linkedRecordType = SpiderDataAtomic.withNameInDataAndValue("linkedRecordType", "linkedRecordType");
 		spiderDataRecordLink.addChild(linkedRecordType);

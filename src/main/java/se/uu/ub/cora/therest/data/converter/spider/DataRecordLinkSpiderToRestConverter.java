@@ -21,21 +21,21 @@ package se.uu.ub.cora.therest.data.converter.spider;
 
 import se.uu.ub.cora.spider.data.SpiderDataAtomic;
 import se.uu.ub.cora.spider.data.SpiderDataGroup;
-import se.uu.ub.cora.spider.data.SpiderDataGroupRecordLink;
+import se.uu.ub.cora.spider.data.SpiderDataRecordLink;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.RestDataRecordLink;
 
 public final class DataRecordLinkSpiderToRestConverter {
-	private SpiderDataGroupRecordLink spiderDataRecordLink;
+	private SpiderDataRecordLink spiderDataRecordLink;
 	private String baseURL;
 	private RestDataRecordLink restDataRecordLink;
 
 	public static DataRecordLinkSpiderToRestConverter fromSpiderDataRecordLinkWithBaseURL(
-			SpiderDataGroupRecordLink spiderDataRecordLink, String baseURL) {
+			SpiderDataRecordLink spiderDataRecordLink, String baseURL) {
 		return new DataRecordLinkSpiderToRestConverter(spiderDataRecordLink, baseURL);
 	}
 
-	private DataRecordLinkSpiderToRestConverter(SpiderDataGroupRecordLink spiderDataRecordLink,
+	private DataRecordLinkSpiderToRestConverter(SpiderDataRecordLink spiderDataRecordLink,
 			String baseURL) {
 		this.spiderDataRecordLink = spiderDataRecordLink;
 		this.baseURL = baseURL;

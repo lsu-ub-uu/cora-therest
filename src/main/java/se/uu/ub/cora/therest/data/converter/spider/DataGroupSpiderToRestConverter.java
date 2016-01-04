@@ -22,7 +22,7 @@ package se.uu.ub.cora.therest.data.converter.spider;
 import se.uu.ub.cora.spider.data.SpiderDataAtomic;
 import se.uu.ub.cora.spider.data.SpiderDataElement;
 import se.uu.ub.cora.spider.data.SpiderDataGroup;
-import se.uu.ub.cora.spider.data.SpiderDataGroupRecordLink;
+import se.uu.ub.cora.spider.data.SpiderDataRecordLink;
 import se.uu.ub.cora.therest.data.RestDataElement;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 
@@ -59,9 +59,9 @@ public final class DataGroupSpiderToRestConverter {
 
 	private RestDataElement convertToElementEquivalentDataClass(
 			SpiderDataElement spiderDataElement) {
-		if (spiderDataElement instanceof SpiderDataGroupRecordLink) {
+		if (spiderDataElement instanceof SpiderDataRecordLink) {
 			return DataRecordLinkSpiderToRestConverter.fromSpiderDataRecordLinkWithBaseURL(
-					(SpiderDataGroupRecordLink) spiderDataElement, baseURL).toRest();
+					(SpiderDataRecordLink) spiderDataElement, baseURL).toRest();
 		}
 		if (spiderDataElement instanceof SpiderDataGroup) {
 			return DataGroupSpiderToRestConverter

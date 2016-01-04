@@ -20,7 +20,7 @@
 package se.uu.ub.cora.therest.data.converter.spider;
 
 import se.uu.ub.cora.spider.data.SpiderDataAtomic;
-import se.uu.ub.cora.spider.data.SpiderDataGroupRecordLink;
+import se.uu.ub.cora.spider.data.SpiderDataRecordLink;
 import se.uu.ub.cora.therest.data.RestDataRecordLink;
 
 public final class DataRecordLinkRestToSpiderConverter {
@@ -35,8 +35,8 @@ public final class DataRecordLinkRestToSpiderConverter {
 		this.restDataRecordLink = restDataRecordLink;
 	}
 
-	public SpiderDataGroupRecordLink toSpider() {
-		SpiderDataGroupRecordLink spiderDataRecordLink = SpiderDataGroupRecordLink.withNameInData(restDataRecordLink.getNameInData());
+	public SpiderDataRecordLink toSpider() {
+		SpiderDataRecordLink spiderDataRecordLink = SpiderDataRecordLink.withNameInData(restDataRecordLink.getNameInData());
 		SpiderDataAtomic linkedRecordType = SpiderDataAtomic.withNameInDataAndValue("linkedRecordType", restDataRecordLink.getLinkedRecordType());
 		spiderDataRecordLink.addChild(linkedRecordType);
 
@@ -54,7 +54,7 @@ public final class DataRecordLinkRestToSpiderConverter {
 		return spiderDataRecordLink;
 	}
 
-	private void addLinkedPathIfItExists(SpiderDataGroupRecordLink spiderDataRecordLink) {
+	private void addLinkedPathIfItExists(SpiderDataRecordLink spiderDataRecordLink) {
 		if(restDataRecordLink.getLinkedPath() != null) {
 			DataGroupRestToSpiderConverter linkedPathConverter =
 					DataGroupRestToSpiderConverter.fromRestDataGroup(restDataRecordLink.getLinkedPath());
