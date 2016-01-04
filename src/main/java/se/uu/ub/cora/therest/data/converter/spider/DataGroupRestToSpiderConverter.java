@@ -19,17 +19,17 @@
 
 package se.uu.ub.cora.therest.data.converter.spider;
 
-import java.util.Map;
-import java.util.Map.Entry;
-
 import se.uu.ub.cora.spider.data.SpiderDataAtomic;
 import se.uu.ub.cora.spider.data.SpiderDataGroup;
-import se.uu.ub.cora.spider.data.SpiderDataRecordLink;
+import se.uu.ub.cora.spider.data.SpiderDataGroupRecordLink;
 import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataElement;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.RestDataRecordLink;
 import se.uu.ub.cora.therest.data.converter.ConverterException;
+
+import java.util.Map;
+import java.util.Map.Entry;
 
 public final class DataGroupRestToSpiderConverter {
 	private RestDataGroup restDataGroup;
@@ -90,7 +90,7 @@ public final class DataGroupRestToSpiderConverter {
 	}
 
 	private void addLinkChild(RestDataElement restDataElement) {
-		SpiderDataRecordLink spiderDataRecordLink = DataRecordLinkRestToSpiderConverter
+		SpiderDataGroupRecordLink spiderDataRecordLink = DataRecordLinkRestToSpiderConverter
 				.fromRestDataRecordLink((RestDataRecordLink) restDataElement).toSpider();
 		spiderDataGroup.addChild(spiderDataRecordLink);
 	}
