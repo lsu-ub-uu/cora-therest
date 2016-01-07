@@ -28,7 +28,7 @@ import se.uu.ub.cora.spider.data.SpiderDataRecordLink;
 import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataElement;
 import se.uu.ub.cora.therest.data.RestDataGroup;
-import se.uu.ub.cora.therest.data.RestDataGroupRecordLink;
+import se.uu.ub.cora.therest.data.RestDataRecordLink;
 
 import java.util.Iterator;
 
@@ -93,7 +93,7 @@ public class DataGroupSpiderToRestConverterTest {
 		spiderDataGroup.addChild(dataRecordLink);
 
 		RestDataGroup restDataGroup = dataGroupSpiderToRestConverter.toRest();
-		RestDataGroupRecordLink restDataRecordLink = (RestDataGroupRecordLink) restDataGroup.getChildren()
+		RestDataRecordLink restDataRecordLink = (RestDataRecordLink) restDataGroup.getChildren()
 				.iterator().next();
 		assertEquals(restDataRecordLink.getNameInData(), "childNameInData");
 

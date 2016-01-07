@@ -29,9 +29,9 @@ public class DataToJsonConverterFactoryImp implements DataToJsonConverterFactory
 			RestDataElement restDataElement) {
 
 		if (restDataElement instanceof RestDataGroup) {
-			if (restDataElement instanceof RestDataGroupRecordLink) {
+			if (restDataElement instanceof RestDataRecordLink) {
 				return DataRecordLinkToJsonConverter.usingJsonFactoryForRestDataLink(factory,
-						(RestDataGroupRecordLink) restDataElement);
+						(RestDataRecordLink) restDataElement);
 			}
 			return DataGroupToJsonConverter.usingJsonFactoryForRestDataGroup(factory,
 					(RestDataGroup) restDataElement);

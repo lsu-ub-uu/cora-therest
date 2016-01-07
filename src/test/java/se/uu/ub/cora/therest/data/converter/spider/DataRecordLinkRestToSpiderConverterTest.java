@@ -26,18 +26,18 @@ import se.uu.ub.cora.spider.data.SpiderDataGroup;
 import se.uu.ub.cora.spider.data.SpiderDataRecordLink;
 import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataGroup;
-import se.uu.ub.cora.therest.data.RestDataGroupRecordLink;
+import se.uu.ub.cora.therest.data.RestDataRecordLink;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 
 public class DataRecordLinkRestToSpiderConverterTest {
-	private RestDataGroupRecordLink restDataRecordLink;
+	private RestDataRecordLink restDataRecordLink;
 	private DataRecordLinkRestToSpiderConverter converter;
 
 	@BeforeMethod
 	public void setUp() {
-		restDataRecordLink = RestDataGroupRecordLink.withNameInData("nameInData");
+		restDataRecordLink = RestDataRecordLink.withNameInData("nameInData");
 		RestDataAtomic linkedRecordType = RestDataAtomic.withNameInDataAndValue("linkedRecordType", "linkedRecordType");
 		restDataRecordLink.addChild(linkedRecordType);
 

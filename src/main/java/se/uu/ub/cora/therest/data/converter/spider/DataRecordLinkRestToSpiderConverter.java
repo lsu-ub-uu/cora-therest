@@ -23,18 +23,18 @@ import se.uu.ub.cora.spider.data.SpiderDataAtomic;
 import se.uu.ub.cora.spider.data.SpiderDataRecordLink;
 import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataGroup;
-import se.uu.ub.cora.therest.data.RestDataGroupRecordLink;
+import se.uu.ub.cora.therest.data.RestDataRecordLink;
 
 public final class DataRecordLinkRestToSpiderConverter {
 	private static final String LINKED_REPEAT_ID = "linkedRepeatId";
-	private RestDataGroupRecordLink restDataRecordLink;
+	private RestDataRecordLink restDataRecordLink;
 
 	public static DataRecordLinkRestToSpiderConverter fromRestDataRecordLink(
-			RestDataGroupRecordLink restDataRecordLink) {
+			RestDataRecordLink restDataRecordLink) {
 		return new DataRecordLinkRestToSpiderConverter(restDataRecordLink);
 	}
 
-	private DataRecordLinkRestToSpiderConverter(RestDataGroupRecordLink restDataRecordLink) {
+	private DataRecordLinkRestToSpiderConverter(RestDataRecordLink restDataRecordLink) {
 		this.restDataRecordLink = restDataRecordLink;
 	}
 

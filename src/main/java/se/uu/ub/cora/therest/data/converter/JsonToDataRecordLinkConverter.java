@@ -21,7 +21,7 @@ package se.uu.ub.cora.therest.data.converter;
 
 import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataElement;
-import se.uu.ub.cora.therest.data.RestDataGroupRecordLink;
+import se.uu.ub.cora.therest.data.RestDataRecordLink;
 import se.uu.ub.cora.therest.json.parser.JsonObject;
 import se.uu.ub.cora.therest.json.parser.JsonParseException;
 
@@ -130,7 +130,7 @@ public final class JsonToDataRecordLinkConverter implements JsonToDataConverter 
 		String nameInData = getStringValueFromJsonObject("name");
 		String linkedRecordType = getStringValueFromJsonObject(LINKED_RECORD_TYPE);
 		String linkedRecordId = getStringValueFromJsonObject(LINKED_RECORD_ID);
-		RestDataGroupRecordLink restDataRecordLink = RestDataGroupRecordLink.withNameInData(nameInData);
+		RestDataRecordLink restDataRecordLink = RestDataRecordLink.withNameInData(nameInData);
 
 		RestDataAtomic linkedRecordTypeElement = RestDataAtomic.withNameInDataAndValue(LINKED_RECORD_TYPE, linkedRecordType);
 		restDataRecordLink.addChild(linkedRecordTypeElement);

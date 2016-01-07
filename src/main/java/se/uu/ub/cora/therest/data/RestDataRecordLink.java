@@ -21,15 +21,15 @@ package se.uu.ub.cora.therest.data;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public final class RestDataGroupRecordLink extends RestDataGroup{
+public final class RestDataRecordLink extends RestDataGroup{
 
     private Map<String, ActionLink> actionLinks = new LinkedHashMap<>();
 
-    public static RestDataGroupRecordLink withNameInData(String nameInData){
-        return new RestDataGroupRecordLink(nameInData);
+    public static RestDataRecordLink withNameInData(String nameInData){
+        return new RestDataRecordLink(nameInData);
     }
 
-    private RestDataGroupRecordLink(String nameInData) {
+    private RestDataRecordLink(String nameInData) {
         super(nameInData);
     }
 

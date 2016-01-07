@@ -71,7 +71,7 @@ public class DataToJsonConverterFactoryTest {
 
 	@Test
 	public void testJsonCreateFactoryDataRecordLink() {
-		RestDataGroupRecordLink recordLink = RestDataGroupRecordLink.withNameInData("recordLinkNameInData");
+		RestDataRecordLink recordLink = RestDataRecordLink.withNameInData("recordLinkNameInData");
 		RestDataAtomic linkedRecordType = RestDataAtomic.withNameInDataAndValue("linkedRecordType", "someRecordType");
 		recordLink.addChild(linkedRecordType);
 

@@ -24,13 +24,13 @@ import se.uu.ub.cora.spider.data.SpiderDataGroup;
 import se.uu.ub.cora.spider.data.SpiderDataRecordLink;
 import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataGroup;
-import se.uu.ub.cora.therest.data.RestDataGroupRecordLink;
+import se.uu.ub.cora.therest.data.RestDataRecordLink;
 
 public final class DataRecordLinkSpiderToRestConverter {
 	private static final String LINKED_REPEAT_ID = "linkedRepeatId";
 	private SpiderDataRecordLink spiderDataRecordLink;
 	private String baseURL;
-	private RestDataGroupRecordLink restDataRecordLink;
+	private RestDataRecordLink restDataRecordLink;
 
 	public static DataRecordLinkSpiderToRestConverter fromSpiderDataRecordLinkWithBaseURL(
 			SpiderDataRecordLink spiderDataRecordLink, String baseURL) {
@@ -43,12 +43,12 @@ public final class DataRecordLinkSpiderToRestConverter {
 		this.baseURL = baseURL;
 	}
 
-	public RestDataGroupRecordLink toRest() {
+	public RestDataRecordLink toRest() {
 
 		SpiderDataAtomic linkedRecordType = (SpiderDataAtomic) spiderDataRecordLink.getFirstChildWithNameInData("linkedRecordType");
 		SpiderDataAtomic linkedRecordId = (SpiderDataAtomic) spiderDataRecordLink.getFirstChildWithNameInData("linkedRecordId");
 
-		restDataRecordLink = RestDataGroupRecordLink.withNameInData(spiderDataRecordLink.getNameInData());
+		restDataRecordLink = RestDataRecordLink.withNameInData(spiderDataRecordLink.getNameInData());
 		RestDataAtomic restLinkedRecordType = RestDataAtomic.withNameInDataAndValue("linkedRecordType", linkedRecordType.getValue());
 		restDataRecordLink.addChild(restLinkedRecordType);
 

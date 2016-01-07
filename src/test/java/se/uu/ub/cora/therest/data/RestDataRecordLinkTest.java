@@ -6,12 +6,12 @@ import se.uu.ub.cora.spider.data.Action;
 
 import static org.testng.Assert.*;
 
-public class RestDataGroupRecordLinkTest {
-    private RestDataGroupRecordLink recordLink;
+public class RestDataRecordLinkTest {
+    private RestDataRecordLink recordLink;
 
     @BeforeMethod
     public void setUp(){
-        recordLink = RestDataGroupRecordLink.withNameInData("aNameInData");
+        recordLink = RestDataRecordLink.withNameInData("aNameInData");
         RestDataAtomic linkedRecordType = RestDataAtomic.withNameInDataAndValue("linkedRecordType", "aLinkedRecordType");
         recordLink.addChild(linkedRecordType);
 

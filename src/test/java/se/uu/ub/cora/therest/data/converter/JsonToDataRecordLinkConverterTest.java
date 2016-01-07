@@ -23,7 +23,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataElement;
-import se.uu.ub.cora.therest.data.RestDataGroupRecordLink;
+import se.uu.ub.cora.therest.data.RestDataRecordLink;
 import se.uu.ub.cora.therest.json.parser.JsonObject;
 import se.uu.ub.cora.therest.json.parser.JsonParseException;
 import se.uu.ub.cora.therest.json.parser.JsonValue;
@@ -44,16 +44,16 @@ public class JsonToDataRecordLinkConverterTest {
 	public void testToClass() {
 		String json = "{\"linkedRecordId\":\"aRecordId\",\"linkedRecordType\":\"aRecordType\""
 				+ ",\"name\":\"nameInData\"}";
-		RestDataGroupRecordLink restDataRecordLink = createRestDataRecordLinkForJsonString(json);
+		RestDataRecordLink restDataRecordLink = createRestDataRecordLinkForJsonString(json);
 		assertEquals(restDataRecordLink.getNameInData(), "nameInData");
 	}
 
-	private RestDataGroupRecordLink createRestDataRecordLinkForJsonString(String json) {
+	private RestDataRecordLink createRestDataRecordLinkForJsonString(String json) {
 		JsonValue jsonValue = jsonParser.parseString(json);
 		JsonToDataConverter jsonToDataConverter = JsonToDataRecordLinkConverter
 				.forJsonObject((JsonObject) jsonValue);
 		RestDataElement restDataElement = jsonToDataConverter.toInstance();
-		RestDataGroupRecordLink restDataRecordLink = (RestDataGroupRecordLink) restDataElement;
+		RestDataRecordLink restDataRecordLink = (RestDataRecordLink) restDataElement;
 		return restDataRecordLink;
 	}
 
@@ -61,7 +61,7 @@ public class JsonToDataRecordLinkConverterTest {
 	public void testToClassWithRepeatId() {
 		String json = "{\"linkedRecordId\":\"aRecordId\",\"linkedRecordType\":\"aRecordType\""
 				+ ",\"name\":\"nameInData\",\"repeatId\":\"7\"}";
-		RestDataGroupRecordLink restDataRecordLink = createRestDataRecordLinkForJsonString(json);
+		RestDataRecordLink restDataRecordLink = createRestDataRecordLinkForJsonString(json);
 		assertEquals(restDataRecordLink.getNameInData(), "nameInData");
 		assertEquals(restDataRecordLink.getRepeatId(), "7");
 	}
@@ -70,7 +70,7 @@ public class JsonToDataRecordLinkConverterTest {
 	public void testToClassWithLinkedRepeatId(){
 		String json = "{\"linkedRecordId\":\"aRecordId\",\"linkedRecordType\":\"aRecordType\""
 				+ ",\"name\":\"nameInData\",\"linkedRepeatId\":\"linkedOne\"}";
-		RestDataGroupRecordLink restDataRecordLink = createRestDataRecordLinkForJsonString(json);
+		RestDataRecordLink restDataRecordLink = createRestDataRecordLinkForJsonString(json);
 
 		RestDataAtomic linkedRepeatId = (RestDataAtomic) restDataRecordLink.getFirstChildWithNameInData("linkedRepeatId");
 		assertEquals(linkedRepeatId.getValue(), "linkedOne");
@@ -80,7 +80,7 @@ public class JsonToDataRecordLinkConverterTest {
 	public void testToClassAnActionLink() {
 		String json = "{\"linkedRecordId\":\"aRecordId\",\"linkedRecordType\":\"aRecordType\""
 				+ ",\"name\":\"nameInData\",\"actionLinks\":\"someActionLink\"}";
-		RestDataGroupRecordLink restDataRecordLink = createRestDataRecordLinkForJsonString(json);
+		RestDataRecordLink restDataRecordLink = createRestDataRecordLinkForJsonString(json);
 		assertEquals(restDataRecordLink.getNameInData(), "nameInData");
 	}
 
@@ -88,7 +88,7 @@ public class JsonToDataRecordLinkConverterTest {
 	public void testToClassWithRepeatIdAndActionLink() {
 		String json = "{\"linkedRecordId\":\"aRecordId\",\"linkedRecordType\":\"aRecordType\""
 				+ ",\"name\":\"nameInData\",\"actionLinks\":\"someActionLink\",\"repeatId\":\"7\"}";
-		RestDataGroupRecordLink restDataRecordLink = createRestDataRecordLinkForJsonString(json);
+		RestDataRecordLink restDataRecordLink = createRestDataRecordLinkForJsonString(json);
 		assertEquals(restDataRecordLink.getNameInData(), "nameInData");
 		assertEquals(restDataRecordLink.getRepeatId(), "7");
 	}
@@ -98,7 +98,7 @@ public class JsonToDataRecordLinkConverterTest {
 		String json = "{\"linkedRecordId\":\"aRecordId\",\"linkedRecordType\":\"aRecordType\""
 				+ ",\"name\":\"nameInData\",\"actionLinks\":\"someActionLink\""
 				+",\"repeatId\":\"7\",\"linkedPath\":{\"name\":\"someLinkedPath\"}}";
-		RestDataGroupRecordLink restDataRecordLink = createRestDataRecordLinkForJsonString(json);
+		RestDataRecordLink restDataRecordLink = createRestDataRecordLinkForJsonString(json);
 		assertEquals(restDataRecordLink.getNameInData(), "nameInData");
 
 		assertFalse(restDataRecordLink.containsChildWithNameInData("linkedPath"));

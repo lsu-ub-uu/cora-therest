@@ -25,19 +25,19 @@ import se.uu.ub.cora.spider.data.Action;
 import se.uu.ub.cora.therest.data.ActionLink;
 import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataGroup;
-import se.uu.ub.cora.therest.data.RestDataGroupRecordLink;
+import se.uu.ub.cora.therest.data.RestDataRecordLink;
 import se.uu.ub.cora.therest.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.therest.json.builder.org.OrgJsonBuilderFactoryAdapter;
 
 import static org.testng.Assert.assertEquals;
 
 public class DataRecordLinkToJsonConverterTest {
-	private RestDataGroupRecordLink recordLink;
+	private RestDataRecordLink recordLink;
 	private DataRecordLinkToJsonConverter converter;
 
 	@BeforeMethod
 	public void setUp() {
-		recordLink = RestDataGroupRecordLink.withNameInData("nameInData");
+		recordLink = RestDataRecordLink.withNameInData("nameInData");
 
 		RestDataAtomic linkedRecordType = RestDataAtomic.withNameInDataAndValue("linkedRecordType", "aRecordType");
 		recordLink.addChild(linkedRecordType);
