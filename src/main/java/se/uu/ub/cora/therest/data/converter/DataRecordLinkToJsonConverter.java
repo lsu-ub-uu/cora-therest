@@ -87,11 +87,8 @@ public final class DataRecordLinkToJsonConverter extends DataToJsonConverter {
 	}
 
 	private boolean hasNonEmptyLinkedRepeatId() {
-		if(recordLink.containsChildWithNameInData("linkedRepeatId") &&
-				!((RestDataAtomic)recordLink.getFirstChildWithNameInData("linkedRepeatId")).getValue().equals("")){
-			return true;
-		}
-		return false;
+		return recordLink.containsChildWithNameInData("linkedRepeatId") &&
+				!((RestDataAtomic) recordLink.getFirstChildWithNameInData("linkedRepeatId")).getValue().equals("");
 	}
 
 
