@@ -25,7 +25,7 @@ import se.uu.ub.cora.spider.data.SpiderDataRecordLink;
 import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataElement;
 import se.uu.ub.cora.therest.data.RestDataGroup;
-import se.uu.ub.cora.therest.data.RestDataRecordLink;
+import se.uu.ub.cora.therest.data.RestDataGroupRecordLink;
 import se.uu.ub.cora.therest.data.converter.ConverterException;
 
 import java.util.Map;
@@ -75,9 +75,11 @@ public final class DataGroupRestToSpiderConverter {
 
 	private void addChildToSpiderGroup(RestDataElement restDataElement) {
 		if (restDataElement instanceof RestDataGroup) {
-			addGroupChild(restDataElement);
-		} else if (restDataElement instanceof RestDataRecordLink) {
-			addLinkChild(restDataElement);
+			if(restDataElement instanceof RestDataGroupRecordLink){
+				addLinkChild(restDataElement);
+			}else{
+				addGroupChild(restDataElement);
+			}
 		} else {
 			addAtomicChild(restDataElement);
 		}
@@ -91,7 +93,7 @@ public final class DataGroupRestToSpiderConverter {
 
 	private void addLinkChild(RestDataElement restDataElement) {
 		SpiderDataRecordLink spiderDataRecordLink = DataRecordLinkRestToSpiderConverter
-				.fromRestDataRecordLink((RestDataRecordLink) restDataElement).toSpider();
+				.fromRestDataRecordLink((RestDataGroupRecordLink) restDataElement).toSpider();
 		spiderDataGroup.addChild(spiderDataRecordLink);
 	}
 

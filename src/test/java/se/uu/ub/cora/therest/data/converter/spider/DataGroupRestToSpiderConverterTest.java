@@ -27,7 +27,7 @@ import se.uu.ub.cora.spider.data.SpiderDataRecordLink;
 import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataAttribute;
 import se.uu.ub.cora.therest.data.RestDataGroup;
-import se.uu.ub.cora.therest.data.RestDataRecordLink;
+import se.uu.ub.cora.therest.data.RestDataGroupRecordLink;
 import se.uu.ub.cora.therest.data.converter.ConverterException;
 
 import static org.testng.Assert.assertEquals;
@@ -80,8 +80,12 @@ public class DataGroupRestToSpiderConverterTest {
 
 	@Test
 	public void testToSpiderWithRecordLinkChild() {
-		RestDataRecordLink restDataRecordLink = RestDataRecordLink
-				.withNameInDataAndLinkedRecordTypeAndLinkedRecordId("aLink", "someRecordType", "someRecordId");
+		RestDataGroupRecordLink restDataRecordLink = RestDataGroupRecordLink.withNameInData("aLink");
+		RestDataAtomic linkedRecordTypeChild = RestDataAtomic.withNameInDataAndValue("linkedRecordType", "someRecordType");
+		restDataRecordLink.addChild(linkedRecordTypeChild);
+
+		RestDataAtomic linkedRecordIdChild = RestDataAtomic.withNameInDataAndValue("linkedRecordId", "someRecordId");
+		restDataRecordLink.addChild(linkedRecordIdChild);
 		restDataGroup.addChild(restDataRecordLink);
 
 		SpiderDataGroup spiderDataGroup = dataGroupRestToSpiderConverter.toSpider();

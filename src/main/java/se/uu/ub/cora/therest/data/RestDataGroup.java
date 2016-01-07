@@ -19,12 +19,14 @@
 
 package se.uu.ub.cora.therest.data;
 
+import se.uu.ub.cora.spider.data.DataMissingException;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public final class RestDataGroup implements RestDataElement, RestData {
+public class RestDataGroup implements RestDataElement, RestData {
 
 	private final String nameInData;
 	private Map<String, String> attributes = new HashMap<>();
@@ -35,7 +37,7 @@ public final class RestDataGroup implements RestDataElement, RestData {
 		return new RestDataGroup(nameInData);
 	}
 
-	private RestDataGroup(String nameInData) {
+	protected RestDataGroup(String nameInData) {
 		this.nameInData = nameInData;
 	}
 
@@ -67,4 +69,23 @@ public final class RestDataGroup implements RestDataElement, RestData {
 	public String getRepeatId() {
 		return repeatId;
 	}
+
+	public boolean containsChildWithNameInData(String nameInData) {
+		for(RestDataElement restDataElement : getChildren()){
+			if(restDataElement.getNameInData().equals(nameInData)){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public RestDataElement getFirstChildWithNameInData(String nameInData) {
+		for(RestDataElement restDataElement : getChildren()){
+			if(restDataElement.getNameInData().equals(nameInData)){
+				return restDataElement;
+			}
+		}
+		throw new DataMissingException("Requested child " + nameInData + " does not exist");
+	}
+
 }

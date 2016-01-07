@@ -21,11 +21,7 @@ package se.uu.ub.cora.therest.data.converter;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import se.uu.ub.cora.therest.data.RestDataAtomic;
-import se.uu.ub.cora.therest.data.RestDataAttribute;
-import se.uu.ub.cora.therest.data.RestDataElement;
-import se.uu.ub.cora.therest.data.RestDataGroup;
-import se.uu.ub.cora.therest.data.RestDataRecordLink;
+import se.uu.ub.cora.therest.data.*;
 import se.uu.ub.cora.therest.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.therest.json.builder.org.OrgJsonBuilderFactoryAdapter;
 
@@ -75,10 +71,14 @@ public class DataToJsonConverterFactoryTest {
 
 	@Test
 	public void testJsonCreateFactoryDataRecordLink() {
-		RestDataElement restDataElement = RestDataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId(
-				"recordLinkNameInData", "someRecordType", "someRecordId");
+		RestDataGroupRecordLink recordLink = RestDataGroupRecordLink.withNameInData("recordLinkNameInData");
+		RestDataAtomic linkedRecordType = RestDataAtomic.withNameInDataAndValue("linkedRecordType", "someRecordType");
+		recordLink.addChild(linkedRecordType);
+
+		RestDataAtomic linkedRecordId = RestDataAtomic.withNameInDataAndValue("linkedRecordId", "someRecordId");
+		recordLink.addChild(linkedRecordId);
 		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
-				.createForRestDataElement(factory, restDataElement);
+				.createForRestDataElement(factory, recordLink);
 
 		assertTrue(dataToJsonConverter instanceof DataRecordLinkToJsonConverter);
 

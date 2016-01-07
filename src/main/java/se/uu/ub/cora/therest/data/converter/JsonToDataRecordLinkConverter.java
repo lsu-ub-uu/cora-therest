@@ -19,8 +19,9 @@
 
 package se.uu.ub.cora.therest.data.converter;
 
+import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataElement;
-import se.uu.ub.cora.therest.data.RestDataRecordLink;
+import se.uu.ub.cora.therest.data.RestDataGroupRecordLink;
 import se.uu.ub.cora.therest.json.parser.JsonObject;
 import se.uu.ub.cora.therest.json.parser.JsonParseException;
 
@@ -126,14 +127,21 @@ public final class JsonToDataRecordLinkConverter implements JsonToDataConverter 
 		String nameInData = getStringValueFromJsonObject("name");
 		String linkedRecordType = getStringValueFromJsonObject("linkedRecordType");
 		String linkedRecordId = getStringValueFromJsonObject("linkedRecordId");
-		RestDataRecordLink restDataRecordLink = RestDataRecordLink
-				.withNameInDataAndLinkedRecordTypeAndLinkedRecordId(nameInData, linkedRecordType, linkedRecordId);
+		RestDataGroupRecordLink restDataRecordLink = RestDataGroupRecordLink.withNameInData(nameInData);
+
+		RestDataAtomic linkedRecordTypeElement = RestDataAtomic.withNameInDataAndValue("linkedRecordType", linkedRecordType);
+		restDataRecordLink.addChild(linkedRecordTypeElement);
+
+		RestDataAtomic linkedRecordIdElement = RestDataAtomic.withNameInDataAndValue("linkedRecordId", linkedRecordId);
+		restDataRecordLink.addChild(linkedRecordIdElement);
+//						.withNameInDataAndLinkedRecordTypeAndLinkedRecordId(nameInData, linkedRecordType, linkedRecordId);
 		if (hasRepeatId()) {
 			restDataRecordLink.setRepeatId(getStringValueFromJsonObject("repeatId"));
 		}
 
 		if(hasLinkedRepeatId()) {
-			restDataRecordLink.setLinkedRepeatId(getStringValueFromJsonObject("linkedRepeatId"));
+			RestDataAtomic linkedRepeatId = RestDataAtomic.withNameInDataAndValue("linkedRepeatId", getStringValueFromJsonObject("linkedRepeatId"));
+			restDataRecordLink.addChild(linkedRepeatId);
 		}
 		return restDataRecordLink;
 	}

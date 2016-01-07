@@ -24,8 +24,6 @@ import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.spider.record.storage.RecordStorage;
 import se.uu.ub.cora.spider.record.storage.RecordStorageInMemory;
 
-//import se.uu.ub.cora.bookkeeper.data.DataRecordLink;
-
 public class TestDataRecordInMemoryStorage {
 	public static RecordStorageInMemory createRecordStorageInMemoryWithTestData() {
 		RecordStorageInMemory recordsInMemory = new RecordStorageInMemory();
@@ -97,8 +95,6 @@ public class TestDataRecordInMemoryStorage {
 
 		DataAtomic fromLinkedRecordId = DataAtomic.withNameInDataAndValue("linkedRecordId", "place:0002");
 		from.addChild(fromLinkedRecordId);
-//		DataRecordLink from = DataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId("from", "place",
-//				"place:0002");
 		recordToRecordLink.addChild(from);
 
 		DataGroup to = DataGroup.withNameInData("to");
@@ -107,8 +103,6 @@ public class TestDataRecordInMemoryStorage {
 
 		DataAtomic toLinkedRecordId = DataAtomic.withNameInDataAndValue("linkedRecordId", "place:0001");
 		to.addChild(toLinkedRecordId);
-//		DataRecordLink to = DataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId("to", "place",
-//				"place:0001");
 		recordToRecordLink.addChild(to);
 
 		collectedLinksList.addChild(recordToRecordLink);
