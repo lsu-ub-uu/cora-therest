@@ -30,6 +30,8 @@ import java.util.Map;
 
 public final class DataRecordLinkToJsonConverter extends DataToJsonConverter {
 
+	private static final String LINKED_REPEAT_ID = "linkedRepeatId";
+	private static final String LINKED_PATH = "linkedPath";
 	private RestDataGroupRecordLink recordLink;
 	private JsonObjectBuilder recordLinkBuilder;
 	private JsonBuilderFactory jsonFactory;
@@ -81,23 +83,23 @@ public final class DataRecordLinkToJsonConverter extends DataToJsonConverter {
 
 	private void possiblyAddLinkedRepeatId() {
 		if(hasNonEmptyLinkedRepeatId()){
-			RestDataAtomic linkedRepeatId = (RestDataAtomic) recordLink.getFirstChildWithNameInData("linkedRepeatId");
-			recordLinkBuilder.addKeyString("linkedRepeatId", linkedRepeatId.getValue());
+			RestDataAtomic linkedRepeatId = (RestDataAtomic) recordLink.getFirstChildWithNameInData(LINKED_REPEAT_ID);
+			recordLinkBuilder.addKeyString(LINKED_REPEAT_ID, linkedRepeatId.getValue());
 		}
 	}
 
 	private boolean hasNonEmptyLinkedRepeatId() {
-		return recordLink.containsChildWithNameInData("linkedRepeatId") &&
-				!((RestDataAtomic) recordLink.getFirstChildWithNameInData("linkedRepeatId")).getValue().equals("");
+		return recordLink.containsChildWithNameInData(LINKED_REPEAT_ID) &&
+				!((RestDataAtomic) recordLink.getFirstChildWithNameInData(LINKED_REPEAT_ID)).getValue().equals("");
 	}
 
 
 	private void possiblyAddLinkedPath() {
-		if(recordLink.containsChildWithNameInData("linkedPath")) {
-			RestDataGroup linkedPath = (RestDataGroup) recordLink.getFirstChildWithNameInData("linkedPath");
+		if(recordLink.containsChildWithNameInData(LINKED_PATH)) {
+			RestDataGroup linkedPath = (RestDataGroup) recordLink.getFirstChildWithNameInData(LINKED_PATH);
 			DataToJsonConverter dataGroupConverter = DataGroupToJsonConverter.usingJsonFactoryForRestDataGroup(jsonFactory, linkedPath);
 			JsonObjectBuilder dataGroupObject = dataGroupConverter.toJsonObjectBuilder();
-			recordLinkBuilder.addKeyJsonObjectBuilder("linkedPath", dataGroupObject);
+			recordLinkBuilder.addKeyJsonObjectBuilder(LINKED_PATH, dataGroupObject);
 		}
 	}
 

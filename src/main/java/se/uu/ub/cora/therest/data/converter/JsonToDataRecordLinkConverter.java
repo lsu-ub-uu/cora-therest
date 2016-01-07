@@ -28,6 +28,9 @@ import se.uu.ub.cora.therest.json.parser.JsonParseException;
 public final class JsonToDataRecordLinkConverter implements JsonToDataConverter {
 
 	private static final int NUM_OF_MANDATORY_KEYS = 3;
+	private static final String LINKED_RECORD_TYPE = "linkedRecordType";
+	private static final String LINKED_RECORD_ID = "linkedRecordId";
+	private static final String LINKED_REPEAT_ID = "linkedRepeatId";
 	private JsonObject jsonObject;
 	private static final int NUM_OF_ALLOWED_KEYS_AT_TOP_LEVEL = 7;
 
@@ -69,10 +72,10 @@ public final class JsonToDataRecordLinkConverter implements JsonToDataConverter 
 		if (!jsonObject.containsKey("name")) {
 			throw new JsonParseException("Group data must contain key \"name\"");
 		}
-		if (!jsonObject.containsKey("linkedRecordType")) {
+		if (!jsonObject.containsKey(LINKED_RECORD_TYPE)) {
 			throw new JsonParseException("Group data must contain key \"linkedRecordType\"");
 		}
-		if (!jsonObject.containsKey("linkedRecordId")) {
+		if (!jsonObject.containsKey(LINKED_RECORD_ID)) {
 			throw new JsonParseException("Group data must contain key \"linkedRecordId\"");
 		}
 	}
@@ -112,7 +115,7 @@ public final class JsonToDataRecordLinkConverter implements JsonToDataConverter 
 	}
 
 	private boolean hasLinkedRepeatId() {
-		return jsonObject.containsKey("linkedRepeatId");
+		return jsonObject.containsKey(LINKED_REPEAT_ID);
 	}
 
 	private boolean hasLinkedPath() {
@@ -125,22 +128,21 @@ public final class JsonToDataRecordLinkConverter implements JsonToDataConverter 
 
 	private RestDataElement createDataGroupInstance() {
 		String nameInData = getStringValueFromJsonObject("name");
-		String linkedRecordType = getStringValueFromJsonObject("linkedRecordType");
-		String linkedRecordId = getStringValueFromJsonObject("linkedRecordId");
+		String linkedRecordType = getStringValueFromJsonObject(LINKED_RECORD_TYPE);
+		String linkedRecordId = getStringValueFromJsonObject(LINKED_RECORD_ID);
 		RestDataGroupRecordLink restDataRecordLink = RestDataGroupRecordLink.withNameInData(nameInData);
 
-		RestDataAtomic linkedRecordTypeElement = RestDataAtomic.withNameInDataAndValue("linkedRecordType", linkedRecordType);
+		RestDataAtomic linkedRecordTypeElement = RestDataAtomic.withNameInDataAndValue(LINKED_RECORD_TYPE, linkedRecordType);
 		restDataRecordLink.addChild(linkedRecordTypeElement);
 
-		RestDataAtomic linkedRecordIdElement = RestDataAtomic.withNameInDataAndValue("linkedRecordId", linkedRecordId);
+		RestDataAtomic linkedRecordIdElement = RestDataAtomic.withNameInDataAndValue(LINKED_RECORD_ID, linkedRecordId);
 		restDataRecordLink.addChild(linkedRecordIdElement);
-//						.withNameInDataAndLinkedRecordTypeAndLinkedRecordId(nameInData, linkedRecordType, linkedRecordId);
 		if (hasRepeatId()) {
 			restDataRecordLink.setRepeatId(getStringValueFromJsonObject("repeatId"));
 		}
 
 		if(hasLinkedRepeatId()) {
-			RestDataAtomic linkedRepeatId = RestDataAtomic.withNameInDataAndValue("linkedRepeatId", getStringValueFromJsonObject("linkedRepeatId"));
+			RestDataAtomic linkedRepeatId = RestDataAtomic.withNameInDataAndValue(LINKED_REPEAT_ID, getStringValueFromJsonObject(LINKED_REPEAT_ID));
 			restDataRecordLink.addChild(linkedRepeatId);
 		}
 		return restDataRecordLink;

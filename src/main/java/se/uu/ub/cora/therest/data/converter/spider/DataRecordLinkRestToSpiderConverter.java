@@ -26,6 +26,7 @@ import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.RestDataGroupRecordLink;
 
 public final class DataRecordLinkRestToSpiderConverter {
+	private static final String LINKED_REPEAT_ID = "linkedRepeatId";
 	private RestDataGroupRecordLink restDataRecordLink;
 
 	public static DataRecordLinkRestToSpiderConverter fromRestDataRecordLink(
@@ -52,10 +53,10 @@ public final class DataRecordLinkRestToSpiderConverter {
 
 		spiderDataRecordLink.setRepeatId(restDataRecordLink.getRepeatId());
 
-		if(restDataRecordLink.containsChildWithNameInData("linkedRepeatId")) {
-			RestDataAtomic restLinkedRepeatId = (RestDataAtomic) restDataRecordLink.getFirstChildWithNameInData("linkedRepeatId");
+		if(restDataRecordLink.containsChildWithNameInData(LINKED_REPEAT_ID)) {
+			RestDataAtomic restLinkedRepeatId = (RestDataAtomic) restDataRecordLink.getFirstChildWithNameInData(LINKED_REPEAT_ID);
 
-			SpiderDataAtomic linkedRepeatId = SpiderDataAtomic.withNameInDataAndValue("linkedRepeatId", restLinkedRepeatId.getValue());
+			SpiderDataAtomic linkedRepeatId = SpiderDataAtomic.withNameInDataAndValue(LINKED_REPEAT_ID, restLinkedRepeatId.getValue());
 			spiderDataRecordLink.addChild(linkedRepeatId);
 		}
 		addLinkedPathIfItExists(spiderDataRecordLink);

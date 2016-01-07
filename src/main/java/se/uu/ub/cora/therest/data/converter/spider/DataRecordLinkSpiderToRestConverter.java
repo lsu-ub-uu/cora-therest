@@ -27,6 +27,7 @@ import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.RestDataGroupRecordLink;
 
 public final class DataRecordLinkSpiderToRestConverter {
+	private static final String LINKED_REPEAT_ID = "linkedRepeatId";
 	private SpiderDataRecordLink spiderDataRecordLink;
 	private String baseURL;
 	private RestDataGroupRecordLink restDataRecordLink;
@@ -54,9 +55,6 @@ public final class DataRecordLinkSpiderToRestConverter {
 		RestDataAtomic restLinkedRecordId = RestDataAtomic.withNameInDataAndValue("linkedRecordId", linkedRecordId.getValue());
 		restDataRecordLink.addChild(restLinkedRecordId);
 
-//				withNameInDataAndLinkedRecordTypeAndLinkedRecordId(
-//						spiderDataRecordLink.getNameInData(), linkedRecordType.getValue(),
-//						linkedRecordId.getValue());
 		restDataRecordLink.setRepeatId(spiderDataRecordLink.getRepeatId());
 		addLinkedRepeatIdIfItExists();
 		addLinkedPathIfItExists();
@@ -65,10 +63,10 @@ public final class DataRecordLinkSpiderToRestConverter {
 	}
 
 	private void addLinkedRepeatIdIfItExists() {
-		if(spiderDataRecordLink.containsChildWithNameInData("linkedRepeatId")) {
-			SpiderDataAtomic linkedRepeatId = (SpiderDataAtomic) spiderDataRecordLink.getFirstChildWithNameInData("linkedRepeatId");
+		if(spiderDataRecordLink.containsChildWithNameInData(LINKED_REPEAT_ID)) {
+			SpiderDataAtomic linkedRepeatId = (SpiderDataAtomic) spiderDataRecordLink.getFirstChildWithNameInData(LINKED_REPEAT_ID);
 
-			RestDataAtomic restLinkedRepeatId = RestDataAtomic.withNameInDataAndValue("linkedRepeatId", linkedRepeatId.getValue());
+			RestDataAtomic restLinkedRepeatId = RestDataAtomic.withNameInDataAndValue(LINKED_REPEAT_ID, linkedRepeatId.getValue());
 
 			restDataRecordLink.addChild(restLinkedRepeatId);
 		}
@@ -77,7 +75,6 @@ public final class DataRecordLinkSpiderToRestConverter {
 	private void addLinkedPathIfItExists() {
 		if(spiderDataRecordLink.containsChildWithNameInData("linkedPath")) {
 			SpiderDataGroup spiderLinkedPath = (SpiderDataGroup)spiderDataRecordLink.getFirstChildWithNameInData("linkedPath");
-//			SpiderDataGroup spiderLinkedPath = spiderDataRecordLink.getLinkedPath();
 			DataGroupSpiderToRestConverter dataGroupSpiderToRestConverter =
 					DataGroupSpiderToRestConverter.fromSpiderDataGroupWithBaseURL(spiderLinkedPath, baseURL);
 			RestDataGroup restLinkedPath = dataGroupSpiderToRestConverter.toRest();
