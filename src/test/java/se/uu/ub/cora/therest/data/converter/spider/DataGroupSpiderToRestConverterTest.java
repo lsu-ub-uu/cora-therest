@@ -19,8 +19,6 @@
 
 package se.uu.ub.cora.therest.data.converter.spider;
 
-import java.util.Iterator;
-
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -30,7 +28,9 @@ import se.uu.ub.cora.spider.data.SpiderDataRecordLink;
 import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataElement;
 import se.uu.ub.cora.therest.data.RestDataGroup;
-import se.uu.ub.cora.therest.data.RestDataRecordLink;
+import se.uu.ub.cora.therest.data.RestDataGroupRecordLink;
+
+import java.util.Iterator;
 
 import static org.testng.Assert.assertEquals;
 
@@ -40,7 +40,7 @@ public class DataGroupSpiderToRestConverterTest {
 	private DataGroupSpiderToRestConverter dataGroupSpiderToRestConverter;
 
 	@BeforeMethod
-	public void beforeMetod() {
+	public void beforeMethod() {
 		spiderDataGroup = SpiderDataGroup.withNameInData("nameInData");
 		dataGroupSpiderToRestConverter = DataGroupSpiderToRestConverter
 				.fromSpiderDataGroupWithBaseURL(spiderDataGroup, baseURL);
@@ -82,14 +82,26 @@ public class DataGroupSpiderToRestConverterTest {
 
 	@Test
 	public void testToRestWithRecordLinkChild() {
-		spiderDataGroup.addChild(SpiderDataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId(
-				"childNameInData", "someRecordType", "someRecordId"));
+		SpiderDataRecordLink dataRecordLink = SpiderDataRecordLink.withNameInData("childNameInData");
+
+		SpiderDataAtomic linkedRecordTypeChild = SpiderDataAtomic.withNameInDataAndValue("linkedRecordType", "someRecordType");
+		dataRecordLink.addChild(linkedRecordTypeChild);
+
+		SpiderDataAtomic linkedRecordIdChild = SpiderDataAtomic.withNameInDataAndValue("linkedRecordId", "someRecordId");
+		dataRecordLink.addChild(linkedRecordIdChild);
+
+		spiderDataGroup.addChild(dataRecordLink);
+
 		RestDataGroup restDataGroup = dataGroupSpiderToRestConverter.toRest();
-		RestDataRecordLink restDataRecordLink = (RestDataRecordLink) restDataGroup.getChildren()
+		RestDataGroupRecordLink restDataRecordLink = (RestDataGroupRecordLink) restDataGroup.getChildren()
 				.iterator().next();
 		assertEquals(restDataRecordLink.getNameInData(), "childNameInData");
-		assertEquals(restDataRecordLink.getLinkedRecordType(), "someRecordType");
-		assertEquals(restDataRecordLink.getLinkedRecordId(), "someRecordId");
+
+		RestDataAtomic linkedRecordType = (RestDataAtomic) restDataRecordLink.getFirstChildWithNameInData("linkedRecordType");
+		assertEquals(linkedRecordType.getValue(), "someRecordType");
+
+		RestDataAtomic linkedRecordId = (RestDataAtomic) restDataRecordLink.getFirstChildWithNameInData("linkedRecordId");
+		assertEquals(linkedRecordId.getValue(), "someRecordId");
 	}
 
 	@Test

@@ -21,7 +21,6 @@ package se.uu.ub.cora.therest.testdata;
 
 import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
-import se.uu.ub.cora.bookkeeper.data.DataRecordLink;
 import se.uu.ub.cora.spider.record.storage.RecordStorage;
 import se.uu.ub.cora.spider.record.storage.RecordStorageInMemory;
 
@@ -89,11 +88,21 @@ public class TestDataRecordInMemoryStorage {
 		// create link to place:0001
 		DataGroup collectedLinksList = DataGroup.withNameInData("collectedLinksList");
 		DataGroup recordToRecordLink = DataGroup.withNameInData("recordToRecordLink");
-		DataRecordLink from = DataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId("from", "place",
-				"place:0002");
+
+		DataGroup from = DataGroup.withNameInData("from");
+		DataAtomic fromLinkedRecordType = DataAtomic.withNameInDataAndValue("linkedRecordType", "place");
+		from.addChild(fromLinkedRecordType);
+
+		DataAtomic fromLinkedRecordId = DataAtomic.withNameInDataAndValue("linkedRecordId", "place:0002");
+		from.addChild(fromLinkedRecordId);
 		recordToRecordLink.addChild(from);
-		DataRecordLink to = DataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId("to", "place",
-				"place:0001");
+
+		DataGroup to = DataGroup.withNameInData("to");
+		DataAtomic toLinkedRecordType = DataAtomic.withNameInDataAndValue("linkedRecordType", "place");
+		to.addChild(toLinkedRecordType);
+
+		DataAtomic toLinkedRecordId = DataAtomic.withNameInDataAndValue("linkedRecordId", "place:0001");
+		to.addChild(toLinkedRecordId);
 		recordToRecordLink.addChild(to);
 
 		collectedLinksList.addChild(recordToRecordLink);

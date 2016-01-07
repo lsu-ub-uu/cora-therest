@@ -19,12 +19,11 @@
 
 package se.uu.ub.cora.therest.data;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertTrue;
-
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import se.uu.ub.cora.spider.data.DataMissingException;
+
+import static org.testng.Assert.*;
 
 public class RestDataGroupTest {
 	private RestDataGroup restDataGroup;
@@ -35,7 +34,7 @@ public class RestDataGroupTest {
 	}
 
 	@Test
-	public void testGropuIsRestData() {
+	public void testGroupIsRestData() {
 		assertTrue(restDataGroup instanceof RestData);
 	}
 
@@ -66,5 +65,31 @@ public class RestDataGroupTest {
 	public void testInitWithRepeatId() {
 		restDataGroup.setRepeatId("x1");
 		assertEquals(restDataGroup.getRepeatId(), "x1");
+	}
+
+	@Test
+	public void testContainsChildWithNameInData(){
+		RestDataElement restDataElement = RestDataGroup.withNameInData("nameInData2");
+		restDataGroup.addChild(restDataElement);
+		assertTrue(restDataGroup.containsChildWithNameInData("nameInData2"));
+	}
+
+	@Test
+	public void testContainsChildWithNameInDataNotFound(){
+		RestDataElement restDataElement = RestDataGroup.withNameInData("nameInData2");
+		restDataGroup.addChild(restDataElement);
+		assertFalse(restDataGroup.containsChildWithNameInData("nameInData_NOT_FOUND"));
+	}
+
+	@Test
+	public void testGetFirstChildWithNameInData(){
+		RestDataElement restDataElement = RestDataGroup.withNameInData("nameInData2");
+		restDataGroup.addChild(restDataElement);
+		assertNotNull(restDataGroup.getFirstChildWithNameInData("nameInData2"));
+	}
+
+	@Test(expectedExceptions = DataMissingException.class)
+	public void testGetFirstChildWithNameInDataNotFound(){
+		restDataGroup.getFirstChildWithNameInData("nameInData_NOT_FOUND");
 	}
 }

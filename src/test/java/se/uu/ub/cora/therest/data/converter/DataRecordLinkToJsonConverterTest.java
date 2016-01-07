@@ -23,21 +23,27 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import se.uu.ub.cora.spider.data.Action;
 import se.uu.ub.cora.therest.data.ActionLink;
+import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataGroup;
-import se.uu.ub.cora.therest.data.RestDataRecordLink;
+import se.uu.ub.cora.therest.data.RestDataGroupRecordLink;
 import se.uu.ub.cora.therest.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.therest.json.builder.org.OrgJsonBuilderFactoryAdapter;
 
 import static org.testng.Assert.assertEquals;
 
 public class DataRecordLinkToJsonConverterTest {
-	private RestDataRecordLink recordLink;
+	private RestDataGroupRecordLink recordLink;
 	private DataRecordLinkToJsonConverter converter;
 
 	@BeforeMethod
 	public void setUp() {
-		recordLink = RestDataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId("nameInData",
-				"aRecordType", "aRecordId");
+		recordLink = RestDataGroupRecordLink.withNameInData("nameInData");
+
+		RestDataAtomic linkedRecordType = RestDataAtomic.withNameInDataAndValue("linkedRecordType", "aRecordType");
+		recordLink.addChild(linkedRecordType);
+
+		RestDataAtomic linkedRecordId = RestDataAtomic.withNameInDataAndValue("linkedRecordId", "aRecordId");
+		recordLink.addChild(linkedRecordId);
 
 		JsonBuilderFactory jsonFactory = new OrgJsonBuilderFactoryAdapter();
 
@@ -74,7 +80,8 @@ public class DataRecordLinkToJsonConverterTest {
 
 	@Test
 	public void testToJsonWithLinkedRepeatId(){
-		recordLink.setLinkedRepeatId("linkedOne");
+		RestDataAtomic linkedRepeatId = RestDataAtomic.withNameInDataAndValue("linkedRepeatId", "linkedOne");
+		recordLink.addChild(linkedRepeatId);
 		String jsonString = converter.toJson();
 
 		assertEquals(jsonString, "{\"linkedRecordType\":\"aRecordType\",\"linkedRecordId\":\"aRecordId\""
@@ -83,7 +90,8 @@ public class DataRecordLinkToJsonConverterTest {
 
 	@Test
 	public void testToJsonWithEmptyLinkedRepeatId() {
-		recordLink.setLinkedRepeatId("");
+		RestDataAtomic linkedRepeatId = RestDataAtomic.withNameInDataAndValue("linkedRepeatId", "");
+		recordLink.addChild(linkedRepeatId);
 		String jsonString = converter.toJson();
 
 		assertEquals(jsonString, "{\"linkedRecordType\":\"aRecordType\",\"linkedRecordId\":\"aRecordId\"" + ""
@@ -93,7 +101,7 @@ public class DataRecordLinkToJsonConverterTest {
 	@Test
 	public void testToJsonWithLinkedPath(){
 		RestDataGroup linkedPathDataGroup = RestDataGroup.withNameInData("linkedPath");
-		recordLink.setLinkedPath(linkedPathDataGroup);
+		recordLink.addChild(linkedPathDataGroup);
 		String jsonString = converter.toJson();
 
 		assertEquals(jsonString, "{\"linkedRecordType\":\"aRecordType\",\"linkedRecordId\":\"aRecordId\"" + ""

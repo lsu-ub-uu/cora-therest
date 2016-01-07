@@ -59,14 +59,14 @@ public final class DataGroupSpiderToRestConverter {
 
 	private RestDataElement convertToElementEquivalentDataClass(
 			SpiderDataElement spiderDataElement) {
+		if (spiderDataElement instanceof SpiderDataRecordLink) {
+			return DataRecordLinkSpiderToRestConverter.fromSpiderDataRecordLinkWithBaseURL(
+					(SpiderDataRecordLink) spiderDataElement, baseURL).toRest();
+		}
 		if (spiderDataElement instanceof SpiderDataGroup) {
 			return DataGroupSpiderToRestConverter
 					.fromSpiderDataGroupWithBaseURL((SpiderDataGroup) spiderDataElement, baseURL)
 					.toRest();
-		}
-		if (spiderDataElement instanceof SpiderDataRecordLink) {
-			return DataRecordLinkSpiderToRestConverter.fromSpiderDataRecordLinkWithBaseURL(
-					(SpiderDataRecordLink) spiderDataElement, baseURL).toRest();
 		}
 		return DataAtomicSpiderToRestConverter
 				.fromSpiderDataAtomic((SpiderDataAtomic) spiderDataElement).toRest();

@@ -19,15 +19,17 @@
 
 package se.uu.ub.cora.therest.data.converter.spider;
 
+import se.uu.ub.cora.spider.data.SpiderDataAtomic;
 import se.uu.ub.cora.spider.data.SpiderDataGroup;
 import se.uu.ub.cora.spider.data.SpiderDataRecordLink;
+import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataGroup;
-import se.uu.ub.cora.therest.data.RestDataRecordLink;
+import se.uu.ub.cora.therest.data.RestDataGroupRecordLink;
 
 public final class DataRecordLinkSpiderToRestConverter {
 	private SpiderDataRecordLink spiderDataRecordLink;
 	private String baseURL;
-	private RestDataRecordLink restDataRecordLink;
+	private RestDataGroupRecordLink restDataRecordLink;
 
 	public static DataRecordLinkSpiderToRestConverter fromSpiderDataRecordLinkWithBaseURL(
 			SpiderDataRecordLink spiderDataRecordLink, String baseURL) {
@@ -40,26 +42,47 @@ public final class DataRecordLinkSpiderToRestConverter {
 		this.baseURL = baseURL;
 	}
 
-	public RestDataRecordLink toRest() {
-		restDataRecordLink = RestDataRecordLink.withNameInDataAndLinkedRecordTypeAndLinkedRecordId(
-				spiderDataRecordLink.getNameInData(), spiderDataRecordLink.getLinkedRecordType(),
-				spiderDataRecordLink.getLinkedRecordId());
-		restDataRecordLink.setRepeatId(spiderDataRecordLink.getRepeatId());
-		restDataRecordLink.setLinkedRepeatId(spiderDataRecordLink.getLinkedRepeatId());
+	public RestDataGroupRecordLink toRest() {
 
+		SpiderDataAtomic linkedRecordType = (SpiderDataAtomic) spiderDataRecordLink.getFirstChildWithNameInData("linkedRecordType");
+		SpiderDataAtomic linkedRecordId = (SpiderDataAtomic) spiderDataRecordLink.getFirstChildWithNameInData("linkedRecordId");
+
+		restDataRecordLink = RestDataGroupRecordLink.withNameInData(spiderDataRecordLink.getNameInData());
+		RestDataAtomic restLinkedRecordType = RestDataAtomic.withNameInDataAndValue("linkedRecordType", linkedRecordType.getValue());
+		restDataRecordLink.addChild(restLinkedRecordType);
+
+		RestDataAtomic restLinkedRecordId = RestDataAtomic.withNameInDataAndValue("linkedRecordId", linkedRecordId.getValue());
+		restDataRecordLink.addChild(restLinkedRecordId);
+
+//				withNameInDataAndLinkedRecordTypeAndLinkedRecordId(
+//						spiderDataRecordLink.getNameInData(), linkedRecordType.getValue(),
+//						linkedRecordId.getValue());
+		restDataRecordLink.setRepeatId(spiderDataRecordLink.getRepeatId());
+		addLinkedRepeatIdIfItExists();
 		addLinkedPathIfItExists();
-		createRestLinks(restDataRecordLink.getLinkedRecordType(), restDataRecordLink.getLinkedRecordId());
+		createRestLinks(restLinkedRecordType.getValue(), restLinkedRecordId.getValue());
 		return restDataRecordLink;
 	}
 
+	private void addLinkedRepeatIdIfItExists() {
+		if(spiderDataRecordLink.containsChildWithNameInData("linkedRepeatId")) {
+			SpiderDataAtomic linkedRepeatId = (SpiderDataAtomic) spiderDataRecordLink.getFirstChildWithNameInData("linkedRepeatId");
+
+			RestDataAtomic restLinkedRepeatId = RestDataAtomic.withNameInDataAndValue("linkedRepeatId", linkedRepeatId.getValue());
+
+			restDataRecordLink.addChild(restLinkedRepeatId);
+		}
+	}
+
 	private void addLinkedPathIfItExists() {
-		if(spiderDataRecordLink.getLinkedPath() != null) {
-			SpiderDataGroup spiderLinkedPath = spiderDataRecordLink.getLinkedPath();
+		if(spiderDataRecordLink.containsChildWithNameInData("linkedPath")) {
+			SpiderDataGroup spiderLinkedPath = (SpiderDataGroup)spiderDataRecordLink.getFirstChildWithNameInData("linkedPath");
+//			SpiderDataGroup spiderLinkedPath = spiderDataRecordLink.getLinkedPath();
 			DataGroupSpiderToRestConverter dataGroupSpiderToRestConverter =
 					DataGroupSpiderToRestConverter.fromSpiderDataGroupWithBaseURL(spiderLinkedPath, baseURL);
 			RestDataGroup restLinkedPath = dataGroupSpiderToRestConverter.toRest();
 
-			restDataRecordLink.setLinkedPath(restLinkedPath);
+			restDataRecordLink.addChild(restLinkedPath);
 		}
 	}
 
