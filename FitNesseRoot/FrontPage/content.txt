@@ -3,4 +3,6 @@
 !note Release ${FITNESSE_VERSION}
 TheRestTests
 
+JsClient
+
 DocumentationPage
