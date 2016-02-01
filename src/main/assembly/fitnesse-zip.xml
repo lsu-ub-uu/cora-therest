@@ -29,7 +29,7 @@
 		<fileSet>
 			<directory>${project.build.directory}/../FitNesseRoot</directory>
 			<excludes>
-				<exclude>*.zip</exclude>
+                <exclude>**/*.zip</exclude>
 			</excludes>
 		</fileSet>
 		<fileSet>
