@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-docker stop therest-dev
+docker-compose stop
