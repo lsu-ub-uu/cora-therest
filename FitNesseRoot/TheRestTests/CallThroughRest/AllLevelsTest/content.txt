@@ -1,6 +1,6 @@
 !contents -R2 -g -p -f -h
 This test will create the metadatagroup trainingProgram, containing two fields, id and createdBy. they are both mandatory (min 1, max 1)!--!It will then create a metadatagroup called singleTrainingProgram which must contain one trainingProgram, no less, no more.!-
--!Then the test will create a recordType which describes a singleTrainingProgram------------------------------------------
+-!Then the test will create a recordType which describes a singleTrainingProgram----------------------------------------------
 
 Last, we will create a trainingProgram using the metadata groups specified. We can only create a trainingProgram if we provide the mandatory elements.!-
 -!The first test is missing id.!-
@@ -28,7 +28,7 @@ Last, we will create a trainingProgram using the metadata groups specified. We c
 !***> Create recordType
 
 | Table:smartrics.rest.fitnesse.fixture.RestFixture | http://localhost:8089/cora |
-| setBody | {"name":"recordType","children":[{"name":"recordInfo","children":[{"name":"id","value":"singleTrainingProgramRecordType"}]},{"name":"metadataId","value":"singleTrainingProgram"},{"name":"abstract","value":"false"},{"name":"presentationViewId","value":"trainingAsPresentedWhenViewing"},{"name":"presentationFormId","value":"trainingAsPresentedWhenEditing"},{"name":"newMetadataId","value":"singleTrainingProgramNew"},{"name":"newPresentationFormId","value":"trainingAsPresentedWhenCreatingNew"},{"name":"listPresentationViewId","value":"trainingAsPresentedInList"},{"name":"searchMetadataId","value":"singleTrainingProgramSearch"},{"name":"searchPresentationFormId","value":"trainingAsPresentedWhenSearching"},{"name":"userSuppliedId","value":"false"},{"name":"selfPresentationViewId","value":"trainingPresentingItself"},{"name":"permissionKey","value":"SINGLETRAINING_TEST"}]} |
+| setBody | {"name":"recordType","children":[{"name":"recordInfo","children":[{"name":"id","value":"singleTrainingProgramRecordType"}]},{"name":"metadataId","value":"singleTrainingProgram"},{"name":"abstract","value":"false"},{"name":"presentationViewId","value":"trainingAsPresentedWhenViewing"},{"name":"presentationFormId","value":"trainingAsPresentedWhenEditing"},{"name":"newMetadataId","value":"singleTrainingProgramNew"},{"name":"newPresentationFormId","value":"trainingAsPresentedWhenCreatingNew"},{"name":"menuPresentationViewId","value":"singleTrainingProgramMenuPGroup"},{"name":"listPresentationViewId","value":"trainingAsPresentedInList"},{"name":"searchMetadataId","value":"singleTrainingProgramSearch"},{"name":"searchPresentationFormId","value":"trainingAsPresentedWhenSearching"},{"name":"userSuppliedId","value":"false"},{"name":"selfPresentationViewId","value":"trainingPresentingItself"},{"name":"permissionKey","value":"SINGLETRAINING_TEST"}]} |
 | POST | /rest/record/recordType | 201 | | |
 
 *!

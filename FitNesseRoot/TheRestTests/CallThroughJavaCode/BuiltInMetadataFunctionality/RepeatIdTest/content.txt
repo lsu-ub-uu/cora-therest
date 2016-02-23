@@ -27,7 +27,7 @@ The system should demand a unique non empty repeatId for all elements that can b
 
 !| RecordEndpointFixture |
 | type | json | testCreateRecord? | getStatusType? |
-| recordType | {"name":"recordType","children":[{"name":"recordInfo","children":[{"name":"id","value":"repeat"}]},{"name":"metadataId","value":"repeat"},{"name":"abstract","value":"false"},{"name":"presentationViewId","value":"pgRepeatView"},{"name":"presentationFormId","value":"pgRepeatForm"},{"name":"newMetadataId","value":"repeatNew"},{"name":"newPresentationFormId","value":"pgRepeatForm"},{"name":"listPresentationViewId","value":"pgRepeatList"},{"name":"searchMetadataId","value":"repeatSearch"},{"name":"searchPresentationFormId","value":"pgRepeatSearchForm"},{"name":"userSuppliedId","value":"true"},{"name":"selfPresentationViewId","value":"pgRepeatSelf"},{"name":"permissionKey","value":"REPEAT"}]} | | CREATED |
+| recordType | {"name":"recordType","children":[{"name":"recordInfo","children":[{"name":"id","value":"repeat"}]},{"name":"metadataId","value":"repeat"},{"name":"abstract","value":"false"},{"name":"presentationViewId","value":"pgRepeatView"},{"name":"presentationFormId","value":"pgRepeatForm"},{"name":"newMetadataId","value":"repeatNew"},{"name":"newPresentationFormId","value":"pgRepeatForm"},{"name":"menuPresentationViewId","value":"repeatMenuPGroup"},{"name":"listPresentationViewId","value":"pgRepeatList"},{"name":"searchMetadataId","value":"repeatSearch"},{"name":"searchPresentationFormId","value":"pgRepeatSearchForm"},{"name":"userSuppliedId","value":"true"},{"name":"selfPresentationViewId","value":"pgRepeatSelf"},{"name":"permissionKey","value":"REPEAT"}]} | | CREATED |
 
 *!
 !***> Create correct data on repeat
