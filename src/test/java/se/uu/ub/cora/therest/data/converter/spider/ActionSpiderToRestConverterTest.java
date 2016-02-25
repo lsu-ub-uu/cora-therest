@@ -37,9 +37,7 @@ public class ActionSpiderToRestConverterTest {
 
 	@BeforeMethod
 	public void setUp() {
-		// actions = new LinkedHashSet<>();
 		actions = new ArrayList<>();
-
 	}
 
 	@Test
