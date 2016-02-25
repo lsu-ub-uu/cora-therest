@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2016 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -20,25 +20,27 @@
 package se.uu.ub.cora.therest.data.converter.spider;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import se.uu.ub.cora.spider.data.Action;
 import se.uu.ub.cora.therest.data.ActionLink;
 
 public final class ActionSpiderToRestConverter {
 
+	private static final String APPLICATION_UUB_RECORD_LIST_JSON = "application/uub+recordList+json";
+	private static final String APPLICATION_UUB_RECORD_JSON = "application/uub+record+json";
 	private String baseURL;
-	private Set<Action> actions;
+	private List<Action> actions;
 	private String recordType;
 	private String recordId;
 
 	public static ActionSpiderToRestConverter fromSpiderActionsWithBaseURLAndRecordTypeAndRecordId(
-			Set<Action> actions, String baseURL, String recordType, String recordId) {
+			List<Action> actions, String baseURL, String recordType, String recordId) {
 		return new ActionSpiderToRestConverter(actions, baseURL, recordType, recordId);
 	}
 
-	private ActionSpiderToRestConverter(Set<Action> actions, String baseURL, String recordType,
+	private ActionSpiderToRestConverter(List<Action> actions, String baseURL, String recordType,
 			String recordId) {
 		this.actions = actions;
 		this.baseURL = baseURL;
@@ -49,23 +51,39 @@ public final class ActionSpiderToRestConverter {
 	public Map<String, ActionLink> toRest() {
 		Map<String, ActionLink> actionLinks = new LinkedHashMap<>();
 		for (Action action : actions) {
-			String url = recordType + "/" + recordId;
+			String url = baseURL + recordType + "/";
+			String urlWithRecordId = url + recordId;
 			ActionLink actionLink = ActionLink.withAction(action);
 
 			if (Action.READ.equals(action)) {
 				actionLink.setRequestMethod("GET");
+				actionLink.setURL(urlWithRecordId);
+				actionLink.setAccept(APPLICATION_UUB_RECORD_JSON);
 			} else if (Action.UPDATE.equals(action)) {
 				actionLink.setRequestMethod("POST");
-			}else if(Action.READ_INCOMING_LINKS.equals(action)){
+				actionLink.setURL(urlWithRecordId);
+				actionLink.setAccept(APPLICATION_UUB_RECORD_JSON);
+				actionLink.setContentType(APPLICATION_UUB_RECORD_JSON);
+			} else if (Action.READ_INCOMING_LINKS.equals(action)) {
 				actionLink.setRequestMethod("GET");
-				url = url + "/incomingLinks";
-			}else {
+				urlWithRecordId = urlWithRecordId + "/incomingLinks";
+				actionLink.setURL(urlWithRecordId);
+				actionLink.setAccept(APPLICATION_UUB_RECORD_LIST_JSON);
+			} else if (Action.DELETE.equals(action)) {
 				actionLink.setRequestMethod("DELETE");
+				actionLink.setURL(urlWithRecordId);
+			} else if (Action.CREATE.equals(action)) {
+				actionLink.setRequestMethod("POST");
+				actionLink.setURL(url);
+				actionLink.setAccept(APPLICATION_UUB_RECORD_JSON);
+				actionLink.setContentType(APPLICATION_UUB_RECORD_JSON);
+			} else {
+				// list / search
+				actionLink.setRequestMethod("GET");
+				actionLink.setURL(url);
+				actionLink.setAccept(APPLICATION_UUB_RECORD_LIST_JSON);
 			}
 
-			actionLink.setURL(baseURL + url);
-			actionLink.setAccept("application/uub+record+json");
-			actionLink.setContentType("application/uub+record+json");
 			actionLinks.put(action.name().toLowerCase(), actionLink);
 		}
 		return actionLinks;

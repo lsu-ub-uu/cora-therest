@@ -108,7 +108,6 @@ public class RecordEndpointTest {
 						+ "{\"children\":[{\"linkedRecordType\":\"place\""
 						+ ",\"linkedRecordId\":\"place:0002\""
 						+ ",\"actionLinks\":{\"read\":{\"requestMethod\":\"GET\",\"rel\":\"read\""
-						+ ",\"contentType\":\"application/uub+record+json\""
 						+ ",\"url\":\"http://localhost:8080/therest/rest/record/place/place:0002\""
 						+ ",\"accept\":\"application/uub+record+json\"}},\"name\":\"from\"}"
 						+ ",{\"linkedRecordType\":\"place\",\"linkedRecordId\":\"place:0001\""

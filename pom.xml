@@ -37,7 +37,7 @@
         <systemone.version>0.8-SNAPSHOT</systemone.version>
         <javax.ws.rs.version>2.0.1</javax.ws.rs.version>
         <jersey.version>2.16</jersey.version>
-        <org.json.version>20141113</org.json.version>
+        <org.json.version>20160212</org.json.version>
         <fitnesse.version>20151230</fitnesse.version>
     </properties>
 

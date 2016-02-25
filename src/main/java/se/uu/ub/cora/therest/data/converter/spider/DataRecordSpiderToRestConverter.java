@@ -119,6 +119,5 @@ public final class DataRecordSpiderToRestConverter {
 				.fromSpiderActionsWithBaseURLAndRecordTypeAndRecordId(spiderDataRecord.getActions(),
 						baseURL, recordType, recordId);
 		restDataRecord.setActionLinks(actionSpiderToRestConverter.toRest());
-
 	}
 }
