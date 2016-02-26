@@ -53,6 +53,7 @@ public final class ActionSpiderToRestConverter {
 		for (Action action : actions) {
 			String url = baseURL + recordType + "/";
 			String urlWithRecordId = url + recordId;
+			String urlForRecordTypeActions = baseURL + recordId + "/";
 			ActionLink actionLink = ActionLink.withAction(action);
 
 			if (Action.READ.equals(action)) {
@@ -74,13 +75,13 @@ public final class ActionSpiderToRestConverter {
 				actionLink.setURL(urlWithRecordId);
 			} else if (Action.CREATE.equals(action)) {
 				actionLink.setRequestMethod("POST");
-				actionLink.setURL(url);
+				actionLink.setURL(urlForRecordTypeActions);
 				actionLink.setAccept(APPLICATION_UUB_RECORD_JSON);
 				actionLink.setContentType(APPLICATION_UUB_RECORD_JSON);
 			} else {
 				// list / search
 				actionLink.setRequestMethod("GET");
-				actionLink.setURL(url);
+				actionLink.setURL(urlForRecordTypeActions);
 				actionLink.setAccept(APPLICATION_UUB_RECORD_LIST_JSON);
 			}
 
