@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2016 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -19,25 +19,25 @@
 
 package se.uu.ub.cora.therest.data.converter.spider;
 
-import java.util.LinkedHashSet;
+import static org.testng.Assert.assertEquals;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
 import se.uu.ub.cora.spider.data.Action;
 import se.uu.ub.cora.therest.data.ActionLink;
 
-import static org.testng.Assert.assertEquals;
-
 public class ActionSpiderToRestConverterTest {
 	private String baseURL = "http://localhost:8080/therest/rest/record/";
-	private Set<Action> actions;
+	private List<Action> actions;
 
 	@BeforeMethod
-	public void setUP() {
-		actions = new LinkedHashSet<>();
-
+	public void setUp() {
+		actions = new ArrayList<>();
 	}
 
 	@Test
@@ -54,10 +54,12 @@ public class ActionSpiderToRestConverterTest {
 		assertEquals(actionLink.getURL(),
 				"http://localhost:8080/therest/rest/record/recordType/recordId");
 		assertEquals(actionLink.getRequestMethod(), "GET");
+		assertEquals(actionLink.getAccept(), "application/uub+record+json");
+		assertEquals(actionLink.getContentType(), null);
 	}
 
 	@Test
-	public void testToRestReadIncomingList(){
+	public void testToRestReadIncomingList() {
 		Action action = Action.READ_INCOMING_LINKS;
 		actions.add(action);
 		ActionSpiderToRestConverter actionSpiderToRestConverter = ActionSpiderToRestConverter
@@ -69,6 +71,8 @@ public class ActionSpiderToRestConverterTest {
 		assertEquals(actionLink.getURL(),
 				"http://localhost:8080/therest/rest/record/recordType/recordId/incomingLinks");
 		assertEquals(actionLink.getRequestMethod(), "GET");
+		assertEquals(actionLink.getAccept(), "application/uub+recordList+json");
+		assertEquals(actionLink.getContentType(), null);
 	}
 
 	@Test
@@ -85,6 +89,8 @@ public class ActionSpiderToRestConverterTest {
 		assertEquals(actionLink.getURL(),
 				"http://localhost:8080/therest/rest/record/recordType/recordId");
 		assertEquals(actionLink.getRequestMethod(), "POST");
+		assertEquals(actionLink.getAccept(), "application/uub+record+json");
+		assertEquals(actionLink.getContentType(), "application/uub+record+json");
 	}
 
 	@Test
@@ -102,34 +108,99 @@ public class ActionSpiderToRestConverterTest {
 		assertEquals(actionLink.getURL(),
 				"http://localhost:8080/therest/rest/record/recordType/recordId");
 		assertEquals(actionLink.getRequestMethod(), "DELETE");
+		assertEquals(actionLink.getAccept(), null);
+		assertEquals(actionLink.getContentType(), null);
 	}
 
 	@Test
-	public void testToRestURLsWithAllActions(){
+	public void testToRestWithActionLinkCREATE() {
+		Action action = Action.CREATE;
+		actions.add(action);
+
+		ActionSpiderToRestConverter actionSpiderToRestConverter = ActionSpiderToRestConverter
+				.fromSpiderActionsWithBaseURLAndRecordTypeAndRecordId(actions, baseURL,
+						"recordType", "text");
+		Map<String, ActionLink> actionLinks = actionSpiderToRestConverter.toRest();
+
+		ActionLink actionLink = actionLinks.get("create");
+		assertEquals(actionLink.getAction(), Action.CREATE);
+		assertEquals(actionLink.getURL(), "http://localhost:8080/therest/rest/record/text/");
+		assertEquals(actionLink.getRequestMethod(), "POST");
+		assertEquals(actionLink.getAccept(), "application/uub+record+json");
+		assertEquals(actionLink.getContentType(), "application/uub+record+json");
+	}
+
+	@Test
+	public void testToRestWithActionLinkLIST() {
+		Action action = Action.LIST;
+		actions.add(action);
+
+		ActionSpiderToRestConverter actionSpiderToRestConverter = ActionSpiderToRestConverter
+				.fromSpiderActionsWithBaseURLAndRecordTypeAndRecordId(actions, baseURL,
+						"recordType", "text");
+		Map<String, ActionLink> actionLinks = actionSpiderToRestConverter.toRest();
+
+		ActionLink actionLink = actionLinks.get("list");
+		assertEquals(actionLink.getAction(), Action.LIST);
+		assertEquals(actionLink.getURL(), "http://localhost:8080/therest/rest/record/text/");
+		assertEquals(actionLink.getRequestMethod(), "GET");
+		assertEquals(actionLink.getAccept(), "application/uub+recordList+json");
+		assertEquals(actionLink.getContentType(), null);
+	}
+
+	@Test
+	public void testToRestWithActionLinkSEARCH() {
+		Action action = Action.SEARCH;
+		actions.add(action);
+
+		ActionSpiderToRestConverter actionSpiderToRestConverter = ActionSpiderToRestConverter
+				.fromSpiderActionsWithBaseURLAndRecordTypeAndRecordId(actions, baseURL,
+						"recordType", "text");
+		Map<String, ActionLink> actionLinks = actionSpiderToRestConverter.toRest();
+
+		ActionLink actionLink = actionLinks.get("search");
+		assertEquals(actionLink.getAction(), Action.SEARCH);
+		assertEquals(actionLink.getURL(), "http://localhost:8080/therest/rest/record/text/");
+		assertEquals(actionLink.getRequestMethod(), "GET");
+		assertEquals(actionLink.getAccept(), "application/uub+recordList+json");
+		assertEquals(actionLink.getContentType(), null);
+	}
+
+	@Test
+	public void testToRestURLsWithAllActions() {
 		actions.add(Action.READ_INCOMING_LINKS);
 		actions.add(Action.READ);
 		actions.add(Action.DELETE);
 		actions.add(Action.UPDATE);
+		actions.add(Action.CREATE);
+		actions.add(Action.LIST);
+		actions.add(Action.SEARCH);
 
 		ActionSpiderToRestConverter actionSpiderToRestConverter = ActionSpiderToRestConverter
 				.fromSpiderActionsWithBaseURLAndRecordTypeAndRecordId(actions, baseURL,
-						"recordType", "recordId");
+						"recordType", "text");
 		Map<String, ActionLink> actionLinks = actionSpiderToRestConverter.toRest();
 
 		ActionLink delete = actionLinks.get("delete");
-		assertEquals(delete.getURL(),
-				"http://localhost:8080/therest/rest/record/recordType/recordId");
+		assertEquals(delete.getURL(), "http://localhost:8080/therest/rest/record/recordType/text");
 
 		ActionLink readIncomingLinks = actionLinks.get("read_incoming_links");
 		assertEquals(readIncomingLinks.getURL(),
-				"http://localhost:8080/therest/rest/record/recordType/recordId/incomingLinks");
+				"http://localhost:8080/therest/rest/record/recordType/text/incomingLinks");
 
 		ActionLink update = actionLinks.get("update");
-		assertEquals(update.getURL(),
-				"http://localhost:8080/therest/rest/record/recordType/recordId");
+		assertEquals(update.getURL(), "http://localhost:8080/therest/rest/record/recordType/text");
 
 		ActionLink read = actionLinks.get("read");
-		assertEquals(read.getURL(),
-				"http://localhost:8080/therest/rest/record/recordType/recordId");
+		assertEquals(read.getURL(), "http://localhost:8080/therest/rest/record/recordType/text");
+
+		ActionLink create = actionLinks.get("create");
+		assertEquals(create.getURL(), "http://localhost:8080/therest/rest/record/text/");
+
+		ActionLink list = actionLinks.get("list");
+		assertEquals(list.getURL(), "http://localhost:8080/therest/rest/record/text/");
+
+		ActionLink search = actionLinks.get("search");
+		assertEquals(search.getURL(), "http://localhost:8080/therest/rest/record/text/");
 	}
 }

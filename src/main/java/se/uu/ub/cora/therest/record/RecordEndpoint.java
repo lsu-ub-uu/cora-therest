@@ -241,7 +241,7 @@ public class RecordEndpoint {
 
 	@GET
 	@Path("{type}/{id}/incomingLinks")
-	@Produces("application/uub+record+json")
+	@Produces("application/uub+recordList+json")
 	public Response readIncomingRecordLinks(@PathParam("type") String type,
 			@PathParam("id") String id) {
 		// set user directly here until we have decided how to authenticate user
