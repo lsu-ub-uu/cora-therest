@@ -30,11 +30,11 @@
 
     <artifactId>therest</artifactId>
     <packaging>war</packaging>
-    <version>0.8-SNAPSHOT</version>
+    <version>0.9-SNAPSHOT</version>
     <name>The Rest</name>
 
     <properties>
-        <systemone.version>0.8-SNAPSHOT</systemone.version>
+        <systemone.version>0.9-SNAPSHOT</systemone.version>
         <javax.ws.rs.version>2.0.1</javax.ws.rs.version>
         <jersey.version>2.16</jersey.version>
         <org.json.version>20141113</org.json.version>

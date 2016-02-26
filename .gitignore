@@ -3,3 +3,8 @@
 /.classpath
 /.project
 /test-output/
+.sonar
+.idea
+*.iml
+*.iws
+*.ipr
