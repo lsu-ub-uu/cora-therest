@@ -28,7 +28,7 @@ import se.uu.ub.cora.therest.json.builder.JsonObjectBuilder;
 
 import java.util.Map;
 
-public final class DataRecordLinkToJsonConverter extends DataToJsonConverter {
+public final class DataRecordLinkToJsonConverter implements DataToJsonConverter {
 
 	private static final String LINKED_REPEAT_ID = "linkedRepeatId";
 	private static final String LINKED_PATH = "linkedPath";
@@ -54,7 +54,7 @@ public final class DataRecordLinkToJsonConverter extends DataToJsonConverter {
 	}
 
 	@Override
-	JsonObjectBuilder toJsonObjectBuilder() {
+	public JsonObjectBuilder toJsonObjectBuilder() {
 		possiblyAddRepeatId();
 		recordLinkBuilder.addKeyString("name", recordLink.getNameInData());
 		addRecordTypeAndRecordId();

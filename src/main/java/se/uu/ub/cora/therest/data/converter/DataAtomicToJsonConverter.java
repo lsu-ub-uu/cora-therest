@@ -23,7 +23,7 @@ import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.therest.json.builder.JsonObjectBuilder;
 
-public final class DataAtomicToJsonConverter extends DataToJsonConverter {
+public final class DataAtomicToJsonConverter implements DataToJsonConverter {
 
 	private RestDataAtomic restDataAtomic;
 	private JsonBuilderFactory factory;
@@ -45,7 +45,7 @@ public final class DataAtomicToJsonConverter extends DataToJsonConverter {
 	}
 
 	@Override
-	JsonObjectBuilder toJsonObjectBuilder() {
+	public JsonObjectBuilder toJsonObjectBuilder() {
 		JsonObjectBuilder jsonObjectBuilder = factory.createObjectBuilder();
 
 		jsonObjectBuilder.addKeyString("name", restDataAtomic.getNameInData());
