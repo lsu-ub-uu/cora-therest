@@ -33,6 +33,7 @@ public class RecordEndpointFixture {
 	private String type;
 	private String json;
 	private StatusType statusType;
+	private String createdId;
 
 	public void setType(String type) {
 		this.type = type;
@@ -48,6 +49,10 @@ public class RecordEndpointFixture {
 
 	public StatusType getStatusType() {
 		return statusType;
+	}
+
+	public String getCreatedId() {
+		return createdId;
 	}
 
 	public String resetDependencyProvider() {
@@ -94,9 +99,22 @@ public class RecordEndpointFixture {
 				DependencyProviderForMultipleTestsWorkingTogether.spiderDependencyProvider);
 		RecordEndpoint recordEndpoint = new RecordEndpoint(uriInfo);
 		Response response = recordEndpoint.createRecord(type, json);
-		String entity = (String) response.getEntity();
 		statusType = response.getStatusInfo();
+		String entity = (String) response.getEntity();
+		createdId = tryToFindCreatedId(entity);
 		return entity;
+	}
+
+	private String tryToFindCreatedId(String entity) {
+		try {
+			return findCreatedId(entity);
+		} catch (Exception e) {
+			return "";
+		}
+	}
+
+	private String findCreatedId(String entity) {
+		return entity.substring(entity.lastIndexOf("/") + 1, entity.lastIndexOf("\""));
 	}
 
 	public String testUpdateRecord() {
