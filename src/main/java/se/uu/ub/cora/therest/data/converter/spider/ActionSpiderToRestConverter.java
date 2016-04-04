@@ -19,12 +19,12 @@
 
 package se.uu.ub.cora.therest.data.converter.spider;
 
+import se.uu.ub.cora.spider.data.Action;
+import se.uu.ub.cora.therest.data.ActionLink;
+
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import se.uu.ub.cora.spider.data.Action;
-import se.uu.ub.cora.therest.data.ActionLink;
 
 public final class ActionSpiderToRestConverter {
 
