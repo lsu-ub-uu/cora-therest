@@ -19,17 +19,16 @@
 
 package se.uu.ub.cora.therest.data.converter.spider;
 
-import static org.testng.Assert.assertEquals;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+import se.uu.ub.cora.spider.data.Action;
+import se.uu.ub.cora.therest.data.ActionLink;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
-
-import se.uu.ub.cora.spider.data.Action;
-import se.uu.ub.cora.therest.data.ActionLink;
+import static org.testng.Assert.assertEquals;
 
 public class ActionSpiderToRestConverterTest {
 	private String baseURL = "http://localhost:8080/therest/rest/record/";
@@ -194,6 +193,7 @@ public class ActionSpiderToRestConverterTest {
 		actions.add(Action.CREATE);
 		actions.add(Action.LIST);
 		actions.add(Action.SEARCH);
+		actions.add(Action.CREATE_BY_UPLOAD);
 
 		ActionSpiderToRestConverter actionSpiderToRestConverter = ActionSpiderToRestConverter
 				.fromSpiderActionsWithBaseURLAndRecordTypeAndRecordId(actions, baseURL,
@@ -221,5 +221,8 @@ public class ActionSpiderToRestConverterTest {
 
 		ActionLink search = actionLinks.get("search");
 		assertEquals(search.getURL(), "http://localhost:8080/therest/rest/record/text/");
+
+		ActionLink createByUpload = actionLinks.get("create_by_upload");
+		assertEquals(createByUpload.getURL(),  "http://localhost:8080/therest/rest/record/text/");
 	}
 }
