@@ -33,11 +33,7 @@ public final class JsonToDataRecordLinkConverter implements JsonToDataConverter 
 	private static final String LINKED_RECORD_ID = "linkedRecordId";
 	private static final String LINKED_REPEAT_ID = "linkedRepeatId";
 	private JsonObject jsonObject;
-//	private static final int NUM_OF_ALLOWED_KEYS_AT_TOP_LEVEL = 5;
-	//name, repeatid, children, actinolinks
 	private static final int NUM_OF_ALLOWED_KEYS_AT_TOP_LEVEL = 4;
-	//linkedRecordId, linkedRepeatId
-	private static final int NUM_OF_ALLOWED_CHILDREN = 2;
 
 	public static JsonToDataRecordLinkConverter forJsonObject(JsonObject jsonObject) {
 		return new JsonToDataRecordLinkConverter(jsonObject);
@@ -62,8 +58,7 @@ public final class JsonToDataRecordLinkConverter implements JsonToDataConverter 
 	}
 
 	private void validateOnlyCorrectKeysAtTopLevel() {
-
-		validateMandatoryKeyAndMandatoryChild();
+		validateMandatoryKeysAndMandatoryChild();
 
 		if (moreKeysAtTopLevelThanAllowed()
 				|| moreKeysAtTopLevelThanMandatoryButEnoughOptionalKeysNotFound()
@@ -71,38 +66,43 @@ public final class JsonToDataRecordLinkConverter implements JsonToDataConverter 
 			throw new JsonParseException("Group data can only contain keys name, repeatId, "
 					+ "linkedRecordId, linkedRepeatId and actionLinks");
 		}
+ 	}
 
-	}
-
-	private void validateMandatoryKeyAndMandatoryChild() {
+	private void validateMandatoryKeysAndMandatoryChild() {
 		if (!jsonObject.containsKey("name")) {
 			throw new JsonParseException("Group data must contain key \"name\"");
 		}
-		if (!childIsPresent(LINKED_RECORD_ID)) {
+		if(!jsonObject.containsKey("children")){
+			throw new JsonParseException("Group data must contain key \"children\"");
+		}
+		if (!hasChild(LINKED_RECORD_ID)) {
 			throw new JsonParseException("Group data must contain key \"linkedRecordId\"");
 		}
 	}
 
-	private boolean childIsPresent(String childName){
-		if(jsonObject.containsKey("children")){
-			JsonArray children = jsonObject.getValueAsJsonArray("children");
-			for (JsonValue child : children) {
-				JsonObject childObject =  (JsonObject)child;
-				if(childObject.containsKey("name") && nameIsSameAsChildName(childObject, childName)){
-					return true;
-				}
-			}
+	private boolean hasChild(String childName){
+		JsonObject child = getChildObjectFromJsonObject(childName);
+		if(child != null){
+			return true;
 		}
+//		JsonArray children = jsonObject.getValueAsJsonArray("children");
+//		for (JsonValue child : children) {
+//			if(isSameChild(childName, child)){
+//				return true;
+//			}
+//		}
 		return  false;
 	}
+
+	private boolean isSameChild(String childName, JsonValue child) {
+		JsonObject childObject =  (JsonObject)child;
+		return childObject.containsKey("name") && nameIsSameAsChildName(childObject, childName);
+	}
+	
+	//TODO:ska vi kolla om det är ett atomärt värde? För tydligare felmeddelande?
 	private boolean nameIsSameAsChildName(JsonObject childObject, String childName) {
 		String name = childObject.getValueAsJsonString("name").getStringValue();
 		return name.equals(childName);
-	}
-
-	private boolean nameIsLinkedRecordId(JsonObject childObject) {
-		String name = childObject.getValueAsJsonString("name").getStringValue();
-		return name.equals(LINKED_RECORD_ID);
 	}
 
 	private boolean moreKeysAtTopLevelThanMandatoryButEnoughOptionalKeysNotFound() {
@@ -122,31 +122,23 @@ public final class JsonToDataRecordLinkConverter implements JsonToDataConverter 
 		if(hasRepeatId()){
 			numOfOptionalKeysPresent++;
 		}
-//		if(hasLinkedRepeatId()){
-//			numOfOptionalKeysPresent++;
-//		}
 		return numOfOptionalKeysPresent;
-	}
-
-	private boolean moreChildrenThanMandatoryButEnoughOptionalChildrenNotFound(){
-		JsonArray children = jsonObject.getValueAsJsonArray("children");
-		if(children.length() > 1 && !childIsPresent(LINKED_REPEAT_ID)){
-			return true;
-		}
-		return false;
 	}
 
 	private boolean hasActionLinks() {
 		return jsonObject.containsKey("actionLinks");
 	}
-
+	
 	private boolean hasRepeatId() {
 		return jsonObject.containsKey("repeatId");
 	}
 
-	private boolean hasLinkedRepeatId() {
-		return childIsPresent(LINKED_REPEAT_ID);
-//		return jsonObject.containsKey(LINKED_REPEAT_ID);
+	private boolean moreChildrenThanMandatoryButEnoughOptionalChildrenNotFound(){
+		JsonArray children = jsonObject.getValueAsJsonArray("children");
+		if(children.length() > 1 && !hasChild(LINKED_REPEAT_ID)){
+			return true;
+		}
+		return false;
 	}
 
 	private boolean moreKeysAtTopLevelThanAllowed() {
@@ -155,40 +147,57 @@ public final class JsonToDataRecordLinkConverter implements JsonToDataConverter 
 
 	private RestDataElement createDataGroupInstance() {
 		String nameInData = getStringValueFromJsonObject("name");
-		String linkedRecordId = getStringValueFromJsonObjectChildren(LINKED_RECORD_ID);
 		RestDataRecordLink restDataRecordLink = RestDataRecordLink.withNameInData(nameInData);
 
-		RestDataAtomic linkedRecordIdElement = RestDataAtomic.withNameInDataAndValue(LINKED_RECORD_ID, linkedRecordId);
+		RestDataAtomic linkedRecordIdElement = createLinkedRecordId();
 		restDataRecordLink.addChild(linkedRecordIdElement);
-		if (hasRepeatId()) {
-			restDataRecordLink.setRepeatId(getStringValueFromJsonObject("repeatId"));
-		}
-
-		if(hasLinkedRepeatId()) {
-			RestDataAtomic linkedRepeatId = RestDataAtomic.withNameInDataAndValue(LINKED_REPEAT_ID,
-					getStringValueFromJsonObjectChildren(LINKED_REPEAT_ID));
-			restDataRecordLink.addChild(linkedRepeatId);
-		}
+		
+		possilySetRepeatId(restDataRecordLink);
+		possiblyAddLinkedRepeatId(restDataRecordLink);
+		
 		return restDataRecordLink;
 	}
 
 	private String getStringValueFromJsonObject(String id) {
 		return jsonObject.getValueAsJsonString(id).getStringValue();
 	}
-
+	
 	private String getStringValueFromJsonObjectChildren(String id){
 		JsonObject childObject = getChildObjectFromJsonObject(id);
 		return childObject.getValueAsJsonString("value").getStringValue();
 	}
-
+	//TODO: hur göra med den här och den andra loopen som är nästan lika?
 	private JsonObject getChildObjectFromJsonObject(String id) {
 		JsonArray children = jsonObject.getValueAsJsonArray("children");
 		for (JsonValue child : children) {
-			JsonObject childObject =  (JsonObject)child;
-			if(childObject.containsKey("name") && nameIsSameAsChildName(childObject, id)){
-				return childObject;
+			if(isSameChild(id, child)){
+				return (JsonObject)child;
 			}
 		}
 		return  null;
+	}
+	
+	private RestDataAtomic createLinkedRecordId() {
+		String linkedRecordId = getStringValueFromJsonObjectChildren(LINKED_RECORD_ID);
+		RestDataAtomic linkedRecordIdElement = RestDataAtomic.withNameInDataAndValue(LINKED_RECORD_ID, linkedRecordId);
+		return linkedRecordIdElement;
+	}
+	
+	private void possilySetRepeatId(RestDataRecordLink restDataRecordLink) {
+		if (hasRepeatId()) {
+			restDataRecordLink.setRepeatId(getStringValueFromJsonObject("repeatId"));
+		}
+	}
+	
+	private void possiblyAddLinkedRepeatId(RestDataRecordLink restDataRecordLink) {
+		if(hasLinkedRepeatId()) {
+			RestDataAtomic linkedRepeatId = RestDataAtomic.withNameInDataAndValue(LINKED_REPEAT_ID,
+					getStringValueFromJsonObjectChildren(LINKED_REPEAT_ID));
+			restDataRecordLink.addChild(linkedRepeatId);
+		}
+	}
+
+	private boolean hasLinkedRepeatId() {
+		return hasChild(LINKED_REPEAT_ID);
 	}
 }
