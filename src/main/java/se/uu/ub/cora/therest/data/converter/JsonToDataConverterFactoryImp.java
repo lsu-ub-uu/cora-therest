@@ -19,6 +19,7 @@
 
 package se.uu.ub.cora.therest.data.converter;
 
+import se.uu.ub.cora.therest.json.parser.JsonArray;
 import se.uu.ub.cora.therest.json.parser.JsonObject;
 import se.uu.ub.cora.therest.json.parser.JsonParseException;
 import se.uu.ub.cora.therest.json.parser.JsonValue;
@@ -35,13 +36,13 @@ public class JsonToDataConverterFactoryImp implements JsonToDataConverterFactory
 		jsonObject = (JsonObject) jsonValue;
 
 		if (isGroup()) {
+			if (isRecordLink()) {
+				return JsonToDataRecordLinkConverter.forJsonObject(jsonObject);
+			}
 			return JsonToDataGroupConverter.forJsonObject(jsonObject);
 		}
 		if (isAtomicData()) {
 			return JsonToDataAtomicConverter.forJsonObject(jsonObject);
-		}
-		if (isRecordLink()) {
-			return JsonToDataRecordLinkConverter.forJsonObject(jsonObject);
 		}
 		return JsonToDataAttributeConverter.forJsonObject(jsonObject);
 	}
@@ -55,6 +56,18 @@ public class JsonToDataConverterFactoryImp implements JsonToDataConverterFactory
 	}
 
 	private boolean isRecordLink() {
-		return jsonObject.containsKey("linkedRecordType");
+		JsonArray children = jsonObject.getValueAsJsonArray("children");
+		for (JsonValue child : children) {
+			JsonObject childObject =  (JsonObject)child;
+			if(childObject.containsKey("name") && nameIsLinkedRecordId(childObject)){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean nameIsLinkedRecordId(JsonObject childObject) {
+		String name = childObject.getValueAsJsonString("name").getStringValue();
+		return name.equals("linkedRecordId");
 	}
 }
