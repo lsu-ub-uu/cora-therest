@@ -30,6 +30,4 @@ public interface JsonArray extends JsonValue, Iterable<JsonValue> {
 	JsonArray getValueAsJsonArray(int index);
 
 	String toJsonFormattedString();
-
-	int length();
 }

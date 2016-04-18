@@ -83,7 +83,8 @@ public class JsonToDataConverterFactoryTest {
 		JsonValue jsonValue = jsonParser.parseString(json);
 		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
 				.createForJsonObject(jsonValue);
-		assertTrue(jsonToDataConverter instanceof JsonToDataRecordLinkConverter);
+//		assertTrue(jsonToDataConverter instanceof JsonToDataRecordLinkConverter);
+		assertTrue(jsonToDataConverter instanceof JsonToDataGroupConverter);
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)

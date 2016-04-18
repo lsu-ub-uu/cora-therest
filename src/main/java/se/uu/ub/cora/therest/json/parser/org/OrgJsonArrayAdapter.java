@@ -98,8 +98,4 @@ public final class OrgJsonArrayAdapter implements JsonArray {
 		return orgJsonArray.toString();
 	}
 
-	public int length() {
-		return orgJsonArray.length();
-	}
-
 }
