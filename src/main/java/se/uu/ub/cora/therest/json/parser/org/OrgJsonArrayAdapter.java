@@ -19,17 +19,12 @@
 
 package se.uu.ub.cora.therest.json.parser.org;
 
+import org.json.JSONArray;
+import se.uu.ub.cora.therest.json.parser.*;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import org.json.JSONArray;
-import se.uu.ub.cora.therest.json.parser.JsonArray;
-import se.uu.ub.cora.therest.json.parser.JsonObject;
-import se.uu.ub.cora.therest.json.parser.JsonParseException;
-import se.uu.ub.cora.therest.json.parser.JsonString;
-import se.uu.ub.cora.therest.json.parser.JsonValue;
-import se.uu.ub.cora.therest.json.parser.JsonValueType;
 
 public final class OrgJsonArrayAdapter implements JsonArray {
 

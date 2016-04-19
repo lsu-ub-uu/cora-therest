@@ -76,12 +76,15 @@ public class JsonToDataConverterFactoryTest {
 
 	@Test
 	public void testFactorOnJsonStringDataRecordLink() {
-		String json = "{\"linkedRecordId\":\"aRecordId\",\"linkedRecordType\":\"aRecordType\""
-				+ ",\"name\":\"nameInData\"}";
+		String json = "{\"name\":\"link\", \"children\":[{\"name\": \"linkedRecordId\", \"value\": \"myLinkedRecordId\"} ]}";
+
+//		String json = "{\"linkedRecordId\":\"aRecordId\""
+//				+ ",\"name\":\"nameInData\"}";
 		JsonValue jsonValue = jsonParser.parseString(json);
 		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
 				.createForJsonObject(jsonValue);
-		assertTrue(jsonToDataConverter instanceof JsonToDataRecordLinkConverter);
+//		assertTrue(jsonToDataConverter instanceof JsonToDataRecordLinkConverter);
+		assertTrue(jsonToDataConverter instanceof JsonToDataGroupConverter);
 	}
 
 	@Test(expectedExceptions = JsonParseException.class)

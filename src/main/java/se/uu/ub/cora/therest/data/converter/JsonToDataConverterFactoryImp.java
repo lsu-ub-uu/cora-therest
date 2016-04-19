@@ -40,9 +40,6 @@ public class JsonToDataConverterFactoryImp implements JsonToDataConverterFactory
 		if (isAtomicData()) {
 			return JsonToDataAtomicConverter.forJsonObject(jsonObject);
 		}
-		if (isRecordLink()) {
-			return JsonToDataRecordLinkConverter.forJsonObject(jsonObject);
-		}
 		return JsonToDataAttributeConverter.forJsonObject(jsonObject);
 	}
 
@@ -52,9 +49,5 @@ public class JsonToDataConverterFactoryImp implements JsonToDataConverterFactory
 
 	private boolean isGroup() {
 		return jsonObject.containsKey("children");
-	}
-
-	private boolean isRecordLink() {
-		return jsonObject.containsKey("linkedRecordType");
 	}
 }

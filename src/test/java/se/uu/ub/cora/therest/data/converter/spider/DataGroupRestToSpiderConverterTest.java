@@ -23,7 +23,6 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import se.uu.ub.cora.spider.data.SpiderDataAtomic;
 import se.uu.ub.cora.spider.data.SpiderDataGroup;
-import se.uu.ub.cora.spider.data.SpiderDataRecordLink;
 import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataAttribute;
 import se.uu.ub.cora.therest.data.RestDataGroup;
@@ -90,8 +89,7 @@ public class DataGroupRestToSpiderConverterTest {
 
 		SpiderDataGroup spiderDataGroup = dataGroupRestToSpiderConverter.toSpider();
 
-		SpiderDataRecordLink spiderDataRecordLink = (SpiderDataRecordLink) spiderDataGroup
-				.getFirstChildWithNameInData("aLink");
+		SpiderDataGroup spiderDataRecordLink = (SpiderDataGroup)spiderDataGroup.getFirstChildWithNameInData("aLink");
 		assertEquals(spiderDataRecordLink.getNameInData(), "aLink");
 
 		SpiderDataAtomic linkedRecordType = (SpiderDataAtomic)spiderDataRecordLink.getFirstChildWithNameInData("linkedRecordType");
