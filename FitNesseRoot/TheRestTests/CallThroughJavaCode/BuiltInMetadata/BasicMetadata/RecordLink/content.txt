@@ -83,6 +83,7 @@ Creating records with links
 | bush | {"name":"bush","children":[{"name":"recordInfo","children":[{"name":"id","value":"bush3"}]},{"name":"testLink","repeatId":"1","linkedRecordType":"bush","linkedRecordId":"bush1"}]} | | CREATED |
 | bush | {"name":"bush","children":[{"name":"recordInfo","children":[{"name":"id","value":"bush4"}]},{"name":"testLink","repeatId":"1","linkedRecordType":"bush","linkedRecordId":"bush1"},{"name":"testLinkPath","repeatId":"1","linkedRecordType":"bush","linkedRecordId":"bush2","linkedRepeatId":"one"}]} | | CREATED |
 | bush | {"name":"bush","children":[{"name":"recordInfo","children":[{"name":"id","value":"bush5"}]},{"name":"testLinkPath","repeatId":"1","linkedRecordType":"bush","linkedRepeatId":"one","linkedRecordId":"bush2","linkedPath":{"name":"linkedPath","children":[{"name":"repeatId","value":"3"},{"name":"nameInData","value":"authority"}]}}]} | | CREATED |
+| bush | {"name":"bush","children":[{"name":"recordInfo","children":[{"name":"id","value":"bush5_2"}]},{"name":"testLinkPath","repeatId":"1","children":[{"name":"linkedRecordType","value":"bush"},{"name":"linkedRecordId","value":"bush2"},{"name":"linkedRepeatId","value":"one"},{"name":"linkedPath","children":[{"name":"repeatId","value":"3"},{"name":"nameInData","value":"authority"}]}]}]} | | CREATED |
 | bush | {"name":"bush","children":[{"name":"recordInfo","children":[{"name":"id","value":"bush6"}]},{"name":"subBush","children":[{"name":"testLink","linkedRecordType":"bush","linkedRecordId":"bush1"}]}]} | | CREATED |
 
 *!
