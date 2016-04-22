@@ -19,12 +19,12 @@
 
 package se.uu.ub.cora.therest.data;
 
-import se.uu.ub.cora.spider.data.DataMissingException;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import se.uu.ub.cora.spider.data.DataMissingException;
 
 public class RestDataGroup implements RestDataElement, RestData {
 

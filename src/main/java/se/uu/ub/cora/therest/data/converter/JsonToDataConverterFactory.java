@@ -19,7 +19,7 @@
 
 package se.uu.ub.cora.therest.data.converter;
 
-import se.uu.ub.cora.therest.json.parser.JsonValue;
+import se.uu.ub.cora.json.parser.JsonValue;
 
 public interface JsonToDataConverterFactory {
 

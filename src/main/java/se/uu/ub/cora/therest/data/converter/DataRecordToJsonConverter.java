@@ -23,9 +23,9 @@ import java.util.Map;
 
 import se.uu.ub.cora.therest.data.ActionLink;
 import se.uu.ub.cora.therest.data.RestDataRecord;
-import se.uu.ub.cora.therest.json.builder.JsonArrayBuilder;
-import se.uu.ub.cora.therest.json.builder.JsonBuilderFactory;
-import se.uu.ub.cora.therest.json.builder.JsonObjectBuilder;
+import se.uu.ub.cora.json.builder.JsonArrayBuilder;
+import se.uu.ub.cora.json.builder.JsonBuilderFactory;
+import se.uu.ub.cora.json.builder.JsonObjectBuilder;
 
 public final class DataRecordToJsonConverter {
 

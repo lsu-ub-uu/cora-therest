@@ -34,10 +34,10 @@
     <name>The Rest</name>
 
     <properties>
+        <json.version>0.1-SNAPSHOT</json.version>
         <systemone.version>0.9-SNAPSHOT</systemone.version>
         <javax.ws.rs.version>2.0.1</javax.ws.rs.version>
         <jersey.version>2.16</jersey.version>
-        <org.json.version>20160212</org.json.version>
         <fitnesse.version>20151230</fitnesse.version>
     </properties>
 
@@ -81,6 +81,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+			<groupId>se.uu.ub.cora</groupId>
+			<artifactId>json</artifactId>
+			<version>${json.version}</version>
+		</dependency>
+		<dependency>
             <groupId>se.uu.ub.cora</groupId>
             <artifactId>systemone</artifactId>
             <version>${systemone.version}</version>
@@ -103,11 +108,6 @@
             <artifactId>javax.servlet-api</artifactId>
             <version>3.0.1</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
-            <version>${org.json.version}</version>
         </dependency>
         <!-- FitNesse -->
         <dependency>

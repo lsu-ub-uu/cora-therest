@@ -23,7 +23,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import se.uu.ub.cora.therest.data.RestDataAtomic;
-import se.uu.ub.cora.therest.json.builder.org.OrgJsonBuilderFactoryAdapter;
+import se.uu.ub.cora.json.builder.org.OrgJsonBuilderFactoryAdapter;
 
 public class DataAtomicToJsonConverterTest {
 	private RestDataAtomic restDataAtomic;

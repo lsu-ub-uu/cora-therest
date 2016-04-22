@@ -22,8 +22,8 @@ package se.uu.ub.cora.therest.data.converter;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import se.uu.ub.cora.therest.data.*;
-import se.uu.ub.cora.therest.json.builder.JsonBuilderFactory;
-import se.uu.ub.cora.therest.json.builder.org.OrgJsonBuilderFactoryAdapter;
+import se.uu.ub.cora.json.builder.JsonBuilderFactory;
+import se.uu.ub.cora.json.builder.org.OrgJsonBuilderFactoryAdapter;
 
 import static org.testng.Assert.assertTrue;
 

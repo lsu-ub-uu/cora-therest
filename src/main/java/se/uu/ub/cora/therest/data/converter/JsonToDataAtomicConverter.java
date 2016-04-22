@@ -21,9 +21,9 @@ package se.uu.ub.cora.therest.data.converter;
 
 import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataElement;
-import se.uu.ub.cora.therest.json.parser.JsonObject;
-import se.uu.ub.cora.therest.json.parser.JsonParseException;
-import se.uu.ub.cora.therest.json.parser.JsonString;
+import se.uu.ub.cora.json.parser.JsonObject;
+import se.uu.ub.cora.json.parser.JsonParseException;
+import se.uu.ub.cora.json.parser.JsonString;
 
 public final class JsonToDataAtomicConverter implements JsonToDataConverter {
 	private static final String REPEAT_ID = "repeatId";

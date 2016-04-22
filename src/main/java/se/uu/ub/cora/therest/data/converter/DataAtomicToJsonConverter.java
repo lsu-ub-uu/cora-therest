@@ -19,9 +19,9 @@
 
 package se.uu.ub.cora.therest.data.converter;
 
+import se.uu.ub.cora.json.builder.JsonBuilderFactory;
+import se.uu.ub.cora.json.builder.JsonObjectBuilder;
 import se.uu.ub.cora.therest.data.RestDataAtomic;
-import se.uu.ub.cora.therest.json.builder.JsonBuilderFactory;
-import se.uu.ub.cora.therest.json.builder.JsonObjectBuilder;
 
 public final class DataAtomicToJsonConverter implements DataToJsonConverter {
 

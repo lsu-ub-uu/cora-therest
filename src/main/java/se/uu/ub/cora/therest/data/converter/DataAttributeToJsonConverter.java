@@ -20,8 +20,8 @@
 package se.uu.ub.cora.therest.data.converter;
 
 import se.uu.ub.cora.therest.data.RestDataAttribute;
-import se.uu.ub.cora.therest.json.builder.JsonBuilderFactory;
-import se.uu.ub.cora.therest.json.builder.JsonObjectBuilder;
+import se.uu.ub.cora.json.builder.JsonBuilderFactory;
+import se.uu.ub.cora.json.builder.JsonObjectBuilder;
 
 public final class DataAttributeToJsonConverter implements DataToJsonConverter {
 	private JsonBuilderFactory factory;

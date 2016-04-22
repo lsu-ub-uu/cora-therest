@@ -20,8 +20,8 @@
 package se.uu.ub.cora.therest.fitnesse;
 
 import se.uu.ub.cora.spider.dependency.SpiderDependencyProvider;
-import se.uu.ub.cora.systemone.SystemOneDependencyProvider;
+import se.uu.ub.cora.systemone.SystemOneDependencyProviderForFitnesse;
 
 public abstract class DependencyProviderForMultipleTestsWorkingTogether {
-	public static SpiderDependencyProvider spiderDependencyProvider = new SystemOneDependencyProvider();
+	public static SpiderDependencyProvider spiderDependencyProvider = new SystemOneDependencyProviderForFitnesse();
 }

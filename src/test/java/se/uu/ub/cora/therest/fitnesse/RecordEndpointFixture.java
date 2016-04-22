@@ -19,14 +19,14 @@
 
 package se.uu.ub.cora.therest.fitnesse;
 
-import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
-import se.uu.ub.cora.systemone.SystemOneDependencyProvider;
-import se.uu.ub.cora.therest.record.RecordEndpoint;
-import se.uu.ub.cora.therest.record.TestUri;
-
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.StatusType;
 import javax.ws.rs.core.UriInfo;
+
+import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
+import se.uu.ub.cora.systemone.SystemOneDependencyProviderForFitnesse;
+import se.uu.ub.cora.therest.record.RecordEndpoint;
+import se.uu.ub.cora.therest.record.TestUri;
 
 public class RecordEndpointFixture {
 	private String id;
@@ -56,7 +56,7 @@ public class RecordEndpointFixture {
 	}
 
 	public String resetDependencyProvider() {
-		DependencyProviderForMultipleTestsWorkingTogether.spiderDependencyProvider = new SystemOneDependencyProvider();
+		DependencyProviderForMultipleTestsWorkingTogether.spiderDependencyProvider = new SystemOneDependencyProviderForFitnesse();
 		return "OK";
 	}
 

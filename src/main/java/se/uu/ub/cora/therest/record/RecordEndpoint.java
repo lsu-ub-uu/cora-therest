@@ -34,6 +34,12 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
+import se.uu.ub.cora.json.builder.JsonBuilderFactory;
+import se.uu.ub.cora.json.builder.org.OrgJsonBuilderFactoryAdapter;
+import se.uu.ub.cora.json.parser.JsonParseException;
+import se.uu.ub.cora.json.parser.JsonParser;
+import se.uu.ub.cora.json.parser.JsonValue;
+import se.uu.ub.cora.json.parser.org.OrgJsonParser;
 import se.uu.ub.cora.spider.data.DataMissingException;
 import se.uu.ub.cora.spider.data.SpiderDataGroup;
 import se.uu.ub.cora.spider.data.SpiderDataList;
@@ -57,12 +63,6 @@ import se.uu.ub.cora.therest.data.converter.JsonToDataConverterFactoryImp;
 import se.uu.ub.cora.therest.data.converter.spider.DataGroupRestToSpiderConverter;
 import se.uu.ub.cora.therest.data.converter.spider.DataListSpiderToRestConverter;
 import se.uu.ub.cora.therest.data.converter.spider.DataRecordSpiderToRestConverter;
-import se.uu.ub.cora.therest.json.builder.JsonBuilderFactory;
-import se.uu.ub.cora.therest.json.builder.org.OrgJsonBuilderFactoryAdapter;
-import se.uu.ub.cora.therest.json.parser.JsonParseException;
-import se.uu.ub.cora.therest.json.parser.JsonParser;
-import se.uu.ub.cora.therest.json.parser.JsonValue;
-import se.uu.ub.cora.therest.json.parser.org.OrgJsonParser;
 
 @Path("record")
 public class RecordEndpoint {

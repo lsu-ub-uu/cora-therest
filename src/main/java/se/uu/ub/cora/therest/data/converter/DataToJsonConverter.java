@@ -19,7 +19,7 @@
 
 package se.uu.ub.cora.therest.data.converter;
 
-import se.uu.ub.cora.therest.json.builder.JsonObjectBuilder;
+import se.uu.ub.cora.json.builder.JsonObjectBuilder;
 
 public interface DataToJsonConverter {
 

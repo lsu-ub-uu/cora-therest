@@ -25,8 +25,8 @@ import java.util.Map;
 import org.testng.annotations.Test;
 import se.uu.ub.cora.spider.data.Action;
 import se.uu.ub.cora.therest.data.ActionLink;
-import se.uu.ub.cora.therest.json.builder.JsonBuilderFactory;
-import se.uu.ub.cora.therest.json.builder.org.OrgJsonBuilderFactoryAdapter;
+import se.uu.ub.cora.json.builder.JsonBuilderFactory;
+import se.uu.ub.cora.json.builder.org.OrgJsonBuilderFactoryAdapter;
 
 import static org.testng.Assert.assertEquals;
 

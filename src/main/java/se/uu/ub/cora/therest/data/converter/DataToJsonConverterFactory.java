@@ -20,7 +20,7 @@
 package se.uu.ub.cora.therest.data.converter;
 
 import se.uu.ub.cora.therest.data.RestDataElement;
-import se.uu.ub.cora.therest.json.builder.JsonBuilderFactory;
+import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 
 public interface DataToJsonConverterFactory {
 
