@@ -86,3 +86,24 @@ A test that first reads all predefined metadata needed to be able to add present
 | presentationRecordLink | {"name":"presentation","attributes":{"type":"pRecordLink"},"children":[{"name":"recordInfo","children":[{"name":"id","value":"myPLink"}]},{"name":"presentationOf","value":"myLink"},{"name":"mode","value":"input"},{"name":"linkedRecordPresentations","children":[]}]} | | BAD_REQUEST |
 
 *!
+!2 Data needed by clients
+!***> Read presentationVars
+
+!| RecordEndpointFixture |
+| type | id | testReadRecord? | getStatusType? |
+| presentationVar | linkedRecordTypeOutputPVar | | OK |
+| presentationVar | linkedRecordIdPVar | | OK |
+| presentationVar | linkedRecordIdOutputPVar | | OK |
+| presentationVar | linkedRepeatIdPVar | | OK |
+| presentationVar | linkedRepeatIdOutputPVar | | OK |
+
+*!
+!***> Read texts
+
+!| RecordEndpointFixture |
+| type | id | testReadRecord? | getStatusType? |
+| textSystemOne | linkedRecordTypeText | | OK |
+| textSystemOne | linkedRecordIdText | | OK |
+| textSystemOne | linkedRepeatIdText | | OK |
+
+*!
