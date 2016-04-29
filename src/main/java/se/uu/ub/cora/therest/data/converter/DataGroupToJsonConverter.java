@@ -19,15 +19,15 @@
 
 package se.uu.ub.cora.therest.data.converter;
 
-import se.uu.ub.cora.therest.data.RestDataElement;
-import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.json.builder.JsonArrayBuilder;
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.JsonObjectBuilder;
+import se.uu.ub.cora.therest.data.RestDataElement;
+import se.uu.ub.cora.therest.data.RestDataGroup;
 
 import java.util.Map.Entry;
 
-public final class DataGroupToJsonConverter implements DataToJsonConverter {
+public final class DataGroupToJsonConverter extends DataToJsonConverter {
 
 	private RestDataGroup restDataGroup;
 	private JsonObjectBuilder dataGroupJsonObjectBuilder;
@@ -43,11 +43,6 @@ public final class DataGroupToJsonConverter implements DataToJsonConverter {
 		this.jsonBuilderFactory = factory;
 		this.restDataGroup = restDataGroup;
 		dataGroupJsonObjectBuilder = factory.createObjectBuilder();
-	}
-
-	@Override
-	public String toJson() {
-		return toJsonObjectBuilder().toJsonFormattedString();
 	}
 
 	@Override

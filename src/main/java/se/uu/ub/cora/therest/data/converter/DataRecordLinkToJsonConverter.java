@@ -19,16 +19,16 @@
 
 package se.uu.ub.cora.therest.data.converter;
 
+import se.uu.ub.cora.json.builder.JsonBuilderFactory;
+import se.uu.ub.cora.json.builder.JsonObjectBuilder;
 import se.uu.ub.cora.therest.data.ActionLink;
 import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.RestDataRecordLink;
-import se.uu.ub.cora.json.builder.JsonBuilderFactory;
-import se.uu.ub.cora.json.builder.JsonObjectBuilder;
 
 import java.util.Map;
 
-public final class DataRecordLinkToJsonConverter implements DataToJsonConverter {
+public final class DataRecordLinkToJsonConverter extends DataToJsonConverter {
 
 	private static final String LINKED_REPEAT_ID = "linkedRepeatId";
 	private static final String LINKED_PATH = "linkedPath";
@@ -46,11 +46,6 @@ public final class DataRecordLinkToJsonConverter implements DataToJsonConverter 
 		this.jsonFactory = jsonFactory;
 		this.recordLink = recordLink;
 		recordLinkBuilder = jsonFactory.createObjectBuilder();
-	}
-
-	@Override
-	public String toJson() {
-		return toJsonObjectBuilder().toJsonFormattedString();
 	}
 
 	@Override

@@ -21,9 +21,12 @@ package se.uu.ub.cora.therest.data.converter;
 
 import se.uu.ub.cora.json.builder.JsonObjectBuilder;
 
-public interface DataToJsonConverter {
+public abstract class DataToJsonConverter {
 
-	String toJson();
+	public String toJson(){
+		JsonObjectBuilder jsonObjectBuilder = toJsonObjectBuilder();
+		return jsonObjectBuilder.toJsonFormattedString();
+	}
 
-	JsonObjectBuilder toJsonObjectBuilder();
+	abstract JsonObjectBuilder toJsonObjectBuilder();
 }

@@ -23,7 +23,7 @@ import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.JsonObjectBuilder;
 import se.uu.ub.cora.therest.data.RestDataAtomic;
 
-public final class DataAtomicToJsonConverter implements DataToJsonConverter {
+public final class DataAtomicToJsonConverter extends DataToJsonConverter {
 
 	private RestDataAtomic restDataAtomic;
 	private JsonBuilderFactory factory;
@@ -36,12 +36,6 @@ public final class DataAtomicToJsonConverter implements DataToJsonConverter {
 	private DataAtomicToJsonConverter(JsonBuilderFactory factory, RestDataAtomic dataAtomic) {
 		this.factory = factory;
 		this.restDataAtomic = dataAtomic;
-	}
-
-	@Override
-	public String toJson() {
-		JsonObjectBuilder atomic = toJsonObjectBuilder();
-		return atomic.toJsonFormattedString();
 	}
 
 	@Override

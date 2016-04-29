@@ -19,11 +19,11 @@
 
 package se.uu.ub.cora.therest.data.converter;
 
-import se.uu.ub.cora.therest.data.RestDataAttribute;
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.JsonObjectBuilder;
+import se.uu.ub.cora.therest.data.RestDataAttribute;
 
-public final class DataAttributeToJsonConverter implements DataToJsonConverter {
+public final class DataAttributeToJsonConverter extends DataToJsonConverter {
 	private JsonBuilderFactory factory;
 	private RestDataAttribute restDataAttribute;
 
@@ -36,12 +36,6 @@ public final class DataAttributeToJsonConverter implements DataToJsonConverter {
 			RestDataAttribute dataAttribute) {
 		this.factory = factory;
 		this.restDataAttribute = dataAttribute;
-	}
-
-	@Override
-	public String toJson() {
-		JsonObjectBuilder attribute = toJsonObjectBuilder();
-		return attribute.toJsonFormattedString();
 	}
 
 	@Override
