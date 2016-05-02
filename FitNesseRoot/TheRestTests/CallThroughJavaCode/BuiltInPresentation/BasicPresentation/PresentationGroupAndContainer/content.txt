@@ -52,8 +52,8 @@ A test that first reads all predefined metadata needed to be able to add present
 | metadataTextVariable | idPGroupTextVar | | OK |
 | metadataTextVariable | idContainerTextVar | | OK |
 | metadataTextVariable | presentationOfTextVar | | OK |
-| metadataTextVariable | presentationRef | | OK |
-| metadataTextVariable | presentationRefMinimized | | OK |
+| metadataTextVariable | presentationRefTextVar | | OK |
+| metadataTextVariable | presentationRefMinimizedTextVar | | OK |
 | metadataTextVariable | emptyTextIdTextVar | | |
 
 *!
