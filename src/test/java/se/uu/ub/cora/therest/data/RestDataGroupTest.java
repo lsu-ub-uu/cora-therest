@@ -19,11 +19,15 @@
 
 package se.uu.ub.cora.therest.data;
 
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertTrue;
+
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import se.uu.ub.cora.spider.data.DataMissingException;
 
-import static org.testng.Assert.*;
+import se.uu.ub.cora.spider.data.DataMissingException;
 
 public class RestDataGroupTest {
 	private RestDataGroup restDataGroup;
@@ -68,28 +72,46 @@ public class RestDataGroupTest {
 	}
 
 	@Test
-	public void testContainsChildWithNameInData(){
+	public void testContainsChildWithNameInData() {
 		RestDataElement restDataElement = RestDataGroup.withNameInData("nameInData2");
 		restDataGroup.addChild(restDataElement);
 		assertTrue(restDataGroup.containsChildWithNameInData("nameInData2"));
 	}
 
 	@Test
-	public void testContainsChildWithNameInDataNotFound(){
+	public void testContainsChildWithNameInDataNotFound() {
 		RestDataElement restDataElement = RestDataGroup.withNameInData("nameInData2");
 		restDataGroup.addChild(restDataElement);
 		assertFalse(restDataGroup.containsChildWithNameInData("nameInData_NOT_FOUND"));
 	}
 
 	@Test
-	public void testGetFirstChildWithNameInData(){
+	public void testGetFirstChildWithNameInData() {
 		RestDataElement restDataElement = RestDataGroup.withNameInData("nameInData2");
 		restDataGroup.addChild(restDataElement);
 		assertNotNull(restDataGroup.getFirstChildWithNameInData("nameInData2"));
 	}
 
 	@Test(expectedExceptions = DataMissingException.class)
-	public void testGetFirstChildWithNameInDataNotFound(){
+	public void testGetFirstChildWithNameInDataNotFound() {
 		restDataGroup.getFirstChildWithNameInData("nameInData_NOT_FOUND");
 	}
+
+	@Test
+	public void testRemoveChild() {
+		RestDataGroup dataGroup = RestDataGroup.withNameInData("nameInData");
+		RestDataElement child = RestDataAtomic.withNameInDataAndValue("childId", "child value");
+		dataGroup.addChild(child);
+		dataGroup.removeFirstChildWithNameInData("childId");
+		assertFalse(dataGroup.containsChildWithNameInData("childId"));
+	}
+
+	@Test(expectedExceptions = DataMissingException.class)
+	public void testRemoveChildNotFound() {
+		RestDataGroup dataGroup = RestDataGroup.withNameInData("nameInData");
+		RestDataElement child = RestDataAtomic.withNameInDataAndValue("childId", "child value");
+		dataGroup.addChild(child);
+		dataGroup.removeFirstChildWithNameInData("childId_NOTFOUND");
+	}
+
 }

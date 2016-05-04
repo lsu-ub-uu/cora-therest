@@ -71,8 +71,8 @@ public class RestDataGroup implements RestDataElement, RestData {
 	}
 
 	public boolean containsChildWithNameInData(String nameInData) {
-		for(RestDataElement restDataElement : getChildren()){
-			if(restDataElement.getNameInData().equals(nameInData)){
+		for (RestDataElement restDataElement : getChildren()) {
+			if (restDataElement.getNameInData().equals(nameInData)) {
 				return true;
 			}
 		}
@@ -80,12 +80,29 @@ public class RestDataGroup implements RestDataElement, RestData {
 	}
 
 	public RestDataElement getFirstChildWithNameInData(String nameInData) {
-		for(RestDataElement restDataElement : getChildren()){
-			if(restDataElement.getNameInData().equals(nameInData)){
+		for (RestDataElement restDataElement : getChildren()) {
+			if (restDataElement.getNameInData().equals(nameInData)) {
 				return restDataElement;
 			}
 		}
 		throw new DataMissingException("Requested child " + nameInData + " does not exist");
 	}
 
+	public void removeFirstChildWithNameInData(String childNameInData) {
+		boolean childRemoved = tryToRemoveChild(childNameInData);
+		if (!childRemoved) {
+			throw new DataMissingException(
+					"Element not found for childNameInData:" + childNameInData);
+		}
+	}
+
+	private boolean tryToRemoveChild(String childNameInData) {
+		for (RestDataElement dataElement : getChildren()) {
+			if (dataElement.getNameInData().equals(childNameInData)) {
+				getChildren().remove(dataElement);
+				return true;
+			}
+		}
+		return false;
+	}
 }

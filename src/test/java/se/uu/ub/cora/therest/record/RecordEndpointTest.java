@@ -103,16 +103,19 @@ public class RecordEndpointTest {
 		Response response = recordEndpoint.readIncomingRecordLinks("place", "place:0001");
 		String entity = (String) response.getEntity();
 
-		assertEquals(entity,
-				"{\"dataList\":{\"fromNo\":\"1\",\"data\":["
-						+ "{\"children\":[{\"linkedRecordType\":\"place\""
-						+ ",\"linkedRecordId\":\"place:0002\""
-						+ ",\"actionLinks\":{\"read\":{\"requestMethod\":\"GET\",\"rel\":\"read\""
-						+ ",\"url\":\"http://localhost:8080/therest/rest/record/place/place:0002\""
-						+ ",\"accept\":\"application/uub+record+json\"}},\"name\":\"from\"}"
-						+ ",{\"linkedRecordType\":\"place\",\"linkedRecordId\":\"place:0001\""
-						+ ",\"name\":\"to\"}],\"name\":\"recordToRecordLink\"}],\"totalNo\":\"1\""
-						+ ",\"containDataOfType\":\"recordToRecordLink\",\"toNo\":\"1\"}}");
+		assertEquals(entity, "{\"dataList\":{\"fromNo\":\"1\",\"data\":["
+				+ "{\"children\":[{\"children\":["
+				+ "{\"name\":\"linkedRecordType\",\"value\":\"place\"}"
+				+ ",{\"name\":\"linkedRecordId\",\"value\":\"place:0002\"}]" + ",\"actionLinks\":{"
+				+ "\"read\":{\"requestMethod\":\"GET\",\"rel\":\"read\""
+				+ ",\"url\":\"http://localhost:8080/therest/rest/record/place/place:0002\""
+				+ ",\"accept\":\"application/uub+record+json\"}}"
+				+ ",\"name\":\"from\"},{\"children\":["
+				+ "{\"name\":\"linkedRecordType\",\"value\":\"place\"}"
+				+ ",{\"name\":\"linkedRecordId\",\"value\":\"place:0001\"}]"
+				+ ",\"name\":\"to\"}],\"name\":\"recordToRecordLink\"}]" + ",\"totalNo\":\"1\""
+				+ ",\"containDataOfType\":\"recordToRecordLink\",\"toNo\":\"1\"}}");
+
 		assertEquals(response.getStatusInfo(), Response.Status.OK);
 	}
 

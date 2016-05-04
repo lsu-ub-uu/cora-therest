@@ -19,17 +19,18 @@
 
 package se.uu.ub.cora.therest.data.converter;
 
+import static org.testng.Assert.assertEquals;
+
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import se.uu.ub.cora.json.builder.JsonBuilderFactory;
+import se.uu.ub.cora.json.builder.org.OrgJsonBuilderFactoryAdapter;
 import se.uu.ub.cora.spider.data.Action;
 import se.uu.ub.cora.therest.data.ActionLink;
 import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.RestDataRecordLink;
-import se.uu.ub.cora.json.builder.JsonBuilderFactory;
-import se.uu.ub.cora.json.builder.org.OrgJsonBuilderFactoryAdapter;
-
-import static org.testng.Assert.assertEquals;
 
 public class DataRecordLinkToJsonConverterTest {
 	private RestDataRecordLink recordLink;
@@ -39,10 +40,12 @@ public class DataRecordLinkToJsonConverterTest {
 	public void setUp() {
 		recordLink = RestDataRecordLink.withNameInData("nameInData");
 
-		RestDataAtomic linkedRecordType = RestDataAtomic.withNameInDataAndValue("linkedRecordType", "aRecordType");
+		RestDataAtomic linkedRecordType = RestDataAtomic.withNameInDataAndValue("linkedRecordType",
+				"aRecordType");
 		recordLink.addChild(linkedRecordType);
 
-		RestDataAtomic linkedRecordId = RestDataAtomic.withNameInDataAndValue("linkedRecordId", "aRecordId");
+		RestDataAtomic linkedRecordId = RestDataAtomic.withNameInDataAndValue("linkedRecordId",
+				"aRecordId");
 		recordLink.addChild(linkedRecordId);
 
 		JsonBuilderFactory jsonFactory = new OrgJsonBuilderFactoryAdapter();
@@ -56,8 +59,10 @@ public class DataRecordLinkToJsonConverterTest {
 	public void testToJson() {
 		String jsonString = converter.toJson();
 
-		assertEquals(jsonString, "{\"linkedRecordType\":\"aRecordType\",\"linkedRecordId\":\"aRecordId\""
-				+ ",\"name\":\"nameInData\"}");
+		assertEquals(jsonString,
+				"{\"children\":[" + "{\"name\":\"linkedRecordType\",\"value\":\"aRecordType\"},"
+						+ "{\"name\":\"linkedRecordId\",\"value\":\"aRecordId\"}]"
+						+ ",\"name\":\"nameInData\"}");
 	}
 
 	@Test
@@ -65,8 +70,11 @@ public class DataRecordLinkToJsonConverterTest {
 		recordLink.setRepeatId("22");
 		String jsonString = converter.toJson();
 
-		assertEquals(jsonString, "{\"linkedRecordType\":\"aRecordType\",\"repeatId\":\"22\""
-				+ ",\"linkedRecordId\":\"aRecordId\"" + ",\"name\":\"nameInData\"}");
+		assertEquals(jsonString,
+				"{\"repeatId\":\"22\",\"children\":["
+						+ "{\"name\":\"linkedRecordType\",\"value\":\"aRecordType\"}"
+						+ ",{\"name\":\"linkedRecordId\",\"value\":\"aRecordId\"}"
+						+ "],\"name\":\"nameInData\"}");
 	}
 
 	@Test
@@ -74,18 +82,24 @@ public class DataRecordLinkToJsonConverterTest {
 		recordLink.setRepeatId("");
 		String jsonString = converter.toJson();
 
-		assertEquals(jsonString, "{\"linkedRecordType\":\"aRecordType\",\"linkedRecordId\":\"aRecordId\"" + ""
-				+ ",\"name\":\"nameInData\"}");
+		assertEquals(jsonString,
+				"{\"children\":[" + "{\"name\":\"linkedRecordType\",\"value\":\"aRecordType\"}"
+						+ ",{\"name\":\"linkedRecordId\",\"value\":\"aRecordId\"}"
+						+ "],\"name\":\"nameInData\"}");
 	}
 
 	@Test
-	public void testToJsonWithLinkedRepeatId(){
-		RestDataAtomic linkedRepeatId = RestDataAtomic.withNameInDataAndValue("linkedRepeatId", "linkedOne");
+	public void testToJsonWithLinkedRepeatId() {
+		RestDataAtomic linkedRepeatId = RestDataAtomic.withNameInDataAndValue("linkedRepeatId",
+				"linkedOne");
 		recordLink.addChild(linkedRepeatId);
 		String jsonString = converter.toJson();
 
-		assertEquals(jsonString, "{\"linkedRecordType\":\"aRecordType\",\"linkedRecordId\":\"aRecordId\""
-				 + ",\"name\":\"nameInData\",\"linkedRepeatId\":\"linkedOne\"}");
+		assertEquals(jsonString,
+				"{\"children\":[" + "{\"name\":\"linkedRecordType\",\"value\":\"aRecordType\"}"
+						+ ",{\"name\":\"linkedRecordId\",\"value\":\"aRecordId\"}"
+						+ ",{\"name\":\"linkedRepeatId\",\"value\":\"linkedOne\"}"
+						+ "],\"name\":\"nameInData\"}");
 	}
 
 	@Test
@@ -94,18 +108,22 @@ public class DataRecordLinkToJsonConverterTest {
 		recordLink.addChild(linkedRepeatId);
 		String jsonString = converter.toJson();
 
-		assertEquals(jsonString, "{\"linkedRecordType\":\"aRecordType\",\"linkedRecordId\":\"aRecordId\"" + ""
-				+ ",\"name\":\"nameInData\"}");
+		assertEquals(jsonString,
+				"{\"children\":[" + "{\"name\":\"linkedRecordType\",\"value\":\"aRecordType\"}"
+						+ ",{\"name\":\"linkedRecordId\",\"value\":\"aRecordId\"}"
+						+ "],\"name\":\"nameInData\"}");
 	}
 
 	@Test
-	public void testToJsonWithLinkedPath(){
+	public void testToJsonWithLinkedPath() {
 		RestDataGroup linkedPathDataGroup = RestDataGroup.withNameInData("linkedPath");
 		recordLink.addChild(linkedPathDataGroup);
 		String jsonString = converter.toJson();
 
-		assertEquals(jsonString, "{\"linkedRecordType\":\"aRecordType\",\"linkedRecordId\":\"aRecordId\"" + ""
-				+ ",\"linkedPath\":{\"name\":\"linkedPath\"},\"name\":\"nameInData\"}");
+		assertEquals(jsonString,
+				"{\"children\":[" + "{\"name\":\"linkedRecordType\",\"value\":\"aRecordType\"}"
+						+ ",{\"name\":\"linkedRecordId\",\"value\":\"aRecordId\"}"
+						+ ",{\"name\":\"linkedPath\"}" + "],\"name\":\"nameInData\"}");
 	}
 
 	@Test
@@ -113,9 +131,10 @@ public class DataRecordLinkToJsonConverterTest {
 		recordLink.addActionLink("read", createReadActionLink());
 
 		String jsonString = converter.toJson();
-
-		assertEquals(jsonString, "{\"linkedRecordType\":\"aRecordType\",\"linkedRecordId\":\"aRecordId\""
-				+ ",\"actionLinks\":{\"read\":{\"requestMethod\":\"GET\",\"rel\":\"read\""
+		assertEquals(jsonString, "{\"children\":["
+				+ "{\"name\":\"linkedRecordType\",\"value\":\"aRecordType\"}"
+				+ ",{\"name\":\"linkedRecordId\",\"value\":\"aRecordId\"}"
+				+ "],\"actionLinks\":{\"read\":{\"requestMethod\":\"GET\",\"rel\":\"read\""
 				+ ",\"contentType\":\"application/metadata_record+json\""
 				+ ",\"url\":\"http://localhost:8080/therest/rest/record/place/place:0001\""
 				+ ",\"accept\":\"application/metadata_record+json\"}},\"name\":\"nameInData\"}");

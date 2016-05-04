@@ -19,22 +19,18 @@
 
 package se.uu.ub.cora.therest.data.converter;
 
+import java.util.Map;
+
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.JsonObjectBuilder;
 import se.uu.ub.cora.therest.data.ActionLink;
 import se.uu.ub.cora.therest.data.RestDataAtomic;
-import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.RestDataRecordLink;
 
-import java.util.Map;
-
-public final class DataRecordLinkToJsonConverter extends DataToJsonConverter {
+public final class DataRecordLinkToJsonConverter extends DataGroupToJsonConverter {
 
 	private static final String LINKED_REPEAT_ID = "linkedRepeatId";
-	private static final String LINKED_PATH = "linkedPath";
 	private RestDataRecordLink recordLink;
-	private JsonObjectBuilder recordLinkBuilder;
-	private JsonBuilderFactory jsonFactory;
 
 	public static DataRecordLinkToJsonConverter usingJsonFactoryForRestDataLink(
 			JsonBuilderFactory jsonFactory, RestDataRecordLink dataLink) {
@@ -43,59 +39,27 @@ public final class DataRecordLinkToJsonConverter extends DataToJsonConverter {
 
 	private DataRecordLinkToJsonConverter(JsonBuilderFactory jsonFactory,
 			RestDataRecordLink recordLink) {
-		this.jsonFactory = jsonFactory;
+		super(jsonFactory, recordLink);
 		this.recordLink = recordLink;
-		recordLinkBuilder = jsonFactory.createObjectBuilder();
 	}
 
 	@Override
 	public JsonObjectBuilder toJsonObjectBuilder() {
-		possiblyAddRepeatId();
-		recordLinkBuilder.addKeyString("name", recordLink.getNameInData());
-		addRecordTypeAndRecordId();
-		possiblyAddLinkedRepeatId();
-		possiblyAddLinkedPath();
+		removeEmptyLinkedRepeatId();
 		possiblyAddActionLinks();
-		return recordLinkBuilder;
+		return super.toJsonObjectBuilder();
 	}
 
-	private void possiblyAddRepeatId() {
-		if (hasNonEmptyRepeatId()) {
-			recordLinkBuilder.addKeyString("repeatId", recordLink.getRepeatId());
+	private void removeEmptyLinkedRepeatId() {
+		if (hasEmptyLinkedRepeatId()) {
+			restDataGroup.removeFirstChildWithNameInData(LINKED_REPEAT_ID);
 		}
 	}
 
-	private boolean hasNonEmptyRepeatId() {
-		return recordLink.getRepeatId() != null && !recordLink.getRepeatId().equals("");
-	}
-
-	private void addRecordTypeAndRecordId() {
-		RestDataAtomic linkedRecordType = (RestDataAtomic) recordLink.getFirstChildWithNameInData("linkedRecordType");
-		recordLinkBuilder.addKeyString("linkedRecordType", linkedRecordType.getValue());
-		RestDataAtomic linkedRecordId = (RestDataAtomic) recordLink.getFirstChildWithNameInData("linkedRecordId");
-		recordLinkBuilder.addKeyString("linkedRecordId", linkedRecordId.getValue());
-	}
-
-	private void possiblyAddLinkedRepeatId() {
-		if(hasNonEmptyLinkedRepeatId()){
-			RestDataAtomic linkedRepeatId = (RestDataAtomic) recordLink.getFirstChildWithNameInData(LINKED_REPEAT_ID);
-			recordLinkBuilder.addKeyString(LINKED_REPEAT_ID, linkedRepeatId.getValue());
-		}
-	}
-
-	private boolean hasNonEmptyLinkedRepeatId() {
-		return recordLink.containsChildWithNameInData(LINKED_REPEAT_ID) &&
-				!((RestDataAtomic) recordLink.getFirstChildWithNameInData(LINKED_REPEAT_ID)).getValue().equals("");
-	}
-
-
-	private void possiblyAddLinkedPath() {
-		if(recordLink.containsChildWithNameInData(LINKED_PATH)) {
-			RestDataGroup linkedPath = (RestDataGroup) recordLink.getFirstChildWithNameInData(LINKED_PATH);
-			DataToJsonConverter dataGroupConverter = DataGroupToJsonConverter.usingJsonFactoryForRestDataGroup(jsonFactory, linkedPath);
-			JsonObjectBuilder dataGroupObject = dataGroupConverter.toJsonObjectBuilder();
-			recordLinkBuilder.addKeyJsonObjectBuilder(LINKED_PATH, dataGroupObject);
-		}
+	private boolean hasEmptyLinkedRepeatId() {
+		return restDataGroup.containsChildWithNameInData(LINKED_REPEAT_ID)
+				&& ((RestDataAtomic) restDataGroup.getFirstChildWithNameInData(LINKED_REPEAT_ID))
+						.getValue().equals("");
 	}
 
 	private void possiblyAddActionLinks() {
@@ -110,10 +74,10 @@ public final class DataRecordLinkToJsonConverter extends DataToJsonConverter {
 
 	private void addActionLinksToRecordLink() {
 		Map<String, ActionLink> actionLinks = recordLink.getActionLinks();
-		ActionLinksToJsonConverter actionLinkConverter = new ActionLinksToJsonConverter(jsonFactory,
-				actionLinks);
+		ActionLinksToJsonConverter actionLinkConverter = new ActionLinksToJsonConverter(
+				jsonBuilderFactory, actionLinks);
 		JsonObjectBuilder actionLinksObject = actionLinkConverter.toJsonObjectBuilder();
-		recordLinkBuilder.addKeyJsonObjectBuilder("actionLinks", actionLinksObject);
+		dataGroupJsonObjectBuilder.addKeyJsonObjectBuilder("actionLinks", actionLinksObject);
 	}
 
 }

@@ -19,27 +19,26 @@
 
 package se.uu.ub.cora.therest.data.converter;
 
+import java.util.Map.Entry;
+
 import se.uu.ub.cora.json.builder.JsonArrayBuilder;
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.JsonObjectBuilder;
 import se.uu.ub.cora.therest.data.RestDataElement;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 
-import java.util.Map.Entry;
+public class DataGroupToJsonConverter extends DataToJsonConverter {
 
-public final class DataGroupToJsonConverter extends DataToJsonConverter {
-
-	private RestDataGroup restDataGroup;
-	private JsonObjectBuilder dataGroupJsonObjectBuilder;
-	private JsonBuilderFactory jsonBuilderFactory;
+	protected RestDataGroup restDataGroup;
+	protected JsonObjectBuilder dataGroupJsonObjectBuilder;
+	protected JsonBuilderFactory jsonBuilderFactory;
 
 	public static DataGroupToJsonConverter usingJsonFactoryForRestDataGroup(
-			se.uu.ub.cora.json.builder.JsonBuilderFactory factory,
-			RestDataGroup restDataGroup) {
+			JsonBuilderFactory factory, RestDataGroup restDataGroup) {
 		return new DataGroupToJsonConverter(factory, restDataGroup);
 	}
 
-	private DataGroupToJsonConverter(JsonBuilderFactory factory, RestDataGroup restDataGroup) {
+	protected DataGroupToJsonConverter(JsonBuilderFactory factory, RestDataGroup restDataGroup) {
 		this.jsonBuilderFactory = factory;
 		this.restDataGroup = restDataGroup;
 		dataGroupJsonObjectBuilder = factory.createObjectBuilder();
@@ -94,4 +93,5 @@ public final class DataGroupToJsonConverter extends DataToJsonConverter {
 		}
 		dataGroupJsonObjectBuilder.addKeyJsonArrayBuilder("children", childrenArray);
 	}
+
 }
