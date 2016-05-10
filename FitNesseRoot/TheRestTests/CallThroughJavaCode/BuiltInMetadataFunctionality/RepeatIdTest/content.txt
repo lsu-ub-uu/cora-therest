@@ -10,58 +10,58 @@ The system should demand a unique non empty repeatId for all elements that can b
 
 !| RecordEndpointFixture |
 | type | json | testCreateRecord? | getStatusType? |
-| metadataTextVariable | {"name":"metadata","attributes":{"type":"textVariable"},"children":[{"name":"recordInfo","children":[{"name":"id","value":"repeatText"}]},{"name":"nameInData","value":"repeatText"},{"name":"textId","value":"repeatTextText"},{"name":"defTextId","value":"repeatTextDefText"},{"name":"regEx","value":"^[r]{4}$"}]} | | CREATED |
+| metadataTextVariable | {"name":"metadata","attributes":{"type":"textVariable"},"children":[{"name":"recordInfo","children":[{"name":"id","value":"repeatText"},{"children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"cora"}],"name":"dataDivider"}]},{"name":"nameInData","value":"repeatText"},{"name":"textId","value":"repeatTextText"},{"name":"defTextId","value":"repeatTextDefText"},{"name":"regEx","value":"^[r]{4}$"}]} | | CREATED |
 
 *!
 !***> Create a metadataGroups for (repeat)
 
 !| RecordEndpointFixture |
 | type | json | testCreateRecord? | getStatusType? |
-| metadataGroup | {"name":"metadata","attributes":{"type":"group"},"children":[{"name":"recordInfo","children":[{"name":"id","value":"nonRepeating"}]},{"name":"textId","value":"repeatText"},{"name":"defTextId","value":"repeatDefText"},{"name":"nameInData","value":"nonRepeating"},{"name":"childReferences","children":[{"name":"childReference","repeatId":"1","children":[{"name":"ref","value":"repeatText"},{"name":"repeatMin","value":"1"},{"name":"repeatMax","value":"1"}]}]}]} | | CREATED |
-| metadataGroup | {"name":"metadata","attributes":{"type":"group"},"children":[{"name":"recordInfo","children":[{"name":"id","value":"repeating"}]},{"name":"textId","value":"repeatText"},{"name":"defTextId","value":"repeatDefText"},{"name":"nameInData","value":"repeating"},{"name":"childReferences","children":[{"name":"childReference","repeatId":"1","children":[{"name":"ref","value":"repeatText"},{"name":"repeatMin","value":"1"},{"name":"repeatMax","value":"5"}]}]}]} | | CREATED |
-| metadataGroup | {"name":"metadata","attributes":{"type":"group"},"children":[{"name":"recordInfo","children":[{"name":"id","value":"repeatNew"}]},{"name":"textId","value":"repeatText"},{"name":"defTextId","value":"repeatDefText"},{"name":"nameInData","value":"repeat"},{"name":"childReferences","children":[{"name":"childReference","repeatId":"1","children":[{"name":"ref","value":"recordInfoNewGroup"},{"name":"repeatMin","value":"1"},{"name":"repeatMax","value":"1"}]},{"name":"childReference","repeatId":"2","children":[{"name":"ref","value":"nonRepeating"},{"name":"repeatMin","value":"1"},{"name":"repeatMax","value":"1"}]},{"name":"childReference","repeatId":"3","children":[{"name":"ref","value":"repeating"},{"name":"repeatMin","value":"1"},{"name":"repeatMax","value":"1"}]}]}]} | | CREATED |
-| metadataGroup | {"name":"metadata","attributes":{"type":"group"},"children":[{"name":"recordInfo","children":[{"name":"id","value":"repeat"}]},{"name":"textId","value":"repeatText"},{"name":"defTextId","value":"repeatDefText"},{"name":"nameInData","value":"repeat"},{"name":"childReferences","children":[{"name":"childReference","repeatId":"1","children":[{"name":"ref","value":"recordInfoGroup"},{"name":"repeatMin","value":"1"},{"name":"repeatMax","value":"1"}]},{"name":"childReference","repeatId":"2","children":[{"name":"ref","value":"nonRepeating"},{"name":"repeatMin","value":"1"},{"name":"repeatMax","value":"1"}]},{"name":"childReference","repeatId":"3","children":[{"name":"ref","value":"repeating"},{"name":"repeatMin","value":"1"},{"name":"repeatMax","value":"1"}]}]}]} | | CREATED |
+| metadataGroup | {"name":"metadata","attributes":{"type":"group"},"children":[{"name":"recordInfo","children":[{"name":"id","value":"nonRepeating"},{"children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"cora"}],"name":"dataDivider"}]},{"name":"textId","value":"repeatText"},{"name":"defTextId","value":"repeatDefText"},{"name":"nameInData","value":"nonRepeating"},{"name":"childReferences","children":[{"name":"childReference","repeatId":"1","children":[{"name":"ref","value":"repeatText"},{"name":"repeatMin","value":"1"},{"name":"repeatMax","value":"1"}]}]}]} | | CREATED |
+| metadataGroup | {"name":"metadata","attributes":{"type":"group"},"children":[{"name":"recordInfo","children":[{"name":"id","value":"repeating"},{"children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"cora"}],"name":"dataDivider"}]},{"name":"textId","value":"repeatText"},{"name":"defTextId","value":"repeatDefText"},{"name":"nameInData","value":"repeating"},{"name":"childReferences","children":[{"name":"childReference","repeatId":"1","children":[{"name":"ref","value":"repeatText"},{"name":"repeatMin","value":"1"},{"name":"repeatMax","value":"5"}]}]}]} | | CREATED |
+| metadataGroup | {"name":"metadata","attributes":{"type":"group"},"children":[{"name":"recordInfo","children":[{"name":"id","value":"repeatNew"},{"children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"cora"}],"name":"dataDivider"}]},{"name":"textId","value":"repeatText"},{"name":"defTextId","value":"repeatDefText"},{"name":"nameInData","value":"repeat"},{"name":"childReferences","children":[{"name":"childReference","repeatId":"1","children":[{"name":"ref","value":"recordInfoNewGroup"},{"name":"repeatMin","value":"1"},{"name":"repeatMax","value":"1"}]},{"name":"childReference","repeatId":"2","children":[{"name":"ref","value":"nonRepeating"},{"name":"repeatMin","value":"1"},{"name":"repeatMax","value":"1"}]},{"name":"childReference","repeatId":"3","children":[{"name":"ref","value":"repeating"},{"name":"repeatMin","value":"1"},{"name":"repeatMax","value":"1"}]}]}]} | | CREATED |
+| metadataGroup | {"name":"metadata","attributes":{"type":"group"},"children":[{"name":"recordInfo","children":[{"name":"id","value":"repeat"},{"children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"cora"}],"name":"dataDivider"}]},{"name":"textId","value":"repeatText"},{"name":"defTextId","value":"repeatDefText"},{"name":"nameInData","value":"repeat"},{"name":"childReferences","children":[{"name":"childReference","repeatId":"1","children":[{"name":"ref","value":"recordInfoGroup"},{"name":"repeatMin","value":"1"},{"name":"repeatMax","value":"1"}]},{"name":"childReference","repeatId":"2","children":[{"name":"ref","value":"nonRepeating"},{"name":"repeatMin","value":"1"},{"name":"repeatMax","value":"1"}]},{"name":"childReference","repeatId":"3","children":[{"name":"ref","value":"repeating"},{"name":"repeatMin","value":"1"},{"name":"repeatMax","value":"1"}]}]}]} | | CREATED |
 
 *!
 !***> Create a recordType(repeat)
 
 !| RecordEndpointFixture |
 | type | json | testCreateRecord? | getStatusType? |
-| recordType | {"name":"recordType","children":[{"name":"recordInfo","children":[{"name":"id","value":"repeat"}]},{"name":"metadataId","value":"repeat"},{"name":"abstract","value":"false"},{"name":"presentationViewId","value":"pgRepeatView"},{"name":"presentationFormId","value":"pgRepeatForm"},{"name":"newMetadataId","value":"repeatNew"},{"name":"newPresentationFormId","value":"pgRepeatForm"},{"name":"menuPresentationViewId","value":"repeatMenuPGroup"},{"name":"listPresentationViewId","value":"pgRepeatList"},{"name":"searchMetadataId","value":"repeatSearch"},{"name":"searchPresentationFormId","value":"pgRepeatSearchForm"},{"name":"userSuppliedId","value":"true"},{"name":"selfPresentationViewId","value":"pgRepeatSelf"},{"name":"permissionKey","value":"REPEAT"}]} | | CREATED |
+| recordType | {"name":"recordType","children":[{"name":"recordInfo","children":[{"name":"id","value":"repeat"},{"children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"cora"}],"name":"dataDivider"}]},{"name":"metadataId","value":"repeat"},{"name":"abstract","value":"false"},{"name":"presentationViewId","value":"pgRepeatView"},{"name":"presentationFormId","value":"pgRepeatForm"},{"name":"newMetadataId","value":"repeatNew"},{"name":"newPresentationFormId","value":"pgRepeatForm"},{"name":"menuPresentationViewId","value":"repeatMenuPGroup"},{"name":"listPresentationViewId","value":"pgRepeatList"},{"name":"searchMetadataId","value":"repeatSearch"},{"name":"searchPresentationFormId","value":"pgRepeatSearchForm"},{"name":"userSuppliedId","value":"true"},{"name":"selfPresentationViewId","value":"pgRepeatSelf"},{"name":"permissionKey","value":"REPEAT"}]} | | CREATED |
 
 *!
 !***> Create correct data on repeat
 
 !| RecordEndpointFixture |
 | type | json | testCreateRecord? | getStatusType? |
-| repeat | {"name":"repeat","children":[{"name":"recordInfo","children":[{"name":"id","value":"repeat1"}]},{"name":"nonRepeating","children":[{"name":"repeatText","value":"rrrr"}]},{"name":"repeating","children":[{"name":"repeatText","repeatId":"1","value":"rrrr"},{"name":"repeatText","repeatId":"2","value":"rrrr"}]}]} | | CREATED |
+| repeat | {"name":"repeat","children":[{"name":"recordInfo","children":[{"name":"id","value":"repeat1"},{"children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"cora"}],"name":"dataDivider"}]},{"name":"nonRepeating","children":[{"name":"repeatText","value":"rrrr"}]},{"name":"repeating","children":[{"name":"repeatText","repeatId":"1","value":"rrrr"},{"name":"repeatText","repeatId":"2","value":"rrrr"}]}]} | | CREATED |
 
 *!
 !***> Create incorrect data on repeat (no repeatId)
 
 !| RecordEndpointFixture |
 | type | json | testCreateRecord? | getStatusType? |
-| repeat | {"name":"repeat","children":[{"name":"recordInfo","children":[{"name":"id","value":"repeat1"}]},{"name":"nonRepeating","children":[{"name":"repeatText","value":"rrrr"}]},{"name":"repeating","children":[{"name":"repeatText","value":"rrrr"},{"name":"repeatText","value":"rrrr"}]}]} | | BAD_REQUEST |
+| repeat | {"name":"repeat","children":[{"name":"recordInfo","children":[{"name":"id","value":"repeat1"},{"children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"cora"}],"name":"dataDivider"}]},{"name":"nonRepeating","children":[{"name":"repeatText","value":"rrrr"}]},{"name":"repeating","children":[{"name":"repeatText","value":"rrrr"},{"name":"repeatText","value":"rrrr"}]}]} | | BAD_REQUEST |
 
 *!
 !***> Create incorrect data on repeat (duplicate repeatId)
 
 !| RecordEndpointFixture |
 | type | json | testCreateRecord? | getStatusType? |
-| repeat | {"name":"repeat","children":[{"name":"recordInfo","children":[{"name":"id","value":"repeat1"}]},{"name":"nonRepeating","children":[{"name":"repeatText","value":"rrrr"}]},{"name":"repeating","children":[{"name":"repeatText","repeatId":"1","value":"rrrr"},{"name":"repeatText","repeatId":"1","value":"rrrr"}]}]} | | BAD_REQUEST |
+| repeat | {"name":"repeat","children":[{"name":"recordInfo","children":[{"name":"id","value":"repeat1"},{"children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"cora"}],"name":"dataDivider"}]},{"name":"nonRepeating","children":[{"name":"repeatText","value":"rrrr"}]},{"name":"repeating","children":[{"name":"repeatText","repeatId":"1","value":"rrrr"},{"name":"repeatText","repeatId":"1","value":"rrrr"}]}]} | | BAD_REQUEST |
 
 *!
 !***> Create incorrect data on repeat (empty repeatId)
 
 !| RecordEndpointFixture |
 | type | json | testCreateRecord? | getStatusType? |
-| repeat | {"name":"repeat","children":[{"name":"recordInfo","children":[{"name":"id","value":"repeat1"}]},{"name":"nonRepeating","children":[{"name":"repeatText","value":"rrrr"}]},{"name":"repeating","children":[{"name":"repeatText","repeatId":"","value":"rrrr"},{"name":"repeatText","repeatId":"","value":"rrrr"}]}]} | | BAD_REQUEST |
+| repeat | {"name":"repeat","children":[{"name":"recordInfo","children":[{"name":"id","value":"repeat1"},{"children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"cora"}],"name":"dataDivider"}]},{"name":"nonRepeating","children":[{"name":"repeatText","value":"rrrr"}]},{"name":"repeating","children":[{"name":"repeatText","repeatId":"","value":"rrrr"},{"name":"repeatText","repeatId":"","value":"rrrr"}]}]} | | BAD_REQUEST |
 
 *!
 !***> Create incorrect data on repeat (where not expected)
 
 !| RecordEndpointFixture |
 | type | json | testCreateRecord? | getStatusType? |
-| repeat | {"name":"repeat","children":[{"name":"recordInfo","children":[{"name":"id","value":"repeat1"}]},{"name":"nonRepeating","children":[{"name":"repeatText","repeatId":"1","value":"rrrr"}]},{"name":"repeating","children":[{"name":"repeatText","repeatId":"1","value":"rrrr"},{"name":"repeatText","repeatId":"2","value":"rrrr"}]}]} | | BAD_REQUEST |
+| repeat | {"name":"repeat","children":[{"name":"recordInfo","children":[{"name":"id","value":"repeat1"},{"children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"cora"}],"name":"dataDivider"}]},{"name":"nonRepeating","children":[{"name":"repeatText","repeatId":"1","value":"rrrr"}]},{"name":"repeating","children":[{"name":"repeatText","repeatId":"1","value":"rrrr"},{"name":"repeatText","repeatId":"2","value":"rrrr"}]}]} | | BAD_REQUEST |
 
 *!
