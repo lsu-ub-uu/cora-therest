@@ -138,9 +138,15 @@ public class RecordEndpointTest {
 	}
 
 	@Test
-	public void testDeleteRecord() {
-		Response response = recordEndpoint.deleteRecord("place", "place:0001");
+	public void testDeleteRecordNoIncomingLinks() {
+		Response response = recordEndpoint.deleteRecord("place", "place:0002");
 		assertEquals(response.getStatusInfo(), Response.Status.OK);
+	}
+
+	@Test
+	public void testDeleteRecordIncomingLinks() {
+		Response response = recordEndpoint.deleteRecord("place", "place:0001");
+		assertEquals(response.getStatusInfo(), Response.Status.METHOD_NOT_ALLOWED);
 	}
 
 	@Test
