@@ -45,7 +45,7 @@
 
 !| RecordEndpointFixture |
 | type | json | testCreateRecord? | getStatusType? |
-| metadataCollectionVariable | {"name":"metadata","children":[{"name":"recordInfo","children":[{"name":"id","value":"perhapsVar"},{"children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"cora"}],"name":"dataDivider"}]},{"name":"nameInData","value":"perhapsVar"},{"name":"textId","value":"itemPerhapsVarVarText"},{"name":"defTextId","value":"itemPerhapsVarDefText"},{"name":"refCollectionId","value":"yesNoUnknown"},{"name":"refParentId","value":"yesNoUnknownVar"},{"name":"finalValue","value":"perhaps"}],"attributes":{"type":"collectionVariable"}} | Data is not valid: final value does not exist in collecion | BAD_REQUEST |
+| metadataCollectionVariable | {"name":"metadata","children":[{"name":"recordInfo","children":[{"name":"id","value":"perhapsVar"},{"children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"cora"}],"name":"dataDivider"}]},{"name":"nameInData","value":"perhapsVar"},{"name":"textId","value":"itemPerhapsVarVarText"},{"name":"defTextId","value":"itemPerhapsVarDefText"},{"name":"refCollectionId","value":"yesNoUnknown"},{"name":"refParentId","value":"yesNoUnknownVar"},{"name":"finalValue","value":"perhaps"}],"attributes":{"type":"collectionVariable"}} | Data is not valid: final value does not exist in collection | BAD_REQUEST |
 
 *!
 !***> Create metadataGroups needed for recordType yesNoUnknown
