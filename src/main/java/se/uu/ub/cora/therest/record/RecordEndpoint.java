@@ -19,31 +19,7 @@
 
 package se.uu.ub.cora.therest.record;
 
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Map;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriInfo;
-
-import org.glassfish.jersey.media.multipart.BodyPart;
-import org.glassfish.jersey.media.multipart.BodyPartEntity;
-import org.glassfish.jersey.media.multipart.FormDataBodyPart;
-import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
-import org.glassfish.jersey.media.multipart.FormDataMultiPart;
-import org.glassfish.jersey.media.multipart.FormDataParam;
-
+import org.glassfish.jersey.media.multipart.*;
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.org.OrgJsonBuilderFactoryAdapter;
 import se.uu.ub.cora.json.parser.JsonParseException;
@@ -64,15 +40,21 @@ import se.uu.ub.cora.therest.data.RestDataElement;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.RestDataList;
 import se.uu.ub.cora.therest.data.RestDataRecord;
-import se.uu.ub.cora.therest.data.converter.ConverterException;
-import se.uu.ub.cora.therest.data.converter.DataListToJsonConverter;
-import se.uu.ub.cora.therest.data.converter.DataRecordToJsonConverter;
-import se.uu.ub.cora.therest.data.converter.JsonToDataConverter;
-import se.uu.ub.cora.therest.data.converter.JsonToDataConverterFactory;
-import se.uu.ub.cora.therest.data.converter.JsonToDataConverterFactoryImp;
+import se.uu.ub.cora.therest.data.converter.*;
 import se.uu.ub.cora.therest.data.converter.spider.DataGroupRestToSpiderConverter;
 import se.uu.ub.cora.therest.data.converter.spider.DataListSpiderToRestConverter;
 import se.uu.ub.cora.therest.data.converter.spider.DataRecordSpiderToRestConverter;
+
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Map;
 
 @Path("record")
 public class RecordEndpoint {
@@ -339,30 +321,12 @@ public class RecordEndpoint {
 
 	@POST
 	@Path("{type}/{id}/upload")
-	// @Path("{type}/{id}")
-	// @Consumes("multipart/mixed")
 	@Consumes("multipart/form-data")
-	// @Consumes("image/png")
-	// @Consumes("application/pdf")
-	// @Consumes(MediaType.MULTIPART_FORM_DATA)
-	// @Consumes("application/uub+record+json")
-	// @Consumes("text/plain")
-	// @Produces("application/uub+record+json")
-	// @PathParam("id") String id,
-	// String record) {
-	// @POST
-	// @Path("{type}/{id}/{hrm}")
-	// @Consumes("application/uub+record+json2")
 	@Produces("application/uub+record+json2")
-	// public Response updateRecord(@PathParam("type") String type,
-	// @PathParam("id") String id,
-	// @PathParam("hrm") String hrm, String jsonRecord) {
-	// public Response uploadFile(MultiPart multiPart) {
-	// public Response uploadFile() {
 	public Response uploadFile(@PathParam("type") String type, @PathParam("id") String id,
 			@FormDataParam("file") InputStream uploadedInputStream,
-			@FormDataParam("file") FormDataContentDisposition fileDetail,
 			FormDataMultiPart multiPart) {
+//			@FormDataParam("file") FormDataContentDisposition fileDetail,
 		// public Response uploadFile(@PathParam("type") String type,
 		// public Response updateRecord() {
 		BodyPart bodyPart = multiPart.getBodyParts().get(0);

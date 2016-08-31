@@ -19,6 +19,7 @@
 
 package se.uu.ub.cora.therest.record;
 
+import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
@@ -26,6 +27,9 @@ import se.uu.ub.cora.therest.initialize.DependencyProviderForTest;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 import static org.testng.Assert.*;
 
@@ -327,5 +331,13 @@ public class RecordEndpointTest {
 		String type = "place";
 		Response responseCreated = recordEndpoint.createRecord(type, jsonToCreateFrom);
 		assertEquals(responseCreated.getStatusInfo(), Response.Status.INTERNAL_SERVER_ERROR);
+	}
+
+	@Test
+	public void testUpload(){
+		InputStream stream = new ByteArrayInputStream("a string".getBytes(StandardCharsets.UTF_8));
+
+		Response responseCreated = recordEndpoint.uploadFile("image", "someId",stream, new FormDataMultiPart());
+		assertEquals(responseCreated.getStatusInfo(), Response.Status.OK);
 	}
 }
