@@ -300,6 +300,7 @@ public class RecordEndpoint {
 	public Response updateRecord(@PathParam("type") String type, @PathParam("id") String id,
 			String jsonRecord) {
 		return updateRecordAsUserIdWithRecord(USER_ID, type, id, jsonRecord);
+		// return Response.status(Response.Status.OK).entity("{}").build();
 	}
 
 	public Response updateRecordAsUserIdWithRecord(String userId, String type, String id,
@@ -326,4 +327,29 @@ public class RecordEndpoint {
 		return Response.status(Response.Status.OK).entity(json).build();
 	}
 
+	// @POST
+	// @Path("upload")
+	// @Path("{type}/{id}")
+	// @Consumes("multipart/mixed")
+	// @Consumes(MediaType.MULTIPART_FORM_DATA)
+	// @Consumes("application/uub+record+json")
+	// @Consumes("text/plain")
+	// public Response uploadFile(MultiPart multiPart) {
+	// public Response uploadFile(@FormDataParam("file") InputStream
+	// uploadedInputStream) {
+	// @Produces("application/uub+record+json")
+	// public Response uploadFile(@PathParam("type") String type,
+	// @PathParam("id") String id,
+	// String record) {
+	// @POST
+	// @Path("{type}/{id}/{hrm}")
+	// @Consumes("application/uub+record+json2")
+	// @Produces("application/uub+record+json2")
+	// public Response updateRecord(@PathParam("type") String type,
+	// @PathParam("id") String id,
+	// @PathParam("hrm") String hrm, String jsonRecord) {
+	//
+	// // return Response.status(Response.Status.OK).build();
+	// return updateRecordAsUserIdWithRecord(USER_ID, type, id, jsonRecord);
+	// }
 }
