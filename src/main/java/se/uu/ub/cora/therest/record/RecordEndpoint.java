@@ -19,8 +19,11 @@
 
 package se.uu.ub.cora.therest.record;
 
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -33,6 +36,13 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
+
+import org.glassfish.jersey.media.multipart.BodyPart;
+import org.glassfish.jersey.media.multipart.BodyPartEntity;
+import org.glassfish.jersey.media.multipart.FormDataBodyPart;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataMultiPart;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.org.OrgJsonBuilderFactoryAdapter;
@@ -327,29 +337,40 @@ public class RecordEndpoint {
 		return Response.status(Response.Status.OK).entity(json).build();
 	}
 
-	// @POST
-	// @Path("upload")
+	@POST
+	@Path("upload")
 	// @Path("{type}/{id}")
 	// @Consumes("multipart/mixed")
+	@Consumes("multipart/form-data")
+	// @Consumes("image/png")
+	// @Consumes("application/pdf")
 	// @Consumes(MediaType.MULTIPART_FORM_DATA)
 	// @Consumes("application/uub+record+json")
 	// @Consumes("text/plain")
-	// public Response uploadFile(MultiPart multiPart) {
-	// public Response uploadFile(@FormDataParam("file") InputStream
-	// uploadedInputStream) {
 	// @Produces("application/uub+record+json")
-	// public Response uploadFile(@PathParam("type") String type,
 	// @PathParam("id") String id,
 	// String record) {
 	// @POST
 	// @Path("{type}/{id}/{hrm}")
 	// @Consumes("application/uub+record+json2")
-	// @Produces("application/uub+record+json2")
+	@Produces("application/uub+record+json2")
 	// public Response updateRecord(@PathParam("type") String type,
 	// @PathParam("id") String id,
 	// @PathParam("hrm") String hrm, String jsonRecord) {
-	//
-	// // return Response.status(Response.Status.OK).build();
-	// return updateRecordAsUserIdWithRecord(USER_ID, type, id, jsonRecord);
-	// }
+	// public Response uploadFile(MultiPart multiPart) {
+	// public Response uploadFile() {
+	public Response uploadFile(@FormDataParam("file") InputStream uploadedInputStream,
+			@FormDataParam("file") FormDataContentDisposition fileDetail,
+			FormDataMultiPart multiPart) {
+		// public Response uploadFile(@PathParam("type") String type,
+		// public Response updateRecord() {
+		BodyPart bodyPart = multiPart.getBodyParts().get(0);
+		BodyPartEntity entity = (BodyPartEntity) bodyPart.getEntity();
+		InputStream inputStream = entity.getInputStream();
+		Map<String, List<FormDataBodyPart>> fields = multiPart.getFields();
+		List<FormDataBodyPart> list = fields.get(fields.keySet().iterator().next());
+		FormDataBodyPart formDataBodyPart = list.get(0);
+		return Response.status(Response.Status.OK).build();
+		// return updateRecordAsUserIdWithRecord(USER_ID, type, id, jsonRecord);
+	}
 }
