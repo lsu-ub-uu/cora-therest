@@ -338,7 +338,7 @@ public class RecordEndpoint {
 	}
 
 	@POST
-	@Path("upload")
+	@Path("{type}/{id}/upload")
 	// @Path("{type}/{id}")
 	// @Consumes("multipart/mixed")
 	@Consumes("multipart/form-data")
@@ -359,7 +359,8 @@ public class RecordEndpoint {
 	// @PathParam("hrm") String hrm, String jsonRecord) {
 	// public Response uploadFile(MultiPart multiPart) {
 	// public Response uploadFile() {
-	public Response uploadFile(@FormDataParam("file") InputStream uploadedInputStream,
+	public Response uploadFile(@PathParam("type") String type, @PathParam("id") String id,
+			@FormDataParam("file") InputStream uploadedInputStream,
 			@FormDataParam("file") FormDataContentDisposition fileDetail,
 			FormDataMultiPart multiPart) {
 		// public Response uploadFile(@PathParam("type") String type,
