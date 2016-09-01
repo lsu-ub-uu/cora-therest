@@ -128,26 +128,7 @@ public class ActionSpiderToRestConverterTest {
 		assertEquals(actionLink.getAccept(), "application/uub+record+json");
 		assertEquals(actionLink.getContentType(), "application/uub+record+json");
 	}
-	
-	@Test
-	public void testToRestWithActionLinkCreateByUpload() {
-		Action actionCreateByUpload = Action.CREATE_BY_UPLOAD;
-		actions.add(actionCreateByUpload);
-		
-		ActionSpiderToRestConverter actionSpiderToRestConverter = ActionSpiderToRestConverter
-				.fromSpiderActionsWithBaseURLAndRecordTypeAndRecordId(actions, baseURL,
-						"recordType", "image");
-		Map<String, ActionLink> actionLinks = actionSpiderToRestConverter.toRest();
 
-		ActionLink actionLink = actionLinks.get("create_by_upload");
-		
-		assertEquals(actionLink.getAction(), actionCreateByUpload);
-		assertEquals(actionLink.getURL(), "http://localhost:8080/therest/rest/record/image/");
-		assertEquals(actionLink.getRequestMethod(), "POST");
-		assertEquals(actionLink.getAccept(), null);
-		assertEquals(actionLink.getContentType(), "multipart/form-data");
-	}
-	
 	@Test
 	public void testToRestWithActionLinkUpload() {
 		Action actionUpload = Action.UPLOAD;
@@ -212,7 +193,7 @@ public class ActionSpiderToRestConverterTest {
 		actions.add(Action.CREATE);
 		actions.add(Action.LIST);
 		actions.add(Action.SEARCH);
-		actions.add(Action.CREATE_BY_UPLOAD);
+		actions.add(Action.UPLOAD);
 
 		ActionSpiderToRestConverter actionSpiderToRestConverter = ActionSpiderToRestConverter
 				.fromSpiderActionsWithBaseURLAndRecordTypeAndRecordId(actions, baseURL,
@@ -241,7 +222,7 @@ public class ActionSpiderToRestConverterTest {
 		ActionLink search = actionLinks.get("search");
 		assertEquals(search.getURL(), "http://localhost:8080/therest/rest/record/text/");
 
-		ActionLink createByUpload = actionLinks.get("create_by_upload");
-		assertEquals(createByUpload.getURL(),  "http://localhost:8080/therest/rest/record/text/");
+		ActionLink createByUpload = actionLinks.get("upload");
+		assertEquals(createByUpload.getURL(),  "http://localhost:8080/therest/rest/record/recordType/text/upload");
 	}
 }
