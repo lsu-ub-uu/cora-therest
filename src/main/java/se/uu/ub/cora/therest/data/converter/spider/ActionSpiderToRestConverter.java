@@ -83,7 +83,12 @@ public final class ActionSpiderToRestConverter {
 				actionLink.setURL(urlForRecordTypeActions);
 				actionLink.setContentType("multipart/form-data");
 				
-			} else {
+			} else if(Action.UPLOAD.equals(action)){
+				actionLink.setRequestMethod("POST");
+				actionLink.setURL(urlWithRecordId + "/upload");
+				actionLink.setContentType("multipart/form-data");
+			}
+			else {
 				// list / search
 				actionLink.setRequestMethod("GET");
 				actionLink.setURL(urlForRecordTypeActions);

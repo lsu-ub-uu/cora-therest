@@ -147,6 +147,25 @@ public class ActionSpiderToRestConverterTest {
 		assertEquals(actionLink.getAccept(), null);
 		assertEquals(actionLink.getContentType(), "multipart/form-data");
 	}
+	
+	@Test
+	public void testToRestWithActionLinkUpload() {
+		Action actionUpload = Action.UPLOAD;
+		actions.add(actionUpload);
+		
+		ActionSpiderToRestConverter actionSpiderToRestConverter = ActionSpiderToRestConverter
+				.fromSpiderActionsWithBaseURLAndRecordTypeAndRecordId(actions, baseURL,
+						"image", "image:0001");
+		Map<String, ActionLink> actionLinks = actionSpiderToRestConverter.toRest();
+
+		ActionLink actionLink = actionLinks.get("upload");
+		
+		assertEquals(actionLink.getAction(), actionUpload);
+		assertEquals(actionLink.getURL(), "http://localhost:8080/therest/rest/record/image/image:0001/upload");
+		assertEquals(actionLink.getRequestMethod(), "POST");
+		assertEquals(actionLink.getAccept(), null);
+		assertEquals(actionLink.getContentType(), "multipart/form-data");
+	}
 
 	@Test
 	public void testToRestWithActionLinkLIST() {
