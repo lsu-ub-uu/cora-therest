@@ -19,7 +19,25 @@
 
 package se.uu.ub.cora.therest.record;
 
-import org.glassfish.jersey.media.multipart.*;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
+
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataParam;
+
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.org.OrgJsonBuilderFactoryAdapter;
 import se.uu.ub.cora.json.parser.JsonParseException;
@@ -40,21 +58,15 @@ import se.uu.ub.cora.therest.data.RestDataElement;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.RestDataList;
 import se.uu.ub.cora.therest.data.RestDataRecord;
-import se.uu.ub.cora.therest.data.converter.*;
+import se.uu.ub.cora.therest.data.converter.ConverterException;
+import se.uu.ub.cora.therest.data.converter.DataListToJsonConverter;
+import se.uu.ub.cora.therest.data.converter.DataRecordToJsonConverter;
+import se.uu.ub.cora.therest.data.converter.JsonToDataConverter;
+import se.uu.ub.cora.therest.data.converter.JsonToDataConverterFactory;
+import se.uu.ub.cora.therest.data.converter.JsonToDataConverterFactoryImp;
 import se.uu.ub.cora.therest.data.converter.spider.DataGroupRestToSpiderConverter;
 import se.uu.ub.cora.therest.data.converter.spider.DataListSpiderToRestConverter;
 import se.uu.ub.cora.therest.data.converter.spider.DataRecordSpiderToRestConverter;
-
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriInfo;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Map;
 
 @Path("record")
 public class RecordEndpoint {
@@ -292,7 +304,6 @@ public class RecordEndpoint {
 	public Response updateRecord(@PathParam("type") String type, @PathParam("id") String id,
 			String jsonRecord) {
 		return updateRecordAsUserIdWithRecord(USER_ID, type, id, jsonRecord);
-		// return Response.status(Response.Status.OK).entity("{}").build();
 	}
 
 	public Response updateRecordAsUserIdWithRecord(String userId, String type, String id,
@@ -325,17 +336,23 @@ public class RecordEndpoint {
 	@Produces("application/uub+record+json2")
 	public Response uploadFile(@PathParam("type") String type, @PathParam("id") String id,
 			@FormDataParam("file") InputStream uploadedInputStream,
-			FormDataMultiPart multiPart) {
-//			@FormDataParam("file") FormDataContentDisposition fileDetail,
-		// public Response uploadFile(@PathParam("type") String type,
-		// public Response updateRecord() {
-		BodyPart bodyPart = multiPart.getBodyParts().get(0);
-		BodyPartEntity entity = (BodyPartEntity) bodyPart.getEntity();
-		InputStream inputStream = entity.getInputStream();
-		Map<String, List<FormDataBodyPart>> fields = multiPart.getFields();
-		List<FormDataBodyPart> list = fields.get(fields.keySet().iterator().next());
-		FormDataBodyPart formDataBodyPart = list.get(0);
-		return Response.status(Response.Status.OK).build();
-		// return updateRecordAsUserIdWithRecord(USER_ID, type, id, jsonRecord);
+			@FormDataParam("file") FormDataContentDisposition fileDetail) {
+		String fileName = fileDetail.getFileName();
+		return uploadFileAsUserIdWithStream(USER_ID, type, id, uploadedInputStream, fileName);
+	}
+
+	private Response uploadFileAsUserIdWithStream(String userId, String type, String id,
+			InputStream uploadedInputStream, String fileName) {
+		return tryUploadFile(userId, type, id, uploadedInputStream, fileName);
+	}
+
+	private Response tryUploadFile(String userId, String type, String id, InputStream inputStream,
+			String fileName) {
+		// SpiderDataGroup record =
+		// convertJsonStringToSpiderDataGroup(jsonRecord);
+		SpiderDataRecord updatedRecord = SpiderInstanceProvider.getSpiderUploader().upload(userId,
+				type, id, inputStream, fileName);
+		String json = convertSpiderDataRecordToJsonString(updatedRecord);
+		return Response.status(Response.Status.OK).entity(json).build();
 	}
 }
