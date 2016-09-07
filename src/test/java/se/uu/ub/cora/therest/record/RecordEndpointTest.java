@@ -372,7 +372,7 @@ public class RecordEndpointTest {
 				+ "\"accept\":\"application/uub+record+json\"}},\"name\":\"dataDivider\"}],"
 				+ "\"name\":\"recordInfo\"},{\"children\":[{\"children\":[{\"name\":\"streamId\","
 				+ "\"value\":\"1\"},{\"name\":\"fileName\",\"value\":\"adele1.png\"}"
-				+ ",{\"name\":\"size\",\"value\":\"8\"}],\"name\":\"master\"}],"
+				+ ",{\"name\":\"fileSize\",\"value\":\"8\"}],\"name\":\"master\"}],"
 				+ "\"name\":\"resourceInfo\"}],\"name\":\"binary\"},\"actionLinks\":{\"read\":"
 				+ "{\"requestMethod\":\"GET\",\"rel\":\"read\","
 				+ "\"url\":\"http://localhost:8080/therest/rest/record/image/image:123456789\","
