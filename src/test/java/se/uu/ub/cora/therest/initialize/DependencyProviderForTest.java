@@ -40,7 +40,6 @@ public class DependencyProviderForTest implements SpiderDependencyProvider {
 	private RecordStorage recordStorage = TestDataRecordInMemoryStorage
 			.createRecordStorageInMemoryWithTestData();
 	private Authorizator authorizator = new AuthorizatorImp();
-	// private RecordIdGenerator idGenerator = new TimeStampIdGenerator();
 	private RecordIdGenerator idGenerator = new IdGeneratorSpy();
 	private PermissionKeyCalculator keyCalculator = new RecordPermissionKeyCalculator();
 	private DataValidator dataValidator = new DataValidatorAlwaysValidSpy();
