@@ -78,12 +78,12 @@ public final class ActionSpiderToRestConverter {
 				actionLink.setURL(urlForRecordTypeActions);
 				actionLink.setAccept(APPLICATION_UUB_RECORD_JSON);
 				actionLink.setContentType(APPLICATION_UUB_RECORD_JSON);
-			} else if(Action.CREATE_BY_UPLOAD.equals(action)){
+			} else if(Action.UPLOAD.equals(action)){
 				actionLink.setRequestMethod("POST");
-				actionLink.setURL(urlForRecordTypeActions);
+				actionLink.setURL(urlWithRecordId + "/upload");
 				actionLink.setContentType("multipart/form-data");
-				
-			} else {
+			}
+			else {
 				// list / search
 				actionLink.setRequestMethod("GET");
 				actionLink.setURL(urlForRecordTypeActions);
