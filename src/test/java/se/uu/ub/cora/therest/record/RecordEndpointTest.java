@@ -348,32 +348,31 @@ public class RecordEndpointTest {
 		builder.fileName("adele1.png");
 		FormDataContentDisposition formDataContentDisposition = builder.build();
 
-		Response response = recordEndpoint.uploadFile("image", "image:340718360949765", stream,
+		Response response = recordEndpoint.uploadFile("image", "image:123456789", stream,
 				formDataContentDisposition);
 
 		String entity = (String) response.getEntity();
 
-		assertEquals(entity, "{\"record\":{\"data\":{\"children\":[{\"children\":[{\"children\":["
+		assertEquals(entity, "{\"record\":{\"data\":{\"children\":[{\"children\":["
+				+ "{\"name\":\"id\",\"value\":\"image:123456789\"},"
+				+ "{\"name\":\"type\",\"value\":\"image\"},{\"children\":["
 				+ "{\"name\":\"linkedRecordType\",\"value\":\"system\"},"
-				+ "{\"name\":\"linkedRecordId\",\"value\":\"cora\"}],\"actionLinks\":{"
-				+ "\"read\":{\"requestMethod\":\"GET\",\"rel\":\"read\","
+				+ "{\"name\":\"linkedRecordId\",\"value\":\"cora\"}],\"actionLinks\":"
+				+ "{\"read\":{\"requestMethod\":\"GET\",\"rel\":\"read\","
 				+ "\"url\":\"http://localhost:8080/therest/rest/record/system/cora\","
-				+ "\"accept\":\"application/uub+record+json\"}},\"name\":\"dataDivider\"},"
-				+ "{\"name\":\"id\",\"value\":\"image:340718360949765\"},"
-				+ "{\"name\":\"type\",\"value\":\"image\"},"
-				+ "{\"name\":\"createdBy\",\"value\":\"userId\"}],\"name\":\"recordInfo\"},"
-				+ "{\"name\":\"fileName\",\"value\":\"adele.png\"},"
-				+ "{\"name\":\"fileSize\",\"value\":\"517493\"}],\"name\":\"binary\","
-				+ "\"attributes\":{\"type\":\"image\"}},\"actionLinks\":{\"read\":"
+				+ "\"accept\":\"application/uub+record+json\"}},\"name\":\"dataDivider\"}],"
+				+ "\"name\":\"recordInfo\"},{\"children\":[{\"children\":[{\"name\":\"streamId\","
+				+ "\"value\":\"1\"},{\"name\":\"fileName\",\"value\":\"adele1.png\"}"
+				+ ",{\"name\":\"size\",\"value\":\"8\"}],\"name\":\"master\"}],"
+				+ "\"name\":\"resourceInfo\"}],\"name\":\"binary\"},\"actionLinks\":{\"read\":"
 				+ "{\"requestMethod\":\"GET\",\"rel\":\"read\","
-				+ "\"url\":\"http://localhost:8080/therest/rest/record/image/image:340718360949765\","
-				+ "\"accept\":\"application/uub+record+json\"},\"update\":"
-				+ "{\"requestMethod\":\"POST\",\"rel\":\"update\","
-				+ "\"contentType\":\"application/uub+record+json\","
-				+ "\"url\":\"http://localhost:8080/therest/rest/record/image/image:340718360949765\","
-				+ "\"accept\":\"application/uub+record+json\"},"
-				+ "\"delete\":{\"requestMethod\":\"DELETE\",\"rel\":\"delete\","
-				+ "\"url\":\"http://localhost:8080/therest/rest/record/image/image:340718360949765\"}}}}");
+				+ "\"url\":\"http://localhost:8080/therest/rest/record/image/image:123456789\","
+				+ "\"accept\":\"application/uub+record+json\"},\"update\":{\"requestMethod\":\"POST\","
+				+ "\"rel\":\"update\",\"contentType\":\"application/uub+record+json\","
+				+ "\"url\":\"http://localhost:8080/therest/rest/record/image/image:123456789\","
+				+ "\"accept\":\"application/uub+record+json\"},\"delete\":"
+				+ "{\"requestMethod\":\"DELETE\",\"rel\":\"delete\","
+				+ "\"url\":\"http://localhost:8080/therest/rest/record/image/image:123456789\"}}}}");
 
 		assertEquals(response.getStatusInfo(), Response.Status.OK);
 
