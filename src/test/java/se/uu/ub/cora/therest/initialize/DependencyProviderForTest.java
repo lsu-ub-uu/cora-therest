@@ -25,14 +25,14 @@ import se.uu.ub.cora.bookkeeper.linkcollector.DataRecordLinkCollector;
 import se.uu.ub.cora.bookkeeper.validator.DataValidator;
 import se.uu.ub.cora.spider.dependency.SpiderDependencyProvider;
 import se.uu.ub.cora.spider.record.PermissionKeyCalculator;
-import se.uu.ub.cora.spider.record.StreamStorageSpy;
 import se.uu.ub.cora.spider.record.storage.RecordIdGenerator;
 import se.uu.ub.cora.spider.record.storage.RecordStorage;
-import se.uu.ub.cora.spider.spy.IdGeneratorSpy;
 import se.uu.ub.cora.spider.stream.storage.StreamStorage;
 import se.uu.ub.cora.systemone.record.RecordPermissionKeyCalculator;
 import se.uu.ub.cora.therest.record.DataRecordLinkCollectorSpy;
 import se.uu.ub.cora.therest.record.DataValidatorAlwaysValidSpy;
+import se.uu.ub.cora.therest.record.IdGeneratorSpy;
+import se.uu.ub.cora.therest.record.StreamStorageSpy;
 import se.uu.ub.cora.therest.testdata.TestDataRecordInMemoryStorage;
 
 public class DependencyProviderForTest implements SpiderDependencyProvider {

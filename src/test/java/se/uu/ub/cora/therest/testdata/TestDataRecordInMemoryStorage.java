@@ -22,7 +22,6 @@ package se.uu.ub.cora.therest.testdata;
 import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.spider.record.storage.RecordStorage;
-import se.uu.ub.cora.spider.testdata.DataCreator;
 import se.uu.ub.cora.storage.RecordStorageInMemory;
 
 public class TestDataRecordInMemoryStorage {

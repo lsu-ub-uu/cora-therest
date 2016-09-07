@@ -19,20 +19,16 @@
 
 package se.uu.ub.cora.therest.record;
 
-import se.uu.ub.cora.bookkeeper.data.DataGroup;
-import se.uu.ub.cora.bookkeeper.linkcollector.DataRecordLinkCollector;
+import se.uu.ub.cora.spider.record.storage.RecordIdGenerator;
 
-public class DataRecordLinkCollectorSpy implements DataRecordLinkCollector {
+public class IdGeneratorSpy implements RecordIdGenerator {
 
-	public boolean collectLinksWasCalled = false;
-
-	public DataGroup collectedDataLinks = DataGroup.withNameInData("collectedDataLinks");
+	public boolean getIdForTypeWasCalled = false;
 
 	@Override
-	public DataGroup collectLinks(String metadataId, DataGroup dataGroup, String fromRecordType,
-			String fromRecordId) {
-		collectLinksWasCalled = true;
-		return collectedDataLinks;
+	public String getIdForType(String type) {
+		getIdForTypeWasCalled = true;
+		return "1";
 	}
 
 }
