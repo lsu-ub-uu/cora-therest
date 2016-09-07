@@ -42,6 +42,7 @@ public class RecordEndpointFixture {
 	private StatusType statusType;
 	private String createdId;
 	private String fileName;
+	private String streamId;
 
 	public void setType(String type) {
 		this.type = type;
@@ -65,6 +66,10 @@ public class RecordEndpointFixture {
 
 	public void setFileName(String fileName) {
 		this.fileName = fileName;
+	}
+
+	public String getStreamId() {
+		return streamId;
 	}
 
 	public String resetDependencyProvider() {
@@ -172,7 +177,22 @@ public class RecordEndpointFixture {
 		if (null == response.getEntity()) {
 			return "";
 		}
-		return (String) response.getEntity();
+		String entity = (String) response.getEntity();
+		streamId = tryToFindStreamId(entity);
+		return entity;
+	}
+
+	private String tryToFindStreamId(String entity) {
+		try {
+			return findStreamId(entity);
+		} catch (Exception e) {
+			return "";
+		}
+	}
+
+	private String findStreamId(String entity) {
+		int streamIdIndex = entity.lastIndexOf("streamId") + 19;
+		return entity.substring(streamIdIndex, entity.indexOf("\"", streamIdIndex));
 	}
 
 }
