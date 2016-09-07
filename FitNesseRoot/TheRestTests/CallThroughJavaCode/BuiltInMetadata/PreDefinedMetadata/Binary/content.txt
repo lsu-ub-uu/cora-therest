@@ -37,7 +37,7 @@ A test that first reads all predefined metadata needed to be able to add binary 
 
 !| RecordEndpointFixture |
 | type | json | testCreateRecord? | getStatusType? | getCreatedId? |
-| image | {"name":"binary","children":[{"name":"recordInfo","children":[{"children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"cora"}],"name":"dataDivider"}]},{"children":[{"children":[{"name":"streamId","value":"kjfdlka"},{"name":"fileName","value":"jlgakj"},{"name":"fileSize","value":"45645"},{"name":"url","value":"asdffs"}],"name":"master"}],"name":"resourceInfo"}],"attributes":{"type":"image"}} | | CREATED | $createdId= |
+| image | {"name":"binary","children":[{"name":"recordInfo","children":[{"children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"cora"}],"name":"dataDivider"}]}],"attributes":{"type":"image"}} | | CREATED | $createdId= |
 
 *!
 !***> Read image
@@ -59,6 +59,13 @@ A test that first reads all predefined metadata needed to be able to add binary 
 
 !| RecordEndpointFixture |
 | type | id | json | testUpdateRecord? | getStatusType? |
-| image | $createdId | {"name":"binary","children":[{"children":[{"children":[{"name":"streamId","value":"kjfdlka"},{"name":"fileName","value":"jlgakj"},{"name":"fileSize","value":"45645"},{"name":"url","value":"someUrl"}],"name":"master"}],"name":"resourceInfo"},{"children":[{"name":"id","value":"$createdId"},{"children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"cora"}],"name":"dataDivider"},{"name":"type","value":"image"},{"name":"createdBy","value":"userId"}],"name":"recordInfo"}],"attributes":{"type":"image"}} | | OK |
+| image | $createdId | {"name":"binary","children":[{"children":[{"name":"id","value":"$createdId"},{"children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"cora"}],"name":"dataDivider"},{"name":"type","value":"image"},{"name":"createdBy","value":"userId"}],"name":"recordInfo"}],"attributes":{"type":"image"}} | | OK |
+
+*!
+!***> Upload image
+
+!| RecordEndpointFixture |
+| type | id | fileName | testUpload? | getStatusType? |
+| image | $createdId | adele.png | {"record":{"data":{"children":[{"children":[{"children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"cora"}],"actionLinks":{"read":{"requestMethod":"GET","rel":"read","url":"http://localhost:8080/therest/rest/record/system/cora","accept":"application/uub+record+json"}},"name":"dataDivider"},{"name":"id","value":"$createdId"},{"name":"type","value":"image"},{"name":"createdBy","value":"userId"}],"name":"recordInfo"},{"children":[{"children":[{"name":"streamId","value":"kjfdlka"},{"name":"fileName","value":"jlgakj"},{"name":"fileSize","value":"45645"},{"name":"url","value":"asdffs"}],"name":"master"}],"name":"resourceInfo"}],"name":"binary","attributes":{"type":"image"}},"actionLinks":{"read":{"requestMethod":"GET","rel":"read","url":"http://localhost:8080/therest/rest/record/image/$createdId","accept":"application/uub+record+json"},"upload":{"requestMethod":"POST","rel":"upload","contentType":"multipart/form-data","url":"http://localhost:8080/therest/rest/record/image/$createdId/upload"},"update":{"requestMethod":"POST","rel":"update","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/image/$createdId","accept":"application/uub+record+json"},"delete":{"requestMethod":"DELETE","rel":"delete","url":"http://localhost:8080/therest/rest/record/image/$createdId"}}}} | OK |
 
 *!

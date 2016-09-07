@@ -348,8 +348,6 @@ public class RecordEndpoint {
 
 	private Response tryUploadFile(String userId, String type, String id, InputStream inputStream,
 			String fileName) {
-		// SpiderDataGroup record =
-		// convertJsonStringToSpiderDataGroup(jsonRecord);
 		SpiderDataRecord updatedRecord = SpiderInstanceProvider.getSpiderUploader().upload(userId,
 				type, id, inputStream, fileName);
 		String json = convertSpiderDataRecordToJsonString(updatedRecord);

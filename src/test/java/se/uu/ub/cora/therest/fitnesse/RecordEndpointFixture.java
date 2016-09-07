@@ -19,9 +19,16 @@
 
 package se.uu.ub.cora.therest.fitnesse;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.StatusType;
 import javax.ws.rs.core.UriInfo;
+
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition.FormDataContentDispositionBuilder;
 
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
 import se.uu.ub.cora.systemone.SystemOneDependencyProviderForFitnesse;
@@ -34,6 +41,7 @@ public class RecordEndpointFixture {
 	private String json;
 	private StatusType statusType;
 	private String createdId;
+	private String fileName;
 
 	public void setType(String type) {
 		this.type = type;
@@ -53,6 +61,10 @@ public class RecordEndpointFixture {
 
 	public String getCreatedId() {
 		return createdId;
+	}
+
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
 	}
 
 	public String resetDependencyProvider() {
@@ -134,6 +146,28 @@ public class RecordEndpointFixture {
 				DependencyProviderForMultipleTestsWorkingTogether.spiderDependencyProvider);
 		RecordEndpoint recordEndpoint = new RecordEndpoint(uriInfo);
 		Response response = recordEndpoint.deleteRecord(type, id);
+		statusType = response.getStatusInfo();
+		if (null == response.getEntity()) {
+			return "";
+		}
+		return (String) response.getEntity();
+	}
+
+	public String testUpload() {
+		UriInfo uriInfo = new TestUri();
+		SpiderInstanceProvider.setSpiderDependencyProvider(
+				DependencyProviderForMultipleTestsWorkingTogether.spiderDependencyProvider);
+		RecordEndpoint recordEndpoint = new RecordEndpoint(uriInfo);
+
+		InputStream stream = new ByteArrayInputStream("a string".getBytes(StandardCharsets.UTF_8));
+
+		FormDataContentDispositionBuilder builder = FormDataContentDisposition
+				.name("multipart;form-data");
+		builder.fileName(fileName);
+		FormDataContentDisposition formDataContentDisposition = builder.build();
+
+		Response response = recordEndpoint.uploadFile(type, id, stream, formDataContentDisposition);
+
 		statusType = response.getStatusInfo();
 		if (null == response.getEntity()) {
 			return "";
