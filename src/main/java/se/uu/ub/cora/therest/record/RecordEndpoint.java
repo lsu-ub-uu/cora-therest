@@ -19,6 +19,7 @@
 
 package se.uu.ub.cora.therest.record;
 
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -33,6 +34,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
+
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.org.OrgJsonBuilderFactoryAdapter;
@@ -326,4 +330,27 @@ public class RecordEndpoint {
 		return Response.status(Response.Status.OK).entity(json).build();
 	}
 
+	@POST
+	@Path("{type}/{id}/upload")
+	@Consumes("multipart/form-data")
+	@Produces("application/uub+record+json2")
+	public Response uploadFile(@PathParam("type") String type, @PathParam("id") String id,
+			@FormDataParam("file") InputStream uploadedInputStream,
+			@FormDataParam("file") FormDataContentDisposition fileDetail) {
+		String fileName = fileDetail.getFileName();
+		return uploadFileAsUserIdWithStream(USER_ID, type, id, uploadedInputStream, fileName);
+	}
+
+	private Response uploadFileAsUserIdWithStream(String userId, String type, String id,
+			InputStream uploadedInputStream, String fileName) {
+		return tryUploadFile(userId, type, id, uploadedInputStream, fileName);
+	}
+
+	private Response tryUploadFile(String userId, String type, String id, InputStream inputStream,
+			String fileName) {
+		SpiderDataRecord updatedRecord = SpiderInstanceProvider.getSpiderUploader().upload(userId,
+				type, id, inputStream, fileName);
+		String json = convertSpiderDataRecordToJsonString(updatedRecord);
+		return Response.status(Response.Status.OK).entity(json).build();
+	}
 }
