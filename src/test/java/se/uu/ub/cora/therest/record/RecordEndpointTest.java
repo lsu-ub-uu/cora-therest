@@ -1,5 +1,6 @@
 /*
  * Copyright 2015 Uppsala University Library
+ * Copyright 2016 Olov McKie
  *
  * This file is part of Cora.
  *
@@ -24,6 +25,8 @@ import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
@@ -388,6 +391,107 @@ public class RecordEndpointTest {
 				+ "\"url\":\"http://localhost:8080/therest/rest/record/image/image:123456789\"}}}}");
 
 		assertEquals(response.getStatusInfo(), Response.Status.OK);
-
 	}
+
+	@Test
+	public void testUploadUnauthorized() {
+		InputStream stream = new ByteArrayInputStream("a string".getBytes(StandardCharsets.UTF_8));
+
+		Response response = recordEndpoint.uploadFileAsUserIdWithStream("unauthorizedUserId",
+				"image", "image:123456789", stream, "someFile.tif");
+
+		assertEquals(response.getStatusInfo(), Response.Status.UNAUTHORIZED);
+	}
+
+	@Test
+	public void testUploadNotFound() {
+		InputStream stream = new ByteArrayInputStream("a string".getBytes(StandardCharsets.UTF_8));
+
+		FormDataContentDispositionBuilder builder = FormDataContentDisposition
+				.name("multipart;form-data");
+		builder.fileName("adele1.png");
+		FormDataContentDisposition formDataContentDisposition = builder.build();
+
+		Response response = recordEndpoint.uploadFile("image", "image:123456789_NOT_FOUND", stream,
+				formDataContentDisposition);
+
+		assertEquals(response.getStatusInfo(), Response.Status.NOT_FOUND);
+	}
+
+	@Test
+	public void testUploadNotAChildOfBinary() {
+		InputStream stream = new ByteArrayInputStream("a string".getBytes(StandardCharsets.UTF_8));
+
+		FormDataContentDispositionBuilder builder = FormDataContentDisposition
+				.name("multipart;form-data");
+		builder.fileName("adele1.png");
+		FormDataContentDisposition formDataContentDisposition = builder.build();
+
+		Response response = recordEndpoint.uploadFile("place", "image:123456789", stream,
+				formDataContentDisposition);
+
+		assertEquals(response.getStatusInfo(), Response.Status.METHOD_NOT_ALLOWED);
+	}
+
+	@Test
+	public void testUploadStreamMissing() {
+		InputStream stream = new ByteArrayInputStream("a string".getBytes(StandardCharsets.UTF_8));
+
+		FormDataContentDispositionBuilder builder = FormDataContentDisposition
+				.name("multipart;form-data");
+		builder.fileName("adele1.png");
+		FormDataContentDisposition formDataContentDisposition = builder.build();
+
+		Response response = recordEndpoint.uploadFile("image", "image:123456789", null,
+				formDataContentDisposition);
+
+		assertEquals(response.getStatusInfo(), Response.Status.BAD_REQUEST);
+	}
+
+	@Test
+	public void testDownload() throws IOException {
+		Response response = recordEndpoint.downloadFile("image", "image:123456789", "master");
+		String contentType = response.getHeaderString("Content-Type");
+		assertEquals(contentType, "application/octet-stream");
+		InputStream stream = (InputStream) response.getEntity();
+		assertNotNull(stream);
+
+		ByteArrayOutputStream result = new ByteArrayOutputStream();
+		byte[] buffer = new byte[1024];
+		int length;
+		while ((length = stream.read(buffer)) != -1) {
+			result.write(buffer, 0, length);
+		}
+		String stringFromStream = result.toString("UTF-8");
+
+		assertEquals(stringFromStream, "a string out");
+		assertEquals(response.getStatusInfo(), Response.Status.OK);
+	}
+
+	@Test
+	public void testDownloadUnauthorized() throws IOException {
+		Response response = recordEndpoint.downloadFileAsUserIdWithStream("unauthorizedUserId",
+				"image", "image:123456789", "master");
+		assertEquals(response.getStatusInfo(), Response.Status.UNAUTHORIZED);
+	}
+
+	@Test
+	public void testDownloadNotFound() throws IOException {
+		Response response = recordEndpoint.downloadFile("image", "image:123456789_NOT_FOUND",
+				"master");
+		assertEquals(response.getStatusInfo(), Response.Status.NOT_FOUND);
+	}
+
+	@Test
+	public void testDownloadNotAChildOfBinary() throws IOException {
+		Response response = recordEndpoint.downloadFile("place", "image:123456789", "master");
+		assertEquals(response.getStatusInfo(), Response.Status.METHOD_NOT_ALLOWED);
+	}
+
+	@Test
+	public void testDownloadBadRequest() throws IOException {
+		Response response = recordEndpoint.downloadFile("image", "image:123456789", "");
+		assertEquals(response.getStatusInfo(), Response.Status.BAD_REQUEST);
+	}
+
 }

@@ -172,6 +172,13 @@ public class TestDataRecordInMemoryStorage {
 	private static void addImageOne(RecordStorageInMemory recordsInMemory) {
 		DataGroup dataGroup = DataCreator.createRecordWithNameInDataAndIdAndTypeAndLinkedRecordId(
 				"binary", "image:123456789", "image", "cora").toDataGroup();
+		DataGroup resourceInfo = DataGroup.withNameInData("resourceInfo");
+		dataGroup.addChild(resourceInfo);
+		DataGroup master = DataGroup.withNameInData("master");
+		resourceInfo.addChild(master);
+		DataAtomic streamId = DataAtomic.withNameInDataAndValue("streamId", "image:222222");
+		master.addChild(streamId);
+
 		recordsInMemory.create("image", "image:123456789", dataGroup,
 				DataGroup.withNameInData("collectedLinksList"), dataDivider);
 	}
