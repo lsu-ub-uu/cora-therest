@@ -65,6 +65,8 @@ A test that first reads all predefined metadata needed to be able to add binary 
 *!
 !***> Upload image
 
+(Uses a stream generated at the server)
+
 !| RecordEndpointFixture |
 | type | id | fileName | testUpload? | getStatusType? | getStreamId? |
 | image | $createdId | adele.png | | OK | $streamId= |
@@ -76,6 +78,13 @@ A test that first reads all predefined metadata needed to be able to add binary 
 | type | id | testReadRecord? | getStatusType? |
 | image | $createdId | {"record":{"data":{"children":[{"children":[{"name":"id","value":"$createdId"},{"children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"cora"}],"actionLinks":{"read":{"requestMethod":"GET","rel":"read","url":"http://localhost:8080/therest/rest/record/system/cora","accept":"application/uub+record+json"}},"name":"dataDivider"},{"name":"type","value":"image"},{"name":"createdBy","value":"userId"}],"name":"recordInfo"},{"children":[{"children":[{"name":"streamId","value":"$streamId"},{"name":"fileName","value":"adele.png"},{"name":"fileSize","value":"8"}],"name":"master"}],"name":"resourceInfo"}],"name":"binary","attributes":{"type":"image"}},"actionLinks":{"read":{"requestMethod":"GET","rel":"read","url":"http://localhost:8080/therest/rest/record/image/$createdId","accept":"application/uub+record+json"},"upload":{"requestMethod":"POST","rel":"upload","contentType":"multipart/form-data","url":"http://localhost:8080/therest/rest/record/image/$createdId/upload"},"update":{"requestMethod":"POST","rel":"update","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/image/$createdId","accept":"application/uub+record+json"},"delete":{"requestMethod":"DELETE","rel":"delete","url":"http://localhost:8080/therest/rest/record/image/$createdId"}}}} | OK |
 
-!
+*!
+!***> Download image
+
+(Uses a stream generated at the server)
+
+!| RecordEndpointFixture |
+| type | id | resourceName | testDownload? | getContentLength? | getContentDisposition? | getStatusType? |
+| image | $createdId | master | | 8 | attachment; filename=adele.png | OK |
 
 *!
