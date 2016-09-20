@@ -48,6 +48,7 @@ import se.uu.ub.cora.spider.data.DataMissingException;
 import se.uu.ub.cora.spider.data.SpiderDataGroup;
 import se.uu.ub.cora.spider.data.SpiderDataList;
 import se.uu.ub.cora.spider.data.SpiderDataRecord;
+import se.uu.ub.cora.spider.data.SpiderInputStream;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
 import se.uu.ub.cora.spider.record.AuthorizationException;
 import se.uu.ub.cora.spider.record.DataException;
@@ -365,7 +366,6 @@ public class RecordEndpoint {
 		return Response.ok(json).build();
 	}
 
-	// TODO: fix error handling upload / download (not_found, unauthorized, etc)
 	@GET
 	@Path("{type}/{id}/{streamId}")
 	// @Consumes("multipart/form-data")
@@ -392,12 +392,10 @@ public class RecordEndpoint {
 	}
 
 	private Response tryDownloadFile(String userId, String type, String id, String streamId) {
-		InputStream streamOut = SpiderInstanceProvider.getSpiderDownloader().download(userId, type,
-				id, streamId);
-		// return Response.ok(streamOut).type("aplication/octet-stream")
-		// .header("Content-Disposition", "attachment; filename=standardssss.png")
-		// .header("Content-Length", "323455").build();
-		return Response.ok(streamOut).type("application/octet-stream")
-				.header("Content-Disposition", "attachment; filename=standardssss.png").build();
+		SpiderInputStream streamOut = SpiderInstanceProvider.getSpiderDownloader().download(userId,
+				type, id, streamId);
+		return Response.ok(streamOut.stream).type("application/octet-stream")
+				.header("Content-Disposition", "attachment; filename=" + streamOut.name)
+				.header("Content-Length", streamOut.size).build();
 	}
 }

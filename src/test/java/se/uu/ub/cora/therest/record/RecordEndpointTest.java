@@ -435,8 +435,6 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testUploadStreamMissing() {
-		InputStream stream = new ByteArrayInputStream("a string".getBytes(StandardCharsets.UTF_8));
-
 		FormDataContentDispositionBuilder builder = FormDataContentDisposition
 				.name("multipart;form-data");
 		builder.fileName("adele1.png");
@@ -466,6 +464,12 @@ public class RecordEndpointTest {
 
 		assertEquals(stringFromStream, "a string out");
 		assertEquals(response.getStatusInfo(), Response.Status.OK);
+
+		String contentLenght = response.getHeaderString("Content-Length");
+		assertEquals(contentLenght, "123");
+
+		String contentDisposition = response.getHeaderString("Content-Disposition");
+		assertEquals(contentDisposition, "attachment; filename=adele.png");
 	}
 
 	@Test
