@@ -43,6 +43,9 @@ public class RecordEndpointFixture {
 	private String createdId;
 	private String fileName;
 	private String streamId;
+	private String resourceName;
+	private String contentLenght;
+	private String contentDisposition;
 
 	public void setType(String type) {
 		this.type = type;
@@ -70,6 +73,18 @@ public class RecordEndpointFixture {
 
 	public String getStreamId() {
 		return streamId;
+	}
+
+	public void setResourceName(String resourceName) {
+		this.resourceName = resourceName;
+	}
+
+	public String getContentDisposition() {
+		return contentDisposition;
+	}
+
+	public String getContentLength() {
+		return contentLenght;
 	}
 
 	public String resetDependencyProvider() {
@@ -193,6 +208,19 @@ public class RecordEndpointFixture {
 	private String findStreamId(String entity) {
 		int streamIdIndex = entity.lastIndexOf("streamId") + 19;
 		return entity.substring(streamIdIndex, entity.indexOf("\"", streamIdIndex));
+	}
+
+	public String testDownload() {
+		UriInfo uriInfo = new TestUri();
+		SpiderInstanceProvider.setSpiderDependencyProvider(
+				DependencyProviderForMultipleTestsWorkingTogether.spiderDependencyProvider);
+		RecordEndpoint recordEndpoint = new RecordEndpoint(uriInfo);
+		Response response = recordEndpoint.downloadFile(type, id, resourceName);
+		statusType = response.getStatusInfo();
+		contentLenght = response.getHeaderString("Content-Length");
+
+		contentDisposition = response.getHeaderString("Content-Disposition");
+		return response.toString();
 	}
 
 }

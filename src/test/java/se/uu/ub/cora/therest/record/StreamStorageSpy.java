@@ -19,8 +19,10 @@
 
 package se.uu.ub.cora.therest.record;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 import se.uu.ub.cora.spider.stream.storage.StreamStorage;
 
@@ -51,6 +53,11 @@ public class StreamStorageSpy implements StreamStorage {
 			e.printStackTrace();
 		}
 		return size;
+	}
+
+	@Override
+	public InputStream retrieve(String streamId, String dataDivider) {
+		return new ByteArrayInputStream("a string out".getBytes(StandardCharsets.UTF_8));
 	}
 
 }

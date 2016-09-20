@@ -48,6 +48,7 @@ import se.uu.ub.cora.spider.data.DataMissingException;
 import se.uu.ub.cora.spider.data.SpiderDataGroup;
 import se.uu.ub.cora.spider.data.SpiderDataList;
 import se.uu.ub.cora.spider.data.SpiderDataRecord;
+import se.uu.ub.cora.spider.data.SpiderInputStream;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
 import se.uu.ub.cora.spider.record.AuthorizationException;
 import se.uu.ub.cora.spider.record.DataException;
@@ -341,9 +342,20 @@ public class RecordEndpoint {
 		return uploadFileAsUserIdWithStream(USER_ID, type, id, uploadedInputStream, fileName);
 	}
 
-	private Response uploadFileAsUserIdWithStream(String userId, String type, String id,
+	Response uploadFileAsUserIdWithStream(String userId, String type, String id,
 			InputStream uploadedInputStream, String fileName) {
-		return tryUploadFile(userId, type, id, uploadedInputStream, fileName);
+		try {
+			return tryUploadFile(userId, type, id, uploadedInputStream, fileName);
+		} catch (MisuseException e) {
+			return Response.status(Response.Status.METHOD_NOT_ALLOWED).entity(e.getMessage())
+					.build();
+		} catch (JsonParseException | DataException | DataMissingException | ConverterException e) {
+			return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+		} catch (RecordNotFoundException e) {
+			return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+		} catch (AuthorizationException e) {
+			return Response.status(Response.Status.UNAUTHORIZED).build();
+		}
 	}
 
 	private Response tryUploadFile(String userId, String type, String id, InputStream inputStream,
@@ -351,6 +363,43 @@ public class RecordEndpoint {
 		SpiderDataRecord updatedRecord = SpiderInstanceProvider.getSpiderUploader().upload(userId,
 				type, id, inputStream, fileName);
 		String json = convertSpiderDataRecordToJsonString(updatedRecord);
-		return Response.status(Response.Status.OK).entity(json).build();
+		return Response.ok(json).build();
+	}
+
+	@GET
+	@Path("{type}/{id}/{streamId}")
+	// @Consumes("multipart/form-data")
+	// @Produces("application/uub+record+json2")
+	public Response downloadFile(@PathParam("type") String type, @PathParam("id") String id,
+			@PathParam("streamId") String streamId) {
+		return downloadFileAsUserIdWithStream(USER_ID, type, id, streamId);
+	}
+
+	Response downloadFileAsUserIdWithStream(String userId, String type, String id,
+			String streamId) {
+		try {
+			return tryDownloadFile(userId, type, id, streamId);
+		} catch (MisuseException e) {
+			return Response.status(Response.Status.METHOD_NOT_ALLOWED).entity(e.getMessage())
+					.build();
+		} catch (JsonParseException | DataException | DataMissingException | ConverterException e) {
+			return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+		} catch (RecordNotFoundException e) {
+			return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+		} catch (AuthorizationException e) {
+			return Response.status(Response.Status.UNAUTHORIZED).build();
+		}
+	}
+
+	private Response tryDownloadFile(String userId, String type, String id, String streamId) {
+		SpiderInputStream streamOut = SpiderInstanceProvider.getSpiderDownloader().download(userId,
+				type, id, streamId);
+		/*
+		 * when we detect and store type of file in spider set it like this
+		 * return Response.ok(streamOut.stream).type("application/octet-stream")
+		 */
+		return Response.ok(streamOut.stream)
+				.header("Content-Disposition", "attachment; filename=" + streamOut.name)
+				.header("Content-Length", streamOut.size).build();
 	}
 }
