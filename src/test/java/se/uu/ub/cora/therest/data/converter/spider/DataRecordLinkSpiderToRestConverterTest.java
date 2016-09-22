@@ -19,8 +19,12 @@
 
 package se.uu.ub.cora.therest.data.converter.spider;
 
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
 import se.uu.ub.cora.spider.data.Action;
 import se.uu.ub.cora.spider.data.SpiderDataAtomic;
 import se.uu.ub.cora.spider.data.SpiderDataGroup;
@@ -29,12 +33,13 @@ import se.uu.ub.cora.therest.data.ActionLink;
 import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.RestDataRecordLink;
-
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
+import se.uu.ub.cora.therest.data.converter.ConverterInfo;
 
 public class DataRecordLinkSpiderToRestConverterTest {
-	private String baseURL = "http://localhost:8080/therest/rest/record/";
+	private ConverterInfo converterInfo = ConverterInfo.withBaseURLAndRecordURL(
+			"http://localhost:8080/therest/rest/record/",
+			"http://localhost:8080/therest/rest/record/someRecordType/someRecordId");
+
 	private SpiderDataRecordLink spiderDataRecordLink;
 	private DataRecordLinkSpiderToRestConverter dataRecordLinkSpiderToRestConverter;
 
@@ -42,14 +47,16 @@ public class DataRecordLinkSpiderToRestConverterTest {
 	public void setUp() {
 		spiderDataRecordLink = SpiderDataRecordLink.withNameInData("nameInData");
 
-		SpiderDataAtomic linkedRecordType = SpiderDataAtomic.withNameInDataAndValue("linkedRecordType", "linkedRecordType");
+		SpiderDataAtomic linkedRecordType = SpiderDataAtomic
+				.withNameInDataAndValue("linkedRecordType", "linkedRecordType");
 		spiderDataRecordLink.addChild(linkedRecordType);
 
-		SpiderDataAtomic linkedRecordId = SpiderDataAtomic.withNameInDataAndValue("linkedRecordId", "linkedRecordId");
+		SpiderDataAtomic linkedRecordId = SpiderDataAtomic.withNameInDataAndValue("linkedRecordId",
+				"linkedRecordId");
 		spiderDataRecordLink.addChild(linkedRecordId);
 
 		dataRecordLinkSpiderToRestConverter = DataRecordLinkSpiderToRestConverter
-				.fromSpiderDataRecordLinkWithBaseURL(spiderDataRecordLink, baseURL);
+				.fromSpiderDataRecordLinkWithBaseURL(spiderDataRecordLink, converterInfo);
 
 	}
 
@@ -58,8 +65,10 @@ public class DataRecordLinkSpiderToRestConverterTest {
 		RestDataRecordLink restDataRecordLink = dataRecordLinkSpiderToRestConverter.toRest();
 		assertEquals(restDataRecordLink.getNameInData(), "nameInData");
 
-		RestDataAtomic linkedRecordType = (RestDataAtomic) restDataRecordLink.getFirstChildWithNameInData("linkedRecordType");
-		RestDataAtomic linkedRecordId = (RestDataAtomic) restDataRecordLink.getFirstChildWithNameInData("linkedRecordId");
+		RestDataAtomic linkedRecordType = (RestDataAtomic) restDataRecordLink
+				.getFirstChildWithNameInData("linkedRecordType");
+		RestDataAtomic linkedRecordId = (RestDataAtomic) restDataRecordLink
+				.getFirstChildWithNameInData("linkedRecordId");
 
 		assertEquals(linkedRecordType.getValue(), "linkedRecordType");
 		assertEquals(linkedRecordId.getValue(), "linkedRecordId");
@@ -72,8 +81,10 @@ public class DataRecordLinkSpiderToRestConverterTest {
 		RestDataRecordLink restDataRecordLink = dataRecordLinkSpiderToRestConverter.toRest();
 		assertEquals(restDataRecordLink.getNameInData(), "nameInData");
 
-		RestDataAtomic linkedRecordType = (RestDataAtomic) restDataRecordLink.getFirstChildWithNameInData("linkedRecordType");
-		RestDataAtomic linkedRecordId = (RestDataAtomic) restDataRecordLink.getFirstChildWithNameInData("linkedRecordId");
+		RestDataAtomic linkedRecordType = (RestDataAtomic) restDataRecordLink
+				.getFirstChildWithNameInData("linkedRecordType");
+		RestDataAtomic linkedRecordId = (RestDataAtomic) restDataRecordLink
+				.getFirstChildWithNameInData("linkedRecordId");
 
 		assertEquals(linkedRecordType.getValue(), "linkedRecordType");
 		assertEquals(linkedRecordId.getValue(), "linkedRecordId");
@@ -81,21 +92,24 @@ public class DataRecordLinkSpiderToRestConverterTest {
 	}
 
 	@Test
-	public void testToRestWithLinkedRepeatId(){
-		SpiderDataAtomic linkedRepeatId = SpiderDataAtomic.withNameInDataAndValue("linkedRepeatId", "linkedOne");
+	public void testToRestWithLinkedRepeatId() {
+		SpiderDataAtomic linkedRepeatId = SpiderDataAtomic.withNameInDataAndValue("linkedRepeatId",
+				"linkedOne");
 		spiderDataRecordLink.addChild(linkedRepeatId);
 		RestDataRecordLink restDataRecordLink = dataRecordLinkSpiderToRestConverter.toRest();
 
-		RestDataAtomic restLinkedRepeatId  = (RestDataAtomic) restDataRecordLink.getFirstChildWithNameInData("linkedRepeatId");
+		RestDataAtomic restLinkedRepeatId = (RestDataAtomic) restDataRecordLink
+				.getFirstChildWithNameInData("linkedRepeatId");
 		assertEquals(restLinkedRepeatId.getValue(), "linkedOne");
 	}
 
 	@Test
-	public void testToRestWithLinkedPath(){
+	public void testToRestWithLinkedPath() {
 		SpiderDataGroup spiderDataGroup = SpiderDataGroup.withNameInData("linkedPath");
 		spiderDataRecordLink.addChild(spiderDataGroup);
 		RestDataRecordLink restDataRecordLink = dataRecordLinkSpiderToRestConverter.toRest();
-		RestDataGroup linkedPath = (RestDataGroup) restDataRecordLink.getFirstChildWithNameInData("linkedPath");
+		RestDataGroup linkedPath = (RestDataGroup) restDataRecordLink
+				.getFirstChildWithNameInData("linkedPath");
 		assertEquals(linkedPath.getNameInData(), "linkedPath");
 	}
 
@@ -105,8 +119,10 @@ public class DataRecordLinkSpiderToRestConverterTest {
 		RestDataRecordLink restDataRecordLink = dataRecordLinkSpiderToRestConverter.toRest();
 		assertEquals(restDataRecordLink.getNameInData(), "nameInData");
 
-		RestDataAtomic linkedRecordType = (RestDataAtomic) restDataRecordLink.getFirstChildWithNameInData("linkedRecordType");
-		RestDataAtomic linkedRecordId = (RestDataAtomic) restDataRecordLink.getFirstChildWithNameInData("linkedRecordId");
+		RestDataAtomic linkedRecordType = (RestDataAtomic) restDataRecordLink
+				.getFirstChildWithNameInData("linkedRecordType");
+		RestDataAtomic linkedRecordId = (RestDataAtomic) restDataRecordLink
+				.getFirstChildWithNameInData("linkedRecordId");
 
 		assertEquals(linkedRecordType.getValue(), "linkedRecordType");
 		assertEquals(linkedRecordId.getValue(), "linkedRecordId");

@@ -19,48 +19,57 @@
 
 package se.uu.ub.cora.therest.data.converter.spider;
 
-import se.uu.ub.cora.spider.data.SpiderDataAtomic;
-import se.uu.ub.cora.spider.data.SpiderDataResourceLink;
-import se.uu.ub.cora.therest.data.RestDataAtomic;
-import se.uu.ub.cora.therest.data.RestDataResourceLink;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
-public final class DataResourceLinkSpiderToRestConverter {
-	private static final String LINKED_REPEAT_ID = "linkedRepeatId";
+import se.uu.ub.cora.spider.data.Action;
+import se.uu.ub.cora.spider.data.SpiderDataResourceLink;
+import se.uu.ub.cora.therest.data.ActionLink;
+import se.uu.ub.cora.therest.data.RestDataGroup;
+import se.uu.ub.cora.therest.data.RestDataResourceLink;
+import se.uu.ub.cora.therest.data.converter.ConverterInfo;
+
+public final class DataResourceLinkSpiderToRestConverter extends DataGroupSpiderToRestConverter {
 	private SpiderDataResourceLink spiderDataResourceLink;
-	private String baseURL;
 	private RestDataResourceLink restDataResourceLink;
 
-	public static DataResourceLinkSpiderToRestConverter fromSpiderDataRecordLinkWithBaseURL(
-			SpiderDataResourceLink spiderDataResourceLink, String baseURL) {
-		return new DataResourceLinkSpiderToRestConverter(spiderDataResourceLink, baseURL);
+	public static DataResourceLinkSpiderToRestConverter fromSpiderDataResourceLinkWithBaseURL(
+			SpiderDataResourceLink spiderDataResourceLink, ConverterInfo converterInfo) {
+		return new DataResourceLinkSpiderToRestConverter(spiderDataResourceLink, converterInfo);
 	}
 
-	private DataResourceLinkSpiderToRestConverter(SpiderDataResourceLink spiderDataRecordLink,
-			String baseURL) {
-		this.spiderDataResourceLink = spiderDataRecordLink;
-		this.baseURL = baseURL;
+	private DataResourceLinkSpiderToRestConverter(SpiderDataResourceLink spiderDataResourceLink,
+			ConverterInfo converterInfo) {
+		super(spiderDataResourceLink, converterInfo);
+		this.spiderDataResourceLink = spiderDataResourceLink;
 	}
 
+	@Override
+	protected RestDataGroup createNewRest() {
+		return RestDataResourceLink.withNameInData(spiderDataGroup.getNameInData());
+	}
+
+	@Override
 	public RestDataResourceLink toRest() {
-		SpiderDataAtomic streamId = (SpiderDataAtomic) spiderDataResourceLink
-				.getFirstChildWithNameInData("streamId");
+		restDataResourceLink = (RestDataResourceLink) super.toRest();
 
-		restDataResourceLink = RestDataResourceLink
-				.withNameInData(spiderDataResourceLink.getNameInData());
-
-		RestDataAtomic restStreamId = RestDataAtomic.withNameInDataAndValue("streamId",
-				streamId.getValue());
-		restDataResourceLink.addChild(restStreamId);
-
-		restDataResourceLink.setRepeatId(spiderDataResourceLink.getRepeatId());
-		createRestLinks("someRecordType", restStreamId.getValue());
+		createRestLinks();
 		return restDataResourceLink;
 	}
 
-	private void createRestLinks(String recordType, String recordId) {
-		ActionSpiderToRestConverter actionSpiderToRestConverter = ActionSpiderToRestConverter
-				.fromSpiderActionsWithBaseURLAndRecordTypeAndRecordId(
-						spiderDataResourceLink.getActions(), baseURL, recordType, recordId);
-		restDataResourceLink.setActionLinks(actionSpiderToRestConverter.toRest());
+	private void createRestLinks() {
+		String url = convertInfo.recordURL + "/" + spiderDataResourceLink.getNameInData();
+		String mimeType = spiderDataResourceLink.extractAtomicValue("mimeType");
+		Map<String, ActionLink> actionLinks = new LinkedHashMap<>();
+		for (Action action : spiderDataResourceLink.getActions()) {
+			ActionLink actionLink = ActionLink.withAction(action);
+
+			actionLink.setRequestMethod("GET");
+			actionLink.setURL(url);
+			actionLink.setAccept(mimeType);
+
+			actionLinks.put("read", actionLink);
+		}
+		restDataResourceLink.setActionLinks(actionLinks);
 	}
 }

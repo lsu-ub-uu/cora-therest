@@ -19,23 +19,31 @@
 
 package se.uu.ub.cora.therest.data.converter.spider;
 
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
+
+import java.util.Iterator;
+
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
 import se.uu.ub.cora.spider.data.SpiderDataAtomic;
 import se.uu.ub.cora.spider.data.SpiderDataGroup;
 import se.uu.ub.cora.spider.data.SpiderDataRecordLink;
+import se.uu.ub.cora.spider.data.SpiderDataResourceLink;
 import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataElement;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.RestDataRecordLink;
-
-import java.util.Iterator;
-
-import static org.testng.Assert.assertEquals;
+import se.uu.ub.cora.therest.data.RestDataResourceLink;
+import se.uu.ub.cora.therest.data.converter.ConverterInfo;
 
 public class DataGroupSpiderToRestConverterTest {
-	private String baseURL = "http://localhost:8080/therest/rest/record/";
+	private ConverterInfo converterInfo = ConverterInfo.withBaseURLAndRecordURL(
+			"http://localhost:8080/therest/rest/record/",
+			"http://localhost:8080/therest/rest/record/someRecordType/someRecordId");
+
 	private SpiderDataGroup spiderDataGroup;
 	private DataGroupSpiderToRestConverter dataGroupSpiderToRestConverter;
 
@@ -43,7 +51,7 @@ public class DataGroupSpiderToRestConverterTest {
 	public void beforeMethod() {
 		spiderDataGroup = SpiderDataGroup.withNameInData("nameInData");
 		dataGroupSpiderToRestConverter = DataGroupSpiderToRestConverter
-				.fromSpiderDataGroupWithBaseURL(spiderDataGroup, baseURL);
+				.fromSpiderDataGroupWithBaseURL(spiderDataGroup, converterInfo);
 	}
 
 	@Test
@@ -82,12 +90,15 @@ public class DataGroupSpiderToRestConverterTest {
 
 	@Test
 	public void testToRestWithRecordLinkChild() {
-		SpiderDataRecordLink dataRecordLink = SpiderDataRecordLink.withNameInData("childNameInData");
+		SpiderDataRecordLink dataRecordLink = SpiderDataRecordLink
+				.withNameInData("childNameInData");
 
-		SpiderDataAtomic linkedRecordTypeChild = SpiderDataAtomic.withNameInDataAndValue("linkedRecordType", "someRecordType");
+		SpiderDataAtomic linkedRecordTypeChild = SpiderDataAtomic
+				.withNameInDataAndValue("linkedRecordType", "someRecordType");
 		dataRecordLink.addChild(linkedRecordTypeChild);
 
-		SpiderDataAtomic linkedRecordIdChild = SpiderDataAtomic.withNameInDataAndValue("linkedRecordId", "someRecordId");
+		SpiderDataAtomic linkedRecordIdChild = SpiderDataAtomic
+				.withNameInDataAndValue("linkedRecordId", "someRecordId");
 		dataRecordLink.addChild(linkedRecordIdChild);
 
 		spiderDataGroup.addChild(dataRecordLink);
@@ -97,11 +108,22 @@ public class DataGroupSpiderToRestConverterTest {
 				.iterator().next();
 		assertEquals(restDataRecordLink.getNameInData(), "childNameInData");
 
-		RestDataAtomic linkedRecordType = (RestDataAtomic) restDataRecordLink.getFirstChildWithNameInData("linkedRecordType");
+		RestDataAtomic linkedRecordType = (RestDataAtomic) restDataRecordLink
+				.getFirstChildWithNameInData("linkedRecordType");
 		assertEquals(linkedRecordType.getValue(), "someRecordType");
 
-		RestDataAtomic linkedRecordId = (RestDataAtomic) restDataRecordLink.getFirstChildWithNameInData("linkedRecordId");
+		RestDataAtomic linkedRecordId = (RestDataAtomic) restDataRecordLink
+				.getFirstChildWithNameInData("linkedRecordId");
 		assertEquals(linkedRecordId.getValue(), "someRecordId");
+	}
+
+	@Test
+	public void testToRestWithResourceLinkChild() {
+		SpiderDataResourceLink master = SpiderDataResourceLink.withNameInData("master");
+		spiderDataGroup.addChild(master);
+		RestDataGroup restDataGroup = dataGroupSpiderToRestConverter.toRest();
+		RestDataElement restMaster = restDataGroup.getFirstChildWithNameInData("master");
+		assertTrue((RestDataResourceLink) restMaster instanceof RestDataResourceLink);
 	}
 
 	@Test

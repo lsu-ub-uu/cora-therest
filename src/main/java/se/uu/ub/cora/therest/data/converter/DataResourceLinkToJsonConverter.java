@@ -1,0 +1,68 @@
+/*
+ * Copyright 2015, 2016 Uppsala University Library
+ *
+ * This file is part of Cora.
+ *
+ *     Cora is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     Cora is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package se.uu.ub.cora.therest.data.converter;
+
+import java.util.Map;
+
+import se.uu.ub.cora.json.builder.JsonBuilderFactory;
+import se.uu.ub.cora.json.builder.JsonObjectBuilder;
+import se.uu.ub.cora.therest.data.ActionLink;
+import se.uu.ub.cora.therest.data.RestDataResourceLink;
+
+public final class DataResourceLinkToJsonConverter extends DataGroupToJsonConverter {
+
+	private RestDataResourceLink resourceLink;
+
+	public static DataResourceLinkToJsonConverter usingJsonFactoryForRestDataLink(
+			JsonBuilderFactory jsonFactory, RestDataResourceLink resourceLink) {
+		return new DataResourceLinkToJsonConverter(jsonFactory, resourceLink);
+	}
+
+	private DataResourceLinkToJsonConverter(JsonBuilderFactory jsonFactory,
+			RestDataResourceLink resourceLink) {
+		super(jsonFactory, resourceLink);
+		this.resourceLink = resourceLink;
+	}
+
+	@Override
+	public JsonObjectBuilder toJsonObjectBuilder() {
+		possiblyAddActionLinks();
+		return super.toJsonObjectBuilder();
+	}
+
+	private void possiblyAddActionLinks() {
+		if (hasActionLinks()) {
+			addActionLinksToRecordLink();
+		}
+	}
+
+	private boolean hasActionLinks() {
+		return !resourceLink.getActionLinks().isEmpty();
+	}
+
+	private void addActionLinksToRecordLink() {
+		Map<String, ActionLink> actionLinks = resourceLink.getActionLinks();
+		ActionLinksToJsonConverter actionLinkConverter = new ActionLinksToJsonConverter(
+				jsonBuilderFactory, actionLinks);
+		JsonObjectBuilder actionLinksObject = actionLinkConverter.toJsonObjectBuilder();
+		dataGroupJsonObjectBuilder.addKeyJsonObjectBuilder("actionLinks", actionLinksObject);
+	}
+
+}

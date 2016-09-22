@@ -30,29 +30,33 @@ import se.uu.ub.cora.spider.data.SpiderDataResourceLink;
 import se.uu.ub.cora.therest.data.ActionLink;
 import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataResourceLink;
+import se.uu.ub.cora.therest.data.converter.ConverterInfo;
 
 public class DataResourceLinkSpiderToRestConverterTest {
-	private String baseURL = "http://localhost:8080/therest/rest/record/";
+	private ConverterInfo converterInfo = ConverterInfo.withBaseURLAndRecordURL(
+			"http://localhost:8080/therest/rest/record/",
+			"http://localhost:8080/therest/rest/record/image/someImageId");
 	private SpiderDataResourceLink spiderDataResourceLink;
 	private DataResourceLinkSpiderToRestConverter dataResourceLinkSpiderToRestConverter;
 
 	@BeforeMethod
 	public void setUp() {
-		spiderDataResourceLink = SpiderDataResourceLink.withNameInData("nameInData");
+		spiderDataResourceLink = SpiderDataResourceLink.withNameInData("master");
 
-		SpiderDataAtomic streamId = SpiderDataAtomic.withNameInDataAndValue("streamId",
-				"aStreamId");
-		spiderDataResourceLink.addChild(streamId);
+		spiderDataResourceLink
+				.addChild(SpiderDataAtomic.withNameInDataAndValue("streamId", "aStreamId"));
+		spiderDataResourceLink
+				.addChild(SpiderDataAtomic.withNameInDataAndValue("mimeType", "application/png"));
 
 		dataResourceLinkSpiderToRestConverter = DataResourceLinkSpiderToRestConverter
-				.fromSpiderDataRecordLinkWithBaseURL(spiderDataResourceLink, baseURL);
+				.fromSpiderDataResourceLinkWithBaseURL(spiderDataResourceLink, converterInfo);
 
 	}
 
 	@Test
 	public void testToRest() {
 		RestDataResourceLink restDataResourceLink = dataResourceLinkSpiderToRestConverter.toRest();
-		assertEquals(restDataResourceLink.getNameInData(), "nameInData");
+		assertEquals(restDataResourceLink.getNameInData(), "master");
 
 		RestDataAtomic streamId = (RestDataAtomic) restDataResourceLink
 				.getFirstChildWithNameInData("streamId");
@@ -64,7 +68,7 @@ public class DataResourceLinkSpiderToRestConverterTest {
 	public void testToRestWithRepeatId() {
 		spiderDataResourceLink.setRepeatId("j");
 		RestDataResourceLink restDataResourceLink = dataResourceLinkSpiderToRestConverter.toRest();
-		assertEquals(restDataResourceLink.getNameInData(), "nameInData");
+		assertEquals(restDataResourceLink.getNameInData(), "master");
 
 		RestDataAtomic streamId = (RestDataAtomic) restDataResourceLink
 				.getFirstChildWithNameInData("streamId");
@@ -77,7 +81,7 @@ public class DataResourceLinkSpiderToRestConverterTest {
 	public void testToRestWithAction() {
 		spiderDataResourceLink.addAction(Action.READ);
 		RestDataResourceLink restDataResourceLink = dataResourceLinkSpiderToRestConverter.toRest();
-		assertEquals(restDataResourceLink.getNameInData(), "nameInData");
+		assertEquals(restDataResourceLink.getNameInData(), "master");
 
 		RestDataAtomic streamId = (RestDataAtomic) restDataResourceLink
 				.getFirstChildWithNameInData("streamId");
@@ -87,6 +91,7 @@ public class DataResourceLinkSpiderToRestConverterTest {
 		assertEquals(actionLink.getURL(),
 				"http://localhost:8080/therest/rest/record/image/someImageId/master");
 		assertEquals(actionLink.getRequestMethod(), "GET");
+		assertEquals(actionLink.getAccept(), "application/png");
 	}
 
 }
