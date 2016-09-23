@@ -21,8 +21,10 @@ package se.uu.ub.cora.therest.testdata;
 
 import se.uu.ub.cora.bookkeeper.data.DataAtomic;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
+import se.uu.ub.cora.spider.data.Action;
 import se.uu.ub.cora.spider.data.SpiderDataAtomic;
 import se.uu.ub.cora.spider.data.SpiderDataGroup;
+import se.uu.ub.cora.spider.data.SpiderDataResourceLink;
 import se.uu.ub.cora.therest.record.DataRecordLinkCollectorSpy;
 
 public final class DataCreator {
@@ -273,5 +275,15 @@ public final class DataCreator {
 		spiderDataGroup.addChild(recordInfo);
 
 		return spiderDataGroup;
+	}
+
+	public static SpiderDataResourceLink createResourceLinkMaster() {
+		SpiderDataResourceLink master = SpiderDataResourceLink.withNameInData("master");
+		master.addChild(SpiderDataAtomic.withNameInDataAndValue("streamId", "aStreamId"));
+		master.addChild(SpiderDataAtomic.withNameInDataAndValue("filename", "aFilename"));
+		master.addChild(SpiderDataAtomic.withNameInDataAndValue("filesize", "1234"));
+		master.addChild(SpiderDataAtomic.withNameInDataAndValue("mimeType", "application/tiff"));
+		master.addAction(Action.READ);
+		return master;
 	}
 }

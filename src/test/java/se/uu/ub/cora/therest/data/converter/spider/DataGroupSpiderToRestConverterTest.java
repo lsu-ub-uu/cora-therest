@@ -31,13 +31,13 @@ import org.testng.annotations.Test;
 import se.uu.ub.cora.spider.data.SpiderDataAtomic;
 import se.uu.ub.cora.spider.data.SpiderDataGroup;
 import se.uu.ub.cora.spider.data.SpiderDataRecordLink;
-import se.uu.ub.cora.spider.data.SpiderDataResourceLink;
 import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataElement;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.RestDataRecordLink;
 import se.uu.ub.cora.therest.data.RestDataResourceLink;
 import se.uu.ub.cora.therest.data.converter.ConverterInfo;
+import se.uu.ub.cora.therest.testdata.DataCreator;
 
 public class DataGroupSpiderToRestConverterTest {
 	private ConverterInfo converterInfo = ConverterInfo.withBaseURLAndRecordURL(
@@ -119,8 +119,7 @@ public class DataGroupSpiderToRestConverterTest {
 
 	@Test
 	public void testToRestWithResourceLinkChild() {
-		SpiderDataResourceLink master = SpiderDataResourceLink.withNameInData("master");
-		spiderDataGroup.addChild(master);
+		spiderDataGroup.addChild(DataCreator.createResourceLinkMaster());
 		RestDataGroup restDataGroup = dataGroupSpiderToRestConverter.toRest();
 		RestDataElement restMaster = restDataGroup.getFirstChildWithNameInData("master");
 		assertTrue((RestDataResourceLink) restMaster instanceof RestDataResourceLink);

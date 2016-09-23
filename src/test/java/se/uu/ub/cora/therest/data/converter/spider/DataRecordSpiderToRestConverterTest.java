@@ -28,12 +28,12 @@ import se.uu.ub.cora.spider.data.Action;
 import se.uu.ub.cora.spider.data.SpiderDataAtomic;
 import se.uu.ub.cora.spider.data.SpiderDataGroup;
 import se.uu.ub.cora.spider.data.SpiderDataRecord;
-import se.uu.ub.cora.spider.data.SpiderDataResourceLink;
 import se.uu.ub.cora.therest.data.ActionLink;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.RestDataRecord;
 import se.uu.ub.cora.therest.data.RestDataResourceLink;
 import se.uu.ub.cora.therest.data.converter.ConverterException;
+import se.uu.ub.cora.therest.testdata.DataCreator;
 
 public class DataRecordSpiderToRestConverterTest {
 	private String baseURL = "http://localhost:8080/therest/rest/record/";
@@ -149,9 +149,7 @@ public class DataRecordSpiderToRestConverterTest {
 	@Test
 	public void testToRestWithResourceLink() {
 		spiderDataGroup.addChild(createRecordInfo());
-		SpiderDataResourceLink master = SpiderDataResourceLink.withNameInData("master");
-		spiderDataGroup.addChild(master);
-		master.addAction(Action.READ);
+		spiderDataGroup.addChild(DataCreator.createResourceLinkMaster());
 
 		RestDataRecord restDataRecord = dataRecordSpiderToRestConverter.toRest();
 		RestDataGroup restDataGroup = restDataRecord.getRestDataGroup();
