@@ -30,15 +30,15 @@ public final class DataResourceLinkToJsonConverter extends DataGroupToJsonConver
 
 	private RestDataResourceLink resourceLink;
 
-	public static DataResourceLinkToJsonConverter usingJsonFactoryForRestDataLink(
-			JsonBuilderFactory jsonFactory, RestDataResourceLink resourceLink) {
-		return new DataResourceLinkToJsonConverter(jsonFactory, resourceLink);
-	}
-
 	private DataResourceLinkToJsonConverter(JsonBuilderFactory jsonFactory,
 			RestDataResourceLink resourceLink) {
 		super(jsonFactory, resourceLink);
 		this.resourceLink = resourceLink;
+	}
+
+	public static DataResourceLinkToJsonConverter usingJsonFactoryForRestDataLink(
+			JsonBuilderFactory jsonFactory, RestDataResourceLink resourceLink) {
+		return new DataResourceLinkToJsonConverter(jsonFactory, resourceLink);
 	}
 
 	@Override
