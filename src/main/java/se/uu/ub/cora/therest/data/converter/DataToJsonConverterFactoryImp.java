@@ -19,8 +19,13 @@
 
 package se.uu.ub.cora.therest.data.converter;
 
-import se.uu.ub.cora.therest.data.*;
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
+import se.uu.ub.cora.therest.data.RestDataAtomic;
+import se.uu.ub.cora.therest.data.RestDataAttribute;
+import se.uu.ub.cora.therest.data.RestDataElement;
+import se.uu.ub.cora.therest.data.RestDataGroup;
+import se.uu.ub.cora.therest.data.RestDataRecordLink;
+import se.uu.ub.cora.therest.data.RestDataResourceLink;
 
 public class DataToJsonConverterFactoryImp implements DataToJsonConverterFactory {
 
@@ -32,6 +37,10 @@ public class DataToJsonConverterFactoryImp implements DataToJsonConverterFactory
 			if (restDataElement instanceof RestDataRecordLink) {
 				return DataRecordLinkToJsonConverter.usingJsonFactoryForRestDataLink(factory,
 						(RestDataRecordLink) restDataElement);
+			}
+			if (restDataElement instanceof RestDataResourceLink) {
+				return DataResourceLinkToJsonConverter.usingJsonFactoryForRestDataLink(factory,
+						(RestDataResourceLink) restDataElement);
 			}
 			return DataGroupToJsonConverter.usingJsonFactoryForRestDataGroup(factory,
 					(RestDataGroup) restDataElement);

@@ -23,6 +23,7 @@ import static org.testng.Assert.assertEquals;
 
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.spider.data.SpiderDataAtomic;
 import se.uu.ub.cora.spider.data.SpiderDataGroup;
 import se.uu.ub.cora.spider.data.SpiderDataList;
 import se.uu.ub.cora.spider.data.SpiderDataRecord;
@@ -36,6 +37,7 @@ public class DataListSpiderToRestConverterTest {
 	@Test
 	public void testToRest() {
 		SpiderDataGroup spiderDataGroup = SpiderDataGroup.withNameInData("groupId");
+		spiderDataGroup.addChild(createRecordInfo());
 		SpiderDataRecord spiderDataRecord = SpiderDataRecord.withSpiderDataGroup(spiderDataGroup);
 		SpiderDataList spiderDataList = SpiderDataList.withContainDataOfType("place");
 		spiderDataList.addData(spiderDataRecord);
@@ -54,9 +56,18 @@ public class DataListSpiderToRestConverterTest {
 		assertEquals(restDataGroup.getNameInData(), "groupId");
 	}
 
+	private SpiderDataGroup createRecordInfo() {
+		SpiderDataGroup recordInfo = SpiderDataGroup.withNameInData("recordInfo");
+		recordInfo.addChild(SpiderDataAtomic.withNameInDataAndValue("id", "place:0001"));
+		recordInfo.addChild(SpiderDataAtomic.withNameInDataAndValue("type", "place"));
+		recordInfo.addChild(SpiderDataAtomic.withNameInDataAndValue("createdBy", "userId"));
+		return recordInfo;
+	}
+
 	@Test
 	public void testToRestWithGroup() {
 		SpiderDataGroup spiderDataGroup = SpiderDataGroup.withNameInData("groupId");
+		spiderDataGroup.addChild(createRecordInfo());
 		SpiderDataList spiderDataList = SpiderDataList.withContainDataOfType("place");
 		spiderDataList.addData(spiderDataGroup);
 		spiderDataList.setTotalNo("10");
