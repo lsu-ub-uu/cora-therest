@@ -39,6 +39,8 @@ import org.glassfish.jersey.media.multipart.FormDataContentDisposition.FormDataC
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.spider.dependency.SpiderInstanceFactory;
+import se.uu.ub.cora.spider.dependency.SpiderInstanceFactoryImp;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
 import se.uu.ub.cora.therest.initialize.DependencyProviderForTest;
 
@@ -53,7 +55,9 @@ public class RecordEndpointTest {
 
 	@BeforeMethod
 	public void beforeMethod() {
-		SpiderInstanceProvider.setSpiderDependencyProvider(new DependencyProviderForTest());
+		SpiderInstanceFactory factory = SpiderInstanceFactoryImp
+				.usingDependencyProvider(new DependencyProviderForTest());
+		SpiderInstanceProvider.setSpiderInstanceFactory(factory);
 		UriInfo uriInfo = new TestUri();
 		recordEndpoint = new RecordEndpoint(uriInfo);
 	}
@@ -292,7 +296,9 @@ public class RecordEndpointTest {
 		// uses always invalid validator
 		DependencyProviderForTest spiderDependencyProvider = new DependencyProviderForTest();
 		spiderDependencyProvider.setDataValidator(new DataValidatorAlwaysInvalidSpy());
-		SpiderInstanceProvider.setSpiderDependencyProvider(spiderDependencyProvider);
+		SpiderInstanceFactory factory = SpiderInstanceFactoryImp
+				.usingDependencyProvider(spiderDependencyProvider);
+		SpiderInstanceProvider.setSpiderInstanceFactory(factory);
 
 		String type = "place";
 		Response responseCreated = recordEndpoint.createRecord(type, jsonToCreateFrom);
@@ -344,7 +350,9 @@ public class RecordEndpointTest {
 	public void testCreateRecordUnexpectedError() {
 		DependencyProviderForTest spiderDependencyProvider = new DependencyProviderForTest();
 		spiderDependencyProvider.setDataValidator(new DataValidatorReturnNullPointer());
-		SpiderInstanceProvider.setSpiderDependencyProvider(spiderDependencyProvider);
+		SpiderInstanceFactory factory = SpiderInstanceFactoryImp
+				.usingDependencyProvider(spiderDependencyProvider);
+		SpiderInstanceProvider.setSpiderInstanceFactory(factory);
 
 		String type = "place";
 		Response responseCreated = recordEndpoint.createRecord(type, jsonToCreateFrom);

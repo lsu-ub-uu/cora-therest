@@ -24,6 +24,8 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
 import se.uu.ub.cora.spider.dependency.SpiderDependencyProvider;
+import se.uu.ub.cora.spider.dependency.SpiderInstanceFactory;
+import se.uu.ub.cora.spider.dependency.SpiderInstanceFactoryImp;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
 import se.uu.ub.cora.systemone.SystemOneDependencyProvider;
 
@@ -32,7 +34,9 @@ public class SystemInitializer implements ServletContextListener {
 	@Override
 	public void contextInitialized(ServletContextEvent arg0) {
 		SpiderDependencyProvider dependencyProvider = new SystemOneDependencyProvider();
-		SpiderInstanceProvider.setSpiderDependencyProvider(dependencyProvider);
+		SpiderInstanceFactory factory = SpiderInstanceFactoryImp
+				.usingDependencyProvider(dependencyProvider);
+		SpiderInstanceProvider.setSpiderInstanceFactory(factory);
 	}
 
 	@Override
