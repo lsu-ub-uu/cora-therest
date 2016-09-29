@@ -19,13 +19,19 @@
 
 package se.uu.ub.cora.therest.data.converter;
 
+import static org.testng.Assert.assertTrue;
+
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import se.uu.ub.cora.therest.data.*;
+
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.org.OrgJsonBuilderFactoryAdapter;
-
-import static org.testng.Assert.assertTrue;
+import se.uu.ub.cora.therest.data.RestDataAtomic;
+import se.uu.ub.cora.therest.data.RestDataAttribute;
+import se.uu.ub.cora.therest.data.RestDataElement;
+import se.uu.ub.cora.therest.data.RestDataGroup;
+import se.uu.ub.cora.therest.data.RestDataRecordLink;
+import se.uu.ub.cora.therest.data.RestDataResourceLink;
 
 public class DataToJsonConverterFactoryTest {
 	private DataToJsonConverterFactory dataToJsonConverterFactory;
@@ -72,15 +78,33 @@ public class DataToJsonConverterFactoryTest {
 	@Test
 	public void testJsonCreateFactoryDataRecordLink() {
 		RestDataRecordLink recordLink = RestDataRecordLink.withNameInData("recordLinkNameInData");
-		RestDataAtomic linkedRecordType = RestDataAtomic.withNameInDataAndValue("linkedRecordType", "someRecordType");
+		RestDataAtomic linkedRecordType = RestDataAtomic.withNameInDataAndValue("linkedRecordType",
+				"someRecordType");
 		recordLink.addChild(linkedRecordType);
 
-		RestDataAtomic linkedRecordId = RestDataAtomic.withNameInDataAndValue("linkedRecordId", "someRecordId");
+		RestDataAtomic linkedRecordId = RestDataAtomic.withNameInDataAndValue("linkedRecordId",
+				"someRecordId");
 		recordLink.addChild(linkedRecordId);
 		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForRestDataElement(factory, recordLink);
 
 		assertTrue(dataToJsonConverter instanceof DataRecordLinkToJsonConverter);
+
+	}
+
+	@Test
+	public void testJsonCreateFactoryDataResourceLink() {
+		RestDataResourceLink resourceLink = RestDataResourceLink
+				.withNameInData("recordLinkNameInData");
+
+		resourceLink.addChild(RestDataAtomic.withNameInDataAndValue("streamId", "someStreamId"));
+		resourceLink.addChild(RestDataAtomic.withNameInDataAndValue("filename", "adele1.png"));
+		resourceLink.addChild(RestDataAtomic.withNameInDataAndValue("filesize", "1234567"));
+		resourceLink.addChild(RestDataAtomic.withNameInDataAndValue("mimeType", "application/png"));
+		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
+				.createForRestDataElement(factory, resourceLink);
+
+		assertTrue(dataToJsonConverter instanceof DataResourceLinkToJsonConverter);
 
 	}
 }

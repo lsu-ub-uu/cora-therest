@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2016 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -19,13 +19,12 @@
 
 package se.uu.ub.cora.therest.data.converter.spider;
 
-import se.uu.ub.cora.spider.data.SpiderDataAtomic;
-import se.uu.ub.cora.spider.data.SpiderDataElement;
 import se.uu.ub.cora.spider.data.SpiderDataGroup;
 import se.uu.ub.cora.spider.data.SpiderDataRecord;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.RestDataRecord;
 import se.uu.ub.cora.therest.data.converter.ConverterException;
+import se.uu.ub.cora.therest.data.converter.ConverterInfo;
 
 public final class DataRecordSpiderToRestConverter {
 
@@ -33,91 +32,80 @@ public final class DataRecordSpiderToRestConverter {
 	private String baseURL;
 	private SpiderDataGroup spiderDataGroup;
 	private RestDataRecord restDataRecord;
+	private String recordId;
+	private String recordType;
+	private ConverterInfo converterInfo;
 
 	public static DataRecordSpiderToRestConverter fromSpiderDataRecordWithBaseURL(
-			SpiderDataRecord spiderDataRecord, String baseURL) {
-		return new DataRecordSpiderToRestConverter(spiderDataRecord, baseURL);
+			SpiderDataRecord spiderDataRecord, String url) {
+		return new DataRecordSpiderToRestConverter(spiderDataRecord, url);
 	}
 
-	private DataRecordSpiderToRestConverter(SpiderDataRecord spiderDataRecord, String baseURL) {
+	private DataRecordSpiderToRestConverter(SpiderDataRecord spiderDataRecord, String url) {
 		this.spiderDataRecord = spiderDataRecord;
-		this.baseURL = baseURL;
+		this.baseURL = url;
 	}
 
 	public RestDataRecord toRest() {
+		try {
+			return convertToRest();
+		} catch (Exception e) {
+			throw new ConverterException("No recordInfo found conversion not possible: " + e);
+		}
+	}
 
+	private RestDataRecord convertToRest() {
 		spiderDataGroup = spiderDataRecord.getSpiderDataGroup();
-		DataGroupSpiderToRestConverter dataGroupSpiderToRestConverter = DataGroupSpiderToRestConverter
-				.fromSpiderDataGroupWithBaseURL(spiderDataGroup, baseURL);
-		RestDataGroup restDataGroup = dataGroupSpiderToRestConverter.toRest();
-		restDataRecord = RestDataRecord.withRestDataGroup(restDataGroup);
+		extractIdAndType();
+		createConverterInfo();
+
+		convertToRestRecord();
 
 		if (hasActions()) {
-			convertActionsToLinks();
+			createRestLinks();
 		}
-		if (!spiderDataRecord.getKeys().isEmpty()) {
-			for (String string : spiderDataRecord.getKeys()) {
-				restDataRecord.addKey(string);
-			}
+		if (hasKeys()) {
+			convertKeys();
 		}
 		return restDataRecord;
+	}
+
+	private void extractIdAndType() {
+		SpiderDataGroup recordInfo = spiderDataGroup.extractGroup("recordInfo");
+		recordId = recordInfo.extractAtomicValue("id");
+		recordType = recordInfo.extractAtomicValue("type");
+	}
+
+	private void createConverterInfo() {
+		String recordURL = baseURL + String.join("/", recordType, recordId);
+		converterInfo = ConverterInfo.withBaseURLAndRecordURL(baseURL, recordURL);
+	}
+
+	private void convertToRestRecord() {
+		DataGroupSpiderToRestConverter dataGroupSpiderToRestConverter = DataGroupSpiderToRestConverter
+				.fromSpiderDataGroupWithBaseURL(spiderDataGroup, converterInfo);
+		RestDataGroup restDataGroup = dataGroupSpiderToRestConverter.toRest();
+		restDataRecord = RestDataRecord.withRestDataGroup(restDataGroup);
 	}
 
 	private boolean hasActions() {
 		return !spiderDataRecord.getActions().isEmpty();
 	}
 
-	private void convertActionsToLinks() {
-		SpiderDataGroup recordInfo = findRecordInfo();
-		String id = findId(recordInfo);
-		String type = findType(recordInfo);
-		createRestLinks(type, id);
-	}
-
-	private SpiderDataGroup findRecordInfo() {
-		SpiderDataGroup recordInfo = null;
-		for (SpiderDataElement spiderDataElement : spiderDataGroup.getChildren()) {
-			if ("recordInfo".equals(spiderDataElement.getNameInData())) {
-				recordInfo = (SpiderDataGroup) spiderDataElement;
-				break;
-			}
-		}
-		if (null == recordInfo) {
-			throw new ConverterException("No recordInfo found convertion not possible");
-		}
-		return recordInfo;
-	}
-
-	private String findId(SpiderDataGroup recordInfo) {
-		String id = "";
-		for (SpiderDataElement spiderDataElement : recordInfo.getChildren()) {
-			if ("id".equals(spiderDataElement.getNameInData())) {
-				id = ((SpiderDataAtomic) spiderDataElement).getValue();
-			}
-		}
-		if ("".equals(id)) {
-			throw new ConverterException("No id was found in recordInfo convertion not possible");
-		}
-		return id;
-	}
-
-	private String findType(SpiderDataGroup recordInfo) {
-		String type = "";
-		for (SpiderDataElement spiderDataElement : recordInfo.getChildren()) {
-			if ("type".equals(spiderDataElement.getNameInData())) {
-				type = ((SpiderDataAtomic) spiderDataElement).getValue();
-			}
-		}
-		if ("".equals(type)) {
-			throw new ConverterException("No type was found in recordInfo convertion not possible");
-		}
-		return type;
-	}
-
-	private void createRestLinks(String recordType, String recordId) {
+	private void createRestLinks() {
 		ActionSpiderToRestConverter actionSpiderToRestConverter = ActionSpiderToRestConverter
 				.fromSpiderActionsWithBaseURLAndRecordTypeAndRecordId(spiderDataRecord.getActions(),
-						baseURL, recordType, recordId);
+						converterInfo, recordType, recordId);
 		restDataRecord.setActionLinks(actionSpiderToRestConverter.toRest());
+	}
+
+	private boolean hasKeys() {
+		return !spiderDataRecord.getKeys().isEmpty();
+	}
+
+	private void convertKeys() {
+		for (String string : spiderDataRecord.getKeys()) {
+			restDataRecord.addKey(string);
+		}
 	}
 }
