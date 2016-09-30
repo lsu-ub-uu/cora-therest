@@ -19,18 +19,17 @@
 
 package se.uu.ub.cora.therest.data.converter.spider;
 
-import static org.testng.Assert.assertEquals;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+import se.uu.ub.cora.spider.data.Action;
+import se.uu.ub.cora.therest.data.ActionLink;
+import se.uu.ub.cora.therest.data.converter.ConverterInfo;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
-
-import se.uu.ub.cora.spider.data.Action;
-import se.uu.ub.cora.therest.data.ActionLink;
-import se.uu.ub.cora.therest.data.converter.ConverterInfo;
+import static org.testng.Assert.assertEquals;
 
 public class ActionSpiderToRestConverterTest {
 	private ConverterInfo converterInfo = ConverterInfo.withBaseURLAndRecordURL(
@@ -148,7 +147,7 @@ public class ActionSpiderToRestConverterTest {
 
 		assertEquals(actionLink.getAction(), actionUpload);
 		assertEquals(actionLink.getURL(),
-				"http://localhost:8080/therest/rest/record/image/image:0001/upload");
+				"http://localhost:8080/therest/rest/record/image/image:0001/master");
 		assertEquals(actionLink.getRequestMethod(), "POST");
 		assertEquals(actionLink.getAccept(), null);
 		assertEquals(actionLink.getContentType(), "multipart/form-data");
@@ -230,6 +229,6 @@ public class ActionSpiderToRestConverterTest {
 
 		ActionLink createByUpload = actionLinks.get("upload");
 		assertEquals(createByUpload.getURL(),
-				"http://localhost:8080/therest/rest/record/recordType/text/upload");
+				"http://localhost:8080/therest/rest/record/recordType/text/master");
 	}
 }
