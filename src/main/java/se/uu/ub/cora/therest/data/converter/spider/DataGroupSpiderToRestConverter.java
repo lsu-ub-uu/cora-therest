@@ -23,31 +23,38 @@ import se.uu.ub.cora.spider.data.SpiderDataAtomic;
 import se.uu.ub.cora.spider.data.SpiderDataElement;
 import se.uu.ub.cora.spider.data.SpiderDataGroup;
 import se.uu.ub.cora.spider.data.SpiderDataRecordLink;
+import se.uu.ub.cora.spider.data.SpiderDataResourceLink;
 import se.uu.ub.cora.therest.data.RestDataElement;
 import se.uu.ub.cora.therest.data.RestDataGroup;
+import se.uu.ub.cora.therest.data.converter.ConverterInfo;
 
-public final class DataGroupSpiderToRestConverter {
+public class DataGroupSpiderToRestConverter {
 
-	private SpiderDataGroup spiderDataGroup;
 	private RestDataGroup restDataGroup;
-	private String baseURL;
+	protected SpiderDataGroup spiderDataGroup;
+	protected ConverterInfo convertInfo;
 
 	public static DataGroupSpiderToRestConverter fromSpiderDataGroupWithBaseURL(
-			SpiderDataGroup spiderDataGroup, String baseURL) {
+			SpiderDataGroup spiderDataGroup, ConverterInfo baseURL) {
 		return new DataGroupSpiderToRestConverter(spiderDataGroup, baseURL);
 	}
 
-	private DataGroupSpiderToRestConverter(SpiderDataGroup spiderDataGroup, String baseURL) {
+	protected DataGroupSpiderToRestConverter(SpiderDataGroup spiderDataGroup,
+			ConverterInfo converterInfo) {
 		this.spiderDataGroup = spiderDataGroup;
-		this.baseURL = baseURL;
+		this.convertInfo = converterInfo;
 	}
 
 	public RestDataGroup toRest() {
-		restDataGroup = RestDataGroup.withNameInData(spiderDataGroup.getNameInData());
+		restDataGroup = createNewRest();
 		restDataGroup.getAttributes().putAll(spiderDataGroup.getAttributes());
 		restDataGroup.setRepeatId(spiderDataGroup.getRepeatId());
 		convertAndSetChildren();
 		return restDataGroup;
+	}
+
+	protected RestDataGroup createNewRest() {
+		return RestDataGroup.withNameInData(spiderDataGroup.getNameInData());
 	}
 
 	private void convertAndSetChildren() {
@@ -61,11 +68,15 @@ public final class DataGroupSpiderToRestConverter {
 			SpiderDataElement spiderDataElement) {
 		if (spiderDataElement instanceof SpiderDataRecordLink) {
 			return DataRecordLinkSpiderToRestConverter.fromSpiderDataRecordLinkWithBaseURL(
-					(SpiderDataRecordLink) spiderDataElement, baseURL).toRest();
+					(SpiderDataRecordLink) spiderDataElement, convertInfo).toRest();
+		}
+		if (spiderDataElement instanceof SpiderDataResourceLink) {
+			return DataResourceLinkSpiderToRestConverter.fromSpiderDataResourceLinkWithBaseURL(
+					(SpiderDataResourceLink) spiderDataElement, convertInfo).toRest();
 		}
 		if (spiderDataElement instanceof SpiderDataGroup) {
 			return DataGroupSpiderToRestConverter
-					.fromSpiderDataGroupWithBaseURL((SpiderDataGroup) spiderDataElement, baseURL)
+					.fromSpiderDataGroupWithBaseURL((SpiderDataGroup) spiderDataElement, convertInfo)
 					.toRest();
 		}
 		return DataAtomicSpiderToRestConverter

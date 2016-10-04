@@ -26,6 +26,7 @@ import se.uu.ub.cora.spider.data.SpiderDataRecord;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.RestDataList;
 import se.uu.ub.cora.therest.data.RestDataRecord;
+import se.uu.ub.cora.therest.data.converter.ConverterInfo;
 
 public final class DataListSpiderToRestConverter {
 
@@ -33,13 +34,13 @@ public final class DataListSpiderToRestConverter {
 	private String baseURL;
 
 	public static DataListSpiderToRestConverter fromSpiderDataListWithBaseURL(
-			SpiderDataList spiderDataList, String baseURL) {
-		return new DataListSpiderToRestConverter(spiderDataList, baseURL);
+			SpiderDataList spiderDataList, String url) {
+		return new DataListSpiderToRestConverter(spiderDataList, url);
 	}
 
-	private DataListSpiderToRestConverter(SpiderDataList spiderDataList, String baseURL) {
+	private DataListSpiderToRestConverter(SpiderDataList spiderDataList, String url) {
 		this.spiderDataList = spiderDataList;
-		this.baseURL = baseURL;
+		this.baseURL = url;
 	}
 
 	public RestDataList toRest() {
@@ -66,14 +67,14 @@ public final class DataListSpiderToRestConverter {
 
 	private void convertSpiderRecordToRest(RestDataList restDataList, SpiderData spiderData) {
 		RestDataRecord restRecord = DataRecordSpiderToRestConverter
-				.fromSpiderDataRecordWithBaseURL((SpiderDataRecord) spiderData, baseURL)
-				.toRest();
+				.fromSpiderDataRecordWithBaseURL((SpiderDataRecord) spiderData, baseURL).toRest();
 		restDataList.addData(restRecord);
 	}
 
 	private void convertSpiderGroupToRest(RestDataList restDataList, SpiderData spiderData) {
+		ConverterInfo converterInfo = ConverterInfo.withBaseURLAndRecordURL(baseURL, "");
 		RestDataGroup restGroup = DataGroupSpiderToRestConverter
-				.fromSpiderDataGroupWithBaseURL((SpiderDataGroup) spiderData, baseURL)
+				.fromSpiderDataGroupWithBaseURL((SpiderDataGroup) spiderData, converterInfo)
 				.toRest();
 		restDataList.addData(restGroup);
 	}

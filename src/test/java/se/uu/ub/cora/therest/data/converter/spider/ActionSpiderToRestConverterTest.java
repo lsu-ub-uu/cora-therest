@@ -23,6 +23,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import se.uu.ub.cora.spider.data.Action;
 import se.uu.ub.cora.therest.data.ActionLink;
+import se.uu.ub.cora.therest.data.converter.ConverterInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +32,10 @@ import java.util.Map;
 import static org.testng.Assert.assertEquals;
 
 public class ActionSpiderToRestConverterTest {
-	private String baseURL = "http://localhost:8080/therest/rest/record/";
+	private ConverterInfo converterInfo = ConverterInfo.withBaseURLAndRecordURL(
+			"http://localhost:8080/therest/rest/record/",
+			"http://localhost:8080/therest/rest/record/someRecordType/someRecordId");
+
 	private List<Action> actions;
 
 	@BeforeMethod
@@ -45,7 +49,7 @@ public class ActionSpiderToRestConverterTest {
 		actions.add(action);
 
 		ActionSpiderToRestConverter actionSpiderToRestConverter = ActionSpiderToRestConverter
-				.fromSpiderActionsWithBaseURLAndRecordTypeAndRecordId(actions, baseURL,
+				.fromSpiderActionsWithBaseURLAndRecordTypeAndRecordId(actions, converterInfo,
 						"recordType", "recordId");
 		Map<String, ActionLink> actionLinks = actionSpiderToRestConverter.toRest();
 		ActionLink actionLink = actionLinks.get("read");
@@ -62,7 +66,7 @@ public class ActionSpiderToRestConverterTest {
 		Action action = Action.READ_INCOMING_LINKS;
 		actions.add(action);
 		ActionSpiderToRestConverter actionSpiderToRestConverter = ActionSpiderToRestConverter
-				.fromSpiderActionsWithBaseURLAndRecordTypeAndRecordId(actions, baseURL,
+				.fromSpiderActionsWithBaseURLAndRecordTypeAndRecordId(actions, converterInfo,
 						"recordType", "recordId");
 		Map<String, ActionLink> actionLinks = actionSpiderToRestConverter.toRest();
 		ActionLink actionLink = actionLinks.get("read_incoming_links");
@@ -79,7 +83,7 @@ public class ActionSpiderToRestConverterTest {
 		Action action = Action.UPDATE;
 		actions.add(action);
 		ActionSpiderToRestConverter actionSpiderToRestConverter = ActionSpiderToRestConverter
-				.fromSpiderActionsWithBaseURLAndRecordTypeAndRecordId(actions, baseURL,
+				.fromSpiderActionsWithBaseURLAndRecordTypeAndRecordId(actions, converterInfo,
 						"recordType", "recordId");
 		Map<String, ActionLink> actionLinks = actionSpiderToRestConverter.toRest();
 
@@ -98,7 +102,7 @@ public class ActionSpiderToRestConverterTest {
 		actions.add(action);
 
 		ActionSpiderToRestConverter actionSpiderToRestConverter = ActionSpiderToRestConverter
-				.fromSpiderActionsWithBaseURLAndRecordTypeAndRecordId(actions, baseURL,
+				.fromSpiderActionsWithBaseURLAndRecordTypeAndRecordId(actions, converterInfo,
 						"recordType", "recordId");
 		Map<String, ActionLink> actionLinks = actionSpiderToRestConverter.toRest();
 
@@ -117,7 +121,7 @@ public class ActionSpiderToRestConverterTest {
 		actions.add(action);
 
 		ActionSpiderToRestConverter actionSpiderToRestConverter = ActionSpiderToRestConverter
-				.fromSpiderActionsWithBaseURLAndRecordTypeAndRecordId(actions, baseURL,
+				.fromSpiderActionsWithBaseURLAndRecordTypeAndRecordId(actions, converterInfo,
 						"recordType", "text");
 		Map<String, ActionLink> actionLinks = actionSpiderToRestConverter.toRest();
 
@@ -133,16 +137,17 @@ public class ActionSpiderToRestConverterTest {
 	public void testToRestWithActionLinkUpload() {
 		Action actionUpload = Action.UPLOAD;
 		actions.add(actionUpload);
-		
+
 		ActionSpiderToRestConverter actionSpiderToRestConverter = ActionSpiderToRestConverter
-				.fromSpiderActionsWithBaseURLAndRecordTypeAndRecordId(actions, baseURL,
+				.fromSpiderActionsWithBaseURLAndRecordTypeAndRecordId(actions, converterInfo,
 						"image", "image:0001");
 		Map<String, ActionLink> actionLinks = actionSpiderToRestConverter.toRest();
 
 		ActionLink actionLink = actionLinks.get("upload");
-		
+
 		assertEquals(actionLink.getAction(), actionUpload);
-		assertEquals(actionLink.getURL(), "http://localhost:8080/therest/rest/record/image/image:0001/upload");
+		assertEquals(actionLink.getURL(),
+				"http://localhost:8080/therest/rest/record/image/image:0001/master");
 		assertEquals(actionLink.getRequestMethod(), "POST");
 		assertEquals(actionLink.getAccept(), null);
 		assertEquals(actionLink.getContentType(), "multipart/form-data");
@@ -154,7 +159,7 @@ public class ActionSpiderToRestConverterTest {
 		actions.add(action);
 
 		ActionSpiderToRestConverter actionSpiderToRestConverter = ActionSpiderToRestConverter
-				.fromSpiderActionsWithBaseURLAndRecordTypeAndRecordId(actions, baseURL,
+				.fromSpiderActionsWithBaseURLAndRecordTypeAndRecordId(actions, converterInfo,
 						"recordType", "text");
 		Map<String, ActionLink> actionLinks = actionSpiderToRestConverter.toRest();
 
@@ -172,7 +177,7 @@ public class ActionSpiderToRestConverterTest {
 		actions.add(action);
 
 		ActionSpiderToRestConverter actionSpiderToRestConverter = ActionSpiderToRestConverter
-				.fromSpiderActionsWithBaseURLAndRecordTypeAndRecordId(actions, baseURL,
+				.fromSpiderActionsWithBaseURLAndRecordTypeAndRecordId(actions, converterInfo,
 						"recordType", "text");
 		Map<String, ActionLink> actionLinks = actionSpiderToRestConverter.toRest();
 
@@ -196,7 +201,7 @@ public class ActionSpiderToRestConverterTest {
 		actions.add(Action.UPLOAD);
 
 		ActionSpiderToRestConverter actionSpiderToRestConverter = ActionSpiderToRestConverter
-				.fromSpiderActionsWithBaseURLAndRecordTypeAndRecordId(actions, baseURL,
+				.fromSpiderActionsWithBaseURLAndRecordTypeAndRecordId(actions, converterInfo,
 						"recordType", "text");
 		Map<String, ActionLink> actionLinks = actionSpiderToRestConverter.toRest();
 
@@ -223,6 +228,7 @@ public class ActionSpiderToRestConverterTest {
 		assertEquals(search.getURL(), "http://localhost:8080/therest/rest/record/text/");
 
 		ActionLink createByUpload = actionLinks.get("upload");
-		assertEquals(createByUpload.getURL(),  "http://localhost:8080/therest/rest/record/recordType/text/upload");
+		assertEquals(createByUpload.getURL(),
+				"http://localhost:8080/therest/rest/record/recordType/text/master");
 	}
 }

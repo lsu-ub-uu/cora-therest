@@ -33,15 +33,15 @@ public class DataGroupToJsonConverter extends DataToJsonConverter {
 	protected JsonObjectBuilder dataGroupJsonObjectBuilder;
 	protected JsonBuilderFactory jsonBuilderFactory;
 
-	public static DataGroupToJsonConverter usingJsonFactoryForRestDataGroup(
-			JsonBuilderFactory factory, RestDataGroup restDataGroup) {
-		return new DataGroupToJsonConverter(factory, restDataGroup);
-	}
-
 	protected DataGroupToJsonConverter(JsonBuilderFactory factory, RestDataGroup restDataGroup) {
 		this.jsonBuilderFactory = factory;
 		this.restDataGroup = restDataGroup;
 		dataGroupJsonObjectBuilder = factory.createObjectBuilder();
+	}
+
+	public static DataGroupToJsonConverter usingJsonFactoryForRestDataGroup(
+			JsonBuilderFactory factory, RestDataGroup restDataGroup) {
+		return new DataGroupToJsonConverter(factory, restDataGroup);
 	}
 
 	@Override

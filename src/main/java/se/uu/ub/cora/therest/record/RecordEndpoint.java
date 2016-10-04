@@ -331,8 +331,46 @@ public class RecordEndpoint {
 		return Response.status(Response.Status.OK).entity(json).build();
 	}
 
+	@GET
+	@Path("{type}/{id}/{streamId}")
+	// @Path("{type}/{id}/master")
+	// @Consumes("multipart/form-data")
+	// @Produces("application/uub+record+json2")
+	public Response downloadFile(@PathParam("type") String type, @PathParam("id") String id,
+			@PathParam("streamId") String streamId) {
+		return downloadFileAsUserIdWithStream(USER_ID, type, id, streamId);
+	}
+
+	Response downloadFileAsUserIdWithStream(String userId, String type, String id,
+			String streamId) {
+		try {
+			return tryDownloadFile(userId, type, id, streamId);
+		} catch (MisuseException e) {
+			return Response.status(Response.Status.METHOD_NOT_ALLOWED).entity(e.getMessage())
+					.build();
+		} catch (JsonParseException | DataException | DataMissingException | ConverterException e) {
+			return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+		} catch (RecordNotFoundException e) {
+			return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+		} catch (AuthorizationException e) {
+			return Response.status(Response.Status.UNAUTHORIZED).build();
+		}
+	}
+
+	private Response tryDownloadFile(String userId, String type, String id, String streamId) {
+		SpiderInputStream streamOut = SpiderInstanceProvider.getSpiderDownloader().download(userId,
+				type, id, streamId);
+		/*
+		 * when we detect and store type of file in spider set it like this
+		 * return Response.ok(streamOut.stream).type("application/octet-stream")
+		 */
+		return Response.ok(streamOut.stream).type(streamOut.mimeType)
+				.header("Content-Disposition", "attachment; filename=" + streamOut.name)
+				.header("Content-Length", streamOut.size).build();
+	}
+
 	@POST
-	@Path("{type}/{id}/upload")
+	@Path("{type}/{id}/{streamId}")
 	@Consumes("multipart/form-data")
 	@Produces("application/uub+record+json2")
 	public Response uploadFile(@PathParam("type") String type, @PathParam("id") String id,
@@ -366,40 +404,4 @@ public class RecordEndpoint {
 		return Response.ok(json).build();
 	}
 
-	@GET
-	@Path("{type}/{id}/{streamId}")
-	// @Consumes("multipart/form-data")
-	// @Produces("application/uub+record+json2")
-	public Response downloadFile(@PathParam("type") String type, @PathParam("id") String id,
-			@PathParam("streamId") String streamId) {
-		return downloadFileAsUserIdWithStream(USER_ID, type, id, streamId);
-	}
-
-	Response downloadFileAsUserIdWithStream(String userId, String type, String id,
-			String streamId) {
-		try {
-			return tryDownloadFile(userId, type, id, streamId);
-		} catch (MisuseException e) {
-			return Response.status(Response.Status.METHOD_NOT_ALLOWED).entity(e.getMessage())
-					.build();
-		} catch (JsonParseException | DataException | DataMissingException | ConverterException e) {
-			return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
-		} catch (RecordNotFoundException e) {
-			return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
-		} catch (AuthorizationException e) {
-			return Response.status(Response.Status.UNAUTHORIZED).build();
-		}
-	}
-
-	private Response tryDownloadFile(String userId, String type, String id, String streamId) {
-		SpiderInputStream streamOut = SpiderInstanceProvider.getSpiderDownloader().download(userId,
-				type, id, streamId);
-		/*
-		 * when we detect and store type of file in spider set it like this
-		 * return Response.ok(streamOut.stream).type("application/octet-stream")
-		 */
-		return Response.ok(streamOut.stream)
-				.header("Content-Disposition", "attachment; filename=" + streamOut.name)
-				.header("Content-Length", streamOut.size).build();
-	}
 }

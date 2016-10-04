@@ -21,6 +21,7 @@ package se.uu.ub.cora.therest.data.converter.spider;
 
 import se.uu.ub.cora.spider.data.Action;
 import se.uu.ub.cora.therest.data.ActionLink;
+import se.uu.ub.cora.therest.data.converter.ConverterInfo;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -30,20 +31,20 @@ public final class ActionSpiderToRestConverter {
 
 	private static final String APPLICATION_UUB_RECORD_LIST_JSON = "application/uub+recordList+json";
 	private static final String APPLICATION_UUB_RECORD_JSON = "application/uub+record+json";
-	private String baseURL;
+	private ConverterInfo converterInfo;
 	private List<Action> actions;
 	private String recordType;
 	private String recordId;
 
 	public static ActionSpiderToRestConverter fromSpiderActionsWithBaseURLAndRecordTypeAndRecordId(
-			List<Action> actions, String baseURL, String recordType, String recordId) {
-		return new ActionSpiderToRestConverter(actions, baseURL, recordType, recordId);
+			List<Action> actions, ConverterInfo baseURL2, String recordType, String recordId) {
+		return new ActionSpiderToRestConverter(actions, baseURL2, recordType, recordId);
 	}
 
-	private ActionSpiderToRestConverter(List<Action> actions, String baseURL, String recordType,
-			String recordId) {
+	private ActionSpiderToRestConverter(List<Action> actions, ConverterInfo baseURL2,
+			String recordType, String recordId) {
 		this.actions = actions;
-		this.baseURL = baseURL;
+		this.converterInfo = baseURL2;
 		this.recordType = recordType;
 		this.recordId = recordId;
 	}
@@ -51,9 +52,9 @@ public final class ActionSpiderToRestConverter {
 	public Map<String, ActionLink> toRest() {
 		Map<String, ActionLink> actionLinks = new LinkedHashMap<>();
 		for (Action action : actions) {
-			String url = baseURL + recordType + "/";
+			String url = converterInfo.baseURL + recordType + "/";
 			String urlWithRecordId = url + recordId;
-			String urlForRecordTypeActions = baseURL + recordId + "/";
+			String urlForRecordTypeActions = converterInfo.baseURL + recordId + "/";
 			ActionLink actionLink = ActionLink.withAction(action);
 
 			if (Action.READ.equals(action)) {
@@ -78,12 +79,11 @@ public final class ActionSpiderToRestConverter {
 				actionLink.setURL(urlForRecordTypeActions);
 				actionLink.setAccept(APPLICATION_UUB_RECORD_JSON);
 				actionLink.setContentType(APPLICATION_UUB_RECORD_JSON);
-			} else if(Action.UPLOAD.equals(action)){
+			} else if (Action.UPLOAD.equals(action)) {
 				actionLink.setRequestMethod("POST");
-				actionLink.setURL(urlWithRecordId + "/upload");
+				actionLink.setURL(urlWithRecordId + "/master");
 				actionLink.setContentType("multipart/form-data");
-			}
-			else {
+			} else {
 				// list / search
 				actionLink.setRequestMethod("GET");
 				actionLink.setURL(urlForRecordTypeActions);

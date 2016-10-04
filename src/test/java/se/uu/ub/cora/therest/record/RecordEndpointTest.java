@@ -382,15 +382,19 @@ public class RecordEndpointTest {
 				+ "\"url\":\"http://localhost:8080/therest/rest/record/system/cora\","
 				+ "\"accept\":\"application/uub+record+json\"}},\"name\":\"dataDivider\"}],"
 				+ "\"name\":\"recordInfo\"},{\"children\":[{\"children\":[{\"name\":\"streamId\","
-				+ "\"value\":\"1\"},{\"name\":\"fileName\",\"value\":\"adele1.png\"}"
-				+ ",{\"name\":\"fileSize\",\"value\":\"8\"}],\"name\":\"master\"}],"
+				+ "\"value\":\"1\"},{\"name\":\"filename\",\"value\":\"adele1.png\"}"
+				+ ",{\"name\":\"filesize\",\"value\":\"8\"}"
+				+ ",{\"name\":\"mimeType\",\"value\":\"application/octet-stream\"}]"
+				+ ",\"actionLinks\":{\"read\":{\"requestMethod\":\"GET\",\"rel\":\"read\","
+				+ "\"url\":\"http://localhost:8080/therest/rest/record/image/image:123456789/master\","
+				+ "\"accept\":\"application/octet-stream\"}},\"name\":\"master\"}],"
 				+ "\"name\":\"resourceInfo\"}],\"name\":\"binary\"},\"actionLinks\":{\"read\":"
 				+ "{\"requestMethod\":\"GET\",\"rel\":\"read\","
 				+ "\"url\":\"http://localhost:8080/therest/rest/record/image/image:123456789\","
 				+ "\"accept\":\"application/uub+record+json\"},"
 				+ "\"upload\":{\"requestMethod\":\"POST\",\"rel\":\"upload\","
 				+ "\"contentType\":\"multipart/form-data\",\"url\":"
-				+ "\"http://localhost:8080/therest/rest/record/image/image:123456789/upload\"},"
+				+ "\"http://localhost:8080/therest/rest/record/image/image:123456789/master\"},"
 				+ "\"update\":{\"requestMethod\":\"POST\","
 				+ "\"rel\":\"update\",\"contentType\":\"application/uub+record+json\","
 				+ "\"url\":\"http://localhost:8080/therest/rest/record/image/image:123456789\","
@@ -462,7 +466,8 @@ public class RecordEndpointTest {
 		 * when we detect and store type of file in spider check it like this
 		 * assertEquals(contentType, "application/octet-stream");
 		 */
-		assertEquals(contentType, null);
+		assertEquals(contentType, "application/octet-stream");
+		// assertEquals(contentType, null);
 		InputStream stream = (InputStream) response.getEntity();
 		assertNotNull(stream);
 
