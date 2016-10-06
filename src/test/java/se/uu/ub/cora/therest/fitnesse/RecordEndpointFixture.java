@@ -30,6 +30,8 @@ import javax.ws.rs.core.UriInfo;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition.FormDataContentDispositionBuilder;
 
+import se.uu.ub.cora.spider.dependency.SpiderInstanceFactory;
+import se.uu.ub.cora.spider.dependency.SpiderInstanceFactoryImp;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
 import se.uu.ub.cora.systemone.SystemOneDependencyProviderForFitnesse;
 import se.uu.ub.cora.therest.record.RecordEndpoint;
@@ -94,8 +96,7 @@ public class RecordEndpointFixture {
 
 	public String testReadRecord() {
 		UriInfo uriInfo = new TestUri();
-		SpiderInstanceProvider.setSpiderDependencyProvider(
-				DependencyProviderForMultipleTestsWorkingTogether.spiderDependencyProvider);
+		setupSpiderInstanceProvider();
 		RecordEndpoint recordEndpoint = new RecordEndpoint(uriInfo);
 		Response response = recordEndpoint.readRecord(type, id);
 		String entity = (String) response.getEntity();
@@ -103,10 +104,15 @@ public class RecordEndpointFixture {
 		return entity;
 	}
 
+	private void setupSpiderInstanceProvider() {
+		SpiderInstanceFactory factory = SpiderInstanceFactoryImp.usingDependencyProvider(
+				DependencyProviderForMultipleTestsWorkingTogether.spiderDependencyProvider);
+		SpiderInstanceProvider.setSpiderInstanceFactory(factory);
+	}
+
 	public String testReadIncomingLinks() {
 		UriInfo uriInfo = new TestUri();
-		SpiderInstanceProvider.setSpiderDependencyProvider(
-				DependencyProviderForMultipleTestsWorkingTogether.spiderDependencyProvider);
+		setupSpiderInstanceProvider();
 		RecordEndpoint recordEndpoint = new RecordEndpoint(uriInfo);
 		Response response = recordEndpoint.readIncomingRecordLinks(type, id);
 		String entity = (String) response.getEntity();
@@ -116,8 +122,7 @@ public class RecordEndpointFixture {
 
 	public String testReadRecordList() {
 		UriInfo uriInfo = new TestUri();
-		SpiderInstanceProvider.setSpiderDependencyProvider(
-				DependencyProviderForMultipleTestsWorkingTogether.spiderDependencyProvider);
+		setupSpiderInstanceProvider();
 		RecordEndpoint recordEndpoint = new RecordEndpoint(uriInfo);
 		Response response = recordEndpoint.readRecordList(type);
 		String entity = (String) response.getEntity();
@@ -127,8 +132,7 @@ public class RecordEndpointFixture {
 
 	public String testCreateRecord() {
 		UriInfo uriInfo = new TestUri();
-		SpiderInstanceProvider.setSpiderDependencyProvider(
-				DependencyProviderForMultipleTestsWorkingTogether.spiderDependencyProvider);
+		setupSpiderInstanceProvider();
 		RecordEndpoint recordEndpoint = new RecordEndpoint(uriInfo);
 		Response response = recordEndpoint.createRecord(type, json);
 		statusType = response.getStatusInfo();
@@ -151,8 +155,7 @@ public class RecordEndpointFixture {
 
 	public String testUpdateRecord() {
 		UriInfo uriInfo = new TestUri();
-		SpiderInstanceProvider.setSpiderDependencyProvider(
-				DependencyProviderForMultipleTestsWorkingTogether.spiderDependencyProvider);
+		setupSpiderInstanceProvider();
 		RecordEndpoint recordEndpoint = new RecordEndpoint(uriInfo);
 		Response response = recordEndpoint.updateRecord(type, id, json);
 		String entity = (String) response.getEntity();
@@ -162,8 +165,7 @@ public class RecordEndpointFixture {
 
 	public String testDeleteRecord() {
 		UriInfo uriInfo = new TestUri();
-		SpiderInstanceProvider.setSpiderDependencyProvider(
-				DependencyProviderForMultipleTestsWorkingTogether.spiderDependencyProvider);
+		setupSpiderInstanceProvider();
 		RecordEndpoint recordEndpoint = new RecordEndpoint(uriInfo);
 		Response response = recordEndpoint.deleteRecord(type, id);
 		statusType = response.getStatusInfo();
@@ -175,8 +177,7 @@ public class RecordEndpointFixture {
 
 	public String testUpload() {
 		UriInfo uriInfo = new TestUri();
-		SpiderInstanceProvider.setSpiderDependencyProvider(
-				DependencyProviderForMultipleTestsWorkingTogether.spiderDependencyProvider);
+		setupSpiderInstanceProvider();
 		RecordEndpoint recordEndpoint = new RecordEndpoint(uriInfo);
 
 		InputStream stream = new ByteArrayInputStream("a string".getBytes(StandardCharsets.UTF_8));
@@ -212,8 +213,7 @@ public class RecordEndpointFixture {
 
 	public String testDownload() {
 		UriInfo uriInfo = new TestUri();
-		SpiderInstanceProvider.setSpiderDependencyProvider(
-				DependencyProviderForMultipleTestsWorkingTogether.spiderDependencyProvider);
+		setupSpiderInstanceProvider();
 		RecordEndpoint recordEndpoint = new RecordEndpoint(uriInfo);
 		Response response = recordEndpoint.downloadFile(type, id, resourceName);
 		statusType = response.getStatusInfo();
