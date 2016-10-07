@@ -61,7 +61,6 @@ A test that first reads all predefined metadata needed to be able to add binary 
 !| RecordEndpointFixture |
 | type | id | testReadRecord? | getStatusType? |
 | image | $createdId | {"record":{"data":{"children":[{"children":[{"children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"cora"}],"actionLinks":{"read":{"requestMethod":"GET","rel":"read","url":"http://localhost:8080/therest/rest/record/system/cora","accept":"application/uub+record+json"}},"name":"dataDivider"},{"name":"id","value":"$createdId"},{"name":"type","value":"image"},{"name":"createdBy","value":"userId"}],"name":"recordInfo"}],"name":"binary","attributes":{"type":"image"}},"actionLinks":{"read":{"requestMethod":"GET","rel":"read","url":"http://localhost:8080/therest/rest/record/image/$createdId","accept":"application/uub+record+json"},"upload":{"requestMethod":"POST","rel":"upload","contentType":"multipart/form-data","url":"http://localhost:8080/therest/rest/record/image/$createdId/master"},"update":{"requestMethod":"POST","rel":"update","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/image/$createdId","accept":"application/uub+record+json"},"delete":{"requestMethod":"DELETE","rel":"delete","url":"http://localhost:8080/therest/rest/record/image/$createdId"}}}} | OK |
-| | | | |
 
 *!
 !***> Update data of recordType image
@@ -109,7 +108,6 @@ A test that first reads all predefined metadata needed to be able to add binary 
 !| RecordEndpointFixture |
 | type | id | testReadRecord? | getStatusType? |
 | sound | $createdId | | OK |
-| | | | |
 
 *!
 !***> Update data of recordType sound
