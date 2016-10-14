@@ -10,15 +10,15 @@ An abstract record type (the parent) is used to create a group of record type si
 
 !| RecordEndpointFixture |
 | type | json | testCreateRecord? | getStatusType? |
-| metadataCollectionItem | {"name":"metadata","children":[{"name":"recordInfo","children":[{"name":"id","value":"itemTree"},{"children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"cora"}],"name":"dataDivider"}]},{"name":"nameInData","value":"tree"},{"name":"textId","value":"itemTreeText"},{"name":"defTextId","value":"itemTreeDefText"}],"attributes":{"type":"collectionItem"}} | | CREATED |
-| metadataCollectionItem | {"name":"metadata","children":[{"name":"recordInfo","children":[{"name":"id","value":"itemFlower"},{"children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"cora"}],"name":"dataDivider"}]},{"name":"nameInData","value":"flower"},{"name":"textId","value":"itemFlowerText"},{"name":"defTextId","value":"itemFlowerDefText"}],"attributes":{"type":"collectionItem"}} | | CREATED |
+| metadataCollectionItem | {"name":"metadata","children":[{"name":"recordInfo","children":[{"name":"id","value":"treeItem"},{"children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"cora"}],"name":"dataDivider"}]},{"name":"nameInData","value":"tree"},{"name":"textId","value":"treeItemText"},{"name":"defTextId","value":"treeItemDefText"}],"attributes":{"type":"collectionItem"}} | | CREATED |
+| metadataCollectionItem | {"name":"metadata","children":[{"name":"recordInfo","children":[{"name":"id","value":"flowerItem"},{"children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"cora"}],"name":"dataDivider"}]},{"name":"nameInData","value":"flower"},{"name":"textId","value":"flowerItemText"},{"name":"defTextId","value":"flowerItemDefText"}],"attributes":{"type":"collectionItem"}} | | CREATED |
 
 *!
 !***> Create itemCollections (plantTypeCollection)
 
 !| RecordEndpointFixture |
 | type | json | testCreateRecord? | getStatusType? |
-| metadataItemCollection | {"name":"metadata","children":[{"name":"recordInfo","children":[{"name":"id","value":"plantTypeCollection"},{"children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"cora"}],"name":"dataDivider"}]},{"name":"nameInData","value":"type"},{"name":"textId","value":"plantTypeCollectionText"},{"name":"defTextId","value":"plantTypeCollectionDefText"},{"name":"collectionItemReferences","children":[{"name":"ref","repeatId":"0","value":"itemTree"},{"name":"ref","repeatId":"1","value":"itemFlower"}]}],"attributes":{"type":"itemCollection"}} | | CREATED |
+| metadataItemCollection | {"name":"metadata","children":[{"name":"recordInfo","children":[{"name":"id","value":"plantTypeCollection"},{"children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"cora"}],"name":"dataDivider"}]},{"name":"nameInData","value":"type"},{"name":"textId","value":"plantTypeCollectionText"},{"name":"defTextId","value":"plantTypeCollectionDefText"},{"name":"collectionItemReferences","children":[{"name":"ref","repeatId":"0","children":[{"name":"linkedRecordType","value":"metadataCollectionItem"},{"name":"linkedRecordId","value":"treeItem"}]},{"name":"ref","repeatId":"1","children":[{"name":"linkedRecordType","value":"metadataCollectionItem"},{"name":"linkedRecordId","value":"flowerItem"}]}]}],"attributes":{"type":"itemCollection"}} | | CREATED |
 
 *!
 !***> Create collectionVariable (plantTypeVar)
