@@ -23,6 +23,7 @@ import se.uu.ub.cora.beefeater.Authorizator;
 import se.uu.ub.cora.beefeater.AuthorizatorImp;
 import se.uu.ub.cora.bookkeeper.linkcollector.DataRecordLinkCollector;
 import se.uu.ub.cora.bookkeeper.validator.DataValidator;
+import se.uu.ub.cora.spider.authentication.Authenticator;
 import se.uu.ub.cora.spider.dependency.SpiderDependencyProvider;
 import se.uu.ub.cora.spider.extended.BaseExtendedFunctionalityProvider;
 import se.uu.ub.cora.spider.extended.ExtendedFunctionalityProvider;
@@ -90,6 +91,11 @@ public class DependencyProviderForTest implements SpiderDependencyProvider {
 	@Override
 	public ExtendedFunctionalityProvider getExtendedFunctionalityProvider() {
 		return new BaseExtendedFunctionalityProvider();
+	}
+
+	@Override
+	public Authenticator getAuthenticator() {
+		return new AuthenticatorForTest();
 	}
 
 }

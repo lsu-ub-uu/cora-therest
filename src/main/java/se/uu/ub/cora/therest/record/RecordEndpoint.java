@@ -72,7 +72,7 @@ import se.uu.ub.cora.therest.data.converter.spider.DataRecordSpiderToRestConvert
 @Path("record")
 public class RecordEndpoint {
 
-	private static final String USER_ID = "userId";
+	private static final String AUTH_TOKEN = "authToken";
 	private UriInfo uriInfo;
 	private String url;
 
@@ -90,24 +90,28 @@ public class RecordEndpoint {
 	@Path("{type}")
 	@Consumes("application/uub+record+json")
 	@Produces("application/uub+record+json")
+	// public Response createRecord(@PathParam("type") String type, String
+	// jsonRecord,
+	// @HeaderParam("authtoken") String authToken) {
 	public Response createRecord(@PathParam("type") String type, String jsonRecord) {
 		// set user directly here until we have decided how to authenticate user
-		return createRecordAsUserIdWithRecord(USER_ID, type, jsonRecord);
+		return createRecordUsingAuthTokenWithRecord(AUTH_TOKEN, type, jsonRecord);
 	}
 
-	public Response createRecordAsUserIdWithRecord(String userId, String type, String jsonRecord) {
+	public Response createRecordUsingAuthTokenWithRecord(String authToken, String type,
+			String jsonRecord) {
 		try {
-			return tryCreateRecord(userId, type, jsonRecord);
+			return tryCreateRecord(authToken, type, jsonRecord);
 		} catch (Exception error) {
 			return handleError(error);
 		}
 	}
 
-	private Response tryCreateRecord(String userId, String type, String jsonRecord)
+	private Response tryCreateRecord(String authToken, String type, String jsonRecord)
 			throws URISyntaxException {
 		SpiderDataGroup record = convertJsonStringToSpiderDataGroup(jsonRecord);
 		SpiderDataRecord createdRecord = SpiderInstanceProvider.getSpiderRecordCreator()
-				.createAndStoreRecord(userId, type, record);
+				.createAndStoreRecord(authToken, type, record);
 
 		SpiderDataGroup createdGroup = createdRecord.getSpiderDataGroup();
 		SpiderDataGroup recordInfo = createdGroup.extractGroup("recordInfo");
@@ -185,12 +189,12 @@ public class RecordEndpoint {
 	@Path("{type}/")
 	@Produces("application/uub+recordList+json")
 	public Response readRecordList(@PathParam("type") String type) {
-		return readRecordListAsUserIdByType(USER_ID, type);
+		return readRecordListUsingAuthTokenByType(AUTH_TOKEN, type);
 	}
 
-	Response readRecordListAsUserIdByType(String userId, String type) {
+	Response readRecordListUsingAuthTokenByType(String authToken, String type) {
 		try {
-			return tryReadRecordList(userId, type);
+			return tryReadRecordList(authToken, type);
 		} catch (RecordNotFoundException e) {
 			return Response.status(Response.Status.NOT_FOUND).build();
 		} catch (AuthorizationException e) {
@@ -198,9 +202,9 @@ public class RecordEndpoint {
 		}
 	}
 
-	private Response tryReadRecordList(String userId, String type) {
+	private Response tryReadRecordList(String authToken, String type) {
 		SpiderDataList readRecordList = SpiderInstanceProvider.getSpiderRecordListReader()
-				.readRecordList(userId, type);
+				.readRecordList(authToken, type);
 		String json = convertSpiderRecordListToJsonString(readRecordList);
 		return Response.status(Response.Status.OK).entity(json).build();
 	}
@@ -221,12 +225,12 @@ public class RecordEndpoint {
 	@Produces("application/uub+record+json")
 	public Response readRecord(@PathParam("type") String type, @PathParam("id") String id) {
 		// set user directly here until we have decided how to authenticate user
-		return readRecordAsUserIdByTypeAndId(USER_ID, type, id);
+		return readRecordUsingAuthTokenByTypeAndId(AUTH_TOKEN, type, id);
 	}
 
-	Response readRecordAsUserIdByTypeAndId(String userId, String type, String id) {
+	Response readRecordUsingAuthTokenByTypeAndId(String authToken, String type, String id) {
 		try {
-			return tryReadRecord(userId, type, id);
+			return tryReadRecord(authToken, type, id);
 		} catch (MisuseException e) {
 			return Response.status(Response.Status.METHOD_NOT_ALLOWED).entity(e.getMessage())
 					.build();
@@ -237,9 +241,9 @@ public class RecordEndpoint {
 		}
 	}
 
-	private Response tryReadRecord(String userId, String type, String id) {
-		SpiderDataRecord record = SpiderInstanceProvider.getSpiderRecordReader().readRecord(userId,
-				type, id);
+	private Response tryReadRecord(String authToken, String type, String id) {
+		SpiderDataRecord record = SpiderInstanceProvider.getSpiderRecordReader()
+				.readRecord(authToken, type, id);
 		String json = convertSpiderDataRecordToJsonString(record);
 		return Response.status(Response.Status.OK).entity(json).build();
 	}
@@ -250,12 +254,12 @@ public class RecordEndpoint {
 	public Response readIncomingRecordLinks(@PathParam("type") String type,
 			@PathParam("id") String id) {
 		// set user directly here until we have decided how to authenticate user
-		return readIncomingRecordLinksAsUserIdByTypeAndId(USER_ID, type, id);
+		return readIncomingRecordLinksUsingAuthTokenByTypeAndId(AUTH_TOKEN, type, id);
 	}
 
-	Response readIncomingRecordLinksAsUserIdByTypeAndId(String userId, String type, String id) {
+	Response readIncomingRecordLinksUsingAuthTokenByTypeAndId(String authToken, String type, String id) {
 		try {
-			return tryReadIncomingRecordLinks(userId, type, id);
+			return tryReadIncomingRecordLinks(authToken, type, id);
 		} catch (MisuseException e) {
 			return Response.status(Response.Status.METHOD_NOT_ALLOWED).entity(e.getMessage())
 					.build();
@@ -266,9 +270,9 @@ public class RecordEndpoint {
 		}
 	}
 
-	private Response tryReadIncomingRecordLinks(String userId, String type, String id) {
+	private Response tryReadIncomingRecordLinks(String authToken, String type, String id) {
 		SpiderDataList dataList = SpiderInstanceProvider.getSpiderRecordReader()
-				.readIncomingLinks(userId, type, id);
+				.readIncomingLinks(authToken, type, id);
 		String json = convertSpiderRecordListToJsonString(dataList);
 		return Response.status(Response.Status.OK).entity(json).build();
 	}
@@ -277,12 +281,12 @@ public class RecordEndpoint {
 	@Path("{type}/{id}")
 	public Response deleteRecord(@PathParam("type") String type, @PathParam("id") String id) {
 		// set user directly here until we have decided how to authenticate user
-		return deleteRecordAsUserIdByTypeAndId(USER_ID, type, id);
+		return deleteRecordUsingAuthTokenByTypeAndId(AUTH_TOKEN, type, id);
 	}
 
-	public Response deleteRecordAsUserIdByTypeAndId(String userId, String type, String id) {
+	public Response deleteRecordUsingAuthTokenByTypeAndId(String authToken, String type, String id) {
 		try {
-			return tryDeleteRecord(userId, type, id);
+			return tryDeleteRecord(authToken, type, id);
 		} catch (MisuseException e) {
 			return Response.status(Response.Status.METHOD_NOT_ALLOWED).entity(e.getMessage())
 					.build();
@@ -293,8 +297,8 @@ public class RecordEndpoint {
 		}
 	}
 
-	private Response tryDeleteRecord(String userId, String type, String id) {
-		SpiderInstanceProvider.getSpiderRecordDeleter().deleteRecord(userId, type, id);
+	private Response tryDeleteRecord(String authToken, String type, String id) {
+		SpiderInstanceProvider.getSpiderRecordDeleter().deleteRecord(authToken, type, id);
 		return Response.status(Response.Status.OK).build();
 	}
 
@@ -304,13 +308,13 @@ public class RecordEndpoint {
 	@Produces("application/uub+record+json")
 	public Response updateRecord(@PathParam("type") String type, @PathParam("id") String id,
 			String jsonRecord) {
-		return updateRecordAsUserIdWithRecord(USER_ID, type, id, jsonRecord);
+		return updateRecordUsingAuthTokenWithRecord(AUTH_TOKEN, type, id, jsonRecord);
 	}
 
-	public Response updateRecordAsUserIdWithRecord(String userId, String type, String id,
+	public Response updateRecordUsingAuthTokenWithRecord(String authToken, String type, String id,
 			String jsonRecord) {
 		try {
-			return tryUpdateRecord(userId, type, id, jsonRecord);
+			return tryUpdateRecord(authToken, type, id, jsonRecord);
 		} catch (MisuseException e) {
 			return Response.status(Response.Status.METHOD_NOT_ALLOWED).entity(e.getMessage())
 					.build();
@@ -323,10 +327,10 @@ public class RecordEndpoint {
 		}
 	}
 
-	private Response tryUpdateRecord(String userId, String type, String id, String jsonRecord) {
+	private Response tryUpdateRecord(String authToken, String type, String id, String jsonRecord) {
 		SpiderDataGroup record = convertJsonStringToSpiderDataGroup(jsonRecord);
 		SpiderDataRecord updatedRecord = SpiderInstanceProvider.getSpiderRecordUpdater()
-				.updateRecord(userId, type, id, record);
+				.updateRecord(authToken, type, id, record);
 		String json = convertSpiderDataRecordToJsonString(updatedRecord);
 		return Response.status(Response.Status.OK).entity(json).build();
 	}
@@ -338,13 +342,13 @@ public class RecordEndpoint {
 	// @Produces("application/uub+record+json2")
 	public Response downloadFile(@PathParam("type") String type, @PathParam("id") String id,
 			@PathParam("streamId") String streamId) {
-		return downloadFileAsUserIdWithStream(USER_ID, type, id, streamId);
+		return downloadFileUsingAuthTokenWithStream(AUTH_TOKEN, type, id, streamId);
 	}
 
-	Response downloadFileAsUserIdWithStream(String userId, String type, String id,
+	Response downloadFileUsingAuthTokenWithStream(String authToken, String type, String id,
 			String streamId) {
 		try {
-			return tryDownloadFile(userId, type, id, streamId);
+			return tryDownloadFile(authToken, type, id, streamId);
 		} catch (MisuseException e) {
 			return Response.status(Response.Status.METHOD_NOT_ALLOWED).entity(e.getMessage())
 					.build();
@@ -357,9 +361,9 @@ public class RecordEndpoint {
 		}
 	}
 
-	private Response tryDownloadFile(String userId, String type, String id, String streamId) {
-		SpiderInputStream streamOut = SpiderInstanceProvider.getSpiderDownloader().download(userId,
-				type, id, streamId);
+	private Response tryDownloadFile(String authToken, String type, String id, String streamId) {
+		SpiderInputStream streamOut = SpiderInstanceProvider.getSpiderDownloader()
+				.download(authToken, type, id, streamId);
 		/*
 		 * when we detect and store type of file in spider set it like this
 		 * return Response.ok(streamOut.stream).type("application/octet-stream")
@@ -377,13 +381,13 @@ public class RecordEndpoint {
 			@FormDataParam("file") InputStream uploadedInputStream,
 			@FormDataParam("file") FormDataContentDisposition fileDetail) {
 		String fileName = fileDetail.getFileName();
-		return uploadFileAsUserIdWithStream(USER_ID, type, id, uploadedInputStream, fileName);
+		return uploadFileUsingAuthTokenWithStream(AUTH_TOKEN, type, id, uploadedInputStream, fileName);
 	}
 
-	Response uploadFileAsUserIdWithStream(String userId, String type, String id,
+	Response uploadFileUsingAuthTokenWithStream(String authToken, String type, String id,
 			InputStream uploadedInputStream, String fileName) {
 		try {
-			return tryUploadFile(userId, type, id, uploadedInputStream, fileName);
+			return tryUploadFile(authToken, type, id, uploadedInputStream, fileName);
 		} catch (MisuseException e) {
 			return Response.status(Response.Status.METHOD_NOT_ALLOWED).entity(e.getMessage())
 					.build();
@@ -396,10 +400,10 @@ public class RecordEndpoint {
 		}
 	}
 
-	private Response tryUploadFile(String userId, String type, String id, InputStream inputStream,
-			String fileName) {
-		SpiderDataRecord updatedRecord = SpiderInstanceProvider.getSpiderUploader().upload(userId,
-				type, id, inputStream, fileName);
+	private Response tryUploadFile(String authToken, String type, String id,
+			InputStream inputStream, String fileName) {
+		SpiderDataRecord updatedRecord = SpiderInstanceProvider.getSpiderUploader()
+				.upload(authToken, type, id, inputStream, fileName);
 		String json = convertSpiderDataRecordToJsonString(updatedRecord);
 		return Response.ok(json).build();
 	}
