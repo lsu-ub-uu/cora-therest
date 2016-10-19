@@ -90,7 +90,7 @@ public class DependencyProviderForTest implements SpiderDependencyProvider {
 
 	@Override
 	public ExtendedFunctionalityProvider getExtendedFunctionalityProvider() {
-		return new BaseExtendedFunctionalityProvider();
+		return new BaseExtendedFunctionalityProvider(this);
 	}
 
 	@Override
