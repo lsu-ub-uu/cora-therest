@@ -320,9 +320,6 @@ public class RecordEndpoint {
 			String jsonRecord) {
 		try {
 			return tryUpdateRecord(authToken, type, id, jsonRecord);
-		} catch (MisuseException e) {
-			return Response.status(Response.Status.METHOD_NOT_ALLOWED).entity(e.getMessage())
-					.build();
 		} catch (JsonParseException | DataException | DataMissingException | ConverterException e) {
 			return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
 		} catch (RecordNotFoundException e) {
