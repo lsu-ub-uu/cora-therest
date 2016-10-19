@@ -48,6 +48,7 @@ public class RecordEndpointFixture {
 	private String resourceName;
 	private String contentLenght;
 	private String contentDisposition;
+	private String authToken;
 
 	public void setType(String type) {
 		this.type = type;
@@ -89,6 +90,10 @@ public class RecordEndpointFixture {
 		return contentLenght;
 	}
 
+	public void setAuthToken(String authToken) {
+		this.authToken = authToken;
+	}
+
 	public String resetDependencyProvider() {
 		DependencyProviderForMultipleTestsWorkingTogether.spiderDependencyProvider = new SystemOneDependencyProviderForFitnesse();
 		return "OK";
@@ -98,7 +103,7 @@ public class RecordEndpointFixture {
 		UriInfo uriInfo = new TestUri();
 		setupSpiderInstanceProvider();
 		RecordEndpoint recordEndpoint = new RecordEndpoint(uriInfo);
-		Response response = recordEndpoint.readRecord(type, id);
+		Response response = recordEndpoint.readRecordUsingAuthTokenByTypeAndId(authToken, type, id);
 		String entity = (String) response.getEntity();
 		statusType = response.getStatusInfo();
 		return entity;

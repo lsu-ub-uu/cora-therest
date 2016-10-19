@@ -44,6 +44,7 @@ import se.uu.ub.cora.json.parser.JsonParseException;
 import se.uu.ub.cora.json.parser.JsonParser;
 import se.uu.ub.cora.json.parser.JsonValue;
 import se.uu.ub.cora.json.parser.org.OrgJsonParser;
+import se.uu.ub.cora.spider.authentication.AuthenticationException;
 import se.uu.ub.cora.spider.data.DataMissingException;
 import se.uu.ub.cora.spider.data.SpiderDataGroup;
 import se.uu.ub.cora.spider.data.SpiderDataList;
@@ -170,7 +171,7 @@ public class RecordEndpoint {
 		} else if (error instanceof URISyntaxException) {
 			response = buildResponse(Response.Status.BAD_REQUEST);
 		} else if (error instanceof AuthorizationException) {
-			response = buildResponse(Response.Status.UNAUTHORIZED);
+			response = buildResponse(Response.Status.FORBIDDEN);
 		} else if (error instanceof RecordNotFoundException) {
 			response = buildResponseIncludingMessage(error, Response.Status.NOT_FOUND);
 		}
@@ -198,7 +199,7 @@ public class RecordEndpoint {
 		} catch (RecordNotFoundException e) {
 			return Response.status(Response.Status.NOT_FOUND).build();
 		} catch (AuthorizationException e) {
-			return Response.status(Response.Status.UNAUTHORIZED).build();
+			return Response.status(Response.Status.FORBIDDEN).build();
 		}
 	}
 
@@ -228,16 +229,18 @@ public class RecordEndpoint {
 		return readRecordUsingAuthTokenByTypeAndId(AUTH_TOKEN, type, id);
 	}
 
-	Response readRecordUsingAuthTokenByTypeAndId(String authToken, String type, String id) {
+	public Response readRecordUsingAuthTokenByTypeAndId(String authToken, String type, String id) {
 		try {
 			return tryReadRecord(authToken, type, id);
+		} catch (AuthenticationException e) {
+			return Response.status(Response.Status.UNAUTHORIZED).build();
 		} catch (MisuseException e) {
 			return Response.status(Response.Status.METHOD_NOT_ALLOWED).entity(e.getMessage())
 					.build();
 		} catch (RecordNotFoundException e) {
 			return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
 		} catch (AuthorizationException e) {
-			return Response.status(Response.Status.UNAUTHORIZED).build();
+			return Response.status(Response.Status.FORBIDDEN).build();
 		}
 	}
 
@@ -257,7 +260,8 @@ public class RecordEndpoint {
 		return readIncomingRecordLinksUsingAuthTokenByTypeAndId(AUTH_TOKEN, type, id);
 	}
 
-	Response readIncomingRecordLinksUsingAuthTokenByTypeAndId(String authToken, String type, String id) {
+	Response readIncomingRecordLinksUsingAuthTokenByTypeAndId(String authToken, String type,
+			String id) {
 		try {
 			return tryReadIncomingRecordLinks(authToken, type, id);
 		} catch (MisuseException e) {
@@ -266,7 +270,7 @@ public class RecordEndpoint {
 		} catch (RecordNotFoundException e) {
 			return Response.status(Response.Status.NOT_FOUND).build();
 		} catch (AuthorizationException e) {
-			return Response.status(Response.Status.UNAUTHORIZED).build();
+			return Response.status(Response.Status.FORBIDDEN).build();
 		}
 	}
 
@@ -284,7 +288,8 @@ public class RecordEndpoint {
 		return deleteRecordUsingAuthTokenByTypeAndId(AUTH_TOKEN, type, id);
 	}
 
-	public Response deleteRecordUsingAuthTokenByTypeAndId(String authToken, String type, String id) {
+	public Response deleteRecordUsingAuthTokenByTypeAndId(String authToken, String type,
+			String id) {
 		try {
 			return tryDeleteRecord(authToken, type, id);
 		} catch (MisuseException e) {
@@ -293,7 +298,7 @@ public class RecordEndpoint {
 		} catch (RecordNotFoundException e) {
 			return Response.status(Response.Status.NOT_FOUND).build();
 		} catch (AuthorizationException e) {
-			return Response.status(Response.Status.UNAUTHORIZED).build();
+			return Response.status(Response.Status.FORBIDDEN).build();
 		}
 	}
 
@@ -323,7 +328,7 @@ public class RecordEndpoint {
 		} catch (RecordNotFoundException e) {
 			return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
 		} catch (AuthorizationException e) {
-			return Response.status(Response.Status.UNAUTHORIZED).build();
+			return Response.status(Response.Status.FORBIDDEN).build();
 		}
 	}
 
@@ -357,7 +362,7 @@ public class RecordEndpoint {
 		} catch (RecordNotFoundException e) {
 			return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
 		} catch (AuthorizationException e) {
-			return Response.status(Response.Status.UNAUTHORIZED).build();
+			return Response.status(Response.Status.FORBIDDEN).build();
 		}
 	}
 
@@ -381,7 +386,8 @@ public class RecordEndpoint {
 			@FormDataParam("file") InputStream uploadedInputStream,
 			@FormDataParam("file") FormDataContentDisposition fileDetail) {
 		String fileName = fileDetail.getFileName();
-		return uploadFileUsingAuthTokenWithStream(AUTH_TOKEN, type, id, uploadedInputStream, fileName);
+		return uploadFileUsingAuthTokenWithStream(AUTH_TOKEN, type, id, uploadedInputStream,
+				fileName);
 	}
 
 	Response uploadFileUsingAuthTokenWithStream(String authToken, String type, String id,
@@ -396,7 +402,7 @@ public class RecordEndpoint {
 		} catch (RecordNotFoundException e) {
 			return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
 		} catch (AuthorizationException e) {
-			return Response.status(Response.Status.UNAUTHORIZED).build();
+			return Response.status(Response.Status.FORBIDDEN).build();
 		}
 	}
 

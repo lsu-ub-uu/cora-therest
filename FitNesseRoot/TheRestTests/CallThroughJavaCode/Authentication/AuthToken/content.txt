@@ -1,0 +1,12 @@
+!contents -R2 -g -p -f -h
+| import |
+| se.uu.ub.cora.therest.fitnesse |
+
+!***> Read a metadataVariable (idTextVar)
+
+!| RecordEndpointFixture |
+| authToken | type | id | testReadRecord? | getStatusType? |
+| dummyNonAuthenticatedToken | metadataTextVariable | idTextVar | | UNAUTHORIZED |
+| dummyAuthenticatedToken | metadataTextVariable | idTextVar | | OK |
+
+*!

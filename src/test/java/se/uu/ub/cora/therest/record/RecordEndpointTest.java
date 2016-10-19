@@ -81,7 +81,7 @@ public class RecordEndpointTest {
 	public void testReadRecordListUnauthorized() {
 		Response response = recordEndpoint
 				.readRecordListUsingAuthTokenByType("dummyNonAuthorizedToken", "place");
-		assertEquals(response.getStatusInfo(), Response.Status.UNAUTHORIZED);
+		assertEquals(response.getStatusInfo(), Response.Status.FORBIDDEN);
 	}
 
 	@Test
@@ -94,10 +94,17 @@ public class RecordEndpointTest {
 	}
 
 	@Test
+	public void testReadRecordUnauthenticated() {
+		Response response = recordEndpoint.readRecordUsingAuthTokenByTypeAndId(
+				"dummyNonAuthenticatedToken", "place", "place:0001");
+		assertEquals(response.getStatusInfo(), Response.Status.UNAUTHORIZED);
+	}
+
+	@Test
 	public void testReadRecordUnauthorized() {
 		Response response = recordEndpoint.readRecordUsingAuthTokenByTypeAndId(
 				"dummyNonAuthorizedToken", "place", "place:0001");
-		assertEquals(response.getStatusInfo(), Response.Status.UNAUTHORIZED);
+		assertEquals(response.getStatusInfo(), Response.Status.FORBIDDEN);
 	}
 
 	@Test
@@ -138,7 +145,7 @@ public class RecordEndpointTest {
 	public void testReadIncomingLinksUnauthorized() {
 		Response response = recordEndpoint.readIncomingRecordLinksUsingAuthTokenByTypeAndId(
 				"dummyNonAuthorizedToken", "place", "place:0001");
-		assertEquals(response.getStatusInfo(), Response.Status.UNAUTHORIZED);
+		assertEquals(response.getStatusInfo(), Response.Status.FORBIDDEN);
 	}
 
 	@Test
@@ -171,7 +178,7 @@ public class RecordEndpointTest {
 	public void testDeleteRecordUnauthorized() {
 		Response response = recordEndpoint.deleteRecordUsingAuthTokenByTypeAndId(
 				"dummyNonAuthorizedToken", "place", "place:0001");
-		assertEquals(response.getStatusInfo(), Response.Status.UNAUTHORIZED);
+		assertEquals(response.getStatusInfo(), Response.Status.FORBIDDEN);
 	}
 
 	@Test
@@ -179,14 +186,6 @@ public class RecordEndpointTest {
 		Response response = recordEndpoint.deleteRecordUsingAuthTokenByTypeAndId(
 				"someToken78678567", "place", "place:0001_NOT_FOUND");
 		assertEquals(response.getStatusInfo(), Response.Status.NOT_FOUND);
-	}
-
-	@Test
-	public void testDeleteRecordAbstractRecordType() {
-		String type = "abstract";
-		Response responseDeleted = recordEndpoint.deleteRecord(type,
-				"canBeWhatEverIdTypeIsChecked");
-		assertEquals(responseDeleted.getStatusInfo(), Response.Status.METHOD_NOT_ALLOWED);
 	}
 
 	@Test
@@ -203,7 +202,7 @@ public class RecordEndpointTest {
 		String id = "place:0001";
 		Response responseUpdate = recordEndpoint.updateRecordUsingAuthTokenWithRecord(
 				"dummyNonAuthorizedToken", type, id, jsonToUpdateWith);
-		assertEquals(responseUpdate.getStatusInfo(), Response.Status.UNAUTHORIZED);
+		assertEquals(responseUpdate.getStatusInfo(), Response.Status.FORBIDDEN);
 	}
 
 	@Test
@@ -272,7 +271,7 @@ public class RecordEndpointTest {
 		String type = "place";
 		Response responseUpdate = recordEndpoint.createRecordUsingAuthTokenWithRecord(
 				"dummyNonAuthorizedToken", type, jsonToCreateFrom);
-		assertEquals(responseUpdate.getStatusInfo(), Response.Status.UNAUTHORIZED);
+		assertEquals(responseUpdate.getStatusInfo(), Response.Status.FORBIDDEN);
 	}
 
 	@Test
@@ -404,7 +403,7 @@ public class RecordEndpointTest {
 		Response response = recordEndpoint.uploadFileUsingAuthTokenWithStream(
 				"dummyNonAuthorizedToken", "image", "image:123456789", stream, "someFile.tif");
 
-		assertEquals(response.getStatusInfo(), Response.Status.UNAUTHORIZED);
+		assertEquals(response.getStatusInfo(), Response.Status.FORBIDDEN);
 	}
 
 	@Test
@@ -485,7 +484,7 @@ public class RecordEndpointTest {
 	public void testDownloadUnauthorized() throws IOException {
 		Response response = recordEndpoint.downloadFileUsingAuthTokenWithStream(
 				"dummyNonAuthorizedToken", "image", "image:123456789", "master");
-		assertEquals(response.getStatusInfo(), Response.Status.UNAUTHORIZED);
+		assertEquals(response.getStatusInfo(), Response.Status.FORBIDDEN);
 	}
 
 	@Test
