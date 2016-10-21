@@ -139,7 +139,8 @@ public class RecordEndpointFixture {
 		UriInfo uriInfo = new TestUri();
 		setupSpiderInstanceProvider();
 		RecordEndpoint recordEndpoint = new RecordEndpoint(uriInfo);
-		Response response = recordEndpoint.createRecord(type, json);
+		Response response = recordEndpoint.createRecordUsingAuthTokenWithRecord(authToken, type,
+				json);
 		statusType = response.getStatusInfo();
 		String entity = (String) response.getEntity();
 		createdId = tryToFindCreatedId(entity);
