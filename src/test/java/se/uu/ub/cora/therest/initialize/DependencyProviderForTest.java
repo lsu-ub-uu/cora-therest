@@ -24,10 +24,10 @@ import se.uu.ub.cora.beefeater.AuthorizatorImp;
 import se.uu.ub.cora.bookkeeper.linkcollector.DataRecordLinkCollector;
 import se.uu.ub.cora.bookkeeper.validator.DataValidator;
 import se.uu.ub.cora.spider.authentication.Authenticator;
+import se.uu.ub.cora.spider.authorization.PermissionRuleCalculator;
 import se.uu.ub.cora.spider.dependency.SpiderDependencyProvider;
 import se.uu.ub.cora.spider.extended.BaseExtendedFunctionalityProvider;
 import se.uu.ub.cora.spider.extended.ExtendedFunctionalityProvider;
-import se.uu.ub.cora.spider.record.PermissionKeyCalculator;
 import se.uu.ub.cora.spider.record.storage.RecordIdGenerator;
 import se.uu.ub.cora.spider.record.storage.RecordStorage;
 import se.uu.ub.cora.spider.stream.storage.StreamStorage;
@@ -44,7 +44,7 @@ public class DependencyProviderForTest implements SpiderDependencyProvider {
 			.createRecordStorageInMemoryWithTestData();
 	private Authorizator authorizator = new AuthorizatorImp();
 	private RecordIdGenerator idGenerator = new IdGeneratorSpy();
-	private PermissionKeyCalculator keyCalculator = new RecordPermissionKeyCalculator();
+	private PermissionRuleCalculator keyCalculator = new RecordPermissionKeyCalculator();
 	private DataValidator dataValidator = new DataValidatorAlwaysValidSpy();
 	private DataRecordLinkCollector linkCollector = new DataRecordLinkCollectorSpy();
 	private StreamStorage streamStorage = new StreamStorageSpy();
@@ -65,7 +65,7 @@ public class DependencyProviderForTest implements SpiderDependencyProvider {
 	}
 
 	@Override
-	public PermissionKeyCalculator getPermissionKeyCalculator() {
+	public PermissionRuleCalculator getPermissionKeyCalculator() {
 		return keyCalculator;
 	}
 
