@@ -19,19 +19,20 @@
 
 package se.uu.ub.cora.therest.initialize;
 
-import se.uu.ub.cora.beefeater.Authorizator;
 import se.uu.ub.cora.beefeater.AuthorizatorImp;
 import se.uu.ub.cora.bookkeeper.linkcollector.DataRecordLinkCollector;
 import se.uu.ub.cora.bookkeeper.validator.DataValidator;
 import se.uu.ub.cora.spider.authentication.Authenticator;
+import se.uu.ub.cora.spider.authorization.BasePermissionRuleCalculator;
 import se.uu.ub.cora.spider.authorization.PermissionRuleCalculator;
+import se.uu.ub.cora.spider.authorization.SpiderAuthorizator;
+import se.uu.ub.cora.spider.authorization.SpiderAuthorizatorImp;
 import se.uu.ub.cora.spider.dependency.SpiderDependencyProvider;
 import se.uu.ub.cora.spider.extended.BaseExtendedFunctionalityProvider;
 import se.uu.ub.cora.spider.extended.ExtendedFunctionalityProvider;
 import se.uu.ub.cora.spider.record.storage.RecordIdGenerator;
 import se.uu.ub.cora.spider.record.storage.RecordStorage;
 import se.uu.ub.cora.spider.stream.storage.StreamStorage;
-import se.uu.ub.cora.systemone.record.RecordPermissionKeyCalculator;
 import se.uu.ub.cora.therest.record.DataRecordLinkCollectorSpy;
 import se.uu.ub.cora.therest.record.DataValidatorAlwaysValidSpy;
 import se.uu.ub.cora.therest.record.IdGeneratorSpy;
@@ -42,16 +43,16 @@ public class DependencyProviderForTest implements SpiderDependencyProvider {
 
 	private RecordStorage recordStorage = TestDataRecordInMemoryStorage
 			.createRecordStorageInMemoryWithTestData();
-	private Authorizator authorizator = new AuthorizatorImp();
 	private RecordIdGenerator idGenerator = new IdGeneratorSpy();
-	private PermissionRuleCalculator keyCalculator = new RecordPermissionKeyCalculator();
+	private PermissionRuleCalculator keyCalculator = new BasePermissionRuleCalculator();
 	private DataValidator dataValidator = new DataValidatorAlwaysValidSpy();
 	private DataRecordLinkCollector linkCollector = new DataRecordLinkCollectorSpy();
 	private StreamStorage streamStorage = new StreamStorageSpy();
 
 	@Override
-	public Authorizator getAuthorizator() {
-		return authorizator;
+	public SpiderAuthorizator getSpiderAuthorizator() {
+		return SpiderAuthorizatorImp.usingSpiderDependencyProviderAndAuthorizator(this,
+				new AuthorizatorImp());
 	}
 
 	@Override
@@ -65,7 +66,7 @@ public class DependencyProviderForTest implements SpiderDependencyProvider {
 	}
 
 	@Override
-	public PermissionRuleCalculator getPermissionKeyCalculator() {
+	public PermissionRuleCalculator getPermissionRuleCalculator() {
 		return keyCalculator;
 	}
 
