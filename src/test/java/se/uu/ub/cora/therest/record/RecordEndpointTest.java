@@ -43,6 +43,7 @@ import se.uu.ub.cora.spider.dependency.SpiderInstanceFactory;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceFactoryImp;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
 import se.uu.ub.cora.therest.initialize.DependencyProviderForTest;
+import se.uu.ub.cora.therest.initialize.DependencyProviderForTestNotAuthorized;
 
 public class RecordEndpointTest {
 	private String jsonToCreateFrom = "{\"name\":\"authority\",\"children\":[{\"name\":\"recordInfo\",\"children\":[{\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"system\"},{\"name\":\"linkedRecordId\",\"value\":\"cora\"}],\"name\":\"dataDivider\"}]},{\"name\":\"datePeriod\",\"attributes\":{\"eventType\":\"existence\"},\"children\":[{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"start\"},\"children\":[{\"name\":\"year\",\"value\":\"1976\"},{\"name\":\"month\",\"value\":\"07\"},{\"name\":\"day\",\"value\":\"22\"}]},{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"end\"},\"children\":[{\"name\":\"year\",\"value\":\"2076\"},{\"name\":\"month\",\"value\":\"12\"},{\"name\":\"day\",\"value\":\"31\"}]},{\"name\":\"description\",\"value\":\"76 - 76\"}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"authorized\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"name\",\"value\":\"Olov\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"name\",\"value\":\"McKie\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"number\"},\"children\":[{\"name\":\"name\",\"value\":\"II\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"addition\"},\"children\":[{\"name\":\"name\",\"value\":\"Ett tillägg\"}]},{\"name\":\"datePeriod\",\"attributes\":{\"eventType\":\"valid\"},\"children\":[{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"start\"},\"children\":[{\"name\":\"year\",\"value\":\"2008\"},{\"name\":\"month\",\"value\":\"06\"},{\"name\":\"day\",\"value\":\"28\"}]},{\"name\":\"description\",\"value\":\"Namn som gift\"}]}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"alternative\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"name\",\"value\":\"Olle\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"name\",\"value\":\"Nilsson\"}]}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"alternative\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"name\",\"value\":\"Olle2\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"name\",\"value\":\"Nilsson2\"}]}]},{\"name\":\"other\",\"value\":\"some other stuff\"},{\"name\":\"other\",\"value\":\"second other stuff\"},{\"name\":\"other\",\"value\":\"third other stuff\"},{\"name\":\"othercol\",\"value\":\"yes\"}],\"attributes\":{\"type\":\"place\"}}";
@@ -79,6 +80,7 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testReadRecordListUnauthorized() {
+		setNotAuthorized();
 		Response response = recordEndpoint
 				.readRecordListUsingAuthTokenByType("dummyNonAuthorizedToken", "place");
 		assertEquals(response.getStatusInfo(), Response.Status.FORBIDDEN);
@@ -102,6 +104,7 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testReadRecordUnauthorized() {
+		setNotAuthorized();
 		Response response = recordEndpoint.readRecordUsingAuthTokenByTypeAndId(
 				"dummyNonAuthorizedToken", "place", "place:0001");
 		assertEquals(response.getStatusInfo(), Response.Status.FORBIDDEN);
@@ -143,6 +146,7 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testReadIncomingLinksUnauthorized() {
+		setNotAuthorized();
 		Response response = recordEndpoint.readIncomingRecordLinksUsingAuthTokenByTypeAndId(
 				"dummyNonAuthorizedToken", "place", "place:0001");
 		assertEquals(response.getStatusInfo(), Response.Status.FORBIDDEN);
@@ -176,6 +180,7 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testDeleteRecordUnauthorized() {
+		setNotAuthorized();
 		Response response = recordEndpoint.deleteRecordUsingAuthTokenByTypeAndId(
 				"dummyNonAuthorizedToken", "place", "place:0001");
 		assertEquals(response.getStatusInfo(), Response.Status.FORBIDDEN);
@@ -198,6 +203,7 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testUpdateRecordUnauthorized() {
+		setNotAuthorized();
 		String type = "place";
 		String id = "place:0001";
 		Response responseUpdate = recordEndpoint.updateRecordUsingAuthTokenWithRecord(
@@ -268,10 +274,17 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testCreateRecordUnauthorized() {
+		setNotAuthorized();
 		String type = "place";
 		Response responseUpdate = recordEndpoint.createRecordUsingAuthTokenWithRecord(
 				"dummyNonAuthorizedToken", type, jsonToCreateFrom);
 		assertEquals(responseUpdate.getStatusInfo(), Response.Status.FORBIDDEN);
+	}
+
+	private void setNotAuthorized() {
+		SpiderInstanceFactory factory = SpiderInstanceFactoryImp
+				.usingDependencyProvider(new DependencyProviderForTestNotAuthorized());
+		SpiderInstanceProvider.setSpiderInstanceFactory(factory);
 	}
 
 	@Test
@@ -366,7 +379,8 @@ public class RecordEndpointTest {
 
 		assertEquals(entity, "{\"record\":{\"data\":{\"children\":[{\"children\":["
 				+ "{\"name\":\"id\",\"value\":\"image:123456789\"},"
-				+ "{\"name\":\"type\",\"value\":\"image\"},{\"children\":["
+				+ "{\"name\":\"type\",\"value\":\"image\"},"
+				+ "{\"name\":\"createdBy\",\"value\":\"12345\"}," + "{\"children\":["
 				+ "{\"name\":\"linkedRecordType\",\"value\":\"system\"},"
 				+ "{\"name\":\"linkedRecordId\",\"value\":\"cora\"}],\"actionLinks\":"
 				+ "{\"read\":{\"requestMethod\":\"GET\",\"rel\":\"read\","
@@ -398,6 +412,8 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testUploadUnauthorized() {
+		setNotAuthorized();
+
 		InputStream stream = new ByteArrayInputStream("a string".getBytes(StandardCharsets.UTF_8));
 
 		Response response = recordEndpoint.uploadFileUsingAuthTokenWithStream(
@@ -482,6 +498,7 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testDownloadUnauthorized() throws IOException {
+		setNotAuthorized();
 		Response response = recordEndpoint.downloadFileUsingAuthTokenWithStream(
 				"dummyNonAuthorizedToken", "image", "image:123456789", "master");
 		assertEquals(response.getStatusInfo(), Response.Status.FORBIDDEN);
