@@ -171,6 +171,7 @@ public final class DataCreator {
 		SpiderDataGroup createRecordInfo = SpiderDataGroup.withNameInData("recordInfo");
 		createRecordInfo.addChild(SpiderDataAtomic.withNameInDataAndValue("id", id));
 		createRecordInfo.addChild(SpiderDataAtomic.withNameInDataAndValue("type", recordType));
+		createRecordInfo.addChild(SpiderDataAtomic.withNameInDataAndValue("createdBy", "12345"));
 
 		SpiderDataGroup dataDivider = createDataDividerWithLinkedRecordId(linkedRecordId);
 		createRecordInfo.addChild(dataDivider);
@@ -260,9 +261,10 @@ public final class DataCreator {
 		recordInfo.addChild(SpiderDataAtomic.withNameInDataAndValue("type", "collectionVariable"));
 		recordInfo.addChild(createDataDividerWithLinkedRecordId("test"));
 		spiderDataGroup.addChild(recordInfo);
-		
+
 		SpiderDataGroup refCollection = SpiderDataGroup.withNameInData("refCollection");
-		refCollection.addChild(SpiderDataAtomic.withNameInDataAndValue("linkedRecordType", "metadataItemCollection"));
+		refCollection.addChild(SpiderDataAtomic.withNameInDataAndValue("linkedRecordType",
+				"metadataItemCollection"));
 		refCollection.addChild(
 				SpiderDataAtomic.withNameInDataAndValue("linkedRecordId", "testItemCollection"));
 		spiderDataGroup.addChild(refCollection);

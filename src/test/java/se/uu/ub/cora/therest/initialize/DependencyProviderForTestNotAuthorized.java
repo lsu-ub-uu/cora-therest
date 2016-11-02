@@ -37,7 +37,7 @@ import se.uu.ub.cora.therest.record.IdGeneratorSpy;
 import se.uu.ub.cora.therest.record.StreamStorageSpy;
 import se.uu.ub.cora.therest.testdata.TestDataRecordInMemoryStorage;
 
-public class DependencyProviderForTest implements SpiderDependencyProvider {
+public class DependencyProviderForTestNotAuthorized implements SpiderDependencyProvider {
 
 	private RecordStorage recordStorage = TestDataRecordInMemoryStorage
 			.createRecordStorageInMemoryWithTestData();
@@ -52,7 +52,7 @@ public class DependencyProviderForTest implements SpiderDependencyProvider {
 		// return
 		// SpiderAuthorizatorImp.usingSpiderDependencyProviderAndAuthorizatorAndRulesProvider(
 		// this, new AlwaysAuthorized(), rulesProvider);
-		return new SpiderAuthorizorAlwaysAuthorized();
+		return new SpiderAuthorizorNeverAuthorized();
 	}
 
 	@Override
