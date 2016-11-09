@@ -1,1 +1,80 @@
 !contents -R2 -g -p -f -h
+| import |
+| se.uu.ub.cora.therest.fitnesse |
+
+sldfj
+
+Test with permissionRule
+
+!***> Read permissionRule
+
+!| RecordEndpointFixture |
+| type | id | testReadRecord? | getStatusType? |
+| permissionRule | fitnesse | | OK |
+
+*!
+!***> Create data of recordType permissionRule
+
+!| RecordEndpointFixture |
+| type | id | json | testCreateRecord? | getStatusType? | getCreatedId? |
+| permissionRule | myPermissionRule | {"name":"permissionRule","children":[{"name":"recordInfo","children":[{"name":"id","value":"myPermissionRule"},{"name":"dataDivider","children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"cora"}]}]},{"name":"permissionRulePart","children":[{"name":"permissionRulePartValue","value":"system.read","repeatId":"0"}],"attributes":{"type":"action"}},{"name":"permissionRulePart","children":[{"name":"permissionRulePartValue","value":"system.book","repeatId":"0"}],"attributes":{"type":"recordType"}},{"name":"permissionRulePart","children":[{"name":"permissionRulePartValue","value":"system.deleted","repeatId":"0"}],"attributes":{"type":"delete"}},{"name":"permissionRulePart","children":[{"name":"permissionRulePartValue","value":"system.published","repeatId":"0"}],"attributes":{"type":"publish"}},{"name":"activeStatus","value":"active"}]} | {"record":{"data":{"children":[{"children":[{"name":"id","value":"myPermissionRule"},{"children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"cora"}],"actionLinks":{"read":{"requestMethod":"GET","rel":"read","url":"http://localhost:8080/therest/rest/record/system/cora","accept":"application/uub+record+json"}},"name":"dataDivider"},{"name":"type","value":"permissionRule"},{"name":"createdBy","value":"12345"}],"name":"recordInfo"},{"children":[{"repeatId":"0","name":"permissionRulePartValue","value":"system.read"}],"name":"permissionRulePart","attributes":{"type":"action"}},{"children":[{"repeatId":"0","name":"permissionRulePartValue","value":"system.book"}],"name":"permissionRulePart","attributes":{"type":"recordType"}},{"children":[{"repeatId":"0","name":"permissionRulePartValue","value":"system.deleted"}],"name":"permissionRulePart","attributes":{"type":"delete"}},{"children":[{"repeatId":"0","name":"permissionRulePartValue","value":"system.published"}],"name":"permissionRulePart","attributes":{"type":"publish"}},{"name":"activeStatus","value":"active"}],"name":"permissionRule"},"actionLinks":{"read":{"requestMethod":"GET","rel":"read","url":"http://localhost:8080/therest/rest/record/permissionRule/myPermissionRule","accept":"application/uub+record+json"},"update":{"requestMethod":"POST","rel":"update","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/permissionRule/myPermissionRule","accept":"application/uub+record+json"},"delete":{"requestMethod":"DELETE","rel":"delete","url":"http://localhost:8080/therest/rest/record/permissionRule/myPermissionRule"}}}} | CREATED | $createdId= |
+
+*!
+!***> Update data of recordType permissionRule
+
+!| RecordEndpointFixture |
+| type | id | json | testUpdateRecord? | getStatusType? |
+| permissionRule | myPermissionRule | {"name":"permissionRule","children":[{"name":"recordInfo","children":[{"name":"id","value":"myPermissionRule"},{"name":"type","value":"permissionRule"},{"name":"createdBy","value":"12345"},{"name":"dataDivider","children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"cora"}]}]},{"name":"permissionRulePart","children":[{"name":"permissionRulePartValue","value":"system.read","repeatId":"0"}],"attributes":{"type":"action"}},{"name":"permissionRulePart","children":[{"name":"permissionRulePartValue","value":"system.book","repeatId":"0"}],"attributes":{"type":"recordType"}},{"name":"permissionRulePart","children":[{"name":"permissionRulePartValue","value":"system.deleted","repeatId":"0"}],"attributes":{"type":"delete"}},{"name":"permissionRulePart","children":[{"name":"permissionRulePartValue","value":"system.unpublished","repeatId":"0"}],"attributes":{"type":"publish"}},{"name":"activeStatus","value":"active"}]} | {"record":{"data":{"children":[{"children":[{"name":"id","value":"myPermissionRule"},{"name":"type","value":"permissionRule"},{"name":"createdBy","value":"12345"},{"children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"cora"}],"actionLinks":{"read":{"requestMethod":"GET","rel":"read","url":"http://localhost:8080/therest/rest/record/system/cora","accept":"application/uub+record+json"}},"name":"dataDivider"}],"name":"recordInfo"},{"children":[{"repeatId":"0","name":"permissionRulePartValue","value":"system.read"}],"name":"permissionRulePart","attributes":{"type":"action"}},{"children":[{"repeatId":"0","name":"permissionRulePartValue","value":"system.book"}],"name":"permissionRulePart","attributes":{"type":"recordType"}},{"children":[{"repeatId":"0","name":"permissionRulePartValue","value":"system.deleted"}],"name":"permissionRulePart","attributes":{"type":"delete"}},{"children":[{"repeatId":"0","name":"permissionRulePartValue","value":"system.unpublished"}],"name":"permissionRulePart","attributes":{"type":"publish"}},{"name":"activeStatus","value":"active"}],"name":"permissionRule"},"actionLinks":{"read":{"requestMethod":"GET","rel":"read","url":"http://localhost:8080/therest/rest/record/permissionRule/myPermissionRule","accept":"application/uub+record+json"},"update":{"requestMethod":"POST","rel":"update","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/permissionRule/myPermissionRule","accept":"application/uub+record+json"},"delete":{"requestMethod":"DELETE","rel":"delete","url":"http://localhost:8080/therest/rest/record/permissionRule/myPermissionRule"}}}} | OK |
+
+*!
+!***> List data(permissionRule)
+
+!| RecordEndpointFixture |
+| type | testReadRecordList? | getStatusType? |
+| permissionRule | | OK |
+
+*!
+Test with new permissionRole
+
+!***> Create data of recordType permissionRole
+
+!| RecordEndpointFixture |
+| type | id | json | testCreateRecord? | getStatusType? | getCreatedId? |
+| permissionRole | myPermissionRole | {"name":"permissionRole","children":[{"name":"recordInfo","children":[{"name":"id","value":"myPermissionRole"},{"name":"dataDivider","children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"cora"}]}]},{"name":"permissionRuleLink","children":[{"name":"linkedRecordType","value":"permissionRule"},{"name":"linkedRecordId","value":"myPermissionRule"}],"repeatId":"0"},{"name":"activeStatus","value":"active"}]} | | CREATED | $createdId= |
+
+*!
+!***> Read permissionRole
+
+!| RecordEndpointFixture |
+| type | id | testReadRecord? | getStatusType? |
+| permissionRole | myPermissionRole | {"record":{"data":{"children":[{"children":[{"name":"id","value":"myPermissionRole"},{"children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"cora"}],"actionLinks":{"read":{"requestMethod":"GET","rel":"read","url":"http://localhost:8080/therest/rest/record/system/cora","accept":"application/uub+record+json"}},"name":"dataDivider"},{"name":"type","value":"permissionRole"},{"name":"createdBy","value":"12345"}],"name":"recordInfo"},{"repeatId":"0","children":[{"name":"linkedRecordType","value":"permissionRule"},{"name":"linkedRecordId","value":"myPermissionRule"}],"actionLinks":{"read":{"requestMethod":"GET","rel":"read","url":"http://localhost:8080/therest/rest/record/permissionRule/myPermissionRule","accept":"application/uub+record+json"}},"name":"permissionRuleLink"},{"name":"activeStatus","value":"active"}],"name":"permissionRole"},"actionLinks":{"read":{"requestMethod":"GET","rel":"read","url":"http://localhost:8080/therest/rest/record/permissionRole/myPermissionRole","accept":"application/uub+record+json"},"update":{"requestMethod":"POST","rel":"update","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/permissionRole/myPermissionRole","accept":"application/uub+record+json"},"delete":{"requestMethod":"DELETE","rel":"delete","url":"http://localhost:8080/therest/rest/record/permissionRole/myPermissionRole"}}}} | OK |
+
+*!
+!***> Update data of recordType permissionRole
+
+!| RecordEndpointFixture |
+| type | id | json | testUpdateRecord? | getStatusType? |
+| permissionRole | myPermissionRole | {"name":"permissionRole","children":[{"name":"recordInfo","children":[{"name":"id","value":"myPermissionRole"},{"name":"type","value":"permissionRole"},{"name":"createdBy","value":"12345"},{"name":"dataDivider","children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"cora"}]}]},{"name":"permissionRuleLink","children":[{"name":"linkedRecordType","value":"permissionRule"},{"name":"linkedRecordId","value":"myPermissionRule"}],"repeatId":"0"},{"name":"activeStatus","value":"inactive"}]} | {"record":{"data":{"children":[{"children":[{"name":"id","value":"myPermissionRole"},{"name":"type","value":"permissionRole"},{"name":"createdBy","value":"12345"},{"children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"cora"}],"actionLinks":{"read":{"requestMethod":"GET","rel":"read","url":"http://localhost:8080/therest/rest/record/system/cora","accept":"application/uub+record+json"}},"name":"dataDivider"}],"name":"recordInfo"},{"repeatId":"0","children":[{"name":"linkedRecordType","value":"permissionRule"},{"name":"linkedRecordId","value":"myPermissionRule"}],"actionLinks":{"read":{"requestMethod":"GET","rel":"read","url":"http://localhost:8080/therest/rest/record/permissionRule/myPermissionRule","accept":"application/uub+record+json"}},"name":"permissionRuleLink"},{"name":"activeStatus","value":"inactive"}],"name":"permissionRole"},"actionLinks":{"read":{"requestMethod":"GET","rel":"read","url":"http://localhost:8080/therest/rest/record/permissionRole/myPermissionRole","accept":"application/uub+record+json"},"update":{"requestMethod":"POST","rel":"update","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/permissionRole/myPermissionRole","accept":"application/uub+record+json"},"delete":{"requestMethod":"DELETE","rel":"delete","url":"http://localhost:8080/therest/rest/record/permissionRole/myPermissionRole"}}}} | OK |
+
+*!
+sdf
+
+!*** Read a metadataVariable (idTextVar)
+
+!| RecordEndpointFixture |
+| authToken | type | id | testReadRecord? | getStatusType? |
+| dummyNonAuthenticatedToken | metadataTextVariable | idTextVar | | UNAUTHORIZED |
+| dummyAuthenticatedToken | metadataTextVariable | idTextVar | | OK |
+
+*!
+Test with new texts to show different createdBy userId
+
+!***> Create data of recordType text (textSystemOne)
+
+!| RecordEndpointFixture |
+| authToken | type | json | testCreateRecord? | getStatusType? |
+| dummyAuthenticatedToken | textSystemOne | {"name":"text","children":[{"name":"recordInfo","children":[{"name":"id","value":"myText"},{"children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"cora"}],"name":"dataDivider"}]},{"name":"textPart","attributes":{"type":"default","lang":"sv"} ,"children":[{"name":"text","value":"Min svenska text"}]}]} | =~/"name":"createdBy",\s*"value":"12345"/ | CREATED |
+| dummyUserAuthenticatedToken | textSystemOne | {"name":"text","children":[{"name":"recordInfo","children":[{"name":"id","value":"my2Text"},{"children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"cora"}],"name":"dataDivider"}]},{"name":"textPart","attributes":{"type":"default","lang":"sv"},"children":[{"name":"text","value":"Min andra text på svenska"}]},{"name":"textPart","attributes":{"type":"alternative","lang":"en"},"children":[{"name":"text","value":"My second text in english"}]}]} | | FORBIDDEN |
+| dummySystemAdminAuthenticatedToken | textSystemOne | {"name":"text","children":[{"name":"recordInfo","children":[{"name":"id","value":"my3Text"},{"children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"cora"}],"name":"dataDivider"}]},{"name":"textPart","attributes":{"type":"default","lang":"sv"},"children":[{"name":"text","value":"Min andra text på svenska"}]},{"name":"textPart","attributes":{"type":"alternative","lang":"en"},"children":[{"name":"text","value":"My second text in english"}]}]} | =~/"name":"createdBy",\s*"value":"99999"/ | CREATED |
+
+*!
