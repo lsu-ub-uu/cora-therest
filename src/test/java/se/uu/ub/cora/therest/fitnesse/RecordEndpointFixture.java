@@ -163,7 +163,8 @@ public class RecordEndpointFixture {
 		UriInfo uriInfo = new TestUri();
 		setupSpiderInstanceProvider();
 		RecordEndpoint recordEndpoint = new RecordEndpoint(uriInfo);
-		Response response = recordEndpoint.updateRecord(type, id, json);
+		Response response = recordEndpoint.updateRecordUsingAuthTokenWithRecord(authToken, type, id,
+				json);
 		String entity = (String) response.getEntity();
 		statusType = response.getStatusInfo();
 		return entity;
@@ -173,7 +174,8 @@ public class RecordEndpointFixture {
 		UriInfo uriInfo = new TestUri();
 		setupSpiderInstanceProvider();
 		RecordEndpoint recordEndpoint = new RecordEndpoint(uriInfo);
-		Response response = recordEndpoint.deleteRecord(type, id);
+		Response response = recordEndpoint.deleteRecordUsingAuthTokenByTypeAndId(authToken, type,
+				id);
 		statusType = response.getStatusInfo();
 		if (null == response.getEntity()) {
 			return "";
