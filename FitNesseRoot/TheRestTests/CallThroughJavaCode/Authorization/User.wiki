@@ -36,13 +36,11 @@ Create a new text to show that it '''is''' allowed:
 !2 User status
 Update user, set status to inactive
 
-'''this is currently not possible as user does not have a status, fix!'''
-
 !***> Update user, fitnesse, setting status to inactive
 
 !| RecordEndpointFixture |
 | authToken | type | id | json | testUpdateRecord? | getStatusType? |
-| fitnesseToken | systemOneUser | fitnesse | {"name":"systemOneUserGroup","children":[{"name":"recordInfo","children":[{"name":"id","value":"fitnesse"},{"name":"type","value":"systemOneUser"},{"name":"createdBy","value":"12345"},{"name":"dataDivider","children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"systemOne"}]}]},{"name":"userId","value":"fitnesse123"},{"name":"userFirstname","value":"Fit"},{"name":"userLastname","value":"Nesse"}]} | | OK |
+| fitnesseToken | systemOneUser | fitnesse | {"name":"user","children":[{"name":"recordInfo","children":[{"name":"id","value":"fitnesse"},{"name":"type","value":"systemOneUser"},{"name":"createdBy","value":"12345"},{"name":"dataDivider","children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"systemOne"}]}]},{"name":"userId","value":"fitnesse123@system.cora.uu.se"},{"name":"userFirstname","value":"Fit"},{"name":"userLastname","value":"Nesse"},{"name":"userRole","children":[{"name":"userRole","children":[{"name":"linkedRecordType","value":"permissionRole"},{"name":"linkedRecordId","value":"fitnesse"}]},{"name":"userRoleRulePart","children":[{"name":"permissionRulePart","children":[{"name":"permissionRulePartValue","value":"system.","repeatId":"0"}],"attributes":{"type":"userId"}},{"name":"permissionRulePart","children":[{"name":"permissionRulePartValue","value":"system.","repeatId":"0"}],"attributes":{"type":"organisation"}}]}],"repeatId":"0"},{"name":"userRole","children":[{"name":"userRole","children":[{"name":"linkedRecordType","value":"permissionRole"},{"name":"linkedRecordId","value":"metadataAdmin"}]},{"name":"userRoleRulePart","children":[{"name":"permissionRulePart","children":[{"name":"permissionRulePartValue","value":"system.","repeatId":"0"}],"attributes":{"type":"userId"}},{"name":"permissionRulePart","children":[{"name":"permissionRulePartValue","value":"system.","repeatId":"0"}],"attributes":{"type":"organisation"}}]}],"repeatId":"1"},{"name":"activeStatus","value":"inactive"}]} | | OK |
 
 *!
 Create a new text to show that it is '''NOT''' allowed:
@@ -59,11 +57,11 @@ Update user, to only have one role (metadataAdmin)
 
 (here we must use a different user (role) as we currently have no permissions at all, using guest)
 
-!***> Update user, fitnesse, setting status to inactive
+!***> Update user, fitnesse, to only have one related role (metadataAdmin)
 
 !| RecordEndpointFixture |
 | authToken | type | id | json | testUpdateRecord? | getStatusType? |
-| guestToken | systemOneUser | fitnesse | {"name":"systemOneUserGroup","children":[{"name":"recordInfo","children":[{"name":"id","value":"fitnesse"},{"name":"type","value":"systemOneUser"},{"name":"createdBy","value":"12345"},{"name":"dataDivider","children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"systemOne"}]}]},{"name":"userId","value":"fitnesse123"},{"name":"userFirstname","value":"Fit"},{"name":"userLastname","value":"Nesse"}]} | | OK |
+| guestToken | systemOneUser | fitnesse | {"name":"user","children":[{"name":"recordInfo","children":[{"name":"id","value":"fitnesse"},{"name":"type","value":"systemOneUser"},{"name":"createdBy","value":"12345"},{"name":"dataDivider","children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"systemOne"}]}]},{"name":"userId","value":"fitnesse123@system.cora.uu.se"},{"name":"userFirstname","value":"Fit"},{"name":"userLastname","value":"Nesse"},{"name":"userRole","children":[{"name":"userRole","children":[{"name":"linkedRecordType","value":"permissionRole"},{"name":"linkedRecordId","value":"metadataAdmin"}]},{"name":"userRoleRulePart","children":[{"name":"permissionRulePart","children":[{"name":"permissionRulePartValue","value":"system.","repeatId":"0"}],"attributes":{"type":"userId"}},{"name":"permissionRulePart","children":[{"name":"permissionRulePartValue","value":"system.","repeatId":"0"}],"attributes":{"type":"organisation"}}]}],"repeatId":"1"},{"name":"activeStatus","value":"active"}]} | | OK |
 
 *!
 Create a new text to show that it is '''NOT''' allowed:
@@ -78,11 +76,11 @@ Create a new text to show that it is '''NOT''' allowed:
 !2 User change rule part connected to role
 Update users, connected rule fitnesse to have a specific userId (system.aUserIdThatHasNotCreatedAnything)
 
-!***> Update user, fitnesse, setting status to inactive
+!***> Update user, fitnesse, setting userId for connected role fitnesse (system.aUserIdThatHasNotCreatedAnything)
 
 !| RecordEndpointFixture |
 | authToken | type | id | json | testUpdateRecord? | getStatusType? |
-| fitnesseToken | systemOneUser | fitnesse | {"name":"systemOneUserGroup","children":[{"name":"recordInfo","children":[{"name":"id","value":"fitnesse"},{"name":"type","value":"systemOneUser"},{"name":"createdBy","value":"12345"},{"name":"dataDivider","children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"systemOne"}]}]},{"name":"userId","value":"fitnesse123"},{"name":"userFirstname","value":"Fit"},{"name":"userLastname","value":"Nesse"}]} | | OK |
+| fitnesseToken | systemOneUser | fitnesse | {"name":"user","children":[{"name":"recordInfo","children":[{"name":"id","value":"fitnesse"},{"name":"type","value":"systemOneUser"},{"name":"createdBy","value":"12345"},{"name":"dataDivider","children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"systemOne"}]}]},{"name":"userId","value":"fitnesse123@system.cora.uu.se"},{"name":"userFirstname","value":"Fit"},{"name":"userLastname","value":"Nesse"},{"name":"userRole","children":[{"name":"userRole","children":[{"name":"linkedRecordType","value":"permissionRole"},{"name":"linkedRecordId","value":"fitnesse"}]},{"name":"userRoleRulePart","children":[{"name":"permissionRulePart","children":[{"name":"permissionRulePartValue","value":"system.aUserIdThatHasNotCreatedAnything","repeatId":"0"}],"attributes":{"type":"userId"}},{"name":"permissionRulePart","children":[{"name":"permissionRulePartValue","value":"system.","repeatId":"0"}],"attributes":{"type":"organisation"}}]}],"repeatId":"0"},{"name":"userRole","children":[{"name":"userRole","children":[{"name":"linkedRecordType","value":"permissionRole"},{"name":"linkedRecordId","value":"metadataAdmin"}]},{"name":"userRoleRulePart","children":[{"name":"permissionRulePart","children":[{"name":"permissionRulePartValue","value":"system.","repeatId":"0"}],"attributes":{"type":"userId"}},{"name":"permissionRulePart","children":[{"name":"permissionRulePartValue","value":"system.","repeatId":"0"}],"attributes":{"type":"organisation"}}]}],"repeatId":"1"},{"name":"activeStatus","value":"active"}]} | | OK |
 
 *!
 Try to update created text to see that it is '''NOT''' allowed
@@ -101,6 +99,6 @@ Update user, fitnesse to be as it was before testing
 
 !| RecordEndpointFixture |
 | authToken | type | id | json | testUpdateRecord? | getStatusType? |
-| fitnesseToken | systemOneUser | fitnesse | {"name":"systemOneUserGroup","children":[{"name":"recordInfo","children":[{"name":"id","value":"fitnesse"},{"name":"type","value":"systemOneUser"},{"name":"createdBy","value":"12345"},{"name":"dataDivider","children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"systemOne"}]}]},{"name":"userId","value":"fitnesse123"},{"name":"userFirstname","value":"Fit"},{"name":"userLastname","value":"Nesse"}]} | | OK |
+| fitnesseToken | systemOneUser | fitnesse | {"name":"user","children":[{"name":"recordInfo","children":[{"name":"id","value":"fitnesse"},{"name":"type","value":"systemOneUser"},{"name":"createdBy","value":"12345"},{"name":"dataDivider","children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"systemOne"}]}]},{"name":"userId","value":"fitnesse123@system.cora.uu.se"},{"name":"userFirstname","value":"Fit"},{"name":"userLastname","value":"Nesse"},{"name":"userRole","children":[{"name":"userRole","children":[{"name":"linkedRecordType","value":"permissionRole"},{"name":"linkedRecordId","value":"fitnesse"}]},{"name":"userRoleRulePart","children":[{"name":"permissionRulePart","children":[{"name":"permissionRulePartValue","value":"system.","repeatId":"0"}],"attributes":{"type":"userId"}},{"name":"permissionRulePart","children":[{"name":"permissionRulePartValue","value":"system.","repeatId":"0"}],"attributes":{"type":"organisation"}}]}],"repeatId":"0"},{"name":"userRole","children":[{"name":"userRole","children":[{"name":"linkedRecordType","value":"permissionRole"},{"name":"linkedRecordId","value":"metadataAdmin"}]},{"name":"userRoleRulePart","children":[{"name":"permissionRulePart","children":[{"name":"permissionRulePartValue","value":"system.","repeatId":"0"}],"attributes":{"type":"userId"}},{"name":"permissionRulePart","children":[{"name":"permissionRulePartValue","value":"system.","repeatId":"0"}],"attributes":{"type":"organisation"}}]}],"repeatId":"1"},{"name":"activeStatus","value":"active"}]} | | OK |
 
 *!
