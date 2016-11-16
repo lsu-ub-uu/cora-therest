@@ -7,16 +7,16 @@ The authority system of Cora is built using rules, roles, users.
 
 A role descibes what is allowed based on one or more rules and a status. More information about rules can be found  [[here.][Rule]]
 
-The system has one role used by fitnesse, it is called fitnesse, reading it results in the following:
+The system has two roles used by the fitnesse user (121212), they are called fitnesseTextAdmin, nothing, reading fitnesseTextAdmin results in the following:
 
-!***> Read permissionRule, fitnesse
+!***> Read permissionRole, fitnesse
 
 !| RecordEndpointFixture |
 | authToken | type | id | testReadRecord? | getStatusType? |
-| fitnesseToken | permissionRole | fitnesse | {"record":{"data":{"children":[{"children":[{"name":"id","value":"fitnesse"},{"name":"type","value":"permissionRole"},{"name":"createdBy","value":"12345"},{"children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"cora"}],"actionLinks":{"read":{"requestMethod":"GET","rel":"read","url":"http://localhost:8080/therest/rest/record/system/cora","accept":"application/uub+record+json"}},"name":"dataDivider"}],"name":"recordInfo"},{"repeatId":"1","children":[{"name":"linkedRecordType","value":"permissionRule"},{"name":"linkedRecordId","value":"metadataAdmin"}],"actionLinks":{"read":{"requestMethod":"GET","rel":"read","url":"http://localhost:8080/therest/rest/record/permissionRule/metadataAdmin","accept":"application/uub+record+json"}},"name":"permissionRuleLink"},{"repeatId":"0","children":[{"name":"linkedRecordType","value":"permissionRule"},{"name":"linkedRecordId","value":"fitnesse"}],"actionLinks":{"read":{"requestMethod":"GET","rel":"read","url":"http://localhost:8080/therest/rest/record/permissionRule/fitnesse","accept":"application/uub+record+json"}},"name":"permissionRuleLink"},{"name":"activeStatus","value":"active"}],"name":"permissionRole"},"actionLinks":{"read":{"requestMethod":"GET","rel":"read","url":"http://localhost:8080/therest/rest/record/permissionRole/fitnesse","accept":"application/uub+record+json"},"read_incoming_links":{"requestMethod":"GET","rel":"read_incoming_links","url":"http://localhost:8080/therest/rest/record/permissionRole/fitnesse/incomingLinks","accept":"application/uub+recordList+json"},"update":{"requestMethod":"POST","rel":"update","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/permissionRole/fitnesse","accept":"application/uub+record+json"}}}} | OK |
+| fitnesseAdminToken | permissionRole | fitnesseTextAdmin | {"record":{"data":{"children":[{"children":[{"name":"id","value":"fitnesseTextAdmin"},{"name":"type","value":"permissionRole"},{"name":"createdBy","value":"12345"},{"children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"cora"}],"actionLinks":{"read":{"requestMethod":"GET","rel":"read","url":"http://localhost:8080/therest/rest/record/system/cora","accept":"application/uub+record+json"}},"name":"dataDivider"}],"name":"recordInfo"},{"repeatId":"0","children":[{"name":"linkedRecordType","value":"permissionRule"},{"name":"linkedRecordId","value":"textAdmin"}],"actionLinks":{"read":{"requestMethod":"GET","rel":"read","url":"http://localhost:8080/therest/rest/record/permissionRule/textAdmin","accept":"application/uub+record+json"}},"name":"permissionRuleLink"},{"name":"activeStatus","value":"active"},{"repeatId":"1","children":[{"name":"linkedRecordType","value":"permissionRule"},{"name":"linkedRecordId","value":"nothing"}],"actionLinks":{"read":{"requestMethod":"GET","rel":"read","url":"http://localhost:8080/therest/rest/record/permissionRule/nothing","accept":"application/uub+record+json"}},"name":"permissionRuleLink"}],"name":"permissionRole"},"actionLinks":{"read":{"requestMethod":"GET","rel":"read","url":"http://localhost:8080/therest/rest/record/permissionRole/fitnesseTextAdmin","accept":"application/uub+record+json"},"read_incoming_links":{"requestMethod":"GET","rel":"read_incoming_links","url":"http://localhost:8080/therest/rest/record/permissionRole/fitnesseTextAdmin/incomingLinks","accept":"application/uub+recordList+json"},"update":{"requestMethod":"POST","rel":"update","contentType":"application/uub+record+json","url":"http://localhost:8080/therest/rest/record/permissionRole/fitnesseTextAdmin","accept":"application/uub+record+json"}}}} | OK |
 
 *!
-The role fitnesse has two rules metadataAdmin and fitnesse.
+The role fitnesseTextAdmin has one rules textAdmin.
 
 To show that changes to roles changes what is allowed, will we use texts as an example:
 
@@ -26,17 +26,17 @@ Create a new text to show that it '''is''' allowed:
 
 !| RecordEndpointFixture |
 | authToken | type | json | testCreateRecord? | getStatusType? |
-| fitnesseToken | textSystemOne | {"name":"text","children":[{"name":"recordInfo","children":[{"name":"id","value":"myRoleText"},{"children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"testSystem"}],"name":"dataDivider"}]},{"name":"textPart","attributes":{"type":"default","lang":"sv"},"children":[{"name":"text","value":"Min svenska text"}]}]} | | CREATED |
+| fitnesseUserToken | textSystemOne | {"name":"text","children":[{"name":"recordInfo","children":[{"name":"id","value":"myRoleText"},{"children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"testSystem"}],"name":"dataDivider"}]},{"name":"textPart","attributes":{"type":"default","lang":"sv"},"children":[{"name":"text","value":"Min svenska text"}]}]} | | CREATED |
 
 *!
 !2 Role status
 Update role, set status to inactive
 
-!***> Update permissionRole, fitnesse, setting status to inactive
+!***> Update permissionRole, fitnesseTextAdmin, setting status to inactive
 
 !| RecordEndpointFixture |
 | authToken | type | id | json | testUpdateRecord? | getStatusType? |
-| fitnesseToken | permissionRole | fitnesse | {"name":"permissionRole","children":[{"name":"recordInfo","children":[{"name":"id","value":"fitnesse"},{"name":"type","value":"permissionRole"},{"name":"createdBy","value":"12345"},{"name":"dataDivider","children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"cora"}]}]},{"name":"permissionRuleLink","children":[{"name":"linkedRecordType","value":"permissionRule"},{"name":"linkedRecordId","value":"metadataAdmin"}],"repeatId":"1"},{"name":"permissionRuleLink","children":[{"name":"linkedRecordType","value":"permissionRule"},{"name":"linkedRecordId","value":"fitnesse"}],"repeatId":"0"},{"name":"activeStatus","value":"inactive"}]} | | OK |
+| fitnesseAdminToken | permissionRole | fitnesseTextAdmin | {"name":"permissionRole","children":[{"name":"recordInfo","children":[{"name":"id","value":"fitnesseTextAdmin"},{"name":"type","value":"permissionRole"},{"name":"createdBy","value":"12345"},{"name":"dataDivider","children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"cora"}]}]},{"name":"permissionRuleLink","children":[{"name":"linkedRecordType","value":"permissionRule"},{"name":"linkedRecordId","value":"textAdmin"}],"repeatId":"0"},{"name":"activeStatus","value":"inactive"}]} | | OK |
 
 *!
 Create a new text to show that it is '''NOT''' allowed:
@@ -45,19 +45,17 @@ Create a new text to show that it is '''NOT''' allowed:
 
 !| RecordEndpointFixture |
 | authToken | type | json | testCreateRecord? | getStatusType? |
-| fitnesseToken | textSystemOne | {"name":"text","children":[{"name":"recordInfo","children":[{"name":"id","value":"myRoleText"},{"children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"testSystem"}],"name":"dataDivider"}]},{"name":"textPart","attributes":{"type":"default","lang":"sv"},"children":[{"name":"text","value":"Min  svenska text"}]}]} | | FORBIDDEN |
+| fitnesseUserToken | textSystemOne | {"name":"text","children":[{"name":"recordInfo","children":[{"name":"id","value":"myRoleText"},{"children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"testSystem"}],"name":"dataDivider"}]},{"name":"textPart","attributes":{"type":"default","lang":"sv"},"children":[{"name":"text","value":"Min  svenska text"}]}]} | | FORBIDDEN |
 
 *!
 !2 Role removed rule
-Update role, to only have one rule (metadataAdmin)
+Update role, to only have one rule (systemOneUser), a role must have at least one rule, explains why the rule nothing is there
 
-(here we must use a different user (role) as we currently have no permissions at all, using guest)
-
-!***> Update permissionRole, removing rule fitnesse
+!***> Update permissionRole, removing rule textAdmin
 
 !| RecordEndpointFixture |
 | authToken | type | id | json | testUpdateRecord? | getStatusType? |
-| guestToken | permissionRole | fitnesse | {"name":"permissionRole","children":[{"name":"recordInfo","children":[{"name":"id","value":"fitnesse"},{"name":"type","value":"permissionRole"},{"name":"createdBy","value":"12345"},{"name":"dataDivider","children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"cora"}]}]},{"name":"permissionRuleLink","children":[{"name":"linkedRecordType","value":"permissionRule"},{"name":"linkedRecordId","value":"metadataAdmin"}],"repeatId":"1"},{"name":"activeStatus","value":"active"}]} | | OK |
+| guestToken | permissionRole | fitnesseTextAdmin | {"name":"permissionRole","children":[{"name":"recordInfo","children":[{"name":"id","value":"fitnesseTextAdmin"},{"name":"type","value":"permissionRole"},{"name":"createdBy","value":"12345"},{"name":"dataDivider","children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"cora"}]}]},{"name":"permissionRuleLink","children":[{"name":"linkedRecordType","value":"permissionRule"},{"name":"linkedRecordId","value":"nothing"}],"repeatId":"0"},{"name":"activeStatus","value":"active"}]} | | OK |
 
 *!
 Create a new text to show that it is '''NOT''' allowed:
@@ -66,17 +64,17 @@ Create a new text to show that it is '''NOT''' allowed:
 
 !| RecordEndpointFixture |
 | authToken | type | json | testCreateRecord? | getStatusType? |
-| fitnesseToken | textSystemOne | {"name":"text","children":[{"name":"recordInfo","children":[{"name":"id","value":"myRoleText"},{"children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"testSystem"}],"name":"dataDivider"}]},{"name":"textPart","attributes":{"type":"default","lang":"sv"},"children":[{"name":"text","value":"Min  svenska text"}]}]} | | FORBIDDEN |
+| fitnesseUserToken | textSystemOne | {"name":"text","children":[{"name":"recordInfo","children":[{"name":"id","value":"myRoleText"},{"children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"testSystem"}],"name":"dataDivider"}]},{"name":"textPart","attributes":{"type":"default","lang":"sv"},"children":[{"name":"text","value":"Min  svenska text"}]}]} | | FORBIDDEN |
 
 *!
 !2 Role added rule
-Update role, to have two rules (metadataAdmin, fitnesse)
+Update role, to have one rule (textAdmin, nothing)
 
-!***> Update permissionRole, removing rule fitnesse
+!***> Update permissionRole, adding rule fitnesse
 
 !| RecordEndpointFixture |
 | authToken | type | id | json | testUpdateRecord? | getStatusType? |
-| fitnesseToken | permissionRole | fitnesse | {"name":"permissionRole","children":[{"name":"recordInfo","children":[{"name":"id","value":"fitnesse"},{"name":"type","value":"permissionRole"},{"name":"createdBy","value":"12345"},{"name":"dataDivider","children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"cora"}]}]},{"name":"permissionRuleLink","children":[{"name":"linkedRecordType","value":"permissionRule"},{"name":"linkedRecordId","value":"metadataAdmin"}],"repeatId":"1"},{"name":"activeStatus","value":"active"},{"name":"permissionRuleLink","children":[{"name":"linkedRecordType","value":"permissionRule"},{"name":"linkedRecordId","value":"fitnesse"}],"repeatId":"2"}]} | | OK |
+| fitnesseAdminToken | permissionRole | fitnesseTextAdmin | {"name":"permissionRole","children":[{"name":"recordInfo","children":[{"name":"id","value":"fitnesseTextAdmin"},{"name":"type","value":"permissionRole"},{"name":"createdBy","value":"12345"},{"name":"dataDivider","children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"cora"}]}]},{"name":"permissionRuleLink","children":[{"name":"linkedRecordType","value":"permissionRule"},{"name":"linkedRecordId","value":"textAdmin"}],"repeatId":"0"},{"name":"permissionRuleLink","children":[{"name":"linkedRecordType","value":"permissionRule"},{"name":"linkedRecordId","value":"nothing"}],"repeatId":"1"},{"name":"activeStatus","value":"active"}]} | | OK |
 
 *!
 Create a new text to show that it '''is''' allowed:
@@ -85,6 +83,6 @@ Create a new text to show that it '''is''' allowed:
 
 !| RecordEndpointFixture |
 | authToken | type | json | testCreateRecord? | getStatusType? |
-| fitnesseToken | textSystemOne | {"name":"text","children":[{"name":"recordInfo","children":[{"name":"id","value":"myRole2Text"},{"children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"testSystem"}],"name":"dataDivider"}]},{"name":"textPart","attributes":{"type":"default","lang":"sv"},"children":[{"name":"text","value":"Min svenska text"}]}]} | | CREATED |
+| fitnesseUserToken | textSystemOne | {"name":"text","children":[{"name":"recordInfo","children":[{"name":"id","value":"myRole2Text"},{"children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"testSystem"}],"name":"dataDivider"}]},{"name":"textPart","attributes":{"type":"default","lang":"sv"},"children":[{"name":"text","value":"Min svenska text"}]}]} | | CREATED |
 
 *!
