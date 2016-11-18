@@ -1,5 +1,4 @@
 ---
-Prune
 Test
 ---
 !contents -R2 -g -p -f -h
@@ -47,7 +46,8 @@ Create a new text to show that it is '''NOT''' allowed:
 
 !***> Create data of recordType text (textSystemOne)
 
-!| RecordEndpointFixture |
+!| comment |
+| RecordEndpointFixture |
 | authToken | type | json | testCreateRecord? | getStatusType? |
 | fitnesseUserToken | textSystemOne | {"name":"text","children":[{"name":"recordInfo","children":[{"name":"id","value":"myUserText"},{"children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"testSystem"}],"name":"dataDivider"}]},{"name":"textPart","attributes":{"type":"default","lang":"sv"},"children":[{"name":"text","value":"Min  svenska text"}]}]} | | FORBIDDEN |
 
@@ -85,7 +85,8 @@ Try to update created text to see that it is '''NOT''' allowed
 
 !***> Update  data of recordType text (textSystemOne)
 
-!| RecordEndpointFixture |
+!| comment |
+| RecordEndpointFixture |
 | authToken | type | id | json | testUpdateRecord? | getStatusType? |
 | fitnesseUserToken | textSystemOne | myUserText | {"children":[{"children":[{"name":"id","value":"myUserText"},{"children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"testSystem"}],"name":"dataDivider"},{"name":"type","value":"textSystemOne"},{"name":"createdBy","value":"12345"}],"name":"recordInfo"},{"children":[{"name":"text","value":"Min  svenska text"}],"name":"textPart","attributes":{"type":"default","lang":"sv"}}],"name":"text"} | | FORBIDDEN |
 
