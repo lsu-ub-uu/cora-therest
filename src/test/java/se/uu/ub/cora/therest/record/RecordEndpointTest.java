@@ -32,6 +32,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
@@ -46,12 +47,16 @@ import se.uu.ub.cora.therest.initialize.DependencyProviderForTest;
 import se.uu.ub.cora.therest.initialize.DependencyProviderForTestNotAuthorized;
 
 public class RecordEndpointTest {
+	private static final String PLACE_0001 = "place:0001";
+	private static final String PLACE = "place";
 	private String jsonToCreateFrom = "{\"name\":\"authority\",\"children\":[{\"name\":\"recordInfo\",\"children\":[{\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"system\"},{\"name\":\"linkedRecordId\",\"value\":\"cora\"}],\"name\":\"dataDivider\"}]},{\"name\":\"datePeriod\",\"attributes\":{\"eventType\":\"existence\"},\"children\":[{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"start\"},\"children\":[{\"name\":\"year\",\"value\":\"1976\"},{\"name\":\"month\",\"value\":\"07\"},{\"name\":\"day\",\"value\":\"22\"}]},{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"end\"},\"children\":[{\"name\":\"year\",\"value\":\"2076\"},{\"name\":\"month\",\"value\":\"12\"},{\"name\":\"day\",\"value\":\"31\"}]},{\"name\":\"description\",\"value\":\"76 - 76\"}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"authorized\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"name\",\"value\":\"Olov\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"name\",\"value\":\"McKie\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"number\"},\"children\":[{\"name\":\"name\",\"value\":\"II\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"addition\"},\"children\":[{\"name\":\"name\",\"value\":\"Ett tillägg\"}]},{\"name\":\"datePeriod\",\"attributes\":{\"eventType\":\"valid\"},\"children\":[{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"start\"},\"children\":[{\"name\":\"year\",\"value\":\"2008\"},{\"name\":\"month\",\"value\":\"06\"},{\"name\":\"day\",\"value\":\"28\"}]},{\"name\":\"description\",\"value\":\"Namn som gift\"}]}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"alternative\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"name\",\"value\":\"Olle\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"name\",\"value\":\"Nilsson\"}]}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"alternative\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"name\",\"value\":\"Olle2\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"name\",\"value\":\"Nilsson2\"}]}]},{\"name\":\"other\",\"value\":\"some other stuff\"},{\"name\":\"other\",\"value\":\"second other stuff\"},{\"name\":\"other\",\"value\":\"third other stuff\"},{\"name\":\"othercol\",\"value\":\"yes\"}],\"attributes\":{\"type\":\"place\"}}";
 	private String jsonToCreateFromConversionException = "{\"name\":\"authority\",\"children\":[{\"type\":\"NOT_CORRECT\"},{\"name\":\"recordInfo\",\"children\":[{\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"system\"},{\"name\":\"linkedRecordId\",\"value\":\"cora\"}],\"name\":\"dataDivider\"}]},{\"name\":\"datePeriod\",\"attributes\":{\"eventType\":\"existence\"},\"children\":[{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"start\"},\"children\":[{\"name\":\"year\",\"value\":\"1976\"},{\"name\":\"month\",\"value\":\"07\"},{\"name\":\"day\",\"value\":\"22\"}]},{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"end\"},\"children\":[{\"name\":\"year\",\"value\":\"2076\"},{\"name\":\"month\",\"value\":\"12\"},{\"name\":\"day\",\"value\":\"31\"}]},{\"name\":\"description\",\"value\":\"76 - 76\"}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"authorized\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"name\",\"value\":\"Olov\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"name\",\"value\":\"McKie\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"number\"},\"children\":[{\"name\":\"name\",\"value\":\"II\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"addition\"},\"children\":[{\"name\":\"name\",\"value\":\"Ett tillägg\"}]},{\"name\":\"datePeriod\",\"attributes\":{\"eventType\":\"valid\"},\"children\":[{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"start\"},\"children\":[{\"name\":\"year\",\"value\":\"2008\"},{\"name\":\"month\",\"value\":\"06\"},{\"name\":\"day\",\"value\":\"28\"}]},{\"name\":\"description\",\"value\":\"Namn som gift\"}]}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"alternative\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"name\",\"value\":\"Olle\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"name\",\"value\":\"Nilsson\"}]}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"alternative\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"name\",\"value\":\"Olle2\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"name\",\"value\":\"Nilsson2\"}]}]},{\"name\":\"other\",\"value\":\"some other stuff\"},{\"name\":\"other\",\"value\":\"second other stuff\"},{\"name\":\"other\",\"value\":\"third other stuff\"},{\"name\":\"othercol\",\"value\":\"yes\"}],\"attributes\":{\"type\":\"place\"}}";
 	private String jsonToCreateFromAttributeAsChild = "{\"name\":\"authority\",\"children\":[{\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"system\"},{\"name\":\"linkedRecordId\",\"value\":\"cora\"}],\"name\":\"dataDivider\"}]},{\"name\":\"datePeriod\",\"attributes\":{\"eventType\":\"existence\"},\"children\":[{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"start\"},\"children\":[{\"year\":\"1976\"},{\"name\":\"month\",\"value\":\"07\"},{\"name\":\"day\",\"value\":\"22\"}]},{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"end\"},\"children\":[{\"name\":\"year\",\"value\":\"2076\"},{\"name\":\"month\",\"value\":\"12\"},{\"name\":\"day\",\"value\":\"31\"}]},{\"name\":\"description\",\"value\":\"76 - 76\"}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"authorized\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"name\",\"value\":\"Olov\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"name\",\"value\":\"McKie\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"number\"},\"children\":[{\"name\":\"name\",\"value\":\"II\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"addition\"},\"children\":[{\"name\":\"name\",\"value\":\"Ett tillägg\"}]},{\"name\":\"datePeriod\",\"attributes\":{\"eventType\":\"valid\"},\"children\":[{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"start\"},\"children\":[{\"name\":\"year\",\"value\":\"2008\"},{\"name\":\"month\",\"value\":\"06\"},{\"name\":\"day\",\"value\":\"28\"}]},{\"name\":\"description\",\"value\":\"Namn som gift\"}]}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"alternative\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"name\",\"value\":\"Olle\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"name\",\"value\":\"Nilsson\"}]}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"alternative\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"name\",\"value\":\"Olle2\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"name\",\"value\":\"Nilsson2\"}]}]},{\"name\":\"other\",\"value\":\"some other stuff\"},{\"name\":\"other\",\"value\":\"second other stuff\"},{\"name\":\"other\",\"value\":\"third other stuff\"},{\"name\":\"othercol\",\"value\":\"yes\"}],\"attributes\":{\"type\":\"place\"}}";
 	private String jsonToUpdateWith = "{\"name\":\"authority\",\"children\":[{\"name\":\"recordInfo\",\"children\":[{\"name\":\"id\",\"value\":\"place:0001\"},{\"name\":\"type\",\"value\":\"place\"},{\"name\":\"createdBy\",\"value\":\"userId\"},{\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"system\"},{\"name\":\"linkedRecordId\",\"value\":\"cora\"}],\"name\":\"dataDivider\"}]},{\"name\":\"datePeriod\",\"attributes\":{\"eventType\":\"existence\"},\"children\":[{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"start\"},\"children\":[{\"name\":\"year\",\"value\":\"1976\"},{\"name\":\"month\",\"value\":\"07\"},{\"name\":\"day\",\"value\":\"22\"}]},{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"end\"},\"children\":[{\"name\":\"year\",\"value\":\"2076\"},{\"name\":\"month\",\"value\":\"12\"},{\"name\":\"day\",\"value\":\"31\"}]},{\"name\":\"description\",\"value\":\"76 - 76\"}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"authorized\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"name\",\"value\":\"Olov\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"name\",\"value\":\"McKie\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"number\"},\"children\":[{\"name\":\"name\",\"value\":\"II\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"addition\"},\"children\":[{\"name\":\"name\",\"value\":\"Ett tillägg\"}]},{\"name\":\"datePeriod\",\"attributes\":{\"eventType\":\"valid\"},\"children\":[{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"start\"},\"children\":[{\"name\":\"year\",\"value\":\"2008\"},{\"name\":\"month\",\"value\":\"06\"},{\"name\":\"day\",\"value\":\"28\"}]},{\"name\":\"description\",\"value\":\"Namn som gift\"}]}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"alternative\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"name\",\"value\":\"Olle\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"name\",\"value\":\"Nilsson\"}]}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"alternative\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"name\",\"value\":\"Olle2\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"name\",\"value\":\"Nilsson2\"}]}]},{\"name\":\"other\",\"value\":\"some other stuff\"},{\"name\":\"other\",\"value\":\"second other stuff\"},{\"name\":\"other\",\"value\":\"third other stuff\"},{\"name\":\"othercol\",\"value\":\"yes\"}],\"attributes\":{\"type\":\"place\"}}";
 	private String jsonToUpdateWithAttributeAsChild = "{\"name\":\"authority\",\"children\":[{\"name\":\"recordInfo\",\"children\":[{\"id\":\"place:0001\"},{\"name\":\"type\",\"value\":\"place\"},{\"name\":\"createdBy\",\"value\":\"userId\"}]},{\"name\":\"datePeriod\",\"attributes\":{\"eventType\":\"existence\"},\"children\":[{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"start\"},\"children\":[{\"name\":\"year\",\"value\":\"1976\"},{\"name\":\"month\",\"value\":\"07\"},{\"name\":\"day\",\"value\":\"22\"}]},{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"end\"},\"children\":[{\"name\":\"year\",\"value\":\"2076\"},{\"name\":\"month\",\"value\":\"12\"},{\"name\":\"day\",\"value\":\"31\"}]},{\"name\":\"description\",\"value\":\"76 - 76\"}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"authorized\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"name\",\"value\":\"Olov\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"name\",\"value\":\"McKie\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"number\"},\"children\":[{\"name\":\"name\",\"value\":\"II\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"addition\"},\"children\":[{\"name\":\"name\",\"value\":\"Ett tillägg\"}]},{\"name\":\"datePeriod\",\"attributes\":{\"eventType\":\"valid\"},\"children\":[{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"start\"},\"children\":[{\"name\":\"year\",\"value\":\"2008\"},{\"name\":\"month\",\"value\":\"06\"},{\"name\":\"day\",\"value\":\"28\"}]},{\"name\":\"description\",\"value\":\"Namn som gift\"}]}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"alternative\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"name\",\"value\":\"Olle\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"name\",\"value\":\"Nilsson\"}]}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"alternative\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"name\",\"value\":\"Olle2\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"name\",\"value\":\"Nilsson2\"}]}]},{\"name\":\"other\",\"value\":\"some other stuff\"},{\"name\":\"other\",\"value\":\"second other stuff\"},{\"name\":\"other\",\"value\":\"third other stuff\"},{\"name\":\"othercol\",\"value\":\"yes\"}],\"attributes\":{\"type\":\"place\"}}";
 	private String jsonToUpdateWithNotFound = "{\"name\":\"authority\",\"children\":[{\"name\":\"recordInfo\",\"children\":[{\"name\":\"id\",\"value\":\"place:0001_NOT_FOUND\"},{\"name\":\"type\",\"value\":\"place\"},{\"name\":\"createdBy\",\"value\":\"userId\"}]},{\"name\":\"datePeriod\",\"attributes\":{\"eventType\":\"existence\"},\"children\":[{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"start\"},\"children\":[{\"name\":\"year\",\"value\":\"1976\"},{\"name\":\"month\",\"value\":\"07\"},{\"name\":\"day\",\"value\":\"22\"}]},{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"end\"},\"children\":[{\"name\":\"year\",\"value\":\"2076\"},{\"name\":\"month\",\"value\":\"12\"},{\"name\":\"day\",\"value\":\"31\"}]},{\"name\":\"description\",\"value\":\"76 - 76\"}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"authorized\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"name\",\"value\":\"Olov\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"name\",\"value\":\"McKie\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"number\"},\"children\":[{\"name\":\"name\",\"value\":\"II\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"addition\"},\"children\":[{\"name\":\"name\",\"value\":\"Ett tillägg\"}]},{\"name\":\"datePeriod\",\"attributes\":{\"eventType\":\"valid\"},\"children\":[{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"start\"},\"children\":[{\"name\":\"year\",\"value\":\"2008\"},{\"name\":\"month\",\"value\":\"06\"},{\"name\":\"day\",\"value\":\"28\"}]},{\"name\":\"description\",\"value\":\"Namn som gift\"}]}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"alternative\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"name\",\"value\":\"Olle\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"name\",\"value\":\"Nilsson\"}]}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"alternative\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"name\",\"value\":\"Olle2\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"name\",\"value\":\"Nilsson2\"}]}]},{\"name\":\"other\",\"value\":\"some other stuff\"},{\"name\":\"other\",\"value\":\"second other stuff\"},{\"name\":\"other\",\"value\":\"third other stuff\"},{\"name\":\"othercol\",\"value\":\"yes\"}],\"attributes\":{\"type\":\"place\"}}";
+	private String jsonWithBadContent = "{\"groupNameInData\":{\"children\":[{\"atomicNameInData\":\"atomicValue\""
+			+ ",\"atomicNameInData2\":\"atomicValue2\"}]}}";
 	private RecordEndpoint recordEndpoint;
 
 	@BeforeMethod
@@ -65,67 +70,71 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testReadRecordList() {
-		String type = "place";
-		Response response = recordEndpoint.readRecordList(type);
-		String entity = (String) response.getEntity();
-		assertNotNull(entity, "An entity in json format should be returned");
-		assertEquals(response.getStatusInfo(), Response.Status.OK);
+		response = recordEndpoint.readRecordList(PLACE);
+		assertEntityExists();
+		assertResponseStatusIs(Response.Status.OK);
+	}
+
+	private void assertEntityExists() {
+		assertNotNull(response.getEntity(), "An entity in json format should be returned");
+	}
+
+	private void assertResponseStatusIs(Status responseStatus) {
+		assertEquals(response.getStatusInfo(), responseStatus);
 	}
 
 	@Test
 	public void testReadRecordListNotFound() {
-		Response response = recordEndpoint.readRecordList("place_NOT_FOUND");
-		assertEquals(response.getStatusInfo(), Response.Status.NOT_FOUND);
+		response = recordEndpoint.readRecordList("place_NOT_FOUND");
+		assertResponseStatusIs(Response.Status.NOT_FOUND);
 	}
 
 	@Test
 	public void testReadRecordListUnauthorized() {
 		setNotAuthorized();
-		Response response = recordEndpoint
-				.readRecordListUsingAuthTokenByType("dummyNonAuthorizedToken", "place");
-		assertEquals(response.getStatusInfo(), Response.Status.FORBIDDEN);
+		response = recordEndpoint.readRecordListUsingAuthTokenByType("dummyNonAuthorizedToken",
+				PLACE);
+		assertResponseStatusIs(Response.Status.FORBIDDEN);
 	}
 
 	@Test
 	public void testReadRecord() {
-		Response response = recordEndpoint.readRecord("place", "place:0001");
-		String entity = (String) response.getEntity();
-
-		assertNotNull(entity, "An entity in json format should be returned");
-		assertEquals(response.getStatusInfo(), Response.Status.OK);
+		response = recordEndpoint.readRecord(PLACE, PLACE_0001);
+		assertEntityExists();
+		assertResponseStatusIs(Response.Status.OK);
 	}
 
 	@Test
 	public void testReadRecordUnauthenticated() {
-		Response response = recordEndpoint.readRecordUsingAuthTokenByTypeAndId(
-				"dummyNonAuthenticatedToken", "place", "place:0001");
-		assertEquals(response.getStatusInfo(), Response.Status.UNAUTHORIZED);
+		response = recordEndpoint.readRecordUsingAuthTokenByTypeAndId("dummyNonAuthenticatedToken",
+				PLACE, PLACE_0001);
+		assertResponseStatusIs(Response.Status.UNAUTHORIZED);
 	}
 
 	@Test
 	public void testReadRecordUnauthorized() {
 		setNotAuthorized();
-		Response response = recordEndpoint.readRecordUsingAuthTokenByTypeAndId(
-				"dummyNonAuthorizedToken", "place", "place:0001");
-		assertEquals(response.getStatusInfo(), Response.Status.FORBIDDEN);
+		response = recordEndpoint.readRecordUsingAuthTokenByTypeAndId("dummyNonAuthorizedToken",
+				PLACE, PLACE_0001);
+		assertResponseStatusIs(Response.Status.FORBIDDEN);
 	}
 
 	@Test
 	public void testReadRecordNotFound() {
-		Response response = recordEndpoint.readRecord("place", "place:0001_NOT_FOUND");
-		assertEquals(response.getStatusInfo(), Response.Status.NOT_FOUND);
+		response = recordEndpoint.readRecord(PLACE, "place:0001_NOT_FOUND");
+		assertResponseStatusIs(Response.Status.NOT_FOUND);
 	}
 
 	@Test
 	public void testReadRecordAbstractRecordType() {
 		String type = "abstract";
-		Response responseRead = recordEndpoint.readRecord(type, "canBeWhatEverIdTypeIsChecked");
-		assertEquals(responseRead.getStatusInfo(), Response.Status.METHOD_NOT_ALLOWED);
+		response = recordEndpoint.readRecord(type, "canBeWhatEverIdTypeIsChecked");
+		assertResponseStatusIs(Response.Status.METHOD_NOT_ALLOWED);
 	}
 
 	@Test
 	public void testReadIncomingRecordLinks() {
-		Response response = recordEndpoint.readIncomingRecordLinks("place", "place:0001");
+		response = recordEndpoint.readIncomingRecordLinks(PLACE, PLACE_0001);
 		String entity = (String) response.getEntity();
 
 		assertEquals(entity, "{\"dataList\":{\"fromNo\":\"1\",\"data\":["
@@ -141,144 +150,122 @@ public class RecordEndpointTest {
 				+ ",\"name\":\"to\"}],\"name\":\"recordToRecordLink\"}]" + ",\"totalNo\":\"1\""
 				+ ",\"containDataOfType\":\"recordToRecordLink\",\"toNo\":\"1\"}}");
 
-		assertEquals(response.getStatusInfo(), Response.Status.OK);
+		assertResponseStatusIs(Response.Status.OK);
 	}
 
 	@Test
 	public void testReadIncomingLinksUnauthorized() {
 		setNotAuthorized();
-		Response response = recordEndpoint.readIncomingRecordLinksUsingAuthTokenByTypeAndId(
-				"dummyNonAuthorizedToken", "place", "place:0001");
-		assertEquals(response.getStatusInfo(), Response.Status.FORBIDDEN);
+		response = recordEndpoint.readIncomingRecordLinksUsingAuthTokenByTypeAndId(
+				"dummyNonAuthorizedToken", PLACE, PLACE_0001);
+		assertResponseStatusIs(Response.Status.FORBIDDEN);
 	}
 
 	@Test
 	public void testReadIncomingLinksNotFound() {
-		Response response = recordEndpoint.readIncomingRecordLinks("place", "place:0001_NOT_FOUND");
-		assertEquals(response.getStatusInfo(), Response.Status.NOT_FOUND);
+		response = recordEndpoint.readIncomingRecordLinks(PLACE, "place:0001_NOT_FOUND");
+		assertResponseStatusIs(Response.Status.NOT_FOUND);
 	}
 
 	@Test
 	public void testReadIncomingLinksAbstractRecordType() {
 		String type = "abstract";
-		Response responseRead = recordEndpoint.readIncomingRecordLinks(type,
-				"canBeWhatEverIdTypeIsChecked");
-		assertEquals(responseRead.getStatusInfo(), Response.Status.METHOD_NOT_ALLOWED);
+		response = recordEndpoint.readIncomingRecordLinks(type, "canBeWhatEverIdTypeIsChecked");
+		assertResponseStatusIs(Response.Status.METHOD_NOT_ALLOWED);
 	}
 
 	@Test
 	public void testDeleteRecordNoIncomingLinks() {
-		Response response = recordEndpoint.deleteRecord("place", "place:0002");
-		assertEquals(response.getStatusInfo(), Response.Status.OK);
+		response = recordEndpoint.deleteRecord(PLACE, "place:0002");
+		assertResponseStatusIs(Response.Status.OK);
 	}
 
 	@Test
 	public void testDeleteRecordIncomingLinks() {
-		Response response = recordEndpoint.deleteRecord("place", "place:0001");
-		assertEquals(response.getStatusInfo(), Response.Status.METHOD_NOT_ALLOWED);
+		response = recordEndpoint.deleteRecord(PLACE, PLACE_0001);
+		assertResponseStatusIs(Response.Status.METHOD_NOT_ALLOWED);
 	}
 
 	@Test
 	public void testDeleteRecordUnauthorized() {
 		setNotAuthorized();
-		Response response = recordEndpoint.deleteRecordUsingAuthTokenByTypeAndId(
-				"dummyNonAuthorizedToken", "place", "place:0001");
-		assertEquals(response.getStatusInfo(), Response.Status.FORBIDDEN);
+		response = recordEndpoint.deleteRecordUsingAuthTokenByTypeAndId("dummyNonAuthorizedToken",
+				PLACE, PLACE_0001);
+		assertResponseStatusIs(Response.Status.FORBIDDEN);
 	}
 
 	@Test
 	public void testDeleteRecordNotFound() {
-		Response response = recordEndpoint.deleteRecordUsingAuthTokenByTypeAndId(
-				"someToken78678567", "place", "place:0001_NOT_FOUND");
-		assertEquals(response.getStatusInfo(), Response.Status.NOT_FOUND);
+		response = recordEndpoint.deleteRecordUsingAuthTokenByTypeAndId("someToken78678567", PLACE,
+				"place:0001_NOT_FOUND");
+		assertResponseStatusIs(Response.Status.NOT_FOUND);
 	}
 
 	@Test
 	public void testUpdateRecord() {
-		String type = "place";
-		String id = "place:0001";
-		Response responseUpdate = recordEndpoint.updateRecord(type, id, jsonToUpdateWith);
-		assertEquals(responseUpdate.getStatusInfo(), Response.Status.OK);
+		response = recordEndpoint.updateRecord(PLACE, PLACE_0001, jsonToUpdateWith);
+		assertResponseStatusIs(Response.Status.OK);
 	}
 
 	@Test
 	public void testUpdateRecordUnauthorized() {
 		setNotAuthorized();
-		String type = "place";
-		String id = "place:0001";
-		Response responseUpdate = recordEndpoint.updateRecordUsingAuthTokenWithRecord(
-				"dummyNonAuthorizedToken", type, id, jsonToUpdateWith);
-		assertEquals(responseUpdate.getStatusInfo(), Response.Status.FORBIDDEN);
+		response = recordEndpoint.updateRecordUsingAuthTokenWithRecord("dummyNonAuthorizedToken",
+				PLACE, PLACE_0001, jsonToUpdateWith);
+		assertResponseStatusIs(Response.Status.FORBIDDEN);
 	}
 
 	@Test
 	public void testUpdateRecordNotFound() {
-		String type = "place";
-		String id = "place:0001";
-		Response responseUpdate = recordEndpoint.updateRecord(type, id + "_NOT_FOUND",
+		response = recordEndpoint.updateRecord(PLACE, PLACE_0001 + "_NOT_FOUND",
 				jsonToUpdateWithNotFound);
-		assertEquals(responseUpdate.getStatusInfo(), Response.Status.NOT_FOUND);
+		assertResponseStatusIs(Response.Status.NOT_FOUND);
 	}
 
 	@Test
 	public void testUpdateRecordTypeNotFound() {
-		String type = "place";
-		String id = "place:0001";
-		Response responseUpdate = recordEndpoint.updateRecord(type + "_NOT_FOUND", id,
-				jsonToUpdateWithNotFound);
-		assertEquals(responseUpdate.getStatusInfo(), Response.Status.NOT_FOUND);
+		response = recordEndpoint.updateRecord(PLACE + "_NOT_FOUND", PLACE_0001, jsonToUpdateWithNotFound);
+		assertResponseStatusIs(Response.Status.NOT_FOUND);
 	}
 
 	@Test
 	public void testUpdateRecordBadContentInJson() {
-		String type = "place";
-		String id = "place:0001";
-		String json = "{\"groupNameInData\":{\"children\":[{\"atomicNameInData\":\"atomicValue\""
-				+ ",\"atomicNameInData2\":\"atomicValue2\"}]}}";
-		Response responseUpdate = recordEndpoint.updateRecord(type, id, json);
-		assertEquals(responseUpdate.getStatusInfo(), Response.Status.BAD_REQUEST);
+		response = recordEndpoint.updateRecord(PLACE, PLACE_0001, jsonWithBadContent);
+		assertResponseStatusIs(Response.Status.BAD_REQUEST);
 	}
 
 	@Test
 	public void testUpdateRecordWrongDataTypeInJson() {
-		String type = "place";
-		String id = "place:0001";
-		Response responseUpdate = recordEndpoint.updateRecord(type, id,
-				jsonToUpdateWithAttributeAsChild);
-		assertEquals(responseUpdate.getStatusInfo(), Response.Status.BAD_REQUEST);
+		response = recordEndpoint.updateRecord(PLACE, PLACE_0001, jsonToUpdateWithAttributeAsChild);
+		assertResponseStatusIs(Response.Status.BAD_REQUEST);
 	}
 
 	@Test
 	public void testCreateRecord() {
-		String type = "place";
-		Response responseCreated = recordEndpoint.createRecord(type, jsonToCreateFrom);
-		assertEquals(responseCreated.getStatusInfo(), Response.Status.CREATED);
-		assertTrue(responseCreated.getLocation().toString().startsWith("record/" + type));
+		response = recordEndpoint.createRecord(PLACE, jsonToCreateFrom);
+		assertResponseStatusIs(Response.Status.CREATED);
+		assertTrue(response.getLocation().toString().startsWith("record/" + PLACE));
 	}
 
 	@Test
 	public void testCreateRecordBadCreatedLocation() {
 		String type = "place&& &&\\\\";
-		Response responseCreated = recordEndpoint.createRecord(type, jsonToCreateFrom);
-		assertEquals(responseCreated.getStatusInfo(), Response.Status.BAD_REQUEST);
+		response = recordEndpoint.createRecord(type, jsonToCreateFrom);
+		assertResponseStatusIs(Response.Status.BAD_REQUEST);
 	}
 
 	@Test
 	public void testCreateRecordBadContentInJson() {
-		String type = "place";
-		String json = "{\"groupNameInData\":{\"children\":[{\"atomicNameInData\":\"atomicValue\""
-				+ ",\"atomicNameInData2\":\"atomicValue2\"}]}}";
-		Response responseCreated = recordEndpoint.createRecord(type, json);
-		assertEquals(responseCreated.getStatusInfo(), Response.Status.BAD_REQUEST);
+		response = recordEndpoint.createRecord(PLACE, jsonWithBadContent);
+		assertResponseStatusIs(Response.Status.BAD_REQUEST);
 	}
 
 	@Test
 	public void testCreateRecordUnauthorized() {
 		setNotAuthorized();
-		String type = "place";
-		Response responseUpdate = recordEndpoint.createRecordUsingAuthTokenWithRecord(
-				"dummyNonAuthorizedToken", type, jsonToCreateFrom);
-		assertEquals(responseUpdate.getStatusInfo(), Response.Status.FORBIDDEN);
+		response = recordEndpoint.createRecordUsingAuthTokenWithRecord("dummyNonAuthorizedToken",
+				PLACE, jsonToCreateFrom);
+		assertResponseStatusIs(Response.Status.FORBIDDEN);
 	}
 
 	private void setNotAuthorized() {
@@ -290,9 +277,9 @@ public class RecordEndpointTest {
 	@Test
 	public void testCreateNonExistingRecordType() {
 		String type = "recordType_NON_EXCISTING";
-		Response responseUpdate = recordEndpoint.createRecordUsingAuthTokenWithRecord(
-				"dummyNonAuthorizedToken", type, jsonToCreateFrom);
-		assertEquals(responseUpdate.getStatusInfo(), Response.Status.NOT_FOUND);
+		response = recordEndpoint.createRecordUsingAuthTokenWithRecord("dummyNonAuthorizedToken",
+				type, jsonToCreateFrom);
+		assertResponseStatusIs(Response.Status.NOT_FOUND);
 	}
 
 	@Test
@@ -304,32 +291,28 @@ public class RecordEndpointTest {
 				.usingDependencyProvider(spiderDependencyProvider);
 		SpiderInstanceProvider.setSpiderInstanceFactory(factory);
 
-		String type = "place";
-		Response responseCreated = recordEndpoint.createRecord(type, jsonToCreateFrom);
-		assertEquals(responseCreated.getStatusInfo(), Response.Status.BAD_REQUEST);
+		response = recordEndpoint.createRecord(PLACE, jsonToCreateFrom);
+		assertResponseStatusIs(Response.Status.BAD_REQUEST);
 	}
 
 	@Test
 	public void testCreateRecordConversionException() {
-		String type = "place";
-		Response responseUpdate = recordEndpoint.createRecordUsingAuthTokenWithRecord(
-				"someToken78678567", type, jsonToCreateFromConversionException);
-		assertEquals(responseUpdate.getStatusInfo(), Response.Status.BAD_REQUEST);
+		response = recordEndpoint.createRecordUsingAuthTokenWithRecord("someToken78678567", PLACE,
+				jsonToCreateFromConversionException);
+		assertResponseStatusIs(Response.Status.BAD_REQUEST);
 	}
 
 	@Test
 	public void testCreateRecordAttributeAsChild() {
-		String type = "place";
-		Response responseCreated = recordEndpoint.createRecord(type,
-				jsonToCreateFromAttributeAsChild);
-		assertEquals(responseCreated.getStatusInfo(), Response.Status.BAD_REQUEST);
+		response = recordEndpoint.createRecord(PLACE, jsonToCreateFromAttributeAsChild);
+		assertResponseStatusIs(Response.Status.BAD_REQUEST);
 	}
 
 	@Test
 	public void testCreateRecordAbstractRecordType() {
 		String type = "abstract";
-		Response responseCreated = recordEndpoint.createRecord(type, jsonToCreateFrom);
-		assertEquals(responseCreated.getStatusInfo(), Response.Status.METHOD_NOT_ALLOWED);
+		response = recordEndpoint.createRecord(type, jsonToCreateFrom);
+		assertResponseStatusIs(Response.Status.METHOD_NOT_ALLOWED);
 	}
 
 	String duplicateTestJson = "{\"name\":\"place\",\"children\":["
@@ -338,15 +321,15 @@ public class RecordEndpointTest {
 			+ "{\"name\":\"linkedRecordId\",\"value\":\"cora\"}],\"name\":\"dataDivider\"},"
 			+ "{\"name\":\"id\",\"value\":\"aPlace\"}]}"
 			+ ",{\"name\":\"id\",\"value\":\"anythingGoes\"}]}";
+	private Response response;
 
 	@Test
 	public void testCreateRecordDuplicateUserSuppliedId() {
-		String type = "place";
-		Response responseCreated = recordEndpoint.createRecord(type, duplicateTestJson);
-		assertEquals(responseCreated.getStatusInfo(), Response.Status.CREATED);
+		response = recordEndpoint.createRecord(PLACE, duplicateTestJson);
+		assertResponseStatusIs(Response.Status.CREATED);
 
-		Response responseCreated2 = recordEndpoint.createRecord(type, duplicateTestJson);
-		assertEquals(responseCreated2.getStatusInfo(), Response.Status.CONFLICT);
+		response = recordEndpoint.createRecord(PLACE, duplicateTestJson);
+		assertResponseStatusIs(Response.Status.CONFLICT);
 
 	}
 
@@ -358,9 +341,8 @@ public class RecordEndpointTest {
 				.usingDependencyProvider(spiderDependencyProvider);
 		SpiderInstanceProvider.setSpiderInstanceFactory(factory);
 
-		String type = "place";
-		Response responseCreated = recordEndpoint.createRecord(type, jsonToCreateFrom);
-		assertEquals(responseCreated.getStatusInfo(), Response.Status.INTERNAL_SERVER_ERROR);
+		response = recordEndpoint.createRecord(PLACE, jsonToCreateFrom);
+		assertResponseStatusIs(Response.Status.INTERNAL_SERVER_ERROR);
 	}
 
 	@Test
@@ -372,7 +354,7 @@ public class RecordEndpointTest {
 		builder.fileName("adele1.png");
 		FormDataContentDisposition formDataContentDisposition = builder.build();
 
-		Response response = recordEndpoint.uploadFile("image", "image:123456789", stream,
+		response = recordEndpoint.uploadFile("image", "image:123456789", stream,
 				formDataContentDisposition);
 
 		String entity = (String) response.getEntity();
@@ -407,7 +389,7 @@ public class RecordEndpointTest {
 				+ "{\"requestMethod\":\"DELETE\",\"rel\":\"delete\","
 				+ "\"url\":\"http://localhost:8080/therest/rest/record/image/image:123456789\"}}}}");
 
-		assertEquals(response.getStatusInfo(), Response.Status.OK);
+		assertResponseStatusIs(Response.Status.OK);
 	}
 
 	@Test
@@ -416,10 +398,10 @@ public class RecordEndpointTest {
 
 		InputStream stream = new ByteArrayInputStream("a string".getBytes(StandardCharsets.UTF_8));
 
-		Response response = recordEndpoint.uploadFileUsingAuthTokenWithStream(
-				"dummyNonAuthorizedToken", "image", "image:123456789", stream, "someFile.tif");
+		response = recordEndpoint.uploadFileUsingAuthTokenWithStream("dummyNonAuthorizedToken",
+				"image", "image:123456789", stream, "someFile.tif");
 
-		assertEquals(response.getStatusInfo(), Response.Status.FORBIDDEN);
+		assertResponseStatusIs(Response.Status.FORBIDDEN);
 	}
 
 	@Test
@@ -431,10 +413,10 @@ public class RecordEndpointTest {
 		builder.fileName("adele1.png");
 		FormDataContentDisposition formDataContentDisposition = builder.build();
 
-		Response response = recordEndpoint.uploadFile("image", "image:123456789_NOT_FOUND", stream,
+		response = recordEndpoint.uploadFile("image", "image:123456789_NOT_FOUND", stream,
 				formDataContentDisposition);
 
-		assertEquals(response.getStatusInfo(), Response.Status.NOT_FOUND);
+		assertResponseStatusIs(Response.Status.NOT_FOUND);
 	}
 
 	@Test
@@ -446,10 +428,10 @@ public class RecordEndpointTest {
 		builder.fileName("adele1.png");
 		FormDataContentDisposition formDataContentDisposition = builder.build();
 
-		Response response = recordEndpoint.uploadFile("place", "image:123456789", stream,
+		response = recordEndpoint.uploadFile(PLACE, "image:123456789", stream,
 				formDataContentDisposition);
 
-		assertEquals(response.getStatusInfo(), Response.Status.METHOD_NOT_ALLOWED);
+		assertResponseStatusIs(Response.Status.METHOD_NOT_ALLOWED);
 	}
 
 	@Test
@@ -459,15 +441,15 @@ public class RecordEndpointTest {
 		builder.fileName("adele1.png");
 		FormDataContentDisposition formDataContentDisposition = builder.build();
 
-		Response response = recordEndpoint.uploadFile("image", "image:123456789", null,
+		response = recordEndpoint.uploadFile("image", "image:123456789", null,
 				formDataContentDisposition);
 
-		assertEquals(response.getStatusInfo(), Response.Status.BAD_REQUEST);
+		assertResponseStatusIs(Response.Status.BAD_REQUEST);
 	}
 
 	@Test
 	public void testDownload() throws IOException {
-		Response response = recordEndpoint.downloadFile("image", "image:123456789", "master");
+		response = recordEndpoint.downloadFile("image", "image:123456789", "master");
 		String contentType = response.getHeaderString("Content-Type");
 		/*
 		 * when we detect and store type of file in spider check it like this
@@ -487,7 +469,7 @@ public class RecordEndpointTest {
 		String stringFromStream = result.toString("UTF-8");
 
 		assertEquals(stringFromStream, "a string out");
-		assertEquals(response.getStatusInfo(), Response.Status.OK);
+		assertResponseStatusIs(Response.Status.OK);
 
 		String contentLenght = response.getHeaderString("Content-Length");
 		assertEquals(contentLenght, "123");
@@ -499,28 +481,27 @@ public class RecordEndpointTest {
 	@Test
 	public void testDownloadUnauthorized() throws IOException {
 		setNotAuthorized();
-		Response response = recordEndpoint.downloadFileUsingAuthTokenWithStream(
-				"dummyNonAuthorizedToken", "image", "image:123456789", "master");
-		assertEquals(response.getStatusInfo(), Response.Status.FORBIDDEN);
+		response = recordEndpoint.downloadFileUsingAuthTokenWithStream("dummyNonAuthorizedToken",
+				"image", "image:123456789", "master");
+		assertResponseStatusIs(Response.Status.FORBIDDEN);
 	}
 
 	@Test
 	public void testDownloadNotFound() throws IOException {
-		Response response = recordEndpoint.downloadFile("image", "image:123456789_NOT_FOUND",
-				"master");
-		assertEquals(response.getStatusInfo(), Response.Status.NOT_FOUND);
+		response = recordEndpoint.downloadFile("image", "image:123456789_NOT_FOUND", "master");
+		assertResponseStatusIs(Response.Status.NOT_FOUND);
 	}
 
 	@Test
 	public void testDownloadNotAChildOfBinary() throws IOException {
-		Response response = recordEndpoint.downloadFile("place", "image:123456789", "master");
-		assertEquals(response.getStatusInfo(), Response.Status.METHOD_NOT_ALLOWED);
+		response = recordEndpoint.downloadFile(PLACE, "image:123456789", "master");
+		assertResponseStatusIs(Response.Status.METHOD_NOT_ALLOWED);
 	}
 
 	@Test
 	public void testDownloadBadRequest() throws IOException {
-		Response response = recordEndpoint.downloadFile("image", "image:123456789", "");
-		assertEquals(response.getStatusInfo(), Response.Status.BAD_REQUEST);
+		response = recordEndpoint.downloadFile("image", "image:123456789", "");
+		assertResponseStatusIs(Response.Status.BAD_REQUEST);
 	}
 
 }
