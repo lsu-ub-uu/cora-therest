@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2016 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -26,6 +26,7 @@ import java.net.URISyntaxException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -73,7 +74,6 @@ import se.uu.ub.cora.therest.data.converter.spider.DataRecordSpiderToRestConvert
 @Path("record")
 public class RecordEndpoint {
 
-	private static final String AUTH_TOKEN = "authToken";
 	private UriInfo uriInfo;
 	private String url;
 
@@ -91,12 +91,14 @@ public class RecordEndpoint {
 	@Path("{type}")
 	@Consumes("application/uub+record+json")
 	@Produces("application/uub+record+json")
-	// public Response createRecord(@PathParam("type") String type, String
-	// jsonRecord,
-	// @HeaderParam("authtoken") String authToken) {
-	public Response createRecord(@PathParam("type") String type, String jsonRecord) {
+	public Response createRecord(@HeaderParam("authToken") String authToken,
+			@PathParam("type") String type, String jsonRecord) {
+		// public Response createRecord(@PathParam("type") String type, String
+		// jsonRecord) {
 		// set user directly here until we have decided how to authenticate user
-		return createRecordUsingAuthTokenWithRecord(AUTH_TOKEN, type, jsonRecord);
+		// return createRecordUsingAuthTokenWithRecord(AUTH_TOKEN, type,
+		// jsonRecord);
+		return createRecordUsingAuthTokenWithRecord(authToken, type, jsonRecord);
 	}
 
 	public Response createRecordUsingAuthTokenWithRecord(String authToken, String type,
@@ -189,8 +191,12 @@ public class RecordEndpoint {
 	@GET
 	@Path("{type}/")
 	@Produces("application/uub+recordList+json")
-	public Response readRecordList(@PathParam("type") String type) {
-		return readRecordListUsingAuthTokenByType(AUTH_TOKEN, type);
+	// public Response readRecordList(@PathParam("type") String type) {
+	// return readRecordListUsingAuthTokenByType(AUTH_TOKEN, type);
+	// }
+	public Response readRecordList(@HeaderParam("authToken") String authToken,
+			@PathParam("type") String type) {
+		return readRecordListUsingAuthTokenByType(authToken, type);
 	}
 
 	Response readRecordListUsingAuthTokenByType(String authToken, String type) {
@@ -224,9 +230,15 @@ public class RecordEndpoint {
 	@GET
 	@Path("{type}/{id}")
 	@Produces("application/uub+record+json")
-	public Response readRecord(@PathParam("type") String type, @PathParam("id") String id) {
+	// public Response readRecord(@PathParam("type") String type,
+	// @PathParam("id") String id) {
+	// // set user directly here until we have decided how to authenticate user
+	// return readRecordUsingAuthTokenByTypeAndId(AUTH_TOKEN, type, id);
+	// }
+	public Response readRecord(@HeaderParam("authToken") String authToken,
+			@PathParam("type") String type, @PathParam("id") String id) {
 		// set user directly here until we have decided how to authenticate user
-		return readRecordUsingAuthTokenByTypeAndId(AUTH_TOKEN, type, id);
+		return readRecordUsingAuthTokenByTypeAndId(authToken, type, id);
 	}
 
 	public Response readRecordUsingAuthTokenByTypeAndId(String authToken, String type, String id) {
@@ -254,10 +266,16 @@ public class RecordEndpoint {
 	@GET
 	@Path("{type}/{id}/incomingLinks")
 	@Produces("application/uub+recordList+json")
-	public Response readIncomingRecordLinks(@PathParam("type") String type,
-			@PathParam("id") String id) {
+	// public Response readIncomingRecordLinks(@PathParam("type") String type,
+	// @PathParam("id") String id) {
+	// // set user directly here until we have decided how to authenticate user
+	// return readIncomingRecordLinksUsingAuthTokenByTypeAndId(AUTH_TOKEN, type,
+	// id);
+	// }
+	public Response readIncomingRecordLinks(@HeaderParam("authToken") String authToken,
+			@PathParam("type") String type, @PathParam("id") String id) {
 		// set user directly here until we have decided how to authenticate user
-		return readIncomingRecordLinksUsingAuthTokenByTypeAndId(AUTH_TOKEN, type, id);
+		return readIncomingRecordLinksUsingAuthTokenByTypeAndId(authToken, type, id);
 	}
 
 	Response readIncomingRecordLinksUsingAuthTokenByTypeAndId(String authToken, String type,
@@ -283,9 +301,15 @@ public class RecordEndpoint {
 
 	@DELETE
 	@Path("{type}/{id}")
-	public Response deleteRecord(@PathParam("type") String type, @PathParam("id") String id) {
+	// public Response deleteRecord(@PathParam("type") String type,
+	// @PathParam("id") String id) {
+	// // set user directly here until we have decided how to authenticate user
+	// return deleteRecordUsingAuthTokenByTypeAndId(AUTH_TOKEN, type, id);
+	// }
+	public Response deleteRecord(@HeaderParam("authToken") String authToken,
+			@PathParam("type") String type, @PathParam("id") String id) {
 		// set user directly here until we have decided how to authenticate user
-		return deleteRecordUsingAuthTokenByTypeAndId(AUTH_TOKEN, type, id);
+		return deleteRecordUsingAuthTokenByTypeAndId(authToken, type, id);
 	}
 
 	public Response deleteRecordUsingAuthTokenByTypeAndId(String authToken, String type,
@@ -311,9 +335,15 @@ public class RecordEndpoint {
 	@Path("{type}/{id}")
 	@Consumes("application/uub+record+json")
 	@Produces("application/uub+record+json")
-	public Response updateRecord(@PathParam("type") String type, @PathParam("id") String id,
-			String jsonRecord) {
-		return updateRecordUsingAuthTokenWithRecord(AUTH_TOKEN, type, id, jsonRecord);
+	// public Response updateRecord(@PathParam("type") String type,
+	// @PathParam("id") String id,
+	// String jsonRecord) {
+	// return updateRecordUsingAuthTokenWithRecord(AUTH_TOKEN, type, id,
+	// jsonRecord);
+	// }
+	public Response updateRecord(@HeaderParam("authToken") String authToken,
+			@PathParam("type") String type, @PathParam("id") String id, String jsonRecord) {
+		return updateRecordUsingAuthTokenWithRecord(authToken, type, id, jsonRecord);
 	}
 
 	public Response updateRecordUsingAuthTokenWithRecord(String authToken, String type, String id,
@@ -342,9 +372,16 @@ public class RecordEndpoint {
 	// @Path("{type}/{id}/master")
 	// @Consumes("multipart/form-data")
 	// @Produces("application/uub+record+json2")
-	public Response downloadFile(@PathParam("type") String type, @PathParam("id") String id,
+	// public Response downloadFile(@PathParam("type") String type,
+	// @PathParam("id") String id,
+	// @PathParam("streamId") String streamId) {
+	// return downloadFileUsingAuthTokenWithStream(AUTH_TOKEN, type, id,
+	// streamId);
+	// }
+	public Response downloadFile(@HeaderParam("authToken") String authToken,
+			@PathParam("type") String type, @PathParam("id") String id,
 			@PathParam("streamId") String streamId) {
-		return downloadFileUsingAuthTokenWithStream(AUTH_TOKEN, type, id, streamId);
+		return downloadFileUsingAuthTokenWithStream(authToken, type, id, streamId);
 	}
 
 	Response downloadFileUsingAuthTokenWithStream(String authToken, String type, String id,
@@ -379,11 +416,21 @@ public class RecordEndpoint {
 	@Path("{type}/{id}/{streamId}")
 	@Consumes("multipart/form-data")
 	@Produces("application/uub+record+json2")
-	public Response uploadFile(@PathParam("type") String type, @PathParam("id") String id,
+	// public Response uploadFile(@PathParam("type") String type,
+	// @PathParam("id") String id,
+	// @FormDataParam("file") InputStream uploadedInputStream,
+	// @FormDataParam("file") FormDataContentDisposition fileDetail) {
+	// String fileName = fileDetail.getFileName();
+	// return uploadFileUsingAuthTokenWithStream(AUTH_TOKEN, type, id,
+	// uploadedInputStream,
+	// fileName);
+	// }
+	public Response uploadFile(@HeaderParam("authToken") String authToken,
+			@PathParam("type") String type, @PathParam("id") String id,
 			@FormDataParam("file") InputStream uploadedInputStream,
 			@FormDataParam("file") FormDataContentDisposition fileDetail) {
 		String fileName = fileDetail.getFileName();
-		return uploadFileUsingAuthTokenWithStream(AUTH_TOKEN, type, id, uploadedInputStream,
+		return uploadFileUsingAuthTokenWithStream(authToken, type, id, uploadedInputStream,
 				fileName);
 	}
 

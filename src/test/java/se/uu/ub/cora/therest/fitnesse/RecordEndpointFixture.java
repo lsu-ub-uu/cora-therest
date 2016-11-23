@@ -48,7 +48,7 @@ public class RecordEndpointFixture {
 	private String resourceName;
 	private String contentLenght;
 	private String contentDisposition;
-	private String authToken;
+	private String authToken = "fitnesseAdminToken";
 
 	public void setType(String type) {
 		this.type = type;
@@ -119,7 +119,7 @@ public class RecordEndpointFixture {
 		UriInfo uriInfo = new TestUri();
 		setupSpiderInstanceProvider();
 		RecordEndpoint recordEndpoint = new RecordEndpoint(uriInfo);
-		Response response = recordEndpoint.readIncomingRecordLinks(type, id);
+		Response response = recordEndpoint.readIncomingRecordLinks(authToken, type, id);
 		String entity = (String) response.getEntity();
 		statusType = response.getStatusInfo();
 		return entity;
@@ -129,7 +129,7 @@ public class RecordEndpointFixture {
 		UriInfo uriInfo = new TestUri();
 		setupSpiderInstanceProvider();
 		RecordEndpoint recordEndpoint = new RecordEndpoint(uriInfo);
-		Response response = recordEndpoint.readRecordList(type);
+		Response response = recordEndpoint.readRecordList(authToken, type);
 		String entity = (String) response.getEntity();
 		statusType = response.getStatusInfo();
 		return entity;
@@ -195,7 +195,8 @@ public class RecordEndpointFixture {
 		builder.fileName(fileName);
 		FormDataContentDisposition formDataContentDisposition = builder.build();
 
-		Response response = recordEndpoint.uploadFile(type, id, stream, formDataContentDisposition);
+		Response response = recordEndpoint.uploadFile(authToken, type, id, stream,
+				formDataContentDisposition);
 
 		statusType = response.getStatusInfo();
 		if (null == response.getEntity()) {
@@ -223,7 +224,7 @@ public class RecordEndpointFixture {
 		UriInfo uriInfo = new TestUri();
 		setupSpiderInstanceProvider();
 		RecordEndpoint recordEndpoint = new RecordEndpoint(uriInfo);
-		Response response = recordEndpoint.downloadFile(type, id, resourceName);
+		Response response = recordEndpoint.downloadFile(authToken, type, id, resourceName);
 		statusType = response.getStatusInfo();
 		contentLenght = response.getHeaderString("Content-Length");
 

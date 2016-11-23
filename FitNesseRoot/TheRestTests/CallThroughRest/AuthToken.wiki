@@ -1,0 +1,40 @@
+---
+Test
+---
+!contents -R2 -g -p -f -h
+!1 Test AuthToken
+Test that sending a valid authToken gives additional permissions compared to guest (no token).
+
+!***> Configure !-RestFixture-!
+
+| Table:smartrics.rest.fitnesse.fixture.RestFixtureConfig | |
+| restfixture.default.headers | Content-Type: application/uub+record+json!-
+-!authToken:fitnesseAdminToken !-
+-! |
+| restfixture.content.handlers.map | application/uub+record+json=JSON |
+
+*!
+!***> Test create without token, should not be allowed
+
+| Table:smartrics.rest.fitnesse.fixture.RestFixture | http://localhost:8089/cora |
+| setHeader | Content-Type:application/uub+record+json |
+| setBody | {"name":"text","children":[{"name":"recordInfo","children":[{"name":"id","value":"authTokenTestingText"},{"name":"dataDivider","children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"systemOne"}]}]},{"name":"textPart","children":[{"name":"text","value":"En  text för att testa  authTokens"}],"attributes":{"type":"default","lang":"sv"}}]} |
+| POST | /rest/record/textSystemOne | 403 | | |
+
+*!
+!***> Test create with token, should  be allowed
+
+| Table:smartrics.rest.fitnesse.fixture.RestFixture | http://localhost:8089/cora |
+| setHeader | Content-Type:application/uub+record+json!-
+-!authToken:fitnesseAdminToken!-
+-! |
+| setBody | {"name":"text","children":[{"name":"recordInfo","children":[{"name":"id","value":"authTokenTestingText"},{"name":"dataDivider","children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"systemOne"}]}]},{"name":"textPart","children":[{"name":"text","value":"En  text för att testa  authTokens"}],"attributes":{"type":"default","lang":"sv"}}]} |
+| POST | /rest/record/textSystemOne | 201 | | |
+
+*!
+!***> Remove text
+
+| Table:smartrics.rest.fitnesse.fixture.RestFixture | http://localhost:8089/cora |
+| DELETE | /rest/record/textSystemOne/authTokenTestingText | 200 | | |
+
+*!

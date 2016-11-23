@@ -2,7 +2,9 @@
 !***> Configure !-RestFixture-!
 
 | Table:smartrics.rest.fitnesse.fixture.RestFixtureConfig | |
-| restfixture.default.headers | Content-Type: application/uub+record+json |
+| restfixture.default.headers | Content-Type: application/uub+record+json!-
+-!authToken:fitnesseAdminToken !-
+-! |
 | restfixture.content.handlers.map | application/uub+record+json=JSON!-
 -!default=JSON |
 
