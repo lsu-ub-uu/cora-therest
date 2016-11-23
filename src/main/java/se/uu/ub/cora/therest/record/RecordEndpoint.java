@@ -93,11 +93,6 @@ public class RecordEndpoint {
 	@Produces("application/uub+record+json")
 	public Response createRecord(@HeaderParam("authToken") String authToken,
 			@PathParam("type") String type, String jsonRecord) {
-		// public Response createRecord(@PathParam("type") String type, String
-		// jsonRecord) {
-		// set user directly here until we have decided how to authenticate user
-		// return createRecordUsingAuthTokenWithRecord(AUTH_TOKEN, type,
-		// jsonRecord);
 		return createRecordUsingAuthTokenWithRecord(authToken, type, jsonRecord);
 	}
 
@@ -191,9 +186,6 @@ public class RecordEndpoint {
 	@GET
 	@Path("{type}/")
 	@Produces("application/uub+recordList+json")
-	// public Response readRecordList(@PathParam("type") String type) {
-	// return readRecordListUsingAuthTokenByType(AUTH_TOKEN, type);
-	// }
 	public Response readRecordList(@HeaderParam("authToken") String authToken,
 			@PathParam("type") String type) {
 		return readRecordListUsingAuthTokenByType(authToken, type);
@@ -230,14 +222,8 @@ public class RecordEndpoint {
 	@GET
 	@Path("{type}/{id}")
 	@Produces("application/uub+record+json")
-	// public Response readRecord(@PathParam("type") String type,
-	// @PathParam("id") String id) {
-	// // set user directly here until we have decided how to authenticate user
-	// return readRecordUsingAuthTokenByTypeAndId(AUTH_TOKEN, type, id);
-	// }
 	public Response readRecord(@HeaderParam("authToken") String authToken,
 			@PathParam("type") String type, @PathParam("id") String id) {
-		// set user directly here until we have decided how to authenticate user
 		return readRecordUsingAuthTokenByTypeAndId(authToken, type, id);
 	}
 
@@ -266,15 +252,8 @@ public class RecordEndpoint {
 	@GET
 	@Path("{type}/{id}/incomingLinks")
 	@Produces("application/uub+recordList+json")
-	// public Response readIncomingRecordLinks(@PathParam("type") String type,
-	// @PathParam("id") String id) {
-	// // set user directly here until we have decided how to authenticate user
-	// return readIncomingRecordLinksUsingAuthTokenByTypeAndId(AUTH_TOKEN, type,
-	// id);
-	// }
 	public Response readIncomingRecordLinks(@HeaderParam("authToken") String authToken,
 			@PathParam("type") String type, @PathParam("id") String id) {
-		// set user directly here until we have decided how to authenticate user
 		return readIncomingRecordLinksUsingAuthTokenByTypeAndId(authToken, type, id);
 	}
 
@@ -301,14 +280,8 @@ public class RecordEndpoint {
 
 	@DELETE
 	@Path("{type}/{id}")
-	// public Response deleteRecord(@PathParam("type") String type,
-	// @PathParam("id") String id) {
-	// // set user directly here until we have decided how to authenticate user
-	// return deleteRecordUsingAuthTokenByTypeAndId(AUTH_TOKEN, type, id);
-	// }
 	public Response deleteRecord(@HeaderParam("authToken") String authToken,
 			@PathParam("type") String type, @PathParam("id") String id) {
-		// set user directly here until we have decided how to authenticate user
 		return deleteRecordUsingAuthTokenByTypeAndId(authToken, type, id);
 	}
 
@@ -335,12 +308,6 @@ public class RecordEndpoint {
 	@Path("{type}/{id}")
 	@Consumes("application/uub+record+json")
 	@Produces("application/uub+record+json")
-	// public Response updateRecord(@PathParam("type") String type,
-	// @PathParam("id") String id,
-	// String jsonRecord) {
-	// return updateRecordUsingAuthTokenWithRecord(AUTH_TOKEN, type, id,
-	// jsonRecord);
-	// }
 	public Response updateRecord(@HeaderParam("authToken") String authToken,
 			@PathParam("type") String type, @PathParam("id") String id, String jsonRecord) {
 		return updateRecordUsingAuthTokenWithRecord(authToken, type, id, jsonRecord);
@@ -369,15 +336,6 @@ public class RecordEndpoint {
 
 	@GET
 	@Path("{type}/{id}/{streamId}")
-	// @Path("{type}/{id}/master")
-	// @Consumes("multipart/form-data")
-	// @Produces("application/uub+record+json2")
-	// public Response downloadFile(@PathParam("type") String type,
-	// @PathParam("id") String id,
-	// @PathParam("streamId") String streamId) {
-	// return downloadFileUsingAuthTokenWithStream(AUTH_TOKEN, type, id,
-	// streamId);
-	// }
 	public Response downloadFile(@HeaderParam("authToken") String authToken,
 			@PathParam("type") String type, @PathParam("id") String id,
 			@PathParam("streamId") String streamId) {
@@ -416,15 +374,6 @@ public class RecordEndpoint {
 	@Path("{type}/{id}/{streamId}")
 	@Consumes("multipart/form-data")
 	@Produces("application/uub+record+json2")
-	// public Response uploadFile(@PathParam("type") String type,
-	// @PathParam("id") String id,
-	// @FormDataParam("file") InputStream uploadedInputStream,
-	// @FormDataParam("file") FormDataContentDisposition fileDetail) {
-	// String fileName = fileDetail.getFileName();
-	// return uploadFileUsingAuthTokenWithStream(AUTH_TOKEN, type, id,
-	// uploadedInputStream,
-	// fileName);
-	// }
 	public Response uploadFile(@HeaderParam("authToken") String authToken,
 			@PathParam("type") String type, @PathParam("id") String id,
 			@FormDataParam("file") InputStream uploadedInputStream,
