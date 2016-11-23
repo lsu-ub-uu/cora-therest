@@ -55,7 +55,7 @@ Update role, to only have one rule (systemOneUser), a role must have at least on
 
 !| RecordEndpointFixture |
 | authToken | type | id | json | testUpdateRecord? | getStatusType? |
-| guestToken | permissionRole | fitnesseTextAdmin | {"name":"permissionRole","children":[{"name":"recordInfo","children":[{"name":"id","value":"fitnesseTextAdmin"},{"name":"type","value":"permissionRole"},{"name":"createdBy","value":"131313"},{"name":"dataDivider","children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"cora"}]}]},{"name":"permissionRuleLink","children":[{"name":"linkedRecordType","value":"permissionRule"},{"name":"linkedRecordId","value":"nothing"}],"repeatId":"0"},{"name":"activeStatus","value":"active"}]} | | OK |
+| fitnesseAdminToken | permissionRole | fitnesseTextAdmin | {"name":"permissionRole","children":[{"name":"recordInfo","children":[{"name":"id","value":"fitnesseTextAdmin"},{"name":"type","value":"permissionRole"},{"name":"createdBy","value":"131313"},{"name":"dataDivider","children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"cora"}]}]},{"name":"permissionRuleLink","children":[{"name":"linkedRecordType","value":"permissionRule"},{"name":"linkedRecordId","value":"nothing"}],"repeatId":"0"},{"name":"activeStatus","value":"active"}]} | | OK |
 
 *!
 Create a new text to show that it is '''NOT''' allowed:

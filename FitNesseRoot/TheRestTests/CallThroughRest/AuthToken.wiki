@@ -17,7 +17,9 @@ Test that sending a valid authToken gives additional permissions compared to gue
 !***> Test create without token, should not be allowed
 
 | Table:smartrics.rest.fitnesse.fixture.RestFixture | http://localhost:8089/cora |
-| setHeader | Content-Type:application/uub+record+json |
+| setHeader | Content-Type:application/uub+record+json !-
+-!authToken:!-unknown-!!-Token-!!-
+-! |
 | setBody | {"name":"text","children":[{"name":"recordInfo","children":[{"name":"id","value":"authTokenTestingText"},{"name":"dataDivider","children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"systemOne"}]}]},{"name":"textPart","children":[{"name":"text","value":"En  text för att testa  authTokens"}],"attributes":{"type":"default","lang":"sv"}}]} |
 | POST | /rest/record/textSystemOne | 403 | | |
 

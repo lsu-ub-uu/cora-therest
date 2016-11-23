@@ -15,7 +15,7 @@
 
 !| RecordEndpointFixture |
 | authToken | type | json | testCreateRecord? | getStatusType? |
-| dummyAuthenticatedToken | textSystemOne | {"name":"text","children":[{"name":"recordInfo","children":[{"name":"id","value":"myText"},{"children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"cora"}],"name":"dataDivider"}]},{"name":"textPart","attributes":{"type":"default","lang":"sv"} ,"children":[{"name":"text","value":"Min svenska text"}]}]} | =~/"name":"createdBy",\s*"value":"12345"/ | CREATED |
+| fitnesseAdminToken | textSystemOne | {"name":"text","children":[{"name":"recordInfo","children":[{"name":"id","value":"myText"},{"children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"cora"}],"name":"dataDivider"}]},{"name":"textPart","attributes":{"type":"default","lang":"sv"} ,"children":[{"name":"text","value":"Min svenska text"}]}]} | =~/"name":"createdBy",\s*"value":"131313"/ | CREATED |
 | fitnesseUserToken | textSystemOne | {"name":"text","children":[{"name":"recordInfo","children":[{"name":"id","value":"my3Text"},{"children":[{"name":"linkedRecordType","value":"system"},{"name":"linkedRecordId","value":"cora"}],"name":"dataDivider"}]},{"name":"textPart","attributes":{"type":"default","lang":"sv"},"children":[{"name":"text","value":"Min andra text på svenska"}]},{"name":"textPart","attributes":{"type":"alternative","lang":"en"},"children":[{"name":"text","value":"My second text in english"}]}]} | =~/"name":"createdBy",\s*"value":"121212"/ | CREATED |
 
 *!
