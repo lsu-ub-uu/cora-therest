@@ -33,48 +33,68 @@ public final class DataRecordLinkSpiderToRestConverter {
 	private ConverterInfo baseURL;
 	private RestDataRecordLink restDataRecordLink;
 
-	public static DataRecordLinkSpiderToRestConverter fromSpiderDataRecordLinkWithBaseURL(
-			SpiderDataRecordLink spiderDataRecordLink, ConverterInfo baseURL2) {
-		return new DataRecordLinkSpiderToRestConverter(spiderDataRecordLink, baseURL2);
-	}
-
 	private DataRecordLinkSpiderToRestConverter(SpiderDataRecordLink spiderDataRecordLink,
 			ConverterInfo baseURL2) {
 		this.spiderDataRecordLink = spiderDataRecordLink;
 		this.baseURL = baseURL2;
 	}
 
+	public static DataRecordLinkSpiderToRestConverter fromSpiderDataRecordLinkWithBaseURL(
+			SpiderDataRecordLink spiderDataRecordLink, ConverterInfo baseURL2) {
+		return new DataRecordLinkSpiderToRestConverter(spiderDataRecordLink, baseURL2);
+	}
+
 	public RestDataRecordLink toRest() {
-
-		SpiderDataAtomic linkedRecordType = (SpiderDataAtomic) spiderDataRecordLink
-				.getFirstChildWithNameInData("linkedRecordType");
-		SpiderDataAtomic linkedRecordId = (SpiderDataAtomic) spiderDataRecordLink
-				.getFirstChildWithNameInData("linkedRecordId");
-
-		restDataRecordLink = RestDataRecordLink
-				.withNameInData(spiderDataRecordLink.getNameInData());
-		RestDataAtomic restLinkedRecordType = RestDataAtomic
-				.withNameInDataAndValue("linkedRecordType", linkedRecordType.getValue());
-		restDataRecordLink.addChild(restLinkedRecordType);
-
-		RestDataAtomic restLinkedRecordId = RestDataAtomic.withNameInDataAndValue("linkedRecordId",
-				linkedRecordId.getValue());
-		restDataRecordLink.addChild(restLinkedRecordId);
+		createDataRestRecordLinkSetNameInData();
+		
+		RestDataAtomic restLinkedRecordType = addLinkedRecordTypeToRestDataRecordLink();
+		RestDataAtomic restLinkedRecordId = addLinkedRecordIdToRestDataRecordLink();
 
 		restDataRecordLink.setRepeatId(spiderDataRecordLink.getRepeatId());
+		restDataRecordLink.getAttributes().putAll(spiderDataRecordLink.getAttributes());
+		
 		addLinkedRepeatIdIfItExists();
 		addLinkedPathIfItExists();
 		createRestLinks(restLinkedRecordType.getValue(), restLinkedRecordId.getValue());
 		return restDataRecordLink;
 	}
 
+	private void createDataRestRecordLinkSetNameInData() {
+		restDataRecordLink = RestDataRecordLink
+				.withNameInData(spiderDataRecordLink.getNameInData());
+	}
+
+	private RestDataAtomic addLinkedRecordTypeToRestDataRecordLink() {
+		return createAndAddRestAtomicChildWithNameInData("linkedRecordType");
+	}
+	
+	private RestDataAtomic createAndAddRestAtomicChildWithNameInData(String nameInData) {
+		RestDataAtomic restLinkedRecordId = createRestDataAtomicFromSpiderDataAtomic(nameInData);
+		restDataRecordLink.addChild(restLinkedRecordId);
+		return restLinkedRecordId;
+	}
+	
+	private RestDataAtomic createRestDataAtomicFromSpiderDataAtomic(String nameInData) {
+		SpiderDataAtomic linkedRecordId = 
+				getAtomicChildFromSpiderDataRecordLinkByNameInData(nameInData);
+		return RestDataAtomic.withNameInDataAndValue(nameInData,
+				linkedRecordId.getValue());
+	}
+	
+	private SpiderDataAtomic getAtomicChildFromSpiderDataRecordLinkByNameInData(String nameInData) {
+		return (SpiderDataAtomic) spiderDataRecordLink
+				.getFirstChildWithNameInData(nameInData);
+	}
+
+	private RestDataAtomic addLinkedRecordIdToRestDataRecordLink() {
+		return createAndAddRestAtomicChildWithNameInData("linkedRecordId");
+	}
+	
 	private void addLinkedRepeatIdIfItExists() {
 		if (spiderDataRecordLink.containsChildWithNameInData(LINKED_REPEAT_ID)) {
-			SpiderDataAtomic linkedRepeatId = (SpiderDataAtomic) spiderDataRecordLink
-					.getFirstChildWithNameInData(LINKED_REPEAT_ID);
 
-			RestDataAtomic restLinkedRepeatId = RestDataAtomic
-					.withNameInDataAndValue(LINKED_REPEAT_ID, linkedRepeatId.getValue());
+			RestDataAtomic restLinkedRepeatId = 
+					createRestDataAtomicFromSpiderDataAtomic(LINKED_REPEAT_ID);
 
 			restDataRecordLink.addChild(restLinkedRepeatId);
 		}

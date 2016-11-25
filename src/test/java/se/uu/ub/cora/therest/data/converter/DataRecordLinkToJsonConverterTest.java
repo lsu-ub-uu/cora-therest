@@ -66,6 +66,17 @@ public class DataRecordLinkToJsonConverterTest {
 	}
 
 	@Test
+	public void testToJsonGroupWithAttribute() {
+		recordLink.addAttributeByIdWithValue("attributeNameInData", "attributeValue");
+		String jsonString = converter.toJson();
+
+		assertEquals(jsonString,"{\"children\":[" + "{\"name\":\"linkedRecordType\",\"value\":\"aRecordType\"},"
+				+ "{\"name\":\"linkedRecordId\",\"value\":\"aRecordId\"}]"
+				+ ",\"name\":\"nameInData\","
+				+ "\"attributes\":{\"attributeNameInData\":\"attributeValue\"}}");
+	}
+	
+	@Test
 	public void testToJsonWithRepeatId() {
 		recordLink.setRepeatId("22");
 		String jsonString = converter.toJson();
