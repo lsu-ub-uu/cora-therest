@@ -119,7 +119,7 @@ public class RecordEndpointFixture {
 		UriInfo uriInfo = new TestUri();
 		setupSpiderInstanceProvider();
 		RecordEndpoint recordEndpoint = new RecordEndpoint(uriInfo);
-		Response response = recordEndpoint.readIncomingRecordLinks(authToken, type, id);
+		Response response = recordEndpoint.readIncomingRecordLinks(authToken, authToken, type, id);
 		String entity = (String) response.getEntity();
 		statusType = response.getStatusInfo();
 		return entity;
@@ -129,7 +129,7 @@ public class RecordEndpointFixture {
 		UriInfo uriInfo = new TestUri();
 		setupSpiderInstanceProvider();
 		RecordEndpoint recordEndpoint = new RecordEndpoint(uriInfo);
-		Response response = recordEndpoint.readRecordList(authToken, type);
+		Response response = recordEndpoint.readRecordList(authToken, authToken, type);
 		String entity = (String) response.getEntity();
 		statusType = response.getStatusInfo();
 		return entity;
@@ -195,7 +195,7 @@ public class RecordEndpointFixture {
 		builder.fileName(fileName);
 		FormDataContentDisposition formDataContentDisposition = builder.build();
 
-		Response response = recordEndpoint.uploadFile(authToken, type, id, stream,
+		Response response = recordEndpoint.uploadFile(authToken, authToken, type, id, stream,
 				formDataContentDisposition);
 
 		statusType = response.getStatusInfo();
@@ -224,7 +224,8 @@ public class RecordEndpointFixture {
 		UriInfo uriInfo = new TestUri();
 		setupSpiderInstanceProvider();
 		RecordEndpoint recordEndpoint = new RecordEndpoint(uriInfo);
-		Response response = recordEndpoint.downloadFile(authToken, type, id, resourceName);
+		Response response = recordEndpoint.downloadFile(authToken, authToken, type, id,
+				resourceName);
 		statusType = response.getStatusInfo();
 		contentLenght = response.getHeaderString("Content-Length");
 

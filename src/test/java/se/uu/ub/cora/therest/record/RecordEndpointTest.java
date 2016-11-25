@@ -70,8 +70,32 @@ public class RecordEndpointTest {
 	}
 
 	@Test
+	public void testPreferedTokenForReadList() throws IOException {
+		expectTokenForReadListToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, "authToken2", AUTH_TOKEN);
+		expectTokenForReadListToPrefereblyBeHeaderThanQuery(null, AUTH_TOKEN, AUTH_TOKEN);
+		expectTokenForReadListToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, null, AUTH_TOKEN);
+		expectTokenForReadListToPrefereblyBeHeaderThanQuery(null, null, null);
+	}
+
+	private void expectTokenForReadListToPrefereblyBeHeaderThanQuery(String headerAuthToken,
+			String queryAuthToken, String authTokenExpected) {
+		SpiderInstanceFactorySpy factorySpy = setupInstanceProviderWithFactorySpy();
+
+		response = recordEndpoint.readRecordList(headerAuthToken, queryAuthToken, PLACE);
+
+		SpiderRecordListReaderSpy spiderListReaderSpy = factorySpy.spiderRecordListReaderSpy;
+		assertEquals(spiderListReaderSpy.authToken, authTokenExpected);
+	}
+
+	private SpiderInstanceFactorySpy setupInstanceProviderWithFactorySpy() {
+		SpiderInstanceFactorySpy factorySpy = new SpiderInstanceFactorySpy();
+		SpiderInstanceProvider.setSpiderInstanceFactory(factorySpy);
+		return factorySpy;
+	}
+
+	@Test
 	public void testReadRecordList() {
-		response = recordEndpoint.readRecordList(AUTH_TOKEN, PLACE);
+		response = recordEndpoint.readRecordList(AUTH_TOKEN, AUTH_TOKEN, PLACE);
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.OK);
 	}
@@ -86,7 +110,7 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testReadRecordListNotFound() {
-		response = recordEndpoint.readRecordList(AUTH_TOKEN, "place_NOT_FOUND");
+		response = recordEndpoint.readRecordList(AUTH_TOKEN, AUTH_TOKEN, "place_NOT_FOUND");
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
 	}
 
@@ -99,8 +123,26 @@ public class RecordEndpointTest {
 	}
 
 	@Test
+	public void testPreferedTokenForRead() throws IOException {
+		expectTokenForReadToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, "authToken2", AUTH_TOKEN);
+		expectTokenForReadToPrefereblyBeHeaderThanQuery(null, AUTH_TOKEN, AUTH_TOKEN);
+		expectTokenForReadToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, null, AUTH_TOKEN);
+		expectTokenForReadToPrefereblyBeHeaderThanQuery(null, null, null);
+	}
+
+	private void expectTokenForReadToPrefereblyBeHeaderThanQuery(String headerAuthToken,
+			String queryAuthToken, String authTokenExpected) {
+		SpiderInstanceFactorySpy factorySpy = setupInstanceProviderWithFactorySpy();
+
+		response = recordEndpoint.readRecord(headerAuthToken, queryAuthToken, PLACE, PLACE_0001);
+
+		SpiderRecordReaderSpy spiderReaderSpy = factorySpy.spiderRecordReaderSpy;
+		assertEquals(spiderReaderSpy.authToken, authTokenExpected);
+	}
+
+	@Test
 	public void testReadRecord() {
-		response = recordEndpoint.readRecord(AUTH_TOKEN, PLACE, PLACE_0001);
+		response = recordEndpoint.readRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001);
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.OK);
 	}
@@ -122,20 +164,42 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testReadRecordNotFound() {
-		response = recordEndpoint.readRecord(AUTH_TOKEN, PLACE, "place:0001_NOT_FOUND");
+		response = recordEndpoint.readRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, "place:0001_NOT_FOUND");
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
 	}
 
 	@Test
 	public void testReadRecordAbstractRecordType() {
 		String type = "abstract";
-		response = recordEndpoint.readRecord(AUTH_TOKEN, type, "canBeWhatEverIdTypeIsChecked");
+		response = recordEndpoint.readRecord(AUTH_TOKEN, AUTH_TOKEN, type,
+				"canBeWhatEverIdTypeIsChecked");
 		assertResponseStatusIs(Response.Status.METHOD_NOT_ALLOWED);
 	}
 
 	@Test
+	public void testPreferedTokenForReadIncomingLinks() throws IOException {
+		expectTokenForReadIncomingLinksToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, "authToken2",
+				AUTH_TOKEN);
+		expectTokenForReadIncomingLinksToPrefereblyBeHeaderThanQuery(null, AUTH_TOKEN, AUTH_TOKEN);
+		expectTokenForReadIncomingLinksToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, null, AUTH_TOKEN);
+		expectTokenForReadIncomingLinksToPrefereblyBeHeaderThanQuery(null, null, null);
+	}
+
+	private void expectTokenForReadIncomingLinksToPrefereblyBeHeaderThanQuery(
+			String headerAuthToken, String queryAuthToken, String authTokenExpected) {
+		SpiderInstanceFactorySpy factorySpy = setupInstanceProviderWithFactorySpy();
+
+		response = recordEndpoint.readIncomingRecordLinks(headerAuthToken, queryAuthToken, PLACE,
+				PLACE_0001);
+
+		SpiderRecordReaderSpy spiderReaderSpy = factorySpy.spiderRecordReaderSpy;
+		assertEquals(spiderReaderSpy.authToken, authTokenExpected);
+	}
+
+	@Test
 	public void testReadIncomingRecordLinks() {
-		response = recordEndpoint.readIncomingRecordLinks(AUTH_TOKEN, PLACE, PLACE_0001);
+		response = recordEndpoint.readIncomingRecordLinks(AUTH_TOKEN, AUTH_TOKEN, PLACE,
+				PLACE_0001);
 		String entity = (String) response.getEntity();
 
 		assertEquals(entity, "{\"dataList\":{\"fromNo\":\"1\",\"data\":["
@@ -164,7 +228,7 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testReadIncomingLinksNotFound() {
-		response = recordEndpoint.readIncomingRecordLinks(AUTH_TOKEN, PLACE,
+		response = recordEndpoint.readIncomingRecordLinks(AUTH_TOKEN, AUTH_TOKEN, PLACE,
 				"place:0001_NOT_FOUND");
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
 	}
@@ -172,20 +236,39 @@ public class RecordEndpointTest {
 	@Test
 	public void testReadIncomingLinksAbstractRecordType() {
 		String type = "abstract";
-		response = recordEndpoint.readIncomingRecordLinks(AUTH_TOKEN, type,
+		response = recordEndpoint.readIncomingRecordLinks(AUTH_TOKEN, AUTH_TOKEN, type,
 				"canBeWhatEverIdTypeIsChecked");
 		assertResponseStatusIs(Response.Status.METHOD_NOT_ALLOWED);
 	}
 
 	@Test
+	public void testPreferedTokenForDelete() throws IOException {
+		expectTokenForDeleteToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, "authToken2", AUTH_TOKEN);
+		expectTokenForDeleteToPrefereblyBeHeaderThanQuery(null, AUTH_TOKEN, AUTH_TOKEN);
+		expectTokenForDeleteToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, null, AUTH_TOKEN);
+		expectTokenForDeleteToPrefereblyBeHeaderThanQuery(null, null, null);
+	}
+
+	private void expectTokenForDeleteToPrefereblyBeHeaderThanQuery(String headerAuthToken,
+			String queryAuthToken, String authTokenExpected) {
+		SpiderInstanceFactorySpy factorySpy = setupInstanceProviderWithFactorySpy();
+
+		response = recordEndpoint.deleteRecord(headerAuthToken, queryAuthToken, PLACE,
+				"place:0002");
+
+		SpiderRecordDeleterSpy spiderDeleterSpy = factorySpy.spiderRecordDeleterSpy;
+		assertEquals(spiderDeleterSpy.authToken, authTokenExpected);
+	}
+
+	@Test
 	public void testDeleteRecordNoIncomingLinks() {
-		response = recordEndpoint.deleteRecord(AUTH_TOKEN, PLACE, "place:0002");
+		response = recordEndpoint.deleteRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, "place:0002");
 		assertResponseStatusIs(Response.Status.OK);
 	}
 
 	@Test
 	public void testDeleteRecordIncomingLinks() {
-		response = recordEndpoint.deleteRecord(AUTH_TOKEN, PLACE, PLACE_0001);
+		response = recordEndpoint.deleteRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001);
 		assertResponseStatusIs(Response.Status.METHOD_NOT_ALLOWED);
 	}
 
@@ -205,8 +288,28 @@ public class RecordEndpointTest {
 	}
 
 	@Test
+	public void testPreferedTokenForUpdate() throws IOException {
+		expectTokenForUpdateToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, "authToken2", AUTH_TOKEN);
+		expectTokenForUpdateToPrefereblyBeHeaderThanQuery(null, AUTH_TOKEN, AUTH_TOKEN);
+		expectTokenForUpdateToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, null, AUTH_TOKEN);
+		expectTokenForUpdateToPrefereblyBeHeaderThanQuery(null, null, null);
+	}
+
+	private void expectTokenForUpdateToPrefereblyBeHeaderThanQuery(String headerAuthToken,
+			String queryAuthToken, String authTokenExpected) {
+		SpiderInstanceFactorySpy factorySpy = setupInstanceProviderWithFactorySpy();
+
+		response = recordEndpoint.updateRecord(headerAuthToken, queryAuthToken, PLACE, PLACE_0001,
+				jsonToUpdateWith);
+
+		SpiderRecordUpdaterSpy spiderUpdaterSpy = factorySpy.spiderRecordUpdaterSpy;
+		assertEquals(spiderUpdaterSpy.authToken, authTokenExpected);
+	}
+
+	@Test
 	public void testUpdateRecord() {
-		response = recordEndpoint.updateRecord(AUTH_TOKEN, PLACE, PLACE_0001, jsonToUpdateWith);
+		response = recordEndpoint.updateRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001,
+				jsonToUpdateWith);
 		assertResponseStatusIs(Response.Status.OK);
 	}
 
@@ -220,34 +323,54 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testUpdateRecordNotFound() {
-		response = recordEndpoint.updateRecord(AUTH_TOKEN, PLACE, PLACE_0001 + "_NOT_FOUND",
-				jsonToUpdateWithNotFound);
+		response = recordEndpoint.updateRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE,
+				PLACE_0001 + "_NOT_FOUND", jsonToUpdateWithNotFound);
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
 	}
 
 	@Test
 	public void testUpdateRecordTypeNotFound() {
-		response = recordEndpoint.updateRecord(AUTH_TOKEN, PLACE + "_NOT_FOUND", PLACE_0001,
-				jsonToUpdateWithNotFound);
+		response = recordEndpoint.updateRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE + "_NOT_FOUND",
+				PLACE_0001, jsonToUpdateWithNotFound);
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
 	}
 
 	@Test
 	public void testUpdateRecordBadContentInJson() {
-		response = recordEndpoint.updateRecord(AUTH_TOKEN, PLACE, PLACE_0001, jsonWithBadContent);
+		response = recordEndpoint.updateRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001,
+				jsonWithBadContent);
 		assertResponseStatusIs(Response.Status.BAD_REQUEST);
 	}
 
 	@Test
 	public void testUpdateRecordWrongDataTypeInJson() {
-		response = recordEndpoint.updateRecord(AUTH_TOKEN, PLACE, PLACE_0001,
+		response = recordEndpoint.updateRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001,
 				jsonToUpdateWithAttributeAsChild);
 		assertResponseStatusIs(Response.Status.BAD_REQUEST);
 	}
 
 	@Test
+	public void testPreferedTokenForCreate() throws IOException {
+		expectTokenForCreateToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, "authToken2", AUTH_TOKEN);
+		expectTokenForCreateToPrefereblyBeHeaderThanQuery(null, AUTH_TOKEN, AUTH_TOKEN);
+		expectTokenForCreateToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, null, AUTH_TOKEN);
+		expectTokenForCreateToPrefereblyBeHeaderThanQuery(null, null, null);
+	}
+
+	private void expectTokenForCreateToPrefereblyBeHeaderThanQuery(String headerAuthToken,
+			String queryAuthToken, String authTokenExpected) {
+		SpiderInstanceFactorySpy factorySpy = setupInstanceProviderWithFactorySpy();
+
+		response = recordEndpoint.createRecord(headerAuthToken, queryAuthToken, PLACE,
+				jsonToCreateFrom);
+
+		SpiderCreatorSpy spiderCreatorSpy = factorySpy.spiderCreatorSpy;
+		assertEquals(spiderCreatorSpy.authToken, authTokenExpected);
+	}
+
+	@Test
 	public void testCreateRecord() {
-		response = recordEndpoint.createRecord(AUTH_TOKEN, PLACE, jsonToCreateFrom);
+		response = recordEndpoint.createRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, jsonToCreateFrom);
 		assertResponseStatusIs(Response.Status.CREATED);
 		assertTrue(response.getLocation().toString().startsWith("record/" + PLACE));
 	}
@@ -255,13 +378,13 @@ public class RecordEndpointTest {
 	@Test
 	public void testCreateRecordBadCreatedLocation() {
 		String type = "place&& &&\\\\";
-		response = recordEndpoint.createRecord(AUTH_TOKEN, type, jsonToCreateFrom);
+		response = recordEndpoint.createRecord(AUTH_TOKEN, AUTH_TOKEN, type, jsonToCreateFrom);
 		assertResponseStatusIs(Response.Status.BAD_REQUEST);
 	}
 
 	@Test
 	public void testCreateRecordBadContentInJson() {
-		response = recordEndpoint.createRecord(AUTH_TOKEN, PLACE, jsonWithBadContent);
+		response = recordEndpoint.createRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, jsonWithBadContent);
 		assertResponseStatusIs(Response.Status.BAD_REQUEST);
 	}
 
@@ -296,7 +419,7 @@ public class RecordEndpointTest {
 				.usingDependencyProvider(spiderDependencyProvider);
 		SpiderInstanceProvider.setSpiderInstanceFactory(factory);
 
-		response = recordEndpoint.createRecord(AUTH_TOKEN, PLACE, jsonToCreateFrom);
+		response = recordEndpoint.createRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, jsonToCreateFrom);
 		assertResponseStatusIs(Response.Status.BAD_REQUEST);
 	}
 
@@ -309,14 +432,15 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testCreateRecordAttributeAsChild() {
-		response = recordEndpoint.createRecord(AUTH_TOKEN, PLACE, jsonToCreateFromAttributeAsChild);
+		response = recordEndpoint.createRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE,
+				jsonToCreateFromAttributeAsChild);
 		assertResponseStatusIs(Response.Status.BAD_REQUEST);
 	}
 
 	@Test
 	public void testCreateRecordAbstractRecordType() {
 		String type = "abstract";
-		response = recordEndpoint.createRecord(AUTH_TOKEN, type, jsonToCreateFrom);
+		response = recordEndpoint.createRecord(AUTH_TOKEN, AUTH_TOKEN, type, jsonToCreateFrom);
 		assertResponseStatusIs(Response.Status.METHOD_NOT_ALLOWED);
 	}
 
@@ -330,10 +454,10 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testCreateRecordDuplicateUserSuppliedId() {
-		response = recordEndpoint.createRecord(AUTH_TOKEN, PLACE, duplicateTestJson);
+		response = recordEndpoint.createRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, duplicateTestJson);
 		assertResponseStatusIs(Response.Status.CREATED);
 
-		response = recordEndpoint.createRecord(AUTH_TOKEN, PLACE, duplicateTestJson);
+		response = recordEndpoint.createRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, duplicateTestJson);
 		assertResponseStatusIs(Response.Status.CONFLICT);
 
 	}
@@ -346,8 +470,33 @@ public class RecordEndpointTest {
 				.usingDependencyProvider(spiderDependencyProvider);
 		SpiderInstanceProvider.setSpiderInstanceFactory(factory);
 
-		response = recordEndpoint.createRecord(AUTH_TOKEN, PLACE, jsonToCreateFrom);
+		response = recordEndpoint.createRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, jsonToCreateFrom);
 		assertResponseStatusIs(Response.Status.INTERNAL_SERVER_ERROR);
+	}
+
+	@Test
+	public void testPreferedTokenForUpload() throws IOException {
+		expectTokenForUploadToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, "authToken2", AUTH_TOKEN);
+		expectTokenForUploadToPrefereblyBeHeaderThanQuery(null, AUTH_TOKEN, AUTH_TOKEN);
+		expectTokenForUploadToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, null, AUTH_TOKEN);
+		expectTokenForUploadToPrefereblyBeHeaderThanQuery(null, null, null);
+	}
+
+	private void expectTokenForUploadToPrefereblyBeHeaderThanQuery(String headerAuthToken,
+			String queryAuthToken, String authTokenExpected) {
+		SpiderInstanceFactorySpy factorySpy = setupInstanceProviderWithFactorySpy();
+
+		FormDataContentDispositionBuilder builder = FormDataContentDisposition
+				.name("multipart;form-data");
+		builder.fileName("adele1.png");
+		FormDataContentDisposition formDataContentDisposition = builder.build();
+		InputStream stream = new ByteArrayInputStream("a string".getBytes(StandardCharsets.UTF_8));
+
+		response = recordEndpoint.uploadFile(headerAuthToken, queryAuthToken, "image",
+				"image:123456789", stream, formDataContentDisposition);
+
+		SpiderUploaderSpy spiderUploaderSpy = factorySpy.spiderUploaderSpy;
+		assertEquals(spiderUploaderSpy.authToken, authTokenExpected);
 	}
 
 	@Test
@@ -359,8 +508,8 @@ public class RecordEndpointTest {
 		builder.fileName("adele1.png");
 		FormDataContentDisposition formDataContentDisposition = builder.build();
 
-		response = recordEndpoint.uploadFile(AUTH_TOKEN, "image", "image:123456789", stream,
-				formDataContentDisposition);
+		response = recordEndpoint.uploadFile(AUTH_TOKEN, AUTH_TOKEN, "image", "image:123456789",
+				stream, formDataContentDisposition);
 
 		String entity = (String) response.getEntity();
 
@@ -418,8 +567,8 @@ public class RecordEndpointTest {
 		builder.fileName("adele1.png");
 		FormDataContentDisposition formDataContentDisposition = builder.build();
 
-		response = recordEndpoint.uploadFile(AUTH_TOKEN, "image", "image:123456789_NOT_FOUND",
-				stream, formDataContentDisposition);
+		response = recordEndpoint.uploadFile(AUTH_TOKEN, AUTH_TOKEN, "image",
+				"image:123456789_NOT_FOUND", stream, formDataContentDisposition);
 
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
 	}
@@ -433,8 +582,8 @@ public class RecordEndpointTest {
 		builder.fileName("adele1.png");
 		FormDataContentDisposition formDataContentDisposition = builder.build();
 
-		response = recordEndpoint.uploadFile(AUTH_TOKEN, PLACE, "image:123456789", stream,
-				formDataContentDisposition);
+		response = recordEndpoint.uploadFile(AUTH_TOKEN, AUTH_TOKEN, PLACE, "image:123456789",
+				stream, formDataContentDisposition);
 
 		assertResponseStatusIs(Response.Status.METHOD_NOT_ALLOWED);
 	}
@@ -446,15 +595,43 @@ public class RecordEndpointTest {
 		builder.fileName("adele1.png");
 		FormDataContentDisposition formDataContentDisposition = builder.build();
 
-		response = recordEndpoint.uploadFile(AUTH_TOKEN, "image", "image:123456789", null,
-				formDataContentDisposition);
+		response = recordEndpoint.uploadFile(AUTH_TOKEN, AUTH_TOKEN, "image", "image:123456789",
+				null, formDataContentDisposition);
 
 		assertResponseStatusIs(Response.Status.BAD_REQUEST);
 	}
 
 	@Test
+	public void testPreferedTokenForDownload() throws IOException {
+		expectTokenForDownloadToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, "authToken2", AUTH_TOKEN);
+		expectTokenForDownloadToPrefereblyBeHeaderThanQuery(null, AUTH_TOKEN, AUTH_TOKEN);
+		expectTokenForDownloadToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, null, AUTH_TOKEN);
+		expectTokenForDownloadToPrefereblyBeHeaderThanQuery(null, null, null);
+	}
+
+	private void expectTokenForDownloadToPrefereblyBeHeaderThanQuery(String headerAuthToken,
+			String queryAuthToken, String authTokenExpected) {
+		SpiderInstanceFactorySpy factorySpy = setupInstanceProviderWithFactorySpy();
+
+		response = recordEndpoint.downloadFile(headerAuthToken, queryAuthToken, "image",
+				"image:123456789", "master");
+
+		SpiderDownloaderSpy spiderDownloaderSpy = factorySpy.spiderDownloaderSpy;
+		assertEquals(spiderDownloaderSpy.authToken, authTokenExpected);
+	}
+
+	@Test
+	public void testDownloadUnauthorized() throws IOException {
+		setNotAuthorized();
+		response = recordEndpoint.downloadFileUsingAuthTokenWithStream("dummyNonAuthorizedToken",
+				"image", "image:123456789", "master");
+		assertResponseStatusIs(Response.Status.FORBIDDEN);
+	}
+
+	@Test
 	public void testDownload() throws IOException {
-		response = recordEndpoint.downloadFile(AUTH_TOKEN, "image", "image:123456789", "master");
+		response = recordEndpoint.downloadFile(AUTH_TOKEN, AUTH_TOKEN, "image", "image:123456789",
+				"master");
 		String contentType = response.getHeaderString("Content-Type");
 		/*
 		 * when we detect and store type of file in spider check it like this
@@ -484,29 +661,23 @@ public class RecordEndpointTest {
 	}
 
 	@Test
-	public void testDownloadUnauthorized() throws IOException {
-		setNotAuthorized();
-		response = recordEndpoint.downloadFileUsingAuthTokenWithStream("dummyNonAuthorizedToken",
-				"image", "image:123456789", "master");
-		assertResponseStatusIs(Response.Status.FORBIDDEN);
-	}
-
-	@Test
 	public void testDownloadNotFound() throws IOException {
-		response = recordEndpoint.downloadFile(AUTH_TOKEN, "image", "image:123456789_NOT_FOUND",
-				"master");
+		response = recordEndpoint.downloadFile(AUTH_TOKEN, AUTH_TOKEN, "image",
+				"image:123456789_NOT_FOUND", "master");
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
 	}
 
 	@Test
 	public void testDownloadNotAChildOfBinary() throws IOException {
-		response = recordEndpoint.downloadFile(AUTH_TOKEN, PLACE, "image:123456789", "master");
+		response = recordEndpoint.downloadFile(AUTH_TOKEN, AUTH_TOKEN, PLACE, "image:123456789",
+				"master");
 		assertResponseStatusIs(Response.Status.METHOD_NOT_ALLOWED);
 	}
 
 	@Test
 	public void testDownloadBadRequest() throws IOException {
-		response = recordEndpoint.downloadFile(AUTH_TOKEN, "image", "image:123456789", "");
+		response = recordEndpoint.downloadFile(AUTH_TOKEN, AUTH_TOKEN, "image", "image:123456789",
+				"");
 		assertResponseStatusIs(Response.Status.BAD_REQUEST);
 	}
 

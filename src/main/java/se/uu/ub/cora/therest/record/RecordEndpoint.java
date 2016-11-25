@@ -31,6 +31,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -91,9 +92,11 @@ public class RecordEndpoint {
 	@Path("{type}")
 	@Consumes("application/uub+record+json")
 	@Produces("application/uub+record+json")
-	public Response createRecord(@HeaderParam("authToken") String authToken,
-			@PathParam("type") String type, String jsonRecord) {
-		return createRecordUsingAuthTokenWithRecord(authToken, type, jsonRecord);
+	public Response createRecord(@HeaderParam("authToken") String headerAuthToken,
+			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
+			String jsonRecord) {
+		String usedToken = getExistingTokenPreferHeader(headerAuthToken, queryAuthToken);
+		return createRecordUsingAuthTokenWithRecord(usedToken, type, jsonRecord);
 	}
 
 	public Response createRecordUsingAuthTokenWithRecord(String authToken, String type,
@@ -186,9 +189,10 @@ public class RecordEndpoint {
 	@GET
 	@Path("{type}/")
 	@Produces("application/uub+recordList+json")
-	public Response readRecordList(@HeaderParam("authToken") String authToken,
-			@PathParam("type") String type) {
-		return readRecordListUsingAuthTokenByType(authToken, type);
+	public Response readRecordList(@HeaderParam("authToken") String headerAuthToken,
+			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type) {
+		String usedToken = getExistingTokenPreferHeader(headerAuthToken, queryAuthToken);
+		return readRecordListUsingAuthTokenByType(usedToken, type);
 	}
 
 	Response readRecordListUsingAuthTokenByType(String authToken, String type) {
@@ -222,9 +226,11 @@ public class RecordEndpoint {
 	@GET
 	@Path("{type}/{id}")
 	@Produces("application/uub+record+json")
-	public Response readRecord(@HeaderParam("authToken") String authToken,
-			@PathParam("type") String type, @PathParam("id") String id) {
-		return readRecordUsingAuthTokenByTypeAndId(authToken, type, id);
+	public Response readRecord(@HeaderParam("authToken") String headerAuthToken,
+			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
+			@PathParam("id") String id) {
+		String usedToken = getExistingTokenPreferHeader(headerAuthToken, queryAuthToken);
+		return readRecordUsingAuthTokenByTypeAndId(usedToken, type, id);
 	}
 
 	public Response readRecordUsingAuthTokenByTypeAndId(String authToken, String type, String id) {
@@ -252,9 +258,11 @@ public class RecordEndpoint {
 	@GET
 	@Path("{type}/{id}/incomingLinks")
 	@Produces("application/uub+recordList+json")
-	public Response readIncomingRecordLinks(@HeaderParam("authToken") String authToken,
-			@PathParam("type") String type, @PathParam("id") String id) {
-		return readIncomingRecordLinksUsingAuthTokenByTypeAndId(authToken, type, id);
+	public Response readIncomingRecordLinks(@HeaderParam("authToken") String headerAuthToken,
+			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
+			@PathParam("id") String id) {
+		String usedToken = getExistingTokenPreferHeader(headerAuthToken, queryAuthToken);
+		return readIncomingRecordLinksUsingAuthTokenByTypeAndId(usedToken, type, id);
 	}
 
 	Response readIncomingRecordLinksUsingAuthTokenByTypeAndId(String authToken, String type,
@@ -280,9 +288,11 @@ public class RecordEndpoint {
 
 	@DELETE
 	@Path("{type}/{id}")
-	public Response deleteRecord(@HeaderParam("authToken") String authToken,
-			@PathParam("type") String type, @PathParam("id") String id) {
-		return deleteRecordUsingAuthTokenByTypeAndId(authToken, type, id);
+	public Response deleteRecord(@HeaderParam("authToken") String headerAuthToken,
+			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
+			@PathParam("id") String id) {
+		String usedToken = getExistingTokenPreferHeader(headerAuthToken, queryAuthToken);
+		return deleteRecordUsingAuthTokenByTypeAndId(usedToken, type, id);
 	}
 
 	public Response deleteRecordUsingAuthTokenByTypeAndId(String authToken, String type,
@@ -308,9 +318,11 @@ public class RecordEndpoint {
 	@Path("{type}/{id}")
 	@Consumes("application/uub+record+json")
 	@Produces("application/uub+record+json")
-	public Response updateRecord(@HeaderParam("authToken") String authToken,
-			@PathParam("type") String type, @PathParam("id") String id, String jsonRecord) {
-		return updateRecordUsingAuthTokenWithRecord(authToken, type, id, jsonRecord);
+	public Response updateRecord(@HeaderParam("authToken") String headerAuthToken,
+			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
+			@PathParam("id") String id, String jsonRecord) {
+		String usedToken = getExistingTokenPreferHeader(headerAuthToken, queryAuthToken);
+		return updateRecordUsingAuthTokenWithRecord(usedToken, type, id, jsonRecord);
 	}
 
 	public Response updateRecordUsingAuthTokenWithRecord(String authToken, String type, String id,
@@ -336,10 +348,15 @@ public class RecordEndpoint {
 
 	@GET
 	@Path("{type}/{id}/{streamId}")
-	public Response downloadFile(@HeaderParam("authToken") String authToken,
-			@PathParam("type") String type, @PathParam("id") String id,
-			@PathParam("streamId") String streamId) {
-		return downloadFileUsingAuthTokenWithStream(authToken, type, id, streamId);
+	public Response downloadFile(@HeaderParam("authToken") String headerAuthToken,
+			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
+			@PathParam("id") String id, @PathParam("streamId") String streamId) {
+		String usedToken = getExistingTokenPreferHeader(headerAuthToken, queryAuthToken);
+		return downloadFileUsingAuthTokenWithStream(usedToken, type, id, streamId);
+	}
+
+	private String getExistingTokenPreferHeader(String headerAuthToken, String queryAuthToken) {
+		return headerAuthToken != null ? headerAuthToken : queryAuthToken;
 	}
 
 	Response downloadFileUsingAuthTokenWithStream(String authToken, String type, String id,
@@ -374,12 +391,13 @@ public class RecordEndpoint {
 	@Path("{type}/{id}/{streamId}")
 	@Consumes("multipart/form-data")
 	@Produces("application/uub+record+json2")
-	public Response uploadFile(@HeaderParam("authToken") String authToken,
-			@PathParam("type") String type, @PathParam("id") String id,
-			@FormDataParam("file") InputStream uploadedInputStream,
+	public Response uploadFile(@HeaderParam("authToken") String headerAuthToken,
+			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
+			@PathParam("id") String id, @FormDataParam("file") InputStream uploadedInputStream,
 			@FormDataParam("file") FormDataContentDisposition fileDetail) {
 		String fileName = fileDetail.getFileName();
-		return uploadFileUsingAuthTokenWithStream(authToken, type, id, uploadedInputStream,
+		String usedToken = getExistingTokenPreferHeader(headerAuthToken, queryAuthToken);
+		return uploadFileUsingAuthTokenWithStream(usedToken, type, id, uploadedInputStream,
 				fileName);
 	}
 
