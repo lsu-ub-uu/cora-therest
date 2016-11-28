@@ -74,6 +74,17 @@ public class DataRecordLinkSpiderToRestConverterTest {
 		assertEquals(linkedRecordId.getValue(), "linkedRecordId");
 		assertFalse(restDataRecordLink.containsChildWithNameInData("linkedPath"));
 	}
+	
+	@Test
+	public void testToRestWithAttributes() {
+		spiderDataRecordLink.addAttributeByIdWithValue("attributeNameInData", "attributeValue");
+
+		RestDataRecordLink restDataRecordLink = dataRecordLinkSpiderToRestConverter.toRest();
+			
+		String attributeId = restDataRecordLink.getAttributes().keySet().iterator().next();
+		String attributeValue = restDataRecordLink.getAttributes().get(attributeId);
+		assertEquals(attributeValue, "attributeValue");
+	}
 
 	@Test
 	public void testToRestWithRepeatId() {

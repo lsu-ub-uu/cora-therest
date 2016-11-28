@@ -34,15 +34,15 @@ public class DataGroupSpiderToRestConverter {
 	protected SpiderDataGroup spiderDataGroup;
 	protected ConverterInfo convertInfo;
 
-	public static DataGroupSpiderToRestConverter fromSpiderDataGroupWithBaseURL(
-			SpiderDataGroup spiderDataGroup, ConverterInfo baseURL) {
-		return new DataGroupSpiderToRestConverter(spiderDataGroup, baseURL);
-	}
-
 	protected DataGroupSpiderToRestConverter(SpiderDataGroup spiderDataGroup,
 			ConverterInfo converterInfo) {
 		this.spiderDataGroup = spiderDataGroup;
 		this.convertInfo = converterInfo;
+	}
+
+	public static DataGroupSpiderToRestConverter fromSpiderDataGroupWithBaseURL(
+			SpiderDataGroup spiderDataGroup, ConverterInfo baseURL) {
+		return new DataGroupSpiderToRestConverter(spiderDataGroup, baseURL);
 	}
 
 	public RestDataGroup toRest() {

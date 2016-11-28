@@ -32,15 +32,15 @@ public final class DataRecordLinkToJsonConverter extends DataGroupToJsonConverte
 	private static final String LINKED_REPEAT_ID = "linkedRepeatId";
 	private RestDataRecordLink recordLink;
 
-	public static DataRecordLinkToJsonConverter usingJsonFactoryForRestDataLink(
-			JsonBuilderFactory jsonFactory, RestDataRecordLink dataLink) {
-		return new DataRecordLinkToJsonConverter(jsonFactory, dataLink);
-	}
-
 	private DataRecordLinkToJsonConverter(JsonBuilderFactory jsonFactory,
 			RestDataRecordLink recordLink) {
 		super(jsonFactory, recordLink);
 		this.recordLink = recordLink;
+	}
+
+	public static DataRecordLinkToJsonConverter usingJsonFactoryForRestDataLink(
+			JsonBuilderFactory jsonFactory, RestDataRecordLink dataLink) {
+		return new DataRecordLinkToJsonConverter(jsonFactory, dataLink);
 	}
 
 	@Override
