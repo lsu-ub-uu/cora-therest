@@ -26,7 +26,7 @@ import se.uu.ub.cora.spider.authentication.Authenticator;
 public class AuthenticatorForTest implements Authenticator {
 
 	@Override
-	public User tryToGetActiveUser(String authToken) {
+	public User getUserForToken(String authToken) {
 		if ("dummyNonAuthenticatedToken".equals(authToken)) {
 			throw new AuthenticationException("token not valid");
 		}
