@@ -19,20 +19,43 @@
 
 package se.uu.ub.cora.therest.initialize;
 
+import static org.testng.Assert.assertTrue;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletContextEvent;
+
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class SystemInitializerTest {
+	private SystemInitializer systemInitializer;
+	private ServletContext source;
+	private ServletContextEvent context;
+
+	@BeforeMethod
+	public void setUp() {
+		systemInitializer = new SystemInitializer();
+		source = new ServletContextSpy();
+		context = new ServletContextEvent(source);
+	}
+
 	@Test
 	public void testInitializeSystem() {
-		SystemInitializer systemInitializer = new SystemInitializer();
-		systemInitializer.contextInitialized(null);
-//		Assert.assertNotNull(object);
-		//TODO: figure out what to test
+		source.setInitParameter("dependencyProviderClassName",
+				"se.uu.ub.cora.therest.initialize.DependencyProviderForTest");
+		systemInitializer.contextInitialized(context);
+
+		assertTrue(systemInitializer.dependencyProvider instanceof DependencyProviderForTest);
 	}
+
+	@Test(expectedExceptions = RuntimeException.class)
+	public void testInitializeSystemWithoutDependencyProviderClassName() {
+		systemInitializer.contextInitialized(context);
+	}
+
 	@Test
-	public void testDestroySystem(){
-		SystemInitializer systemInitializer = new SystemInitializer();
+	public void testDestroySystem() {
 		systemInitializer.contextDestroyed(null);
-		//TODO: should we do something on destroy?
+		// TODO: should we do something on destroy?
 	}
 }

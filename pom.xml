@@ -28,6 +28,7 @@
 		<systemone.version>0.11-SNAPSHOT</systemone.version>
 		<javax.ws.rs.version>2.0.1</javax.ws.rs.version>
 <!-- 		<jersey.version>2.16</jersey.version> -->
+<!-- 		<spider.version>0.12-SNAPSHOT</spider.version> -->
 		<jersey.version>2.23.2</jersey.version>
 		<fitnesse.version>20161106</fitnesse.version>
 	</properties>
@@ -83,6 +84,11 @@
 			<version>${systemone.version}</version>
 			<scope>compile</scope>
 		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>se.uu.ub.cora</groupId> -->
+<!-- 			<artifactId>spider</artifactId> -->
+<!-- 			<version>${spider.version}</version> -->
+<!-- 		</dependency> -->
 		<dependency>
 			<groupId>javax.ws.rs</groupId>
 			<artifactId>javax.ws.rs-api</artifactId>
