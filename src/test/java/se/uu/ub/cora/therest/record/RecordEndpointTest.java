@@ -123,6 +123,13 @@ public class RecordEndpointTest {
 	}
 
 	@Test
+	public void testReadRecordListNoTokenAndUnauthorized() {
+		setNotAuthorized();
+		response = recordEndpoint.readRecordListUsingAuthTokenByType(null, PLACE);
+		assertResponseStatusIs(Response.Status.UNAUTHORIZED);
+	}
+
+	@Test
 	public void testPreferedTokenForRead() throws IOException {
 		expectTokenForReadToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, "authToken2", AUTH_TOKEN);
 		expectTokenForReadToPrefereblyBeHeaderThanQuery(null, AUTH_TOKEN, AUTH_TOKEN);

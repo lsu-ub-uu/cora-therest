@@ -104,7 +104,7 @@ public class RecordEndpoint {
 		try {
 			return tryCreateRecord(authToken, type, jsonRecord);
 		} catch (Exception error) {
-			return handleError(error);
+			return handleError(authToken, error);
 		}
 	}
 
@@ -158,24 +158,49 @@ public class RecordEndpoint {
 				restDataRecord);
 	}
 
-	private Response handleError(Exception error) {
-		Response response = buildResponse(Status.INTERNAL_SERVER_ERROR);
+	private Response handleError(String authToken, Exception error) {
 
 		if (error instanceof RecordConflictException) {
-			response = buildResponseIncludingMessage(error, Response.Status.CONFLICT);
-		} else if (error instanceof MisuseException) {
-			response = buildResponseIncludingMessage(error, Response.Status.METHOD_NOT_ALLOWED);
-		} else if (error instanceof JsonParseException || error instanceof DataException
-				|| error instanceof ConverterException) {
-			response = buildResponseIncludingMessage(error, Response.Status.BAD_REQUEST);
-		} else if (error instanceof URISyntaxException) {
-			response = buildResponse(Response.Status.BAD_REQUEST);
-		} else if (error instanceof AuthorizationException) {
-			response = buildResponse(Response.Status.FORBIDDEN);
-		} else if (error instanceof RecordNotFoundException) {
-			response = buildResponseIncludingMessage(error, Response.Status.NOT_FOUND);
+			return buildResponseIncludingMessage(error, Response.Status.CONFLICT);
 		}
-		return response;
+
+		if (error instanceof MisuseException) {
+			return buildResponseIncludingMessage(error, Response.Status.METHOD_NOT_ALLOWED);
+		}
+
+		if (errorIsCausedByDataProblem(error)) {
+			return buildResponseIncludingMessage(error, Response.Status.BAD_REQUEST);
+		}
+
+		if (error instanceof RecordNotFoundException) {
+			return buildResponseIncludingMessage(error, Response.Status.NOT_FOUND);
+		}
+
+		if (error instanceof URISyntaxException) {
+			return buildResponse(Response.Status.BAD_REQUEST);
+		}
+
+		if (error instanceof AuthorizationException) {
+			return handleAuthorizationException(authToken);
+		}
+
+		if (error instanceof AuthenticationException) {
+			return buildResponse(Response.Status.UNAUTHORIZED);
+		}
+
+		return buildResponse(Status.INTERNAL_SERVER_ERROR);
+	}
+
+	private boolean errorIsCausedByDataProblem(Exception error) {
+		return error instanceof JsonParseException || error instanceof DataException
+				|| error instanceof ConverterException || error instanceof DataMissingException;
+	}
+
+	private Response handleAuthorizationException(String authToken) {
+		if (authToken == null) {
+			return buildResponse(Response.Status.UNAUTHORIZED);
+		}
+		return buildResponse(Response.Status.FORBIDDEN);
 	}
 
 	private Response buildResponseIncludingMessage(Exception error, Status status) {
@@ -198,10 +223,8 @@ public class RecordEndpoint {
 	Response readRecordListUsingAuthTokenByType(String authToken, String type) {
 		try {
 			return tryReadRecordList(authToken, type);
-		} catch (RecordNotFoundException e) {
-			return Response.status(Response.Status.NOT_FOUND).build();
-		} catch (AuthorizationException e) {
-			return Response.status(Response.Status.FORBIDDEN).build();
+		} catch (Exception error) {
+			return handleError(authToken, error);
 		}
 	}
 
@@ -236,15 +259,8 @@ public class RecordEndpoint {
 	public Response readRecordUsingAuthTokenByTypeAndId(String authToken, String type, String id) {
 		try {
 			return tryReadRecord(authToken, type, id);
-		} catch (AuthenticationException e) {
-			return Response.status(Response.Status.UNAUTHORIZED).build();
-		} catch (MisuseException e) {
-			return Response.status(Response.Status.METHOD_NOT_ALLOWED).entity(e.getMessage())
-					.build();
-		} catch (RecordNotFoundException e) {
-			return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
-		} catch (AuthorizationException e) {
-			return Response.status(Response.Status.FORBIDDEN).build();
+		} catch (Exception error) {
+			return handleError(authToken, error);
 		}
 	}
 
@@ -269,13 +285,8 @@ public class RecordEndpoint {
 			String id) {
 		try {
 			return tryReadIncomingRecordLinks(authToken, type, id);
-		} catch (MisuseException e) {
-			return Response.status(Response.Status.METHOD_NOT_ALLOWED).entity(e.getMessage())
-					.build();
-		} catch (RecordNotFoundException e) {
-			return Response.status(Response.Status.NOT_FOUND).build();
-		} catch (AuthorizationException e) {
-			return Response.status(Response.Status.FORBIDDEN).build();
+		} catch (Exception error) {
+			return handleError(authToken, error);
 		}
 	}
 
@@ -299,13 +310,8 @@ public class RecordEndpoint {
 			String id) {
 		try {
 			return tryDeleteRecord(authToken, type, id);
-		} catch (MisuseException e) {
-			return Response.status(Response.Status.METHOD_NOT_ALLOWED).entity(e.getMessage())
-					.build();
-		} catch (RecordNotFoundException e) {
-			return Response.status(Response.Status.NOT_FOUND).build();
-		} catch (AuthorizationException e) {
-			return Response.status(Response.Status.FORBIDDEN).build();
+		} catch (Exception error) {
+			return handleError(authToken, error);
 		}
 	}
 
@@ -329,12 +335,8 @@ public class RecordEndpoint {
 			String jsonRecord) {
 		try {
 			return tryUpdateRecord(authToken, type, id, jsonRecord);
-		} catch (JsonParseException | DataException | DataMissingException | ConverterException e) {
-			return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
-		} catch (RecordNotFoundException e) {
-			return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
-		} catch (AuthorizationException e) {
-			return Response.status(Response.Status.FORBIDDEN).build();
+		} catch (Exception error) {
+			return handleError(authToken, error);
 		}
 	}
 
@@ -363,15 +365,8 @@ public class RecordEndpoint {
 			String streamId) {
 		try {
 			return tryDownloadFile(authToken, type, id, streamId);
-		} catch (MisuseException e) {
-			return Response.status(Response.Status.METHOD_NOT_ALLOWED).entity(e.getMessage())
-					.build();
-		} catch (JsonParseException | DataException | DataMissingException | ConverterException e) {
-			return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
-		} catch (RecordNotFoundException e) {
-			return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
-		} catch (AuthorizationException e) {
-			return Response.status(Response.Status.FORBIDDEN).build();
+		} catch (Exception error) {
+			return handleError(authToken, error);
 		}
 	}
 
@@ -405,15 +400,8 @@ public class RecordEndpoint {
 			InputStream uploadedInputStream, String fileName) {
 		try {
 			return tryUploadFile(authToken, type, id, uploadedInputStream, fileName);
-		} catch (MisuseException e) {
-			return Response.status(Response.Status.METHOD_NOT_ALLOWED).entity(e.getMessage())
-					.build();
-		} catch (JsonParseException | DataException | DataMissingException | ConverterException e) {
-			return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
-		} catch (RecordNotFoundException e) {
-			return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
-		} catch (AuthorizationException e) {
-			return Response.status(Response.Status.FORBIDDEN).build();
+		} catch (Exception error) {
+			return handleError(authToken, error);
 		}
 	}
 
