@@ -1,2 +1,0 @@
-|import|
-|se.uu.ub.cora.therest.fitnesse|
