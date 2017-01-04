@@ -81,7 +81,7 @@ public class SystemInitializer implements ServletContextListener {
 
 	private void createInstanceOfDependencyProviderClass(String dependencyProviderString)
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException,
-			InvocationTargetException, NoSuchMethodException, RuntimeException {
+			InvocationTargetException, NoSuchMethodException {
 		Constructor<?> constructor = Class.forName(dependencyProviderString)
 				.getConstructor(Map.class);
 		dependencyProvider = (SpiderDependencyProvider) constructor.newInstance(initInfo);
