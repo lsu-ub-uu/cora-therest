@@ -19,6 +19,12 @@
 
 package se.uu.ub.cora.therest.initialize;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -33,23 +39,36 @@ import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
 public class SystemInitializer implements ServletContextListener {
 	public SpiderDependencyProvider dependencyProvider;
 	private ServletContext servletContext;
+	private Map<String, String> initInfo;
 
 	@Override
 	public void contextInitialized(ServletContextEvent arg0) {
 		servletContext = arg0.getServletContext();
 		try {
 			tryToInitialize();
+		} catch (InvocationTargetException e) {
+			throw new RuntimeException(
+					"Error starting The Rest: " + e.getTargetException().getMessage());
 		} catch (Exception e) {
 			throw new RuntimeException("Error starting The Rest: " + e.getMessage());
 		}
 	}
 
-	private void tryToInitialize()
-			throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+	private void tryToInitialize() throws InstantiationException, IllegalAccessException,
+			ClassNotFoundException, InvocationTargetException, NoSuchMethodException {
 		String dependencyProviderString = getClassNameToInitializeAsDependencyProviderFromContext();
+		collectInitInformation();
 		createInstanceOfDependencyProviderClass(dependencyProviderString);
-
 		createAndSetFactoryInSpiderInstanceProvider();
+	}
+
+	private void collectInitInformation() {
+		initInfo = new HashMap<>();
+		Enumeration<String> initParameterNames = servletContext.getInitParameterNames();
+		while (initParameterNames.hasMoreElements()) {
+			String key = initParameterNames.nextElement();
+			initInfo.put(key, servletContext.getInitParameter(key));
+		}
 	}
 
 	private String getClassNameToInitializeAsDependencyProviderFromContext() {
@@ -61,9 +80,11 @@ public class SystemInitializer implements ServletContextListener {
 	}
 
 	private void createInstanceOfDependencyProviderClass(String dependencyProviderString)
-			throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-		Object newInstance = Class.forName(dependencyProviderString).newInstance();
-		dependencyProvider = (SpiderDependencyProvider) newInstance;
+			throws InstantiationException, IllegalAccessException, ClassNotFoundException,
+			InvocationTargetException, NoSuchMethodException, RuntimeException {
+		Constructor<?> constructor = Class.forName(dependencyProviderString)
+				.getConstructor(Map.class);
+		dependencyProvider = (SpiderDependencyProvider) constructor.newInstance(initInfo);
 	}
 
 	private void createAndSetFactoryInSpiderInstanceProvider() {

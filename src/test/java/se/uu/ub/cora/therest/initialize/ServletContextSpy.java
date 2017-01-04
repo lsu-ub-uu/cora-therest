@@ -22,6 +22,7 @@ package se.uu.ub.cora.therest.initialize;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.EventListener;
 import java.util.Map;
@@ -196,8 +197,7 @@ public class ServletContextSpy implements ServletContext {
 
 	@Override
 	public Enumeration<String> getInitParameterNames() {
-		// TODO Auto-generated method stub
-		return null;
+		return Collections.enumeration(initParameters.keySet());
 	}
 
 	@Override

@@ -19,7 +19,7 @@
 
 package se.uu.ub.cora.therest.initialize;
 
-import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.assertEquals;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -45,11 +45,30 @@ public class SystemInitializerTest {
 				"se.uu.ub.cora.therest.initialize.DependencyProviderForTest");
 		systemInitializer.contextInitialized(context);
 
-		assertTrue(systemInitializer.dependencyProvider instanceof DependencyProviderForTest);
+		assertEquals(systemInitializer.dependencyProvider.getClass(),
+				DependencyProviderForTest.class);
 	}
 
 	@Test(expectedExceptions = RuntimeException.class)
 	public void testInitializeSystemWithoutDependencyProviderClassName() {
+		systemInitializer.contextInitialized(context);
+	}
+
+	@Test
+	public void testInitializeSystemInitInfoSetInDependencyProvider() {
+		source.setInitParameter("dependencyProviderClassName",
+				"se.uu.ub.cora.therest.initialize.DependencyProviderSpy");
+		systemInitializer.contextInitialized(context);
+
+		DependencyProviderSpy dependencyProviderSpy = (DependencyProviderSpy) systemInitializer.dependencyProvider;
+		assertEquals(dependencyProviderSpy.getInitInfo().get("dependencyProviderClassName"),
+				"se.uu.ub.cora.therest.initialize.DependencyProviderSpy");
+	}
+
+	@Test(expectedExceptions = RuntimeException.class)
+	public void testInitializeSystemTargetInvokationError() {
+		source.setInitParameter("dependencyProviderClassName",
+				"se.uu.ub.cora.therest.initialize.DependencyProviderMissingGatekeeperUrlSpy");
 		systemInitializer.contextInitialized(context);
 	}
 

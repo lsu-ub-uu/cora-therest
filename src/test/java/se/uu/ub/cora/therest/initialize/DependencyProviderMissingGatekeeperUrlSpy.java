@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2017 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -24,85 +24,77 @@ import java.util.Map;
 import se.uu.ub.cora.bookkeeper.linkcollector.DataRecordLinkCollector;
 import se.uu.ub.cora.bookkeeper.validator.DataValidator;
 import se.uu.ub.cora.spider.authentication.Authenticator;
-import se.uu.ub.cora.spider.authorization.BasePermissionRuleCalculator;
 import se.uu.ub.cora.spider.authorization.PermissionRuleCalculator;
 import se.uu.ub.cora.spider.authorization.SpiderAuthorizator;
 import se.uu.ub.cora.spider.dependency.SpiderDependencyProvider;
-import se.uu.ub.cora.spider.extended.BaseExtendedFunctionalityProvider;
 import se.uu.ub.cora.spider.extended.ExtendedFunctionalityProvider;
 import se.uu.ub.cora.spider.record.storage.RecordIdGenerator;
 import se.uu.ub.cora.spider.record.storage.RecordStorage;
 import se.uu.ub.cora.spider.stream.storage.StreamStorage;
-import se.uu.ub.cora.therest.record.DataRecordLinkCollectorSpy;
-import se.uu.ub.cora.therest.record.DataValidatorAlwaysValidSpy;
-import se.uu.ub.cora.therest.record.IdGeneratorSpy;
-import se.uu.ub.cora.therest.record.StreamStorageSpy;
-import se.uu.ub.cora.therest.testdata.TestDataRecordInMemoryStorage;
 
-public class DependencyProviderForTestNotAuthorized extends SpiderDependencyProvider {
+public class DependencyProviderMissingGatekeeperUrlSpy extends SpiderDependencyProvider {
 
-	private RecordStorage recordStorage = TestDataRecordInMemoryStorage
-			.createRecordStorageInMemoryWithTestData();
-	private RecordIdGenerator idGenerator = new IdGeneratorSpy();
-	private DataValidator dataValidator = new DataValidatorAlwaysValidSpy();
-	private DataRecordLinkCollector linkCollector = new DataRecordLinkCollectorSpy();
-	private StreamStorage streamStorage = new StreamStorageSpy();
-
-	public DependencyProviderForTestNotAuthorized(Map<String, String> initInfo) {
+	public DependencyProviderMissingGatekeeperUrlSpy(Map<String, String> initInfo) {
 		super(initInfo);
+		throw new RuntimeException("InitInfo must contain gatekeeperURL");
 	}
 
 	@Override
 	public SpiderAuthorizator getSpiderAuthorizator() {
-		// RulesProvider rulesProvider = new RulesProviderImp(recordStorage);
-		// return
-		// SpiderAuthorizatorImp.usingSpiderDependencyProviderAndAuthorizatorAndRulesProvider(
-		// this, new AlwaysAuthorized(), rulesProvider);
-		return new SpiderAuthorizorNeverAuthorized();
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
 	public RecordStorage getRecordStorage() {
-		return recordStorage;
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
 	public RecordIdGenerator getIdGenerator() {
-		return idGenerator;
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
 	public PermissionRuleCalculator getPermissionRuleCalculator() {
-		return new BasePermissionRuleCalculator();
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
 	public DataValidator getDataValidator() {
-		return dataValidator;
-	}
-
-	public void setDataValidator(DataValidator dataValidator) {
-		this.dataValidator = dataValidator;
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
 	public DataRecordLinkCollector getDataRecordLinkCollector() {
-		return linkCollector;
-	}
-
-	@Override
-	public StreamStorage getStreamStorage() {
-		return streamStorage;
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
 	public ExtendedFunctionalityProvider getExtendedFunctionalityProvider() {
-		return new BaseExtendedFunctionalityProvider(this);
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public StreamStorage getStreamStorage() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
 	public Authenticator getAuthenticator() {
-		return new AuthenticatorForTest();
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Map<String, String> getInitInfo() {
+		return initInfo;
 	}
 
 }

@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
+import java.util.HashMap;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -63,7 +64,7 @@ public class RecordEndpointTest {
 	@BeforeMethod
 	public void beforeMethod() {
 		SpiderInstanceFactory factory = SpiderInstanceFactoryImp
-				.usingDependencyProvider(new DependencyProviderForTest());
+				.usingDependencyProvider(new DependencyProviderForTest(new HashMap<>()));
 		SpiderInstanceProvider.setSpiderInstanceFactory(factory);
 		UriInfo uriInfo = new TestUri();
 		recordEndpoint = new RecordEndpoint(uriInfo);
@@ -404,8 +405,8 @@ public class RecordEndpointTest {
 	}
 
 	private void setNotAuthorized() {
-		SpiderInstanceFactory factory = SpiderInstanceFactoryImp
-				.usingDependencyProvider(new DependencyProviderForTestNotAuthorized());
+		SpiderInstanceFactory factory = SpiderInstanceFactoryImp.usingDependencyProvider(
+				new DependencyProviderForTestNotAuthorized(new HashMap<>()));
 		SpiderInstanceProvider.setSpiderInstanceFactory(factory);
 	}
 
@@ -420,7 +421,8 @@ public class RecordEndpointTest {
 	@Test
 	public void testCreateRecordNotValid() {
 		// uses always invalid validator
-		DependencyProviderForTest spiderDependencyProvider = new DependencyProviderForTest();
+		DependencyProviderForTest spiderDependencyProvider = new DependencyProviderForTest(
+				new HashMap<>());
 		spiderDependencyProvider.setDataValidator(new DataValidatorAlwaysInvalidSpy());
 		SpiderInstanceFactory factory = SpiderInstanceFactoryImp
 				.usingDependencyProvider(spiderDependencyProvider);
@@ -471,7 +473,8 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testCreateRecordUnexpectedError() {
-		DependencyProviderForTest spiderDependencyProvider = new DependencyProviderForTest();
+		DependencyProviderForTest spiderDependencyProvider = new DependencyProviderForTest(
+				new HashMap<>());
 		spiderDependencyProvider.setDataValidator(new DataValidatorReturnNullPointer());
 		SpiderInstanceFactory factory = SpiderInstanceFactoryImp
 				.usingDependencyProvider(spiderDependencyProvider);

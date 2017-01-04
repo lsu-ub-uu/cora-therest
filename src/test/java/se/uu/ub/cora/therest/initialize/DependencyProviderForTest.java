@@ -19,6 +19,8 @@
 
 package se.uu.ub.cora.therest.initialize;
 
+import java.util.Map;
+
 import se.uu.ub.cora.bookkeeper.linkcollector.DataRecordLinkCollector;
 import se.uu.ub.cora.bookkeeper.validator.DataValidator;
 import se.uu.ub.cora.spider.authentication.Authenticator;
@@ -37,7 +39,7 @@ import se.uu.ub.cora.therest.record.IdGeneratorSpy;
 import se.uu.ub.cora.therest.record.StreamStorageSpy;
 import se.uu.ub.cora.therest.testdata.TestDataRecordInMemoryStorage;
 
-public class DependencyProviderForTest implements SpiderDependencyProvider {
+public class DependencyProviderForTest extends SpiderDependencyProvider {
 
 	private RecordStorage recordStorage = TestDataRecordInMemoryStorage
 			.createRecordStorageInMemoryWithTestData();
@@ -45,6 +47,10 @@ public class DependencyProviderForTest implements SpiderDependencyProvider {
 	private DataValidator dataValidator = new DataValidatorAlwaysValidSpy();
 	private DataRecordLinkCollector linkCollector = new DataRecordLinkCollectorSpy();
 	private StreamStorage streamStorage = new StreamStorageSpy();
+
+	public DependencyProviderForTest(Map<String, String> initInfo) {
+		super(initInfo);
+	}
 
 	@Override
 	public SpiderAuthorizator getSpiderAuthorizator() {
