@@ -197,23 +197,17 @@ public class TestDataRecordInMemoryStorage {
 		dataGroup.addChild(recordInfo);
 
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("id", "recordType"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("metadataId", "recordType"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("presentationViewId",
-				"presentation:pgRecordTypeView"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("presentationFormId",
-				"presentation:pgRecordTypeForm"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("newMetadataId", "recordTypeNew"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("newPresentationFormId",
-				"presentation:pgRecordTypeFormNew"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("listPresentationViewId",
-				"presentation:pgRecordTypeViewList"));
+		dataGroup.addChild(createChildWithNameInDataLinkedTypeLinkedId("metadataId", "metadataGroup", "recordType"));
+		dataGroup.addChild(createChildWithNameInDataLinkedTypeLinkedId("presentationViewId", "presentationGroup", "presentation:pgRecordTypeView"));
+		dataGroup.addChild(createChildWithNameInDataLinkedTypeLinkedId("presentationFormId", "presentationGroup", "presentation:pgRecordTypeForm"));
+		dataGroup.addChild(createChildWithNameInDataLinkedTypeLinkedId("newMetadataId", "metadataGroup", "recordTypeNew"));
+		dataGroup.addChild(createChildWithNameInDataLinkedTypeLinkedId("newPresentationFormId", "presentationGroup", "presentation:pgRecordTypeFormNew"));
+		dataGroup.addChild(createChildWithNameInDataLinkedTypeLinkedId("listPresentationViewId", "presentationGroup", "presentation:pgRecordTypeViewList"));
 		dataGroup.addChild(
 				DataAtomic.withNameInDataAndValue("searchMetadataId", "metadata:recordTypeSearch"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("searchPresentationFormId",
 				"presentation:pgRecordTypeSearchForm"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("userSuppliedId", "true"));
-		dataGroup.addChild(
-				DataAtomic.withNameInDataAndValue("permissionKey", "RECORDTYPE_RECORDTYPE"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("selfPresentationViewId",
 				"presentation:pgrecordTypeRecordType"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("abstract", "false"));
@@ -247,23 +241,18 @@ public class TestDataRecordInMemoryStorage {
 		recordInfo.addChild(DataAtomic.withNameInDataAndValue("type", recordType));
 		dataGroup.addChild(recordInfo);
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("id", "recordType"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("metadataId", "recordType"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("presentationViewId",
-				"presentation:pgRecordTypeView"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("presentationFormId",
-				"presentation:pgRecordTypeForm"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("newMetadataId", "recordTypeNew"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("newPresentationFormId",
-				"presentation:pgRecordTypeFormNew"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("listPresentationViewId",
-				"presentation:pgRecordTypeViewList"));
+		dataGroup.addChild(createChildWithNameInDataLinkedTypeLinkedId("metadataId", "metadataGroup", "recordType"));
+		dataGroup.addChild(createChildWithNameInDataLinkedTypeLinkedId("presentationViewId", "presentationGroup", "presentation:pgRecordTypeView"));
+		dataGroup.addChild(createChildWithNameInDataLinkedTypeLinkedId("presentationFormId", "presentationGroup", "presentation:pgRecordTypeForm"));
+
+		dataGroup.addChild(createChildWithNameInDataLinkedTypeLinkedId("metadataId", "metadataGroup", "recordTypeNew"));
+		dataGroup.addChild(createChildWithNameInDataLinkedTypeLinkedId("newPresentationFormId", "presentationGroup", "presentation:pgRecordTypeFormNew"));
+		dataGroup.addChild(createChildWithNameInDataLinkedTypeLinkedId("listPresentationViewId", "presentationGroup", "presentation:pgRecordTypeViewList"));
 		dataGroup.addChild(
 				DataAtomic.withNameInDataAndValue("searchMetadataId", "metadata:recordTypeSearch"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("searchPresentationFormId",
 				"presentation:pgRecordTypeSearchForm"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("userSuppliedId", "false"));
-		dataGroup.addChild(
-				DataAtomic.withNameInDataAndValue("permissionKey", "RECORDTYPE_RECORDTYPE"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("selfPresentationViewId",
 				"presentation:pgrecordTypeRecordType"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("abstract", "false"));
@@ -281,27 +270,31 @@ public class TestDataRecordInMemoryStorage {
 		dataGroup.addChild(recordInfo);
 
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("id", "place"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("metadataId", "metadata:place"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("presentationViewId",
-				"presentation:pgPlaceView"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("presentationFormId",
-				"presentation:pgPlaceForm"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("newMetadataId", "metadata:placeNew"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("newPresentationFormId",
-				"presentation:pgPlaceFormNew"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("listPresentationViewId",
-				"presentation:pgPlaceViewList"));
+
+		dataGroup.addChild(createChildWithNameInDataLinkedTypeLinkedId("metadataId", "metadataGroup", "metadata:place"));
+
+		dataGroup.addChild(createChildWithNameInDataLinkedTypeLinkedId("presentationViewId", "presentationGroup", "presentation:pgPlaceView"));
+		dataGroup.addChild(createChildWithNameInDataLinkedTypeLinkedId("presentationFormId", "presentationGroup", "presentation:pgPlaceForm"));
+		dataGroup.addChild(createChildWithNameInDataLinkedTypeLinkedId("newMetadataId", "metadataGroup", "metadata:placeNew"));
+		dataGroup.addChild(createChildWithNameInDataLinkedTypeLinkedId("newPresentationFormId", "presentationGroup", "presentation:pgPlaceFormNew"));
+		dataGroup.addChild(createChildWithNameInDataLinkedTypeLinkedId("listPresentationViewId", "presentationGroup", "presentation:pgPlaceViewList"));
 		dataGroup.addChild(
 				DataAtomic.withNameInDataAndValue("searchMetadataId", "metadata:placeSearch"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("searchPresentationFormId",
 				"presentation:pgPlaceSearchForm"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("userSuppliedId", "false"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("permissionKey", "RECORDTYPE_PLACE"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("selfPresentationViewId",
 				"presentation:pgPlaceRecordType"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("abstract", "false"));
 		recordsInMemory.create(recordType, "place", dataGroup,
 				DataGroup.withNameInData("collectedLinksList"), "cora");
+	}
+
+	private static DataGroup createChildWithNameInDataLinkedTypeLinkedId(String nameInData, String linkedRecordType, String linkedRecordId) {
+		DataGroup child = DataGroup.withNameInData(nameInData);
+		child.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", linkedRecordType));
+		child.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", linkedRecordId));
+		return child;
 	}
 
 	private static void addRecordTypeBadType(RecordStorageInMemory recordsInMemory) {
@@ -314,22 +307,17 @@ public class TestDataRecordInMemoryStorage {
 		dataGroup.addChild(recordInfo);
 
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("id", "place"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("metadataId", "metadata:place"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("presentationViewId",
-				"presentation:pgPlaceView"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("presentationFormId",
-				"presentation:pgPlaceForm"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("newMetadataId", "metadata:placeNew"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("newPresentationFormId",
-				"presentation:pgPlaceFormNew"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("listPresentationViewId",
-				"presentation:pgPlaceViewList"));
+		dataGroup.addChild(createChildWithNameInDataLinkedTypeLinkedId("metadataId", "metadataGroup", "metadata:place"));
+		dataGroup.addChild(createChildWithNameInDataLinkedTypeLinkedId("presentationViewId", "presentationGroup", "presentation:pgPlaceView"));
+		dataGroup.addChild(createChildWithNameInDataLinkedTypeLinkedId("presentationFormId", "presentationGroup", "presentation:pgPlaceForm"));
+		dataGroup.addChild(createChildWithNameInDataLinkedTypeLinkedId("newMetadataId", "metadataGroup", "metadata:placeNew"));
+		dataGroup.addChild(createChildWithNameInDataLinkedTypeLinkedId("newPresentationFormId", "presentationGroup", "presentation:pgPlaceFormNew"));
+		dataGroup.addChild(createChildWithNameInDataLinkedTypeLinkedId("listPresentationViewId", "presentationGroup", "presentation:pgPlaceViewList"));
 		dataGroup.addChild(
 				DataAtomic.withNameInDataAndValue("searchMetadataId", "metadata:placeSearch"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("searchPresentationFormId",
 				"presentation:pgPlaceSearchForm"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("userSuppliedId", "false"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("permissionKey", "RECORDTYPE_PLACE"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("selfPresentationViewId",
 				"presentation:pgPlaceRecordType"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("abstract", "false"));
@@ -346,24 +334,18 @@ public class TestDataRecordInMemoryStorage {
 		recordInfo.addChild(DataAtomic.withNameInDataAndValue("type", recordType));
 		dataGroup.addChild(recordInfo);
 
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("metadataId", "abstract"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("presentationViewId",
-				"presentation:pgAbstractView"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("presentationFormId",
-				"presentation:pgAbstractForm"));
-		dataGroup.addChild(
-				DataAtomic.withNameInDataAndValue("newMetadataId", "metadata:abstractNew"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("newPresentationFormId",
-				"presentation:pgAbstractFormNew"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue("listPresentationViewId",
-				"presentation:pgAbstractViewList"));
+		dataGroup.addChild(createChildWithNameInDataLinkedTypeLinkedId("metadataId", "metadataGroup", "abstract"));
+		dataGroup.addChild(createChildWithNameInDataLinkedTypeLinkedId("presentationViewId", "presentationGroup", "presentation:pgAbstractView"));
+		dataGroup.addChild(createChildWithNameInDataLinkedTypeLinkedId("presentationFormId", "presentationGroup", "presentation:pgAbstractForm"));
+
+		dataGroup.addChild(createChildWithNameInDataLinkedTypeLinkedId("newMetadataId", "metadataGroup", "abstractNew"));
+		dataGroup.addChild(createChildWithNameInDataLinkedTypeLinkedId("newPresentationFormId", "presentationGroup", "presentation:pgAbstractFormNew"));
+		dataGroup.addChild(createChildWithNameInDataLinkedTypeLinkedId("listPresentationViewId", "presentationGroup", "presentation:pgAbstractViewList"));
 		dataGroup.addChild(
 				DataAtomic.withNameInDataAndValue("searchMetadataId", "metadata:AbstractSearch"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("searchPresentationFormId",
 				"presentation:pgAbstractSearchForm"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("userSuppliedId", "false"));
-		dataGroup.addChild(
-				DataAtomic.withNameInDataAndValue("permissionKey", "RECORDTYPE_ABSTRACT"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("selfPresentationViewId",
 				"presentation:pgAbstractRecordType"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("abstract", "true"));
