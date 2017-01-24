@@ -53,33 +53,32 @@ public final class DataCreator {
 
 		DataGroup dataGroup = DataGroup.withNameInData(RECORD_TYPE);
 		dataGroup.addChild(createRecordInfoWithRecordTypeAndRecordId(RECORD_TYPE, id));
-
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue(METADATA_ID, id));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue(PRESENTATION_VIEW_ID,
-				"pg" + idWithCapitalFirst + "View"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue(PRESENTATION_FORM_ID,
-				"pg" + idWithCapitalFirst + "Form"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue(NEW_METADATA_ID, id + "New"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue(NEW_PRESENTATION_FORM_ID,
-				"pg" + idWithCapitalFirst + "FormNew"));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue(LIST_PRESENTATION_VIEW_ID,
-				"pg" + idWithCapitalFirst + "List"));
+		dataGroup.addChild(createChildWithNameInDataLinkedTypeLinkedId(METADATA_ID, "metadataGroup", id));
+		dataGroup.addChild(createChildWithNameInDataLinkedTypeLinkedId(PRESENTATION_VIEW_ID, "presentationGroup", "pg" + idWithCapitalFirst + "View"));
+		dataGroup.addChild(createChildWithNameInDataLinkedTypeLinkedId(PRESENTATION_FORM_ID, "presentationGroup", "pg" + idWithCapitalFirst + "Form"));
+		dataGroup.addChild(createChildWithNameInDataLinkedTypeLinkedId(NEW_METADATA_ID, "metadataGroup", id + "New"));
+		dataGroup.addChild(createChildWithNameInDataLinkedTypeLinkedId(NEW_PRESENTATION_FORM_ID, "presentationGroup", "pg" + idWithCapitalFirst + "FormNew"));
+		dataGroup.addChild(createChildWithNameInDataLinkedTypeLinkedId(LIST_PRESENTATION_VIEW_ID, "presentationGroup", "pg" + idWithCapitalFirst + "List"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue(SEARCH_METADATA_ID, id + "Search"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue(SEARCH_PRESENTATION_FORM_ID,
 				"pg" + idWithCapitalFirst + "SearchForm"));
 
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue(USER_SUPPLIED_ID, userSuppliedId));
-		dataGroup.addChild(DataAtomic.withNameInDataAndValue(PERMISSION_KEY,
-				"RECORDTYPE_" + id.toUpperCase()));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue(SELF_PRESENTATION_VIEW_ID,
 				"pg" + idWithCapitalFirst + "Self"));
 		dataGroup.addChild(DataAtomic.withNameInDataAndValue("abstract", abstractValue));
 		if (null != parentId) {
+			dataGroup.addChild(createChildWithNameInDataLinkedTypeLinkedId("parentId", "recordType", parentId));
 			dataGroup.addChild(DataAtomic.withNameInDataAndValue("parentId", parentId));
 		}
 		return dataGroup;
 	}
-
+	private static DataGroup createChildWithNameInDataLinkedTypeLinkedId(String nameInData, String linkedRecordType, String linkedRecordId) {
+		DataGroup child = DataGroup.withNameInData(nameInData);
+		child.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", linkedRecordType));
+		child.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", linkedRecordId));
+		return child;
+	}
 	public static DataGroup createRecordTypeWithIdAndUserSuppliedIdAndParentId(String id,
 			String userSuppliedId, String parentId) {
 		return createRecordTypeWithIdAndUserSuppliedIdAndAbstractAndParentId(id, userSuppliedId,
