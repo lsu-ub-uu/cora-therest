@@ -381,7 +381,11 @@ public class TestDataRecordInMemoryStorage {
 				"presentation:pgChild1RecordType"));
 
 		dataGroup1.addChild(DataAtomic.withNameInDataAndValue("abstract", "false"));
-		dataGroup1.addChild(DataAtomic.withNameInDataAndValue("parentId", "abstract"));
+//		dataGroup1.addChild(DataAtomic.withNameInDataAndValue("parentId", "abstract"));
+		DataGroup parentId1 = DataGroup.withNameInData("parentId");
+		parentId1.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "recordType"));
+		parentId1.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "abstract"));
+		dataGroup1.addChild(parentId1);
 		// records.get(recordType).put("child1", dataGroup1);
 		recordsInMemory.create(recordType, "child1", dataGroup1,
 				DataGroup.withNameInData("collectedLinksList"), "cora");
@@ -414,7 +418,13 @@ public class TestDataRecordInMemoryStorage {
 				"presentation:pgChild2RecordType"));
 
 		dataGroup2.addChild(DataAtomic.withNameInDataAndValue("abstract", "false"));
-		dataGroup2.addChild(DataAtomic.withNameInDataAndValue("parentId", "abstract"));
+
+		DataGroup parentId = DataGroup.withNameInData("parentId");
+		parentId.addChild(DataAtomic.withNameInDataAndValue("linkedRecordType", "recordType"));
+		parentId.addChild(DataAtomic.withNameInDataAndValue("linkedRecordId", "abstract"));
+		dataGroup2.addChild(parentId);
+
+//		dataGroup2.addChild(DataAtomic.withNameInDataAndValue("parentId", "abstract"));
 		// records.get(recordType).put("child2", dataGroup2);
 		recordsInMemory.create(recordType, "child2", dataGroup2,
 				DataGroup.withNameInData("collectedLinksList"), "cora");

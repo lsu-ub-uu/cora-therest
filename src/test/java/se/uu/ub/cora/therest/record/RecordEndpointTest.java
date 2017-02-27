@@ -20,10 +20,19 @@
 
 package se.uu.ub.cora.therest.record;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertTrue;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition.FormDataContentDispositionBuilder;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+import se.uu.ub.cora.spider.dependency.SpiderInstanceFactory;
+import se.uu.ub.cora.spider.dependency.SpiderInstanceFactoryImp;
+import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
+import se.uu.ub.cora.therest.initialize.DependencyProviderForTest;
+import se.uu.ub.cora.therest.initialize.DependencyProviderForTestNotAuthorized;
 
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -32,20 +41,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.util.HashMap;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriInfo;
-
-import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
-import org.glassfish.jersey.media.multipart.FormDataContentDisposition.FormDataContentDispositionBuilder;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
-
-import se.uu.ub.cora.spider.dependency.SpiderInstanceFactory;
-import se.uu.ub.cora.spider.dependency.SpiderInstanceFactoryImp;
-import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
-import se.uu.ub.cora.therest.initialize.DependencyProviderForTest;
-import se.uu.ub.cora.therest.initialize.DependencyProviderForTestNotAuthorized;
+import static org.testng.Assert.*;
 
 public class RecordEndpointTest {
 	private static final String PLACE_0001 = "place:0001";
@@ -179,9 +175,9 @@ public class RecordEndpointTest {
 	@Test
 	public void testReadRecordAbstractRecordType() {
 		String type = "abstract";
-		response = recordEndpoint.readRecord(AUTH_TOKEN, AUTH_TOKEN, type,
-				"canBeWhatEverIdTypeIsChecked");
-		assertResponseStatusIs(Response.Status.METHOD_NOT_ALLOWED);
+		response = recordEndpoint.readRecord(AUTH_TOKEN, AUTH_TOKEN, "binary",
+				"image:123456789");
+		assertResponseStatusIs(Response.Status.OK);
 	}
 
 	@Test
