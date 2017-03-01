@@ -19,17 +19,18 @@
 
 package se.uu.ub.cora.therest.data.converter.spider;
 
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
-import se.uu.ub.cora.spider.data.Action;
-import se.uu.ub.cora.therest.data.ActionLink;
-import se.uu.ub.cora.therest.data.converter.ConverterInfo;
+import static org.testng.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static org.testng.Assert.assertEquals;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+import se.uu.ub.cora.spider.data.Action;
+import se.uu.ub.cora.therest.data.ActionLink;
+import se.uu.ub.cora.therest.data.converter.ConverterInfo;
 
 public class ActionSpiderToRestConverterTest {
 	private ConverterInfo converterInfo = ConverterInfo.withBaseURLAndRecordURL(
@@ -178,12 +179,12 @@ public class ActionSpiderToRestConverterTest {
 
 		ActionSpiderToRestConverter actionSpiderToRestConverter = ActionSpiderToRestConverter
 				.fromSpiderActionsWithBaseURLAndRecordTypeAndRecordId(actions, converterInfo,
-						"recordType", "text");
+						"search", "aSearchId");
 		Map<String, ActionLink> actionLinks = actionSpiderToRestConverter.toRest();
 
 		ActionLink actionLink = actionLinks.get("search");
 		assertEquals(actionLink.getAction(), Action.SEARCH);
-		assertEquals(actionLink.getURL(), "http://localhost:8080/therest/rest/record/text/");
+		assertEquals(actionLink.getURL(), "http://localhost:8080/therest/rest/record/aSearchId/");
 		assertEquals(actionLink.getRequestMethod(), "GET");
 		assertEquals(actionLink.getAccept(), "application/uub+recordList+json");
 		assertEquals(actionLink.getContentType(), null);
