@@ -30,6 +30,7 @@ import se.uu.ub.cora.spider.authorization.SpiderAuthorizator;
 import se.uu.ub.cora.spider.dependency.SpiderDependencyProvider;
 import se.uu.ub.cora.spider.extended.BaseExtendedFunctionalityProvider;
 import se.uu.ub.cora.spider.extended.ExtendedFunctionalityProvider;
+import se.uu.ub.cora.spider.record.RecordSearch;
 import se.uu.ub.cora.spider.record.storage.RecordIdGenerator;
 import se.uu.ub.cora.spider.record.storage.RecordStorage;
 import se.uu.ub.cora.spider.stream.storage.StreamStorage;
@@ -103,6 +104,12 @@ public class DependencyProviderForTest extends SpiderDependencyProvider {
 	@Override
 	public Authenticator getAuthenticator() {
 		return new AuthenticatorForTest();
+	}
+
+	@Override
+	public RecordSearch getRecordSearch() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

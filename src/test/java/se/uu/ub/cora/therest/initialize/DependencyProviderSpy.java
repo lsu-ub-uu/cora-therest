@@ -28,6 +28,7 @@ import se.uu.ub.cora.spider.authorization.PermissionRuleCalculator;
 import se.uu.ub.cora.spider.authorization.SpiderAuthorizator;
 import se.uu.ub.cora.spider.dependency.SpiderDependencyProvider;
 import se.uu.ub.cora.spider.extended.ExtendedFunctionalityProvider;
+import se.uu.ub.cora.spider.record.RecordSearch;
 import se.uu.ub.cora.spider.record.storage.RecordIdGenerator;
 import se.uu.ub.cora.spider.record.storage.RecordStorage;
 import se.uu.ub.cora.spider.stream.storage.StreamStorage;
@@ -94,6 +95,12 @@ public class DependencyProviderSpy extends SpiderDependencyProvider {
 
 	public Map<String, String> getInitInfo() {
 		return initInfo;
+	}
+
+	@Override
+	public RecordSearch getRecordSearch() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
