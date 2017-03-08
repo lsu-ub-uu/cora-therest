@@ -414,7 +414,7 @@ public class RecordEndpoint {
 	}
 
 	@GET
-	@Path("search/{searchId}")
+	@Path("searchResult/{searchId}")
 	@Produces("application/uub+recordList+json")
 	public Response searchRecord(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("searchId") String searchId,
