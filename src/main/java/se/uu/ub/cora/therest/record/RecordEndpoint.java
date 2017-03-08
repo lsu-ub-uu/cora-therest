@@ -413,4 +413,31 @@ public class RecordEndpoint {
 		return Response.ok(json).build();
 	}
 
+	@GET
+	@Path("search/{searchId}")
+	@Produces("application/uub+recordList+json")
+	public Response searchRecord(@HeaderParam("authToken") String headerAuthToken,
+			@QueryParam("authToken") String queryAuthToken, @PathParam("searchId") String searchId,
+			@QueryParam("searchData") String searchDataAsJson) {
+		String usedToken = getExistingTokenPreferHeader(headerAuthToken, queryAuthToken);
+		return searchRecordUsingAuthTokenBySearchData(usedToken, searchId, searchDataAsJson);
+	}
+
+	private Response searchRecordUsingAuthTokenBySearchData(String authToken, String searchId,
+			String searchDataAsJson) {
+		try {
+			return trySearchRecord(authToken, searchId, searchDataAsJson);
+		} catch (Exception error) {
+			return handleError(authToken, error);
+		}
+	}
+
+	private Response trySearchRecord(String authToken, String searchId, String searchDataAsJson) {
+		SpiderDataGroup searchData = convertJsonStringToSpiderDataGroup(searchDataAsJson);
+
+		SpiderDataList searchRecordList = SpiderInstanceProvider.getSpiderRecordSearcher()
+				.search(authToken, searchId, searchData);
+		String json = convertSpiderRecordListToJsonString(searchRecordList);
+		return Response.status(Response.Status.OK).entity(json).build();
+	}
 }

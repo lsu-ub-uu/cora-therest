@@ -20,19 +20,10 @@
 
 package se.uu.ub.cora.therest.record;
 
-import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
-import org.glassfish.jersey.media.multipart.FormDataContentDisposition.FormDataContentDispositionBuilder;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
-import se.uu.ub.cora.spider.dependency.SpiderInstanceFactory;
-import se.uu.ub.cora.spider.dependency.SpiderInstanceFactoryImp;
-import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
-import se.uu.ub.cora.therest.initialize.DependencyProviderForTest;
-import se.uu.ub.cora.therest.initialize.DependencyProviderForTestNotAuthorized;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertTrue;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriInfo;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -41,9 +32,24 @@ import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.util.HashMap;
 
-import static org.testng.Assert.*;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
+
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition.FormDataContentDispositionBuilder;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+import se.uu.ub.cora.spider.data.SpiderDataGroup;
+import se.uu.ub.cora.spider.dependency.SpiderInstanceFactory;
+import se.uu.ub.cora.spider.dependency.SpiderInstanceFactoryImp;
+import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
+import se.uu.ub.cora.therest.initialize.DependencyProviderForTest;
+import se.uu.ub.cora.therest.initialize.DependencyProviderForTestNotAuthorized;
 
 public class RecordEndpointTest {
+	private static final String DUMMY_NON_AUTHORIZED_TOKEN = "dummyNonAuthorizedToken";
 	private static final String PLACE_0001 = "place:0001";
 	private static final String PLACE = "place";
 	private static final String AUTH_TOKEN = "authToken";
@@ -55,6 +61,8 @@ public class RecordEndpointTest {
 	private String jsonToUpdateWithNotFound = "{\"name\":\"authority\",\"children\":[{\"name\":\"recordInfo\",\"children\":[{\"name\":\"id\",\"value\":\"place:0001_NOT_FOUND\"},{\"name\":\"type\",\"value\":\"place\"},{\"name\":\"createdBy\",\"value\":\"userId\"}]},{\"name\":\"datePeriod\",\"attributes\":{\"eventType\":\"existence\"},\"children\":[{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"start\"},\"children\":[{\"name\":\"year\",\"value\":\"1976\"},{\"name\":\"month\",\"value\":\"07\"},{\"name\":\"day\",\"value\":\"22\"}]},{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"end\"},\"children\":[{\"name\":\"year\",\"value\":\"2076\"},{\"name\":\"month\",\"value\":\"12\"},{\"name\":\"day\",\"value\":\"31\"}]},{\"name\":\"description\",\"value\":\"76 - 76\"}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"authorized\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"name\",\"value\":\"Olov\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"name\",\"value\":\"McKie\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"number\"},\"children\":[{\"name\":\"name\",\"value\":\"II\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"addition\"},\"children\":[{\"name\":\"name\",\"value\":\"Ett tillägg\"}]},{\"name\":\"datePeriod\",\"attributes\":{\"eventType\":\"valid\"},\"children\":[{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"start\"},\"children\":[{\"name\":\"year\",\"value\":\"2008\"},{\"name\":\"month\",\"value\":\"06\"},{\"name\":\"day\",\"value\":\"28\"}]},{\"name\":\"description\",\"value\":\"Namn som gift\"}]}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"alternative\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"name\",\"value\":\"Olle\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"name\",\"value\":\"Nilsson\"}]}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"alternative\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"name\",\"value\":\"Olle2\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"name\",\"value\":\"Nilsson2\"}]}]},{\"name\":\"other\",\"value\":\"some other stuff\"},{\"name\":\"other\",\"value\":\"second other stuff\"},{\"name\":\"other\",\"value\":\"third other stuff\"},{\"name\":\"othercol\",\"value\":\"yes\"}],\"attributes\":{\"type\":\"place\"}}";
 	private String jsonWithBadContent = "{\"groupNameInData\":{\"children\":[{\"atomicNameInData\":\"atomicValue\""
 			+ ",\"atomicNameInData2\":\"atomicValue2\"}]}}";
+	private String jsonSearchData = "{\"name\":\"search\",\"children\":[{\"name\":\"include\",\""
+			+ "children\":[{\"name\":\"includePart\",\"children\":[{\"name\":\"text\",\"value\":\"\"}]}]}]}";
 	private RecordEndpoint recordEndpoint;
 
 	@BeforeMethod
@@ -114,7 +122,7 @@ public class RecordEndpointTest {
 	@Test
 	public void testReadRecordListUnauthorized() {
 		setNotAuthorized();
-		response = recordEndpoint.readRecordListUsingAuthTokenByType("dummyNonAuthorizedToken",
+		response = recordEndpoint.readRecordListUsingAuthTokenByType(DUMMY_NON_AUTHORIZED_TOKEN,
 				PLACE);
 		assertResponseStatusIs(Response.Status.FORBIDDEN);
 	}
@@ -161,7 +169,7 @@ public class RecordEndpointTest {
 	@Test
 	public void testReadRecordUnauthorized() {
 		setNotAuthorized();
-		response = recordEndpoint.readRecordUsingAuthTokenByTypeAndId("dummyNonAuthorizedToken",
+		response = recordEndpoint.readRecordUsingAuthTokenByTypeAndId(DUMMY_NON_AUTHORIZED_TOKEN,
 				PLACE, PLACE_0001);
 		assertResponseStatusIs(Response.Status.FORBIDDEN);
 	}
@@ -174,9 +182,7 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testReadRecordAbstractRecordType() {
-		String type = "abstract";
-		response = recordEndpoint.readRecord(AUTH_TOKEN, AUTH_TOKEN, "binary",
-				"image:123456789");
+		response = recordEndpoint.readRecord(AUTH_TOKEN, AUTH_TOKEN, "binary", "image:123456789");
 		assertResponseStatusIs(Response.Status.OK);
 	}
 
@@ -226,7 +232,7 @@ public class RecordEndpointTest {
 	public void testReadIncomingLinksUnauthorized() {
 		setNotAuthorized();
 		response = recordEndpoint.readIncomingRecordLinksUsingAuthTokenByTypeAndId(
-				"dummyNonAuthorizedToken", PLACE, PLACE_0001);
+				DUMMY_NON_AUTHORIZED_TOKEN, PLACE, PLACE_0001);
 		assertResponseStatusIs(Response.Status.FORBIDDEN);
 	}
 
@@ -279,7 +285,7 @@ public class RecordEndpointTest {
 	@Test
 	public void testDeleteRecordUnauthorized() {
 		setNotAuthorized();
-		response = recordEndpoint.deleteRecordUsingAuthTokenByTypeAndId("dummyNonAuthorizedToken",
+		response = recordEndpoint.deleteRecordUsingAuthTokenByTypeAndId(DUMMY_NON_AUTHORIZED_TOKEN,
 				PLACE, PLACE_0001);
 		assertResponseStatusIs(Response.Status.FORBIDDEN);
 	}
@@ -320,7 +326,7 @@ public class RecordEndpointTest {
 	@Test
 	public void testUpdateRecordUnauthorized() {
 		setNotAuthorized();
-		response = recordEndpoint.updateRecordUsingAuthTokenWithRecord("dummyNonAuthorizedToken",
+		response = recordEndpoint.updateRecordUsingAuthTokenWithRecord(DUMMY_NON_AUTHORIZED_TOKEN,
 				PLACE, PLACE_0001, jsonToUpdateWith);
 		assertResponseStatusIs(Response.Status.FORBIDDEN);
 	}
@@ -395,7 +401,7 @@ public class RecordEndpointTest {
 	@Test
 	public void testCreateRecordUnauthorized() {
 		setNotAuthorized();
-		response = recordEndpoint.createRecordUsingAuthTokenWithRecord("dummyNonAuthorizedToken",
+		response = recordEndpoint.createRecordUsingAuthTokenWithRecord(DUMMY_NON_AUTHORIZED_TOKEN,
 				PLACE, jsonToCreateFrom);
 		assertResponseStatusIs(Response.Status.FORBIDDEN);
 	}
@@ -409,7 +415,7 @@ public class RecordEndpointTest {
 	@Test
 	public void testCreateNonExistingRecordType() {
 		String type = "recordType_NON_EXCISTING";
-		response = recordEndpoint.createRecordUsingAuthTokenWithRecord("dummyNonAuthorizedToken",
+		response = recordEndpoint.createRecordUsingAuthTokenWithRecord(DUMMY_NON_AUTHORIZED_TOKEN,
 				type, jsonToCreateFrom);
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
 	}
@@ -558,7 +564,7 @@ public class RecordEndpointTest {
 
 		InputStream stream = new ByteArrayInputStream("a string".getBytes(StandardCharsets.UTF_8));
 
-		response = recordEndpoint.uploadFileUsingAuthTokenWithStream("dummyNonAuthorizedToken",
+		response = recordEndpoint.uploadFileUsingAuthTokenWithStream(DUMMY_NON_AUTHORIZED_TOKEN,
 				"image", "image:123456789", stream, "someFile.tif");
 
 		assertResponseStatusIs(Response.Status.FORBIDDEN);
@@ -629,7 +635,7 @@ public class RecordEndpointTest {
 	@Test
 	public void testDownloadUnauthorized() throws IOException {
 		setNotAuthorized();
-		response = recordEndpoint.downloadFileUsingAuthTokenWithStream("dummyNonAuthorizedToken",
+		response = recordEndpoint.downloadFileUsingAuthTokenWithStream(DUMMY_NON_AUTHORIZED_TOKEN,
 				"image", "image:123456789", "master");
 		assertResponseStatusIs(Response.Status.FORBIDDEN);
 	}
@@ -687,4 +693,87 @@ public class RecordEndpointTest {
 		assertResponseStatusIs(Response.Status.BAD_REQUEST);
 	}
 
+	@Test
+	public void testSearchRecordInputsReachSpider() {
+		SpiderInstanceFactorySpy factorySpy = setupInstanceProviderWithFactorySpy();
+		response = recordEndpoint.searchRecord(AUTH_TOKEN, AUTH_TOKEN, "aSearchId", jsonSearchData);
+		SpiderRecordSearcherSpy spiderRecordSearcherSpy = factorySpy.spiderRecordSearcherSpy;
+		assertEquals(spiderRecordSearcherSpy.authToken, AUTH_TOKEN);
+		assertEquals(spiderRecordSearcherSpy.searchId, "aSearchId");
+		SpiderDataGroup searchData = spiderRecordSearcherSpy.searchData;
+		assertEquals(searchData.getNameInData(), "search");
+		SpiderDataGroup include = (SpiderDataGroup) searchData
+				.getFirstChildWithNameInData("include");
+		SpiderDataGroup includePart = (SpiderDataGroup) include
+				.getFirstChildWithNameInData("includePart");
+		assertTrue(includePart.containsChildWithNameInData("text"));
+	}
+
+	@Test
+	public void testSearchRecordRightTokenInputsReachSpider() {
+		SpiderInstanceFactorySpy factorySpy = setupInstanceProviderWithFactorySpy();
+		response = recordEndpoint.searchRecord(AUTH_TOKEN, null, "aSearchId", jsonSearchData);
+		SpiderRecordSearcherSpy spiderRecordSearcherSpy = factorySpy.spiderRecordSearcherSpy;
+		assertEquals(spiderRecordSearcherSpy.authToken, AUTH_TOKEN);
+	}
+
+	@Test
+	public void testSearchRecordRightTokenInputsReachSpider2() {
+		SpiderInstanceFactorySpy factorySpy = setupInstanceProviderWithFactorySpy();
+		response = recordEndpoint.searchRecord(null, AUTH_TOKEN, "aSearchId", jsonSearchData);
+		SpiderRecordSearcherSpy spiderRecordSearcherSpy = factorySpy.spiderRecordSearcherSpy;
+		assertEquals(spiderRecordSearcherSpy.authToken, AUTH_TOKEN);
+	}
+
+	@Test
+	public void testSearchRecordRightTokenInputsReachSpider3() {
+		SpiderInstanceFactorySpy factorySpy = setupInstanceProviderWithFactorySpy();
+		response = recordEndpoint.searchRecord(AUTH_TOKEN, "otherAuthToken", "aSearchId",
+				jsonSearchData);
+		SpiderRecordSearcherSpy spiderRecordSearcherSpy = factorySpy.spiderRecordSearcherSpy;
+		assertEquals(spiderRecordSearcherSpy.authToken, AUTH_TOKEN);
+	}
+
+	@Test
+	public void testSearchRecord() {
+		setupInstanceProviderWithFactorySpy();
+		response = recordEndpoint.searchRecord(AUTH_TOKEN, AUTH_TOKEN, "aSearchId", jsonSearchData);
+		assertEntityExists();
+		assertResponseStatusIs(Response.Status.OK);
+		String expectedJson = "{\"dataList\":{\"fromNo\":\"0\",\"data\":[],\"totalNo\":\"1\","
+				+ "\"containDataOfType\":\"mix\",\"toNo\":\"1\"}}";
+		assertEquals(response.getEntity(), expectedJson);
+	}
+
+	@Test
+	public void testSearchRecordSearchIdNotFound() {
+		setupInstanceProviderWithFactorySpy();
+		response = recordEndpoint.searchRecord(AUTH_TOKEN, AUTH_TOKEN, "aSearchId_NOT_FOUND",
+				jsonSearchData);
+		assertResponseStatusIs(Response.Status.NOT_FOUND);
+	}
+
+	@Test
+	public void testSearchRecordInvalidSearchData() {
+		setupInstanceProviderWithFactorySpy();
+		response = recordEndpoint.searchRecord(AUTH_TOKEN, AUTH_TOKEN, "aSearchId_INVALID_DATA",
+				jsonSearchData);
+		assertResponseStatusIs(Response.Status.BAD_REQUEST);
+	}
+
+	@Test
+	public void testSearchRecordUnauthorized() {
+		setupInstanceProviderWithFactorySpy();
+		response = recordEndpoint.searchRecord(DUMMY_NON_AUTHORIZED_TOKEN,
+				DUMMY_NON_AUTHORIZED_TOKEN, "aSearchId", jsonSearchData);
+		assertResponseStatusIs(Response.Status.FORBIDDEN);
+	}
+
+	@Test
+	public void testSearchRecordUnauthenticated() {
+		setupInstanceProviderWithFactorySpy();
+		response = recordEndpoint.searchRecord("nonExistingToken", "nonExistingToken", "aSearchId",
+				jsonSearchData);
+		assertResponseStatusIs(Response.Status.UNAUTHORIZED);
+	}
 }
