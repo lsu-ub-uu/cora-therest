@@ -184,7 +184,8 @@ public class ActionSpiderToRestConverterTest {
 
 		ActionLink actionLink = actionLinks.get("search");
 		assertEquals(actionLink.getAction(), Action.SEARCH);
-		assertEquals(actionLink.getURL(), "http://localhost:8080/therest/rest/record/aSearchId/");
+		assertEquals(actionLink.getURL(),
+				"http://localhost:8080/therest/rest/record/searchResult/aSearchId");
 		assertEquals(actionLink.getRequestMethod(), "GET");
 		assertEquals(actionLink.getAccept(), "application/uub+recordList+json");
 		assertEquals(actionLink.getContentType(), null);
@@ -226,7 +227,8 @@ public class ActionSpiderToRestConverterTest {
 		assertEquals(list.getURL(), "http://localhost:8080/therest/rest/record/text/");
 
 		ActionLink search = actionLinks.get("search");
-		assertEquals(search.getURL(), "http://localhost:8080/therest/rest/record/text/");
+		assertEquals(search.getURL(),
+				"http://localhost:8080/therest/rest/record/searchResult/text");
 
 		ActionLink createByUpload = actionLinks.get("upload");
 		assertEquals(createByUpload.getURL(),

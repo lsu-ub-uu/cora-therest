@@ -19,13 +19,13 @@
 
 package se.uu.ub.cora.therest.data.converter.spider;
 
-import se.uu.ub.cora.spider.data.Action;
-import se.uu.ub.cora.therest.data.ActionLink;
-import se.uu.ub.cora.therest.data.converter.ConverterInfo;
-
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import se.uu.ub.cora.spider.data.Action;
+import se.uu.ub.cora.therest.data.ActionLink;
+import se.uu.ub.cora.therest.data.converter.ConverterInfo;
 
 public final class ActionSpiderToRestConverter {
 
@@ -83,6 +83,10 @@ public final class ActionSpiderToRestConverter {
 				actionLink.setRequestMethod("POST");
 				actionLink.setURL(urlWithRecordId + "/master");
 				actionLink.setContentType("multipart/form-data");
+			} else if (Action.SEARCH.equals(action)) {
+				actionLink.setRequestMethod("GET");
+				actionLink.setURL(converterInfo.baseURL + "searchResult/" + recordId);
+				actionLink.setAccept(APPLICATION_UUB_RECORD_LIST_JSON);
 			} else {
 				// list / search
 				actionLink.setRequestMethod("GET");
