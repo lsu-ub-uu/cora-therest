@@ -29,8 +29,8 @@ import se.uu.ub.cora.therest.data.converter.ConverterInfo;
 
 public final class ActionSpiderToRestConverter {
 
-	private static final String APPLICATION_UUB_RECORD_LIST_JSON = "application/uub+recordList+json";
-	private static final String APPLICATION_UUB_RECORD_JSON = "application/uub+record+json";
+	private static final String APPLICATION_UUB_RECORD_LIST_JSON = "application/vnd.uub.recordList+json";
+	private static final String APPLICATION_UUB_RECORD_JSON = "application/vnd.uub.record+json";
 	private ConverterInfo converterInfo;
 	private List<Action> actions;
 	private String recordType;

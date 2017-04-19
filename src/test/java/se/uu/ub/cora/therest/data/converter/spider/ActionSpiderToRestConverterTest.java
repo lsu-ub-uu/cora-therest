@@ -58,7 +58,7 @@ public class ActionSpiderToRestConverterTest {
 		assertEquals(actionLink.getURL(),
 				"http://localhost:8080/therest/rest/record/recordType/recordId");
 		assertEquals(actionLink.getRequestMethod(), "GET");
-		assertEquals(actionLink.getAccept(), "application/uub+record+json");
+		assertEquals(actionLink.getAccept(), "application/vnd.uub.record+json");
 		assertEquals(actionLink.getContentType(), null);
 	}
 
@@ -75,7 +75,7 @@ public class ActionSpiderToRestConverterTest {
 		assertEquals(actionLink.getURL(),
 				"http://localhost:8080/therest/rest/record/recordType/recordId/incomingLinks");
 		assertEquals(actionLink.getRequestMethod(), "GET");
-		assertEquals(actionLink.getAccept(), "application/uub+recordList+json");
+		assertEquals(actionLink.getAccept(), "application/vnd.uub.recordList+json");
 		assertEquals(actionLink.getContentType(), null);
 	}
 
@@ -93,8 +93,8 @@ public class ActionSpiderToRestConverterTest {
 		assertEquals(actionLink.getURL(),
 				"http://localhost:8080/therest/rest/record/recordType/recordId");
 		assertEquals(actionLink.getRequestMethod(), "POST");
-		assertEquals(actionLink.getAccept(), "application/uub+record+json");
-		assertEquals(actionLink.getContentType(), "application/uub+record+json");
+		assertEquals(actionLink.getAccept(), "application/vnd.uub.record+json");
+		assertEquals(actionLink.getContentType(), "application/vnd.uub.record+json");
 	}
 
 	@Test
@@ -130,8 +130,8 @@ public class ActionSpiderToRestConverterTest {
 		assertEquals(actionLink.getAction(), Action.CREATE);
 		assertEquals(actionLink.getURL(), "http://localhost:8080/therest/rest/record/text/");
 		assertEquals(actionLink.getRequestMethod(), "POST");
-		assertEquals(actionLink.getAccept(), "application/uub+record+json");
-		assertEquals(actionLink.getContentType(), "application/uub+record+json");
+		assertEquals(actionLink.getAccept(), "application/vnd.uub.record+json");
+		assertEquals(actionLink.getContentType(), "application/vnd.uub.record+json");
 	}
 
 	@Test
@@ -168,7 +168,7 @@ public class ActionSpiderToRestConverterTest {
 		assertEquals(actionLink.getAction(), Action.LIST);
 		assertEquals(actionLink.getURL(), "http://localhost:8080/therest/rest/record/text/");
 		assertEquals(actionLink.getRequestMethod(), "GET");
-		assertEquals(actionLink.getAccept(), "application/uub+recordList+json");
+		assertEquals(actionLink.getAccept(), "application/vnd.uub.recordList+json");
 		assertEquals(actionLink.getContentType(), null);
 	}
 
@@ -187,7 +187,7 @@ public class ActionSpiderToRestConverterTest {
 		assertEquals(actionLink.getURL(),
 				"http://localhost:8080/therest/rest/record/searchResult/aSearchId");
 		assertEquals(actionLink.getRequestMethod(), "GET");
-		assertEquals(actionLink.getAccept(), "application/uub+recordList+json");
+		assertEquals(actionLink.getAccept(), "application/vnd.uub.recordList+json");
 		assertEquals(actionLink.getContentType(), null);
 	}
 

@@ -90,8 +90,8 @@ public class RecordEndpoint {
 
 	@POST
 	@Path("{type}")
-	@Consumes("application/uub+record+json")
-	@Produces("application/uub+record+json")
+	@Consumes("application/vnd.uub.record+json")
+	@Produces("application/vnd.uub.record+json")
 	public Response createRecord(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			String jsonRecord) {
@@ -213,7 +213,7 @@ public class RecordEndpoint {
 
 	@GET
 	@Path("{type}/")
-	@Produces("application/uub+recordList+json")
+	@Produces("application/vnd.uub.recordList+json")
 	public Response readRecordList(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type) {
 		String usedToken = getExistingTokenPreferHeader(headerAuthToken, queryAuthToken);
@@ -248,7 +248,7 @@ public class RecordEndpoint {
 
 	@GET
 	@Path("{type}/{id}")
-	@Produces("application/uub+record+json")
+	@Produces("application/vnd.uub.record+json")
 	public Response readRecord(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			@PathParam("id") String id) {
@@ -273,7 +273,7 @@ public class RecordEndpoint {
 
 	@GET
 	@Path("{type}/{id}/incomingLinks")
-	@Produces("application/uub+recordList+json")
+	@Produces("application/vnd.uub.recordList+json")
 	public Response readIncomingRecordLinks(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			@PathParam("id") String id) {
@@ -322,8 +322,8 @@ public class RecordEndpoint {
 
 	@POST
 	@Path("{type}/{id}")
-	@Consumes("application/uub+record+json")
-	@Produces("application/uub+record+json")
+	@Consumes("application/vnd.uub.record+json")
+	@Produces("application/vnd.uub.record+json")
 	public Response updateRecord(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			@PathParam("id") String id, String jsonRecord) {
@@ -385,7 +385,7 @@ public class RecordEndpoint {
 	@POST
 	@Path("{type}/{id}/{streamId}")
 	@Consumes("multipart/form-data")
-	@Produces("application/uub+record+json2")
+	@Produces("application/vnd.uub.record+json2")
 	public Response uploadFile(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			@PathParam("id") String id, @FormDataParam("file") InputStream uploadedInputStream,
@@ -415,7 +415,7 @@ public class RecordEndpoint {
 
 	@GET
 	@Path("searchResult/{searchId}")
-	@Produces("application/uub+recordList+json")
+	@Produces("application/vnd.uub.recordList+json")
 	public Response searchRecord(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("searchId") String searchId,
 			@QueryParam("searchData") String searchDataAsJson) {
