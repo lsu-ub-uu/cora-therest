@@ -19,14 +19,15 @@
 
 package se.uu.ub.cora.therest.data.converter;
 
+import static org.testng.Assert.assertEquals;
+
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import se.uu.ub.cora.therest.data.RestDataAtomic;
-import se.uu.ub.cora.therest.data.RestDataGroup;
+
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.org.OrgJsonBuilderFactoryAdapter;
-
-import static org.testng.Assert.assertEquals;
+import se.uu.ub.cora.therest.data.RestDataAtomic;
+import se.uu.ub.cora.therest.data.RestDataGroup;
 
 public class DataGroupToJsonConverterTest {
 	private DataToJsonConverterFactory dataToJsonConverterFactory;
@@ -141,7 +142,13 @@ public class DataGroupToJsonConverterTest {
 
 		RestDataGroup recordInfo = RestDataGroup.withNameInData("recordInfo");
 		recordInfo.addChild(RestDataAtomic.withNameInDataAndValue("id", "place:0001"));
-		recordInfo.addChild(RestDataAtomic.withNameInDataAndValue("type", "place"));
+		RestDataGroup type = RestDataGroup.withNameInData("type");
+		type.addChild(RestDataAtomic.withNameInDataAndValue("linkedRecordType", "recordType"));
+		type.addChild(RestDataAtomic.withNameInDataAndValue("linkedRecordId", "place"));
+		recordInfo.addChild(type);
+
+		// recordInfo.addChild(RestDataAtomic.withNameInDataAndValue("type",
+		// "place"));
 		recordInfo.addChild(RestDataAtomic.withNameInDataAndValue("createdBy", "userId"));
 		restDataGroup.addChild(recordInfo);
 

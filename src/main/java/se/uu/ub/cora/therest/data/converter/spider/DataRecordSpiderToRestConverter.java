@@ -73,7 +73,8 @@ public final class DataRecordSpiderToRestConverter {
 	private void extractIdAndType() {
 		SpiderDataGroup recordInfo = spiderDataGroup.extractGroup("recordInfo");
 		recordId = recordInfo.extractAtomicValue("id");
-		recordType = recordInfo.extractAtomicValue("type");
+		SpiderDataGroup typeGroup = recordInfo.extractGroup("type");
+		recordType = typeGroup.extractAtomicValue("linkedRecordId");
 	}
 
 	private void createConverterInfo() {
