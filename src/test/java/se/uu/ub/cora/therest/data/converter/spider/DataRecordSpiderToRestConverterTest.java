@@ -82,8 +82,6 @@ public class DataRecordSpiderToRestConverterTest {
 		type.addChild(SpiderDataAtomic.withNameInDataAndValue("linkedRecordId", "place"));
 		recordInfo.addChild(type);
 
-		// recordInfo.addChild(SpiderDataAtomic.withNameInDataAndValue("type",
-		// "place"));
 		recordInfo.addChild(SpiderDataAtomic.withNameInDataAndValue("createdBy", "userId"));
 		spiderDataGroup.addChild(recordInfo);
 
@@ -124,8 +122,6 @@ public class DataRecordSpiderToRestConverterTest {
 				SpiderDataAtomic.withNameInDataAndValue("linkedRecordType", "recordType"));
 		typeGroup.addChild(SpiderDataAtomic.withNameInDataAndValue("linkedRecordId", "place"));
 		recordInfo.addChild(typeGroup);
-		// recordInfo.addChild(SpiderDataAtomic.withNameInDataAndValue("type",
-		// "place"));
 		recordInfo.addChild(SpiderDataAtomic.withNameInDataAndValue("createdBy", "userId"));
 		return recordInfo;
 	}
