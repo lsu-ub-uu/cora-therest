@@ -19,14 +19,15 @@
 
 package se.uu.ub.cora.therest.data.converter;
 
+import static org.testng.Assert.assertEquals;
+
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import se.uu.ub.cora.therest.data.RestDataAtomic;
-import se.uu.ub.cora.therest.data.RestDataGroup;
+
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.org.OrgJsonBuilderFactoryAdapter;
-
-import static org.testng.Assert.assertEquals;
+import se.uu.ub.cora.therest.data.RestDataAtomic;
+import se.uu.ub.cora.therest.data.RestDataGroup;
 
 public class DataGroupToJsonConverterTest {
 	private DataToJsonConverterFactory dataToJsonConverterFactory;
@@ -141,7 +142,11 @@ public class DataGroupToJsonConverterTest {
 
 		RestDataGroup recordInfo = RestDataGroup.withNameInData("recordInfo");
 		recordInfo.addChild(RestDataAtomic.withNameInDataAndValue("id", "place:0001"));
-		recordInfo.addChild(RestDataAtomic.withNameInDataAndValue("type", "place"));
+		RestDataGroup type = RestDataGroup.withNameInData("type");
+		type.addChild(RestDataAtomic.withNameInDataAndValue("linkedRecordType", "recordType"));
+		type.addChild(RestDataAtomic.withNameInDataAndValue("linkedRecordId", "place"));
+		recordInfo.addChild(type);
+
 		recordInfo.addChild(RestDataAtomic.withNameInDataAndValue("createdBy", "userId"));
 		restDataGroup.addChild(recordInfo);
 
@@ -158,18 +163,15 @@ public class DataGroupToJsonConverterTest {
 		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForRestDataElement(factory, restDataGroup);
 		String json = dataToJsonConverter.toJson();
-		String expectedJson = "{\"children\":[";
-		expectedJson += "{\"children\":[";
-		expectedJson += "{\"name\":\"id\",\"value\":\"place:0001\"},";
-		expectedJson += "{\"name\":\"type\",\"value\":\"place\"},";
-		expectedJson += "{\"name\":\"createdBy\",\"value\":\"userId\"}],\"name\":\"recordInfo\"},";
-		expectedJson += "{\"name\":\"atomicNameInData\",\"value\":\"atomicValue\"},";
-		expectedJson += "{\"children\":[{\"name\":\"atomicNameInData2\",\"value\":\"atomicValue2\"}],";
-		expectedJson += "\"name\":\"groupNameInData2\",\"attributes\":{";
-		expectedJson += "\"g2AttributeNameInData\":\"g2AttributeValue\"}}],";
-		expectedJson += "\"name\":\"groupNameInData\",\"attributes\":{";
-		expectedJson += "\"attributeNameInData2\":\"attributeValue2\",";
-		expectedJson += "\"attributeNameInData\":\"attributeValue\"}}";
+		String expectedJson = "{\"children\":[{\"children\":[{\"name\":\"id\",\"value\":\"place:0001\"},"
+				+ "{\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"recordType\"},"
+				+ "{\"name\":\"linkedRecordId\",\"value\":\"place\"}],\"name\":\"type\"},"
+				+ "{\"name\":\"createdBy\",\"value\":\"userId\"}],\"name\":\"recordInfo\"},"
+				+ "{\"name\":\"atomicNameInData\",\"value\":\"atomicValue\"},{\"children\":["
+				+ "{\"name\":\"atomicNameInData2\",\"value\":\"atomicValue2\"}],"
+				+ "\"name\":\"groupNameInData2\",\"attributes\":{\"g2AttributeNameInData\":\"g2AttributeValue\"}}],"
+				+ "\"name\":\"groupNameInData\",\"attributes\":{\"attributeNameInData2\":\"attributeValue2\","
+				+ "\"attributeNameInData\":\"attributeValue\"}}";
 
 		assertEquals(json, expectedJson);
 	}
