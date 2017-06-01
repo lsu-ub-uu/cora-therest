@@ -34,6 +34,7 @@ import se.uu.ub.cora.spider.extended.ExtendedFunctionalityProvider;
 import se.uu.ub.cora.spider.record.RecordSearch;
 import se.uu.ub.cora.spider.record.storage.RecordIdGenerator;
 import se.uu.ub.cora.spider.record.storage.RecordStorage;
+import se.uu.ub.cora.spider.search.RecordIndexer;
 import se.uu.ub.cora.spider.stream.storage.StreamStorage;
 import se.uu.ub.cora.therest.record.DataRecordLinkCollectorSpy;
 import se.uu.ub.cora.therest.record.DataValidatorAlwaysValidSpy;
@@ -115,6 +116,12 @@ public class DependencyProviderForTest extends SpiderDependencyProvider {
 
 	@Override
 	public DataGroupSearchTermCollector getDataGroupSearchTermCollector() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public RecordIndexer getRecordIndexer() {
 		// TODO Auto-generated method stub
 		return null;
 	}
