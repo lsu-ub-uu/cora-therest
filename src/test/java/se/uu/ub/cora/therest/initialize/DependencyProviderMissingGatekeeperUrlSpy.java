@@ -22,6 +22,7 @@ package se.uu.ub.cora.therest.initialize;
 import java.util.Map;
 
 import se.uu.ub.cora.bookkeeper.linkcollector.DataRecordLinkCollector;
+import se.uu.ub.cora.bookkeeper.searchtermcollector.DataGroupSearchTermCollector;
 import se.uu.ub.cora.bookkeeper.validator.DataValidator;
 import se.uu.ub.cora.spider.authentication.Authenticator;
 import se.uu.ub.cora.spider.authorization.PermissionRuleCalculator;
@@ -100,6 +101,12 @@ public class DependencyProviderMissingGatekeeperUrlSpy extends SpiderDependencyP
 
 	@Override
 	public RecordSearch getRecordSearch() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public DataGroupSearchTermCollector getDataGroupSearchTermCollector() {
 		// TODO Auto-generated method stub
 		return null;
 	}
