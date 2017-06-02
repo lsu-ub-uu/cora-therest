@@ -19,8 +19,6 @@
 
 package se.uu.ub.cora.therest.initialize;
 
-import java.util.Map;
-
 import se.uu.ub.cora.bookkeeper.linkcollector.DataRecordLinkCollector;
 import se.uu.ub.cora.bookkeeper.searchtermcollector.DataGroupSearchTermCollector;
 import se.uu.ub.cora.bookkeeper.validator.DataValidator;
@@ -42,6 +40,8 @@ import se.uu.ub.cora.therest.record.IdGeneratorSpy;
 import se.uu.ub.cora.therest.record.StreamStorageSpy;
 import se.uu.ub.cora.therest.testdata.TestDataRecordInMemoryStorage;
 
+import java.util.Map;
+
 public class DependencyProviderForTest extends SpiderDependencyProvider {
 
 	private RecordStorage recordStorage = TestDataRecordInMemoryStorage
@@ -50,6 +50,8 @@ public class DependencyProviderForTest extends SpiderDependencyProvider {
 	private DataValidator dataValidator = new DataValidatorAlwaysValidSpy();
 	private DataRecordLinkCollector linkCollector = new DataRecordLinkCollectorSpy();
 	private StreamStorage streamStorage = new StreamStorageSpy();
+	private RecordIndexer recordIndexer = new RecordIndexerSpy();
+	private DataGroupSearchTermCollector searchTermCollector = new DataGroupSearchTermCollectorSpy();
 
 	public DependencyProviderForTest(Map<String, String> initInfo) {
 		super(initInfo);
@@ -116,14 +118,12 @@ public class DependencyProviderForTest extends SpiderDependencyProvider {
 
 	@Override
 	public DataGroupSearchTermCollector getDataGroupSearchTermCollector() {
-		// TODO Auto-generated method stub
-		return null;
+		return searchTermCollector;
 	}
 
 	@Override
 	public RecordIndexer getRecordIndexer() {
-		// TODO Auto-generated method stub
-		return null;
+		return recordIndexer;
 	}
 
 }
