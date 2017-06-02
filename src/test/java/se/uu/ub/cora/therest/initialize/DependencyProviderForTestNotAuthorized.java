@@ -19,8 +19,6 @@
 
 package se.uu.ub.cora.therest.initialize;
 
-import java.util.Map;
-
 import se.uu.ub.cora.bookkeeper.linkcollector.DataRecordLinkCollector;
 import se.uu.ub.cora.bookkeeper.searchtermcollector.DataGroupSearchTermCollector;
 import se.uu.ub.cora.bookkeeper.validator.DataValidator;
@@ -41,6 +39,8 @@ import se.uu.ub.cora.therest.record.DataValidatorAlwaysValidSpy;
 import se.uu.ub.cora.therest.record.IdGeneratorSpy;
 import se.uu.ub.cora.therest.record.StreamStorageSpy;
 import se.uu.ub.cora.therest.testdata.TestDataRecordInMemoryStorage;
+
+import java.util.Map;
 
 public class DependencyProviderForTestNotAuthorized extends SpiderDependencyProvider {
 
