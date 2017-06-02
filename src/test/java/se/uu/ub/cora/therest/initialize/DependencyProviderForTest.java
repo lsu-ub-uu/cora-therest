@@ -19,9 +19,8 @@
 
 package se.uu.ub.cora.therest.initialize;
 
-import java.util.Map;
-
 import se.uu.ub.cora.bookkeeper.linkcollector.DataRecordLinkCollector;
+import se.uu.ub.cora.bookkeeper.searchtermcollector.DataGroupSearchTermCollector;
 import se.uu.ub.cora.bookkeeper.validator.DataValidator;
 import se.uu.ub.cora.spider.authentication.Authenticator;
 import se.uu.ub.cora.spider.authorization.BasePermissionRuleCalculator;
@@ -33,12 +32,15 @@ import se.uu.ub.cora.spider.extended.ExtendedFunctionalityProvider;
 import se.uu.ub.cora.spider.record.RecordSearch;
 import se.uu.ub.cora.spider.record.storage.RecordIdGenerator;
 import se.uu.ub.cora.spider.record.storage.RecordStorage;
+import se.uu.ub.cora.spider.search.RecordIndexer;
 import se.uu.ub.cora.spider.stream.storage.StreamStorage;
 import se.uu.ub.cora.therest.record.DataRecordLinkCollectorSpy;
 import se.uu.ub.cora.therest.record.DataValidatorAlwaysValidSpy;
 import se.uu.ub.cora.therest.record.IdGeneratorSpy;
 import se.uu.ub.cora.therest.record.StreamStorageSpy;
 import se.uu.ub.cora.therest.testdata.TestDataRecordInMemoryStorage;
+
+import java.util.Map;
 
 public class DependencyProviderForTest extends SpiderDependencyProvider {
 
@@ -48,6 +50,8 @@ public class DependencyProviderForTest extends SpiderDependencyProvider {
 	private DataValidator dataValidator = new DataValidatorAlwaysValidSpy();
 	private DataRecordLinkCollector linkCollector = new DataRecordLinkCollectorSpy();
 	private StreamStorage streamStorage = new StreamStorageSpy();
+	private RecordIndexer recordIndexer = new RecordIndexerSpy();
+	private DataGroupSearchTermCollector searchTermCollector = new DataGroupSearchTermCollectorSpy();
 
 	public DependencyProviderForTest(Map<String, String> initInfo) {
 		super(initInfo);
@@ -110,6 +114,16 @@ public class DependencyProviderForTest extends SpiderDependencyProvider {
 	public RecordSearch getRecordSearch() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public DataGroupSearchTermCollector getDataGroupSearchTermCollector() {
+		return searchTermCollector;
+	}
+
+	@Override
+	public RecordIndexer getRecordIndexer() {
+		return recordIndexer;
 	}
 
 }
