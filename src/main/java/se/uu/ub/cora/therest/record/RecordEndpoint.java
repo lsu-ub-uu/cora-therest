@@ -189,7 +189,6 @@ public class RecordEndpoint {
 		}
 
 		return buildResponseIncludingMessage(error, Response.Status.INTERNAL_SERVER_ERROR);
-		// return buildResponse(Status.INTERNAL_SERVER_ERROR);
 	}
 
 	private boolean errorIsCausedByDataProblem(Exception error) {
