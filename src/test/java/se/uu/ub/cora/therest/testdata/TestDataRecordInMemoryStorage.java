@@ -43,6 +43,10 @@ public class TestDataRecordInMemoryStorage {
 		addRecordTypePlace(recordsInMemory);
 		addAbstractRecordTypes(recordsInMemory);
 		addRecordTypeBadType(recordsInMemory);
+		addRecordTypeSystem(recordsInMemory);
+		addRecordTypeUser(recordsInMemory);
+		addSystem(recordsInMemory);
+		addUser(recordsInMemory);
 
 		DataGroup dummy = DataGroup.withNameInData("dummy");
 		recordsInMemory.create("metadataCollectionVariable", "dummy1", dummy,
@@ -492,5 +496,46 @@ public class TestDataRecordInMemoryStorage {
 		// records.get(recordType).put("child2", dataGroup2);
 		recordsInMemory.create(recordType, "child2", dataGroup2,
 				DataGroup.withNameInData("collectedLinksList"), "cora");
+	}
+
+	private static void addRecordTypeSystem(RecordStorageInMemory recordsInMemory) {
+		String recordType = "recordType";
+		DataGroup dataGroup = DataCreator
+				.createRecordTypeWithIdAndUserSuppliedIdAndAbstract("system", "true", "false");
+
+		recordsInMemory.create(recordType, "system", dataGroup,
+				DataGroup.withNameInData("collectedLinksList"), dataDivider);
+	}
+
+	private static void addSystem(RecordStorageInMemory recordsInMemory) {
+		DataGroup dataGroup = DataGroup.withNameInData("system");
+		DataGroup recordInfo = DataCreator.createRecordInfoWithRecordTypeAndRecordId("system",
+				"cora");
+		dataGroup.addChild(recordInfo);
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("systemName", "cora"));
+
+		recordsInMemory.create("system", "cora", dataGroup,
+				DataGroup.withNameInData("collectedLinksList"), dataDivider);
+	}
+
+	private static void addRecordTypeUser(RecordStorageInMemory recordsInMemory) {
+		String recordType = "recordType";
+		DataGroup dataGroup = DataCreator
+				.createRecordTypeWithIdAndUserSuppliedIdAndAbstract("user", "true", "false");
+
+		recordsInMemory.create(recordType, "user", dataGroup,
+				DataGroup.withNameInData("collectedLinksList"), dataDivider);
+	}
+
+	private static void addUser(RecordStorageInMemory recordsInMemory) {
+		DataGroup dataGroup = DataGroup.withNameInData("user");
+		DataGroup recordInfo = DataCreator.createRecordInfoWithRecordTypeAndRecordId("user",
+				"12345");
+		dataGroup.addChild(recordInfo);
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("userId", "12345"));
+		dataGroup.addChild(DataAtomic.withNameInDataAndValue("userFirstname", "someName"));
+
+		recordsInMemory.create("user", "12345", dataGroup,
+				DataGroup.withNameInData("collectedLinksList"), dataDivider);
 	}
 }
