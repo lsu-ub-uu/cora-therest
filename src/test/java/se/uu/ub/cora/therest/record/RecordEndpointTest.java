@@ -94,8 +94,17 @@ public class RecordEndpointTest {
 		return factorySpy;
 	}
 
+//	@Test
+//	public void testReadRecordList() {
+//		response = recordEndpoint.readRecordList(AUTH_TOKEN, AUTH_TOKEN, PLACE);
+//		assertEntityExists();
+//		assertResponseStatusIs(Response.Status.OK);
+//	}
+
 	@Test
 	public void testReadRecordList() {
+		SpiderInstanceFactorySpy factorySpy = setupInstanceProviderWithFactorySpy();
+
 		response = recordEndpoint.readRecordList(AUTH_TOKEN, AUTH_TOKEN, PLACE);
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.OK);
@@ -109,23 +118,48 @@ public class RecordEndpointTest {
 		assertEquals(response.getStatusInfo(), responseStatus);
 	}
 
+//	@Test
+//	public void testReadRecordListNotFound() {
+//		response = recordEndpoint.readRecordList(AUTH_TOKEN, AUTH_TOKEN, "place_NOT_FOUND");
+//		assertResponseStatusIs(Response.Status.NOT_FOUND);
+//	}
+
 	@Test
 	public void testReadRecordListNotFound() {
+		setupInstanceProviderWithFactorySpy();
+
 		response = recordEndpoint.readRecordList(AUTH_TOKEN, AUTH_TOKEN, "place_NOT_FOUND");
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
 	}
 
+//	@Test
+//	public void testReadRecordListUnauthorized() {
+//		setNotAuthorized();
+//		response = recordEndpoint.readRecordListUsingAuthTokenByType(DUMMY_NON_AUTHORIZED_TOKEN,
+//				PLACE);
+//		assertResponseStatusIs(Response.Status.FORBIDDEN);
+//	}
+
 	@Test
 	public void testReadRecordListUnauthorized() {
-		setNotAuthorized();
+//		setNotAuthorized();
+		setupInstanceProviderWithFactorySpy();
 		response = recordEndpoint.readRecordListUsingAuthTokenByType(DUMMY_NON_AUTHORIZED_TOKEN,
 				PLACE);
 		assertResponseStatusIs(Response.Status.FORBIDDEN);
 	}
 
+//	@Test
+//	public void testReadRecordListNoTokenAndUnauthorized() {
+//		setNotAuthorized();
+//		response = recordEndpoint.readRecordListUsingAuthTokenByType(null, PLACE);
+//		assertResponseStatusIs(Response.Status.UNAUTHORIZED);
+//	}
+
 	@Test
 	public void testReadRecordListNoTokenAndUnauthorized() {
-		setNotAuthorized();
+//		setNotAuthorized();
+		setupInstanceProviderWithFactorySpy();
 		response = recordEndpoint.readRecordListUsingAuthTokenByType(null, PLACE);
 		assertResponseStatusIs(Response.Status.UNAUTHORIZED);
 	}
