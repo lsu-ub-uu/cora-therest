@@ -19,6 +19,7 @@
 
 package se.uu.ub.cora.therest.record;
 
+import se.uu.ub.cora.spider.record.MisuseException;
 import se.uu.ub.cora.spider.record.SpiderRecordDeleter;
 
 public class SpiderRecordDeleterSpy implements SpiderRecordDeleter {
@@ -32,6 +33,10 @@ public class SpiderRecordDeleterSpy implements SpiderRecordDeleter {
 		this.authToken = authToken;
 		this.type = type;
 		this.id = id;
+		if ("place:0001".equals(id)) {
+			throw new MisuseException("Deleting record: " + id
+					+ " is not allowed since other records are linking to it");
+		}
 	}
 
 }
