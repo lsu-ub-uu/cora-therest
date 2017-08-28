@@ -19,11 +19,15 @@
 
 package se.uu.ub.cora.therest.record;
 
-import java.io.InputStream;
-
-import se.uu.ub.cora.spider.data.SpiderDataGroup;
+import se.uu.ub.cora.spider.authorization.AuthorizationException;
+import se.uu.ub.cora.spider.data.DataMissingException;
 import se.uu.ub.cora.spider.data.SpiderDataRecord;
+import se.uu.ub.cora.spider.record.MisuseException;
 import se.uu.ub.cora.spider.record.SpiderUploader;
+import se.uu.ub.cora.spider.record.storage.RecordNotFoundException;
+import se.uu.ub.cora.therest.testdata.DataCreator;
+
+import java.io.InputStream;
 
 public class SpiderUploaderSpy implements SpiderUploader {
 
@@ -41,8 +45,25 @@ public class SpiderUploaderSpy implements SpiderUploader {
 		this.id = id;
 		this.inputStream = inputStream;
 		this.fileName = fileName;
-		return SpiderDataRecord
-				.withSpiderDataGroup(SpiderDataGroup.withNameInData("someNameInData"));
+
+		if("dummyNonAuthorizedToken".equals(authToken)){
+			throw new AuthorizationException("not authorized");
+		}
+		if("image:123456789_NOT_FOUND".equals(id)){
+			throw new RecordNotFoundException("No record exists with recordId: " + id);
+		}
+
+		if("not_child_of_binary_type".equals(type)){
+			throw new MisuseException(
+					"It is only possible to upload files to recordTypes that are children of binary");
+		}
+
+		if(inputStream == null){
+			throw new DataMissingException("No stream to store");
+		}
+		return SpiderDataRecord.withSpiderDataGroup(
+				DataCreator.createRecordWithNameInDataAndIdAndTypeAndLinkedRecordId("nameInData",
+						"someId", type, "linkedRecordId"));
 	}
 
 }

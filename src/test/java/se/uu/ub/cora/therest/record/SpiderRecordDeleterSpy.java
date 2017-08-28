@@ -19,8 +19,10 @@
 
 package se.uu.ub.cora.therest.record;
 
+import se.uu.ub.cora.spider.authorization.AuthorizationException;
 import se.uu.ub.cora.spider.record.MisuseException;
 import se.uu.ub.cora.spider.record.SpiderRecordDeleter;
+import se.uu.ub.cora.spider.record.storage.RecordNotFoundException;
 
 public class SpiderRecordDeleterSpy implements SpiderRecordDeleter {
 
@@ -33,9 +35,14 @@ public class SpiderRecordDeleterSpy implements SpiderRecordDeleter {
 		this.authToken = authToken;
 		this.type = type;
 		this.id = id;
+		if("dummyNonAuthorizedToken".equals(authToken)){
+			throw new AuthorizationException("not authorized");
+		}
 		if ("place:0001".equals(id)) {
 			throw new MisuseException("Deleting record: " + id
 					+ " is not allowed since other records are linking to it");
+		}else if ("place:0001_NOT_FOUND".equals(id)) {
+			throw new RecordNotFoundException("no record exist with id " + id);
 		}
 	}
 
