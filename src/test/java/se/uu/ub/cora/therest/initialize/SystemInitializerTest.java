@@ -19,13 +19,13 @@
 
 package se.uu.ub.cora.therest.initialize;
 
-import static org.testng.Assert.assertEquals;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import static org.testng.Assert.assertEquals;
 
 public class SystemInitializerTest {
 	private SystemInitializer systemInitializer;
@@ -42,11 +42,11 @@ public class SystemInitializerTest {
 	@Test
 	public void testInitializeSystem() {
 		source.setInitParameter("dependencyProviderClassName",
-				"se.uu.ub.cora.therest.initialize.DependencyProviderForTest");
+				"se.uu.ub.cora.therest.initialize.DependencyProviderSpy");
 		systemInitializer.contextInitialized(context);
 
 		assertEquals(systemInitializer.dependencyProvider.getClass(),
-				DependencyProviderForTest.class);
+				DependencyProviderSpy.class);
 	}
 
 	@Test(expectedExceptions = RuntimeException.class)

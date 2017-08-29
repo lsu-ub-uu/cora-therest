@@ -19,9 +19,12 @@
 
 package se.uu.ub.cora.therest.record;
 
+import se.uu.ub.cora.spider.authorization.AuthorizationException;
 import se.uu.ub.cora.spider.data.SpiderDataGroup;
 import se.uu.ub.cora.spider.data.SpiderDataRecord;
 import se.uu.ub.cora.spider.record.SpiderRecordUpdater;
+import se.uu.ub.cora.spider.record.storage.RecordNotFoundException;
+import se.uu.ub.cora.therest.testdata.DataCreator;
 
 public class SpiderRecordUpdaterSpy implements SpiderRecordUpdater {
 
@@ -37,8 +40,18 @@ public class SpiderRecordUpdaterSpy implements SpiderRecordUpdater {
 		this.type = type;
 		this.id = id;
 		this.record = record;
-		return SpiderDataRecord
-				.withSpiderDataGroup(SpiderDataGroup.withNameInData("someNameInData"));
+		if("dummyNonAuthorizedToken".equals(authToken)){
+			throw new AuthorizationException("not authorized");
+		}
+		if("place:0001_NOT_FOUND".equals(id)){
+			throw new RecordNotFoundException("no record exist with id " + id);
+		}
+		if("place_NOT_FOUND".equals(type)){
+			throw new RecordNotFoundException("no record exist with type " + type);
+		}
+		return SpiderDataRecord.withSpiderDataGroup(
+				DataCreator.createRecordWithNameInDataAndIdAndTypeAndLinkedRecordId("nameInData",
+						id, type, "linkedRecordId"));
 	}
 
 }
