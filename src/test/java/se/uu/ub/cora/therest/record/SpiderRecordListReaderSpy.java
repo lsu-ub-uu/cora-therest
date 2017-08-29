@@ -33,13 +33,17 @@ public class SpiderRecordListReaderSpy implements SpiderRecordListReader {
 	public SpiderDataList readRecordList(String authToken, String type) {
 		this.authToken = authToken;
 		this.type = type;
+		possiblyThrowException(authToken, type);
+		return SpiderDataList.withContainDataOfType(type);
+	}
+
+	private void possiblyThrowException(String authToken, String type) {
 		if("place_NOT_FOUND".equals(type)){
 			throw new RecordNotFoundException("Record not found");
 		}
 		if("dummyNonAuthorizedToken".equals(authToken) || authToken == null){
 			throw new AuthorizationException("not authorized");
 		}
-		return SpiderDataList.withContainDataOfType(type);
 	}
 
 }

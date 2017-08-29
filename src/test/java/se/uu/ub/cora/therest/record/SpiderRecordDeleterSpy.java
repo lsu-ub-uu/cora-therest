@@ -35,6 +35,10 @@ public class SpiderRecordDeleterSpy implements SpiderRecordDeleter {
 		this.authToken = authToken;
 		this.type = type;
 		this.id = id;
+		possiblyThrowException(authToken, id);
+	}
+
+	private void possiblyThrowException(String authToken, String id) {
 		if("dummyNonAuthorizedToken".equals(authToken)){
 			throw new AuthorizationException("not authorized");
 		}

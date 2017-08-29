@@ -39,6 +39,15 @@ public class SpiderRecordReaderSpy implements SpiderRecordReader {
 		this.authToken = authToken;
 		this.type = type;
 		this.id = id;
+		possiblyThrowExceptionForRead(authToken, id);
+
+		return SpiderDataRecord.withSpiderDataGroup(
+				DataCreator.createRecordWithNameInDataAndIdAndTypeAndLinkedRecordId("nameInData",
+						id, type, "linkedRecordId"));
+
+	}
+
+	private void possiblyThrowExceptionForRead(String authToken, String id) {
 		if ("dummyNonAuthenticatedToken".equals(authToken)) {
 			throw new AuthenticationException("token not valid");
 		} else if ("dummyNonAuthorizedToken".equals(authToken)) {
@@ -48,11 +57,6 @@ public class SpiderRecordReaderSpy implements SpiderRecordReader {
 		if ("place:0001_NOT_FOUND".equals(id)) {
 			throw new RecordNotFoundException("no record exsist with id " + id);
 		}
-
-		return SpiderDataRecord.withSpiderDataGroup(
-				DataCreator.createRecordWithNameInDataAndIdAndTypeAndLinkedRecordId("nameInData",
-						id, type, "linkedRecordId"));
-
 	}
 
 	@Override
@@ -60,6 +64,11 @@ public class SpiderRecordReaderSpy implements SpiderRecordReader {
 		this.authToken = authToken;
 		this.type = type;
 		this.id = id;
+		possiblyThrowExceptionForIncomingLinks(authToken, type, id);
+		return SpiderDataList.withContainDataOfType("someType");
+	}
+
+	private void possiblyThrowExceptionForIncomingLinks(String authToken, String type, String id) {
 		if ("dummyNonAuthorizedToken".equals(authToken)) {
 			throw new AuthorizationException("not authorized");
 		}
@@ -70,7 +79,6 @@ public class SpiderRecordReaderSpy implements SpiderRecordReader {
 			throw new MisuseException("Reading for record: " + id + " on the abstract recordType:"
 					+ type + " is not allowed");
 		}
-		return SpiderDataList.withContainDataOfType("someType");
 	}
 
 }
