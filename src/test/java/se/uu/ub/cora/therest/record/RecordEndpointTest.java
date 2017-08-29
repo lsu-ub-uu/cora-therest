@@ -20,10 +20,16 @@
 
 package se.uu.ub.cora.therest.record;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertTrue;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition.FormDataContentDispositionBuilder;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+import se.uu.ub.cora.spider.data.SpiderDataGroup;
+import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
 
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -31,17 +37,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriInfo;
-
-import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
-import org.glassfish.jersey.media.multipart.FormDataContentDisposition.FormDataContentDispositionBuilder;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
-
-import se.uu.ub.cora.spider.data.SpiderDataGroup;
-import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
+import static org.testng.Assert.*;
 
 public class RecordEndpointTest {
 	private static final String DUMMY_NON_AUTHORIZED_TOKEN = "dummyNonAuthorizedToken";
@@ -71,7 +67,7 @@ public class RecordEndpointTest {
 	}
 
 	@Test
-	public void testPreferedTokenForReadList() throws IOException {
+	public void testPreferredTokenForReadList() throws IOException {
 		expectTokenForReadListToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, "authToken2", AUTH_TOKEN);
 		expectTokenForReadListToPrefereblyBeHeaderThanQuery(null, AUTH_TOKEN, AUTH_TOKEN);
 		expectTokenForReadListToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, null, AUTH_TOKEN);
@@ -122,15 +118,15 @@ public class RecordEndpointTest {
 	}
 
 	@Test
-	public void testPreferedTokenForRead() throws IOException {
-		expectTokenForReadToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, "authToken2", AUTH_TOKEN);
-		expectTokenForReadToPrefereblyBeHeaderThanQuery(null, AUTH_TOKEN, AUTH_TOKEN);
-		expectTokenForReadToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, null, AUTH_TOKEN);
-		expectTokenForReadToPrefereblyBeHeaderThanQuery(null, null, null);
+	public void testPreferredTokenForRead() throws IOException {
+		expectTokenForReadToPreferablyBeHeaderThanQuery(AUTH_TOKEN, "authToken2", AUTH_TOKEN);
+		expectTokenForReadToPreferablyBeHeaderThanQuery(null, AUTH_TOKEN, AUTH_TOKEN);
+		expectTokenForReadToPreferablyBeHeaderThanQuery(AUTH_TOKEN, null, AUTH_TOKEN);
+		expectTokenForReadToPreferablyBeHeaderThanQuery(null, null, null);
 	}
 
-	private void expectTokenForReadToPrefereblyBeHeaderThanQuery(String headerAuthToken,
-			String queryAuthToken, String authTokenExpected) {
+	private void expectTokenForReadToPreferablyBeHeaderThanQuery(String headerAuthToken,
+																 String queryAuthToken, String authTokenExpected) {
 
 		response = recordEndpoint.readRecord(headerAuthToken, queryAuthToken, PLACE, PLACE_0001);
 
@@ -172,7 +168,7 @@ public class RecordEndpointTest {
 	}
 
 	@Test
-	public void testPreferedTokenForReadIncomingLinks() throws IOException {
+	public void testPreferredTokenForReadIncomingLinks() throws IOException {
 		expectTokenForReadIncomingLinksToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, "authToken2",
 				AUTH_TOKEN);
 		expectTokenForReadIncomingLinksToPrefereblyBeHeaderThanQuery(null, AUTH_TOKEN, AUTH_TOKEN);
@@ -221,15 +217,15 @@ public class RecordEndpointTest {
 	}
 
 	@Test
-	public void testPreferedTokenForDelete() throws IOException {
-		expectTokenForDeleteToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, "authToken2", AUTH_TOKEN);
-		expectTokenForDeleteToPrefereblyBeHeaderThanQuery(null, AUTH_TOKEN, AUTH_TOKEN);
-		expectTokenForDeleteToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, null, AUTH_TOKEN);
-		expectTokenForDeleteToPrefereblyBeHeaderThanQuery(null, null, null);
+	public void testPreferredTokenForDelete() throws IOException {
+		expectTokenForDeleteToPreferablyBeHeaderThanQuery(AUTH_TOKEN, "authToken2", AUTH_TOKEN);
+		expectTokenForDeleteToPreferablyBeHeaderThanQuery(null, AUTH_TOKEN, AUTH_TOKEN);
+		expectTokenForDeleteToPreferablyBeHeaderThanQuery(AUTH_TOKEN, null, AUTH_TOKEN);
+		expectTokenForDeleteToPreferablyBeHeaderThanQuery(null, null, null);
 	}
 
-	private void expectTokenForDeleteToPrefereblyBeHeaderThanQuery(String headerAuthToken,
-			String queryAuthToken, String authTokenExpected) {
+	private void expectTokenForDeleteToPreferablyBeHeaderThanQuery(String headerAuthToken,
+																   String queryAuthToken, String authTokenExpected) {
 
 		response = recordEndpoint.deleteRecord(headerAuthToken, queryAuthToken, PLACE,
 				"place:0002");
@@ -265,7 +261,7 @@ public class RecordEndpointTest {
 	}
 
 	@Test
-	public void testPreferedTokenForUpdate() throws IOException {
+	public void testPreferredTokenForUpdate() throws IOException {
 		expectTokenForUpdateToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, "authToken2", AUTH_TOKEN);
 		expectTokenForUpdateToPrefereblyBeHeaderThanQuery(null, AUTH_TOKEN, AUTH_TOKEN);
 		expectTokenForUpdateToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, null, AUTH_TOKEN);
@@ -325,15 +321,15 @@ public class RecordEndpointTest {
 	}
 
 	@Test
-	public void testPreferedTokenForCreate() throws IOException {
-		expectTokenForCreateToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, "authToken2", AUTH_TOKEN);
-		expectTokenForCreateToPrefereblyBeHeaderThanQuery(null, AUTH_TOKEN, AUTH_TOKEN);
-		expectTokenForCreateToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, null, AUTH_TOKEN);
-		expectTokenForCreateToPrefereblyBeHeaderThanQuery(null, null, null);
+	public void testPreferredTokenForCreate() throws IOException {
+		expectTokenForCreateToPreferablyBeHeaderThanQuery(AUTH_TOKEN, "authToken2", AUTH_TOKEN);
+		expectTokenForCreateToPreferablyBeHeaderThanQuery(null, AUTH_TOKEN, AUTH_TOKEN);
+		expectTokenForCreateToPreferablyBeHeaderThanQuery(AUTH_TOKEN, null, AUTH_TOKEN);
+		expectTokenForCreateToPreferablyBeHeaderThanQuery(null, null, null);
 	}
 
-	private void expectTokenForCreateToPrefereblyBeHeaderThanQuery(String headerAuthToken,
-			String queryAuthToken, String authTokenExpected) {
+	private void expectTokenForCreateToPreferablyBeHeaderThanQuery(String headerAuthToken,
+																   String queryAuthToken, String authTokenExpected) {
 
 		response = recordEndpoint.createRecord(headerAuthToken, queryAuthToken, PLACE,
 				jsonToCreateFrom);
@@ -429,7 +425,7 @@ public class RecordEndpointTest {
 	}
 
 	@Test
-	public void testPreferedTokenForUpload() throws IOException {
+	public void testPreferredTokenForUpload() throws IOException {
 		expectTokenForUploadToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, "authToken2", AUTH_TOKEN);
 		expectTokenForUploadToPrefereblyBeHeaderThanQuery(null, AUTH_TOKEN, AUTH_TOKEN);
 		expectTokenForUploadToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, null, AUTH_TOKEN);
@@ -521,7 +517,7 @@ public class RecordEndpointTest {
 	}
 
 	@Test
-	public void testPreferedTokenForDownload() throws IOException {
+	public void testPreferredTokenForDownload() throws IOException {
 		expectTokenForDownloadToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, "authToken2", AUTH_TOKEN);
 		expectTokenForDownloadToPrefereblyBeHeaderThanQuery(null, AUTH_TOKEN, AUTH_TOKEN);
 		expectTokenForDownloadToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, null, AUTH_TOKEN);
