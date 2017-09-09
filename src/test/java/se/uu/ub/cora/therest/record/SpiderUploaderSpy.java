@@ -46,13 +46,6 @@ public class SpiderUploaderSpy implements SpiderUploader {
 		this.inputStream = inputStream;
 		this.fileName = fileName;
 
-		possiblyThrowException(authToken, type, id, inputStream);
-		return SpiderDataRecord.withSpiderDataGroup(
-				DataCreator.createRecordWithNameInDataAndIdAndTypeAndLinkedRecordId("nameInData",
-						"someId", type, "linkedRecordId"));
-	}
-
-	private void possiblyThrowException(String authToken, String type, String id, InputStream inputStream) {
 		if("dummyNonAuthorizedToken".equals(authToken)){
 			throw new AuthorizationException("not authorized");
 		}
@@ -68,6 +61,9 @@ public class SpiderUploaderSpy implements SpiderUploader {
 		if(inputStream == null){
 			throw new DataMissingException("No stream to store");
 		}
+		return SpiderDataRecord.withSpiderDataGroup(
+				DataCreator.createRecordWithNameInDataAndIdAndTypeAndLinkedRecordId("nameInData",
+						"someId", type, "linkedRecordId"));
 	}
 
 }

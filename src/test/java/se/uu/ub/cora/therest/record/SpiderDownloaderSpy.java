@@ -43,13 +43,6 @@ public class SpiderDownloaderSpy implements SpiderDownloader {
 		this.id = id;
 		this.resource = resource;
 
-		possiblyThrowException(authToken, type, id, resource);
-
-		return SpiderInputStream.withNameSizeInputStream("someFile", 12, "application/octet-stream",
-				new ByteArrayInputStream("a string out".getBytes(StandardCharsets.UTF_8)));
-	}
-
-	private void possiblyThrowException(String authToken, String type, String id, String resource) {
 		if("dummyNonAuthorizedToken".equals(authToken)){
 			throw new AuthorizationException("not authorized");
 		}
@@ -66,6 +59,9 @@ public class SpiderDownloaderSpy implements SpiderDownloader {
 		if("".equals(resource)){
 			throw new DataMissingException("No stream to store");
 		}
+
+		return SpiderInputStream.withNameSizeInputStream("someFile", 12, "application/octet-stream",
+				new ByteArrayInputStream("a string out".getBytes(StandardCharsets.UTF_8)));
 	}
 
 }

@@ -19,15 +19,6 @@ public class SpiderRecordSearcherSpy implements SpiderRecordSearcher {
 		this.authToken = authToken;
 		this.searchId = searchId;
 		this.searchData = searchData;
-		possiblyThrowException(authToken, searchId);
-		SpiderDataList searchResult = SpiderDataList.withContainDataOfType("mix");
-		searchResult.setFromNo("0");
-		searchResult.setToNo("1");
-		searchResult.setTotalNo("1");
-		return searchResult;
-	}
-
-	private void possiblyThrowException(String authToken, String searchId) {
 		if ("nonExistingToken".equals(authToken)) {
 			throw new AuthenticationException("User not authenticated");
 		}
@@ -40,6 +31,11 @@ public class SpiderRecordSearcherSpy implements SpiderRecordSearcher {
 		if ("aSearchId_INVALID_DATA".equals(searchId)) {
 			throw new DataException("SearchData is invalid");
 		}
+		SpiderDataList searchResult = SpiderDataList.withContainDataOfType("mix");
+		searchResult.setFromNo("0");
+		searchResult.setToNo("1");
+		searchResult.setTotalNo("1");
+		return searchResult;
 	}
 
 }
