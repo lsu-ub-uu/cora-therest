@@ -20,16 +20,10 @@
 
 package se.uu.ub.cora.therest.record;
 
-import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
-import org.glassfish.jersey.media.multipart.FormDataContentDisposition.FormDataContentDispositionBuilder;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
-import se.uu.ub.cora.spider.data.SpiderDataGroup;
-import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertTrue;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriInfo;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -37,7 +31,17 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 
-import static org.testng.Assert.*;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
+
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition.FormDataContentDispositionBuilder;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+import se.uu.ub.cora.spider.data.SpiderDataGroup;
+import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
 
 public class RecordEndpointTest {
 	private static final String DUMMY_NON_AUTHORIZED_TOKEN = "dummyNonAuthorizedToken";
@@ -126,7 +130,7 @@ public class RecordEndpointTest {
 	}
 
 	private void expectTokenForReadToPreferablyBeHeaderThanQuery(String headerAuthToken,
-																 String queryAuthToken, String authTokenExpected) {
+			String queryAuthToken, String authTokenExpected) {
 
 		response = recordEndpoint.readRecord(headerAuthToken, queryAuthToken, PLACE, PLACE_0001);
 
@@ -182,8 +186,8 @@ public class RecordEndpointTest {
 		response = recordEndpoint.readIncomingRecordLinks(headerAuthToken, queryAuthToken, PLACE,
 				PLACE_0001);
 
-		SpiderRecordReaderSpy spiderReaderSpy = factorySpy.spiderRecordReaderSpy;
-		assertEquals(spiderReaderSpy.authToken, authTokenExpected);
+		SpiderRecordIncomingLinksReaderSpy spiderIncomingLinksReaderSpy = factorySpy.spiderRecordIncomingLinksReaderSpy;
+		assertEquals(spiderIncomingLinksReaderSpy.authToken, authTokenExpected);
 	}
 
 	@Test
@@ -225,7 +229,7 @@ public class RecordEndpointTest {
 	}
 
 	private void expectTokenForDeleteToPreferablyBeHeaderThanQuery(String headerAuthToken,
-																   String queryAuthToken, String authTokenExpected) {
+			String queryAuthToken, String authTokenExpected) {
 
 		response = recordEndpoint.deleteRecord(headerAuthToken, queryAuthToken, PLACE,
 				"place:0002");
@@ -329,7 +333,7 @@ public class RecordEndpointTest {
 	}
 
 	private void expectTokenForCreateToPreferablyBeHeaderThanQuery(String headerAuthToken,
-																   String queryAuthToken, String authTokenExpected) {
+			String queryAuthToken, String authTokenExpected) {
 
 		response = recordEndpoint.createRecord(headerAuthToken, queryAuthToken, PLACE,
 				jsonToCreateFrom);

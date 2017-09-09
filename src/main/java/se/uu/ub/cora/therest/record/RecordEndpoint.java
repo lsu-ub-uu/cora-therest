@@ -291,7 +291,7 @@ public class RecordEndpoint {
 	}
 
 	private Response tryReadIncomingRecordLinks(String authToken, String type, String id) {
-		SpiderDataList dataList = SpiderInstanceProvider.getSpiderRecordReader()
+		SpiderDataList dataList = SpiderInstanceProvider.getSpiderRecordIncomingLinksReader()
 				.readIncomingLinks(authToken, type, id);
 		String json = convertSpiderRecordListToJsonString(dataList);
 		return Response.status(Response.Status.OK).entity(json).build();
