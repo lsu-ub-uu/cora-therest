@@ -21,9 +21,7 @@ package se.uu.ub.cora.therest.record;
 
 import se.uu.ub.cora.spider.authentication.AuthenticationException;
 import se.uu.ub.cora.spider.authorization.AuthorizationException;
-import se.uu.ub.cora.spider.data.SpiderDataList;
 import se.uu.ub.cora.spider.data.SpiderDataRecord;
-import se.uu.ub.cora.spider.record.MisuseException;
 import se.uu.ub.cora.spider.record.SpiderRecordReader;
 import se.uu.ub.cora.spider.record.storage.RecordNotFoundException;
 import se.uu.ub.cora.therest.testdata.DataCreator;
@@ -39,6 +37,15 @@ public class SpiderRecordReaderSpy implements SpiderRecordReader {
 		this.authToken = authToken;
 		this.type = type;
 		this.id = id;
+		possiblyThrowExceptionForRead(authToken, id);
+
+		return SpiderDataRecord.withSpiderDataGroup(
+				DataCreator.createRecordWithNameInDataAndIdAndTypeAndLinkedRecordId("nameInData",
+						id, type, "linkedRecordId"));
+
+	}
+
+	private void possiblyThrowExceptionForRead(String authToken, String id) {
 		if ("dummyNonAuthenticatedToken".equals(authToken)) {
 			throw new AuthenticationException("token not valid");
 		} else if ("dummyNonAuthorizedToken".equals(authToken)) {
@@ -48,29 +55,5 @@ public class SpiderRecordReaderSpy implements SpiderRecordReader {
 		if ("place:0001_NOT_FOUND".equals(id)) {
 			throw new RecordNotFoundException("no record exsist with id " + id);
 		}
-
-		return SpiderDataRecord.withSpiderDataGroup(
-				DataCreator.createRecordWithNameInDataAndIdAndTypeAndLinkedRecordId("nameInData",
-						id, type, "linkedRecordId"));
-
 	}
-
-	@Override
-	public SpiderDataList readIncomingLinks(String authToken, String type, String id) {
-		this.authToken = authToken;
-		this.type = type;
-		this.id = id;
-		if ("dummyNonAuthorizedToken".equals(authToken)) {
-			throw new AuthorizationException("not authorized");
-		}
-		if ("place:0001_NOT_FOUND".equals(id)) {
-			throw new RecordNotFoundException("no record exsist with id " + id);
-		}
-		if ("abstract".equals(type)) {
-			throw new MisuseException("Reading for record: " + id + " on the abstract recordType:"
-					+ type + " is not allowed");
-		}
-		return SpiderDataList.withContainDataOfType("someType");
-	}
-
 }

@@ -40,6 +40,13 @@ public class SpiderRecordUpdaterSpy implements SpiderRecordUpdater {
 		this.type = type;
 		this.id = id;
 		this.record = record;
+		possiblyThrowException(authToken, type, id);
+		return SpiderDataRecord.withSpiderDataGroup(
+				DataCreator.createRecordWithNameInDataAndIdAndTypeAndLinkedRecordId("nameInData",
+						id, type, "linkedRecordId"));
+	}
+
+	private void possiblyThrowException(String authToken, String type, String id) {
 		if("dummyNonAuthorizedToken".equals(authToken)){
 			throw new AuthorizationException("not authorized");
 		}
@@ -49,9 +56,6 @@ public class SpiderRecordUpdaterSpy implements SpiderRecordUpdater {
 		if("place_NOT_FOUND".equals(type)){
 			throw new RecordNotFoundException("no record exist with type " + type);
 		}
-		return SpiderDataRecord.withSpiderDataGroup(
-				DataCreator.createRecordWithNameInDataAndIdAndTypeAndLinkedRecordId("nameInData",
-						id, type, "linkedRecordId"));
 	}
 
 }
