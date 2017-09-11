@@ -19,27 +19,8 @@
 
 package se.uu.ub.cora.therest.record;
 
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriInfo;
-
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
-
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.org.OrgJsonBuilderFactoryAdapter;
 import se.uu.ub.cora.json.parser.JsonParseException;
@@ -48,11 +29,7 @@ import se.uu.ub.cora.json.parser.JsonValue;
 import se.uu.ub.cora.json.parser.org.OrgJsonParser;
 import se.uu.ub.cora.spider.authentication.AuthenticationException;
 import se.uu.ub.cora.spider.authorization.AuthorizationException;
-import se.uu.ub.cora.spider.data.DataMissingException;
-import se.uu.ub.cora.spider.data.SpiderDataGroup;
-import se.uu.ub.cora.spider.data.SpiderDataList;
-import se.uu.ub.cora.spider.data.SpiderDataRecord;
-import se.uu.ub.cora.spider.data.SpiderInputStream;
+import se.uu.ub.cora.spider.data.*;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
 import se.uu.ub.cora.spider.record.DataException;
 import se.uu.ub.cora.spider.record.MisuseException;
@@ -62,15 +39,19 @@ import se.uu.ub.cora.therest.data.RestDataElement;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.RestDataList;
 import se.uu.ub.cora.therest.data.RestDataRecord;
-import se.uu.ub.cora.therest.data.converter.ConverterException;
-import se.uu.ub.cora.therest.data.converter.DataListToJsonConverter;
-import se.uu.ub.cora.therest.data.converter.DataRecordToJsonConverter;
-import se.uu.ub.cora.therest.data.converter.JsonToDataConverter;
-import se.uu.ub.cora.therest.data.converter.JsonToDataConverterFactory;
-import se.uu.ub.cora.therest.data.converter.JsonToDataConverterFactoryImp;
+import se.uu.ub.cora.therest.data.converter.*;
 import se.uu.ub.cora.therest.data.converter.spider.DataGroupRestToSpiderConverter;
 import se.uu.ub.cora.therest.data.converter.spider.DataListSpiderToRestConverter;
 import se.uu.ub.cora.therest.data.converter.spider.DataRecordSpiderToRestConverter;
+
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 @Path("record")
 public class RecordEndpoint {

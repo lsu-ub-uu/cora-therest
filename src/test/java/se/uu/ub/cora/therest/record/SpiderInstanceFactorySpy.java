@@ -20,15 +20,7 @@
 package se.uu.ub.cora.therest.record;
 
 import se.uu.ub.cora.spider.dependency.SpiderInstanceFactory;
-import se.uu.ub.cora.spider.record.SpiderDownloader;
-import se.uu.ub.cora.spider.record.SpiderRecordCreator;
-import se.uu.ub.cora.spider.record.SpiderRecordDeleter;
-import se.uu.ub.cora.spider.record.SpiderRecordIncomingLinksReader;
-import se.uu.ub.cora.spider.record.SpiderRecordListReader;
-import se.uu.ub.cora.spider.record.SpiderRecordReader;
-import se.uu.ub.cora.spider.record.SpiderRecordSearcher;
-import se.uu.ub.cora.spider.record.SpiderRecordUpdater;
-import se.uu.ub.cora.spider.record.SpiderUploader;
+import se.uu.ub.cora.spider.record.*;
 
 public class SpiderInstanceFactorySpy implements SpiderInstanceFactory {
 
