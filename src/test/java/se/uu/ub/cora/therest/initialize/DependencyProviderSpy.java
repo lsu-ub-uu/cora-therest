@@ -20,7 +20,7 @@
 package se.uu.ub.cora.therest.initialize;
 
 import se.uu.ub.cora.bookkeeper.linkcollector.DataRecordLinkCollector;
-import se.uu.ub.cora.bookkeeper.searchtermcollector.DataGroupSearchTermCollector;
+import se.uu.ub.cora.bookkeeper.searchtermcollector.DataGroupTermCollector;
 import se.uu.ub.cora.bookkeeper.validator.DataValidator;
 import se.uu.ub.cora.spider.authentication.Authenticator;
 import se.uu.ub.cora.spider.authorization.PermissionRuleCalculator;
@@ -106,7 +106,7 @@ public class DependencyProviderSpy extends SpiderDependencyProvider {
 	}
 
 	@Override
-	public DataGroupSearchTermCollector getDataGroupSearchTermCollector() {
+	public DataGroupTermCollector getDataGroupSearchTermCollector() {
 		// TODO Auto-generated method stub
 		return null;
 	}
