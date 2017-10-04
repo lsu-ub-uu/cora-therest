@@ -36,17 +36,17 @@ public final class ActionSpiderToRestConverter {
 	private String recordType;
 	private String recordId;
 
-	public static ActionSpiderToRestConverter fromSpiderActionsWithBaseURLAndRecordTypeAndRecordId(
-			List<Action> actions, ConverterInfo baseURL2, String recordType, String recordId) {
-		return new ActionSpiderToRestConverter(actions, baseURL2, recordType, recordId);
-	}
-
 	private ActionSpiderToRestConverter(List<Action> actions, ConverterInfo baseURL2,
 			String recordType, String recordId) {
 		this.actions = actions;
 		this.converterInfo = baseURL2;
 		this.recordType = recordType;
 		this.recordId = recordId;
+	}
+
+	public static ActionSpiderToRestConverter fromSpiderActionsWithBaseURLAndRecordTypeAndRecordId(
+			List<Action> actions, ConverterInfo baseURL2, String recordType, String recordId) {
+		return new ActionSpiderToRestConverter(actions, baseURL2, recordType, recordId);
 	}
 
 	public Map<String, ActionLink> toRest() {
@@ -87,6 +87,9 @@ public final class ActionSpiderToRestConverter {
 				actionLink.setRequestMethod("GET");
 				actionLink.setURL(converterInfo.baseURL + "searchResult/" + recordId);
 				actionLink.setAccept(APPLICATION_UUB_RECORD_LIST_JSON);
+			} else if (Action.INDEX.equals(action)) {
+				actionLink.setRequestMethod("GET");
+				actionLink.setURL(urlWithRecordId);
 			} else {
 				// list / search
 				actionLink.setRequestMethod("GET");

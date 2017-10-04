@@ -173,6 +173,25 @@ public class ActionSpiderToRestConverterTest {
 	}
 
 	@Test
+	public void testToRestWithActionLinkINDEX() {
+		Action action = Action.INDEX;
+		actions.add(action);
+
+		ActionSpiderToRestConverter actionSpiderToRestConverter = ActionSpiderToRestConverter
+				.fromSpiderActionsWithBaseURLAndRecordTypeAndRecordId(actions, converterInfo,
+						"recordType", "recordId");
+		Map<String, ActionLink> actionLinks = actionSpiderToRestConverter.toRest();
+
+		ActionLink actionLink = actionLinks.get("index");
+		assertEquals(actionLink.getAction(), Action.INDEX);
+		assertEquals(actionLink.getURL(),
+				"http://localhost:8080/therest/rest/record/recordType/recordId");
+		assertEquals(actionLink.getRequestMethod(), "GET");
+		assertEquals(actionLink.getAccept(), null);
+		assertEquals(actionLink.getContentType(), null);
+	}
+
+	@Test
 	public void testToRestWithActionLinkSEARCH() {
 		Action action = Action.SEARCH;
 		actions.add(action);
