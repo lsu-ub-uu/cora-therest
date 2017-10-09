@@ -19,18 +19,19 @@
 
 package se.uu.ub.cora.therest.data.converter.spider;
 
-import static org.testng.Assert.assertEquals;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+import se.uu.ub.cora.spider.data.Action;
+import se.uu.ub.cora.therest.data.ActionLink;
+import se.uu.ub.cora.therest.data.RestDataAtomic;
+import se.uu.ub.cora.therest.data.RestDataGroup;
+import se.uu.ub.cora.therest.data.converter.ConverterInfo;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
-
-import se.uu.ub.cora.spider.data.Action;
-import se.uu.ub.cora.therest.data.ActionLink;
-import se.uu.ub.cora.therest.data.converter.ConverterInfo;
+import static org.testng.Assert.assertEquals;
 
 public class ActionSpiderToRestConverterTest {
 	private ConverterInfo converterInfo = ConverterInfo.withBaseURLAndRecordURL(
@@ -179,16 +180,26 @@ public class ActionSpiderToRestConverterTest {
 
 		ActionSpiderToRestConverter actionSpiderToRestConverter = ActionSpiderToRestConverter
 				.fromSpiderActionsWithBaseURLAndRecordTypeAndRecordId(actions, converterInfo,
-						"recordType", "recordId");
+						"person", "somePersonId");
 		Map<String, ActionLink> actionLinks = actionSpiderToRestConverter.toRest();
 
 		ActionLink actionLink = actionLinks.get("index");
 		assertEquals(actionLink.getAction(), Action.INDEX);
-		assertEquals(actionLink.getURL(),
-				"http://localhost:8080/therest/rest/record/recordType/recordId");
-		assertEquals(actionLink.getRequestMethod(), "GET");
-		assertEquals(actionLink.getAccept(), null);
-		assertEquals(actionLink.getContentType(), null);
+		assertEquals(actionLink.getURL(), "http://localhost:8080/therest/rest/record/workOrder/");
+		assertEquals(actionLink.getRequestMethod(), "POST");
+		assertEquals(actionLink.getAccept(), "application/vnd.uub.record+json");
+		assertEquals(actionLink.getContentType(), "application/vnd.uub.record+json");
+		assertCorrectBodyPartOfActionLink(actionLink);
+	}
+
+	private void assertCorrectBodyPartOfActionLink(ActionLink actionLink) {
+		RestDataGroup body = actionLink.getBody();
+		assertEquals(body.getNameInData(), "workOrder");
+		RestDataGroup recordType = (RestDataGroup) body.getFirstChildWithNameInData("recordType");
+		assertEquals(((RestDataAtomic)recordType.getFirstChildWithNameInData("linkedRecordType")).getValue(), "recordType");
+		assertEquals(((RestDataAtomic)recordType.getFirstChildWithNameInData("linkedRecordId")).getValue(), "person");
+		RestDataAtomic type = (RestDataAtomic) body.getFirstChildWithNameInData("type");
+		assertEquals(type.getValue(), "index");
 	}
 
 	@Test

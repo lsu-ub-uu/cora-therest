@@ -19,13 +19,15 @@
 
 package se.uu.ub.cora.therest.data.converter.spider;
 
+import se.uu.ub.cora.spider.data.Action;
+import se.uu.ub.cora.therest.data.ActionLink;
+import se.uu.ub.cora.therest.data.RestDataAtomic;
+import se.uu.ub.cora.therest.data.RestDataGroup;
+import se.uu.ub.cora.therest.data.converter.ConverterInfo;
+
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import se.uu.ub.cora.spider.data.Action;
-import se.uu.ub.cora.therest.data.ActionLink;
-import se.uu.ub.cora.therest.data.converter.ConverterInfo;
 
 public final class ActionSpiderToRestConverter {
 
@@ -88,8 +90,7 @@ public final class ActionSpiderToRestConverter {
 				actionLink.setURL(converterInfo.baseURL + "searchResult/" + recordId);
 				actionLink.setAccept(APPLICATION_UUB_RECORD_LIST_JSON);
 			} else if (Action.INDEX.equals(action)) {
-				actionLink.setRequestMethod("GET");
-				actionLink.setURL(urlWithRecordId);
+				setUpActionLinkForIndexAction(actionLink);
 			} else {
 				// list / search
 				actionLink.setRequestMethod("GET");
@@ -100,6 +101,25 @@ public final class ActionSpiderToRestConverter {
 			actionLinks.put(action.name().toLowerCase(), actionLink);
 		}
 		return actionLinks;
+	}
+
+	private void setUpActionLinkForIndexAction(ActionLink actionLink) {
+		actionLink.setRequestMethod("POST");
+		actionLink.setURL(converterInfo.baseURL+"workOrder/");
+		actionLink.setAccept(APPLICATION_UUB_RECORD_JSON);
+		actionLink.setContentType(APPLICATION_UUB_RECORD_JSON);
+		RestDataGroup body = createDataGroupForBody();
+		actionLink.setBody(body);
+	}
+
+	private RestDataGroup createDataGroupForBody() {
+		RestDataGroup body = RestDataGroup.withNameInData("workOrder");
+		RestDataGroup recordTypeGroup = RestDataGroup.withNameInData("recordType");
+		recordTypeGroup.addChild(RestDataAtomic.withNameInDataAndValue("linkedRecordType", "recordType"));
+		recordTypeGroup.addChild(RestDataAtomic.withNameInDataAndValue("linkedRecordId", recordType));
+		body.addChild(recordTypeGroup);
+		body.addChild(RestDataAtomic.withNameInDataAndValue("type", "index"));
+		return body;
 	}
 
 }
