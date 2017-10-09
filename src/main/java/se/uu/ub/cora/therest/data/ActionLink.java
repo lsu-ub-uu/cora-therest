@@ -23,15 +23,16 @@ import se.uu.ub.cora.spider.data.Action;
 
 public final class ActionLink {
 
-	public static ActionLink withAction(Action read) {
-		return new ActionLink(read);
-	}
-
+	private RestDataGroup body;
 	private Action action;
 	private String url;
 	private String requestMethod;
 	private String accept;
 	private String contentType;
+
+	public static ActionLink withAction(Action read) {
+		return new ActionLink(read);
+	}
 
 	private ActionLink(Action read) {
 		this.action = read;
@@ -73,4 +74,11 @@ public final class ActionLink {
 		return contentType;
 	}
 
+	public void setBody(RestDataGroup body) {
+		this.body = body;
+	}
+
+	public RestDataGroup getBody() {
+		return body;
+	}
 }

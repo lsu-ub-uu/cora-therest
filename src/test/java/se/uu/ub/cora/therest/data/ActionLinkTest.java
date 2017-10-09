@@ -21,6 +21,7 @@ package se.uu.ub.cora.therest.data;
 
 import org.testng.annotations.Test;
 import se.uu.ub.cora.spider.data.Action;
+import se.uu.ub.cora.therest.testdata.DataCreator;
 
 import static org.testng.Assert.assertEquals;
 
@@ -58,4 +59,14 @@ public class ActionLinkTest {
 		actionLink.setContentType("application/metadata_record+json");
 		assertEquals(actionLink.getContentType(), "application/metadata_record+json");
 	}
+
+	@Test
+	public void testBody(){
+		ActionLink actionLink = ActionLink.withAction(Action.READ);
+		RestDataGroup workOrder = DataCreator.createWorkOrder();
+		actionLink.setBody(workOrder);
+		assertEquals(actionLink.getBody(),workOrder);
+	}
+
+
 }

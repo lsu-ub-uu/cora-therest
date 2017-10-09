@@ -19,14 +19,16 @@
 
 package se.uu.ub.cora.therest.data.converter;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import org.testng.annotations.Test;
-import se.uu.ub.cora.spider.data.Action;
-import se.uu.ub.cora.therest.data.ActionLink;
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.org.OrgJsonBuilderFactoryAdapter;
+import se.uu.ub.cora.spider.data.Action;
+import se.uu.ub.cora.therest.data.ActionLink;
+import se.uu.ub.cora.therest.data.RestDataGroup;
+import se.uu.ub.cora.therest.testdata.DataCreator;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static org.testng.Assert.assertEquals;
 
@@ -55,5 +57,21 @@ public class ActionLinksToJsonConverterTest {
 		actionLink.setRequestMethod("GET");
 		actionLink.setURL("http://localhost:8080/therest/rest/record/place/place:0001");
 		return actionLink;
+	}
+
+	@Test
+	public void testConvertJsonWithBody() {
+		ActionLink actionLink = createReadActionLink();
+			Map<String, ActionLink> actionLinks = new LinkedHashMap<>();
+		actionLinks.put("read", actionLink);
+		RestDataGroup workOrder = DataCreator.createWorkOrder();
+		actionLink.setBody(workOrder);
+
+		JsonBuilderFactory jsonFactory = new OrgJsonBuilderFactoryAdapter();
+
+		ActionLinksToJsonConverter converter = new ActionLinksToJsonConverter(jsonFactory,
+				actionLinks);
+		assertEquals(converter.toJson(),
+				"{\"read\":{\"requestMethod\":\"GET\",\"rel\":\"read\",\"body\":{\"children\":[{\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"recordType\"},{\"name\":\"linkedRecordId\",\"value\":\"person\"}],\"name\":\"recordType\"},{\"name\":\"recordId\",\"value\":\"personOne\"},{\"name\":\"type\",\"value\":\"index\"}],\"name\":\"workOrder\"},\"contentType\":\"application/metadata_record+json\",\"url\":\"http://localhost:8080/therest/rest/record/place/place:0001\",\"accept\":\"application/metadata_record+json\"}}");
 	}
 }
