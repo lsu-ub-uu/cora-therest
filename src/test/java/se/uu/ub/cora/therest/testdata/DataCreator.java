@@ -25,6 +25,8 @@ import se.uu.ub.cora.spider.data.Action;
 import se.uu.ub.cora.spider.data.SpiderDataAtomic;
 import se.uu.ub.cora.spider.data.SpiderDataGroup;
 import se.uu.ub.cora.spider.data.SpiderDataResourceLink;
+import se.uu.ub.cora.therest.data.RestDataAtomic;
+import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.record.DataRecordLinkCollectorSpy;
 
 public final class DataCreator {
@@ -327,5 +329,18 @@ public final class DataCreator {
 		master.addChild(SpiderDataAtomic.withNameInDataAndValue("mimeType", "application/tiff"));
 		master.addAction(Action.READ);
 		return master;
+	}
+
+	public static RestDataGroup createWorkOrder() {
+		RestDataGroup workOrder = RestDataGroup.withNameInData("workOrder");
+
+		RestDataGroup recordTypeLink = RestDataGroup.withNameInData("recordType");
+		recordTypeLink.addChild(RestDataAtomic.withNameInDataAndValue("linkedRecordType", "recordType"));
+		recordTypeLink.addChild(RestDataAtomic.withNameInDataAndValue("linkedRecordId", "person"));
+		workOrder.addChild(recordTypeLink);
+
+		workOrder.addChild(RestDataAtomic.withNameInDataAndValue("recordId", "personOne"));
+		workOrder.addChild(RestDataAtomic.withNameInDataAndValue("type", "index"));
+		return workOrder;
 	}
 }

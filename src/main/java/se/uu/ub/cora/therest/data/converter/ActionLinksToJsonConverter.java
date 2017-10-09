@@ -56,8 +56,21 @@ public class ActionLinksToJsonConverter extends DataToJsonConverter {
 			internalLinkBuilder.addKeyString("requestMethod", actionLink.getRequestMethod());
 			internalLinkBuilder.addKeyString("accept", actionLink.getAccept());
 			internalLinkBuilder.addKeyString("contentType", actionLink.getContentType());
+
+			possiblyAddBodyToBuilder(actionLink, internalLinkBuilder);
 			actionLinksObject.addKeyJsonObjectBuilder(actionString, internalLinkBuilder);
 		}
+	}
+
+	private void possiblyAddBodyToBuilder(ActionLink actionLink, JsonObjectBuilder internalLinkBuilder) {
+		if(actionLinkHasBody(actionLink)) {
+            DataGroupToJsonConverter dataGroupToJsonConverter = DataGroupToJsonConverter.usingJsonFactoryForRestDataGroup(jsonBuilderFactory, actionLink.getBody());
+            internalLinkBuilder.addKeyJsonObjectBuilder("body", dataGroupToJsonConverter.toJsonObjectBuilder());
+        }
+	}
+
+	private boolean actionLinkHasBody(ActionLink actionLink) {
+		return actionLink.getBody() != null;
 	}
 
 }
