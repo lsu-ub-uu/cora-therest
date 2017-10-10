@@ -114,6 +114,17 @@ public final class ActionSpiderToRestConverter {
 
 	private RestDataGroup createDataGroupForBody() {
 		RestDataGroup body = RestDataGroup.withNameInData("workOrder");
+
+		RestDataGroup recordInfo = RestDataGroup.withNameInData("recordInfo");
+		// RestDataGroup dataDivider =
+		// RestDataGroup.withNameInData("dataDivider");
+		// dataDivider.addChild(RestDataAtomic.withNameInDataAndValue("linkedRecordType",
+		// "system"));
+		// dataDivider.addChild(RestDataAtomic.withNameInDataAndValue("linkedRecordId",
+		// "cora"));
+		// recordInfo.addChild(dataDivider);
+		body.addChild(recordInfo);
+
 		RestDataGroup recordTypeGroup = RestDataGroup.withNameInData("recordType");
 		recordTypeGroup
 				.addChild(RestDataAtomic.withNameInDataAndValue("linkedRecordType", "recordType"));

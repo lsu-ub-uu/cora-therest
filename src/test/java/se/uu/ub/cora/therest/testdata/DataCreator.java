@@ -333,14 +333,26 @@ public final class DataCreator {
 
 	public static RestDataGroup createWorkOrder() {
 		RestDataGroup workOrder = RestDataGroup.withNameInData("workOrder");
+		RestDataGroup recordInfo = createRecordInfoWithDataDivider();
+		workOrder.addChild(recordInfo);
 
 		RestDataGroup recordTypeLink = RestDataGroup.withNameInData("recordType");
-		recordTypeLink.addChild(RestDataAtomic.withNameInDataAndValue("linkedRecordType", "recordType"));
+		recordTypeLink
+				.addChild(RestDataAtomic.withNameInDataAndValue("linkedRecordType", "recordType"));
 		recordTypeLink.addChild(RestDataAtomic.withNameInDataAndValue("linkedRecordId", "person"));
 		workOrder.addChild(recordTypeLink);
 
 		workOrder.addChild(RestDataAtomic.withNameInDataAndValue("recordId", "personOne"));
 		workOrder.addChild(RestDataAtomic.withNameInDataAndValue("type", "index"));
 		return workOrder;
+	}
+
+	private static RestDataGroup createRecordInfoWithDataDivider() {
+		RestDataGroup recordInfo = RestDataGroup.withNameInData("recordInfo");
+		RestDataGroup dataDivider = RestDataGroup.withNameInData("dataDivider");
+		dataDivider.addChild(RestDataAtomic.withNameInDataAndValue("linkedRecordType", "system"));
+		dataDivider.addChild(RestDataAtomic.withNameInDataAndValue("linkedRecordId", "cora"));
+		recordInfo.addChild(dataDivider);
+		return recordInfo;
 	}
 }
