@@ -19,15 +19,15 @@
 
 package se.uu.ub.cora.therest.data.converter.spider;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 import se.uu.ub.cora.spider.data.Action;
 import se.uu.ub.cora.therest.data.ActionLink;
 import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.converter.ConverterInfo;
+
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public final class ActionSpiderToRestConverter {
 
@@ -114,16 +114,6 @@ public final class ActionSpiderToRestConverter {
 
 	private RestDataGroup createDataGroupForBody() {
 		RestDataGroup body = RestDataGroup.withNameInData("workOrder");
-
-		RestDataGroup recordInfo = RestDataGroup.withNameInData("recordInfo");
-		// RestDataGroup dataDivider =
-		// RestDataGroup.withNameInData("dataDivider");
-		// dataDivider.addChild(RestDataAtomic.withNameInDataAndValue("linkedRecordType",
-		// "system"));
-		// dataDivider.addChild(RestDataAtomic.withNameInDataAndValue("linkedRecordId",
-		// "cora"));
-		// recordInfo.addChild(dataDivider);
-		body.addChild(recordInfo);
 
 		RestDataGroup recordTypeGroup = RestDataGroup.withNameInData("recordType");
 		recordTypeGroup
