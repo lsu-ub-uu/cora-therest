@@ -75,45 +75,40 @@ import se.uu.ub.cora.therest.data.converter.spider.DataRecordSpiderToRestConvert
 @Path("record")
 public class RecordEndpoint {
 
-	// private UriInfo uriInfo;
 	private String url;
 	HttpServletRequest request;
 
-	// public RecordEndpoint(@Context UriInfo uriInfo, @Context HttpServletRequest req) {
 	public RecordEndpoint(@Context HttpServletRequest req) {
-		// public RecordEndpoint(@Context Request req) {
-		// this.uriInfo = uriInfo;
 		request = req;
 		url = getBaseURLFromURI();
 	}
 
 	private String getBaseURLFromURI() {
+		String baseURL = getBaseURLFromRequest();
 
-		// String baseURI2 = uriInfo.getBaseUri().toString();
-		// String baseURI = request.getRequestURL().toString();
-		// String baseURI3 = request.getServerName();
-		// String baseURI4 = request.getContextPath();
-		// String baseURI5 = request.getServletPath();
-		// String baseURI6 = request.getRequestURI();
-		// String baseURI7 = request.getPathInfo();
-		// String baseURI8 = request.getRealPath();
+		baseURL = changeHttpToHttpsIfHeaderSaysSo(baseURL);
+
+		return baseURL;
+	}
+
+	private String getBaseURLFromRequest() {
 		String tempUrl = request.getRequestURL().toString();
-		String baseURI = tempUrl.substring(0, tempUrl.indexOf(request.getPathInfo()));
-		baseURI += "/record/";
+		String baseURL = tempUrl.substring(0, tempUrl.indexOf(request.getPathInfo()));
+		baseURL += "/record/";
+		return baseURL;
+	}
 
-		String forwardedProtocol = null;
-		// if (null != request) {
-		forwardedProtocol = request.getHeader("X-Forwarded-Proto");
-		// forwardedProtocol = ((ContainerRequest)
-		// request).getHeaderString("X-Forwarded-Proto");
-		// }
+	private String changeHttpToHttpsIfHeaderSaysSo(String baseURI) {
+		String forwardedProtocol = request.getHeader("X-Forwarded-Proto");
 
-		if (null != forwardedProtocol && !"".equals(forwardedProtocol)) {
-			baseURI = baseURI.replaceAll("http", forwardedProtocol);
+		if (ifForwardedProtocolExists(forwardedProtocol)) {
+			return baseURI.replaceAll("http", forwardedProtocol);
 		}
-
-		// return baseURI + "record/";
 		return baseURI;
+	}
+
+	private boolean ifForwardedProtocolExists(String forwardedProtocol) {
+		return null != forwardedProtocol && !"".equals(forwardedProtocol);
 	}
 
 	@POST
