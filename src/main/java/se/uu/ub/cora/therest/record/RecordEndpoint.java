@@ -79,15 +79,17 @@ public class RecordEndpoint {
 
 	private UriInfo uriInfo;
 	private String url;
-	@Context
 	Request request;
 
-	public RecordEndpoint(@Context UriInfo uriInfo) {
+	public RecordEndpoint(@Context UriInfo uriInfo, @Context Request req) {
+		// public RecordEndpoint(@Context Request req) {
 		this.uriInfo = uriInfo;
+		request = req;
 		url = getBaseURLFromURI();
 	}
 
 	private String getBaseURLFromURI() {
+
 		String baseURI = uriInfo.getBaseUri().toString();
 
 		String forwardedProtocol = null;
