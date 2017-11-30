@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -33,14 +34,11 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriInfo;
 
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
-import org.glassfish.jersey.server.ContainerRequest;
 
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.org.OrgJsonBuilderFactoryAdapter;
@@ -77,31 +75,45 @@ import se.uu.ub.cora.therest.data.converter.spider.DataRecordSpiderToRestConvert
 @Path("record")
 public class RecordEndpoint {
 
-	private UriInfo uriInfo;
+	// private UriInfo uriInfo;
 	private String url;
-	Request request;
+	HttpServletRequest request;
 
-	public RecordEndpoint(@Context UriInfo uriInfo, @Context Request req) {
+	// public RecordEndpoint(@Context UriInfo uriInfo, @Context HttpServletRequest req) {
+	public RecordEndpoint(@Context HttpServletRequest req) {
 		// public RecordEndpoint(@Context Request req) {
-		this.uriInfo = uriInfo;
+		// this.uriInfo = uriInfo;
 		request = req;
 		url = getBaseURLFromURI();
 	}
 
 	private String getBaseURLFromURI() {
 
-		String baseURI = uriInfo.getBaseUri().toString();
+		// String baseURI2 = uriInfo.getBaseUri().toString();
+		// String baseURI = request.getRequestURL().toString();
+		// String baseURI3 = request.getServerName();
+		// String baseURI4 = request.getContextPath();
+		// String baseURI5 = request.getServletPath();
+		// String baseURI6 = request.getRequestURI();
+		// String baseURI7 = request.getPathInfo();
+		// String baseURI8 = request.getRealPath();
+		String tempUrl = request.getRequestURL().toString();
+		String baseURI = tempUrl.substring(0, tempUrl.indexOf(request.getPathInfo()));
+		baseURI += "/record/";
 
 		String forwardedProtocol = null;
-		if (null != request) {
-			forwardedProtocol = ((ContainerRequest) request).getHeaderString("X-Forwarded-Proto");
-		}
+		// if (null != request) {
+		forwardedProtocol = request.getHeader("X-Forwarded-Proto");
+		// forwardedProtocol = ((ContainerRequest)
+		// request).getHeaderString("X-Forwarded-Proto");
+		// }
 
 		if (null != forwardedProtocol && !"".equals(forwardedProtocol)) {
 			baseURI = baseURI.replaceAll("http", forwardedProtocol);
 		}
 
-		return baseURI + "record/";
+		// return baseURI + "record/";
+		return baseURI;
 	}
 
 	@POST

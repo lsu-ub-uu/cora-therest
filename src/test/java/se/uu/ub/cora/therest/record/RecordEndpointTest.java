@@ -20,17 +20,10 @@
 //
 // package se.uu.ub.cora.therest.record;
 //
-// import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
-// import
-/// org.glassfish.jersey.media.multipart.FormDataContentDisposition.FormDataContentDispositionBuilder;
-// import org.testng.annotations.BeforeMethod;
-// import org.testng.annotations.Test;
-// import se.uu.ub.cora.spider.data.SpiderDataGroup;
-// import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
+// import static org.testng.Assert.assertEquals;
+// import static org.testng.Assert.assertNotNull;
+// import static org.testng.Assert.assertTrue;
 //
-// import javax.ws.rs.core.Response;
-// import javax.ws.rs.core.Response.Status;
-// import javax.ws.rs.core.UriInfo;
 // import java.io.ByteArrayInputStream;
 // import java.io.ByteArrayOutputStream;
 // import java.io.IOException;
@@ -38,7 +31,19 @@
 // import java.nio.charset.StandardCharsets;
 // import java.text.ParseException;
 //
-// import static org.testng.Assert.*;
+// import javax.servlet.http.HttpServletRequest;
+// import javax.ws.rs.core.Response;
+// import javax.ws.rs.core.Response.Status;
+// import javax.ws.rs.core.UriInfo;
+//
+// import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+// import
+/// org.glassfish.jersey.media.multipart.FormDataContentDisposition.FormDataContentDispositionBuilder;
+// import org.testng.annotations.BeforeMethod;
+// import org.testng.annotations.Test;
+//
+// import se.uu.ub.cora.spider.data.SpiderDataGroup;
+// import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
 //
 // public class RecordEndpointTest {
 // private static final String DUMMY_NON_AUTHORIZED_TOKEN = "dummyNonAuthorizedToken";
@@ -119,7 +124,9 @@
 // SpiderInstanceProvider.setSpiderInstanceFactory(factorySpy);
 //
 // UriInfo uriInfo = new TestUri();
-// recordEndpoint = new RecordEndpoint(uriInfo);
+// HttpServletRequest request = new TestHttpServletRequest();
+// // recordEndpoint = new RecordEndpoint(uriInfo);
+// recordEndpoint = new RecordEndpoint(request);
 // }
 //
 // @Test
