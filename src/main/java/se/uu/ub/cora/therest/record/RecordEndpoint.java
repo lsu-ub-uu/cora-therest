@@ -91,7 +91,11 @@ public class RecordEndpoint {
 		String forwardedProtocol = ((ContainerRequest) request)
 				.getHeaderString("X-Forwarded-Proto");
 		String baseURI = uriInfo.getBaseUri().toString();
-		baseURI = baseURI.replaceAll("http", forwardedProtocol);
+
+		if (null != forwardedProtocol && !"".equals(forwardedProtocol)) {
+			baseURI = baseURI.replaceAll("http", forwardedProtocol);
+		}
+
 		return baseURI + "record/";
 	}
 
