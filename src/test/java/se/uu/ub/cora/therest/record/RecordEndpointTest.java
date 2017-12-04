@@ -31,7 +31,6 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -60,14 +59,36 @@ public class RecordEndpointTest {
 			+ "children\":[{\"name\":\"includePart\",\"children\":[{\"name\":\"text\",\"value\":\"\"}]}]}]}";
 	private RecordEndpoint recordEndpoint;
 	private SpiderInstanceFactorySpy factorySpy;
+	private Response response;
+	private TestHttpServletRequest request;
 
 	@BeforeMethod
 	public void beforeMethod() {
 		factorySpy = new SpiderInstanceFactorySpy();
 		SpiderInstanceProvider.setSpiderInstanceFactory(factorySpy);
 
-		HttpServletRequest request = new TestHttpServletRequest();
+		request = new TestHttpServletRequest();
 		recordEndpoint = new RecordEndpoint(request);
+	}
+
+	@Test
+	public void testXForwardedProtoHttps() {
+		request.headers.put("X-Forwarded-Proto", "https");
+		recordEndpoint = new RecordEndpoint(request);
+
+		response = recordEndpoint.readRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001);
+		String entityString = response.getEntity().toString();
+		assertTrue(entityString.contains("\"url\":\"https:/"));
+	}
+
+	@Test
+	public void testXForwardedProtoEmpty() {
+		request.headers.put("X-Forwarded-Proto", "");
+		recordEndpoint = new RecordEndpoint(request);
+
+		response = recordEndpoint.readRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001);
+		String entityString = response.getEntity().toString();
+		assertTrue(entityString.contains("\"url\":\"http:/"));
 	}
 
 	@Test
@@ -411,7 +432,6 @@ public class RecordEndpointTest {
 			+ "{\"name\":\"linkedRecordId\",\"value\":\"cora\"}],\"name\":\"dataDivider\"},"
 			+ "{\"name\":\"id\",\"value\":\"aPlace\"}]}"
 			+ ",{\"name\":\"id\",\"value\":\"anythingGoes\"}]}";
-	private Response response;
 
 	@Test
 	public void testCreateRecordDuplicateUserSuppliedId() {

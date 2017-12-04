@@ -6,6 +6,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.Principal;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -24,6 +25,7 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 
 public class TestHttpServletRequest implements HttpServletRequest {
+	public Map<String, String> headers = new HashMap<>();
 
 	@Override
 	public AsyncContext getAsyncContext() {
@@ -275,7 +277,7 @@ public class TestHttpServletRequest implements HttpServletRequest {
 	@Override
 	public String getHeader(String arg0) {
 		// TODO Auto-generated method stub
-		return null;
+		return headers.get(arg0);
 	}
 
 	@Override

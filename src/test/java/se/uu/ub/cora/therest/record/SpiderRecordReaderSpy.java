@@ -21,6 +21,7 @@ package se.uu.ub.cora.therest.record;
 
 import se.uu.ub.cora.spider.authentication.AuthenticationException;
 import se.uu.ub.cora.spider.authorization.AuthorizationException;
+import se.uu.ub.cora.spider.data.Action;
 import se.uu.ub.cora.spider.data.SpiderDataRecord;
 import se.uu.ub.cora.spider.record.SpiderRecordReader;
 import se.uu.ub.cora.spider.record.storage.RecordNotFoundException;
@@ -39,10 +40,11 @@ public class SpiderRecordReaderSpy implements SpiderRecordReader {
 		this.id = id;
 		possiblyThrowExceptionForRead(authToken, id);
 
-		return SpiderDataRecord.withSpiderDataGroup(
+		SpiderDataRecord spiderDataGroup = SpiderDataRecord.withSpiderDataGroup(
 				DataCreator.createRecordWithNameInDataAndIdAndTypeAndLinkedRecordId("nameInData",
 						id, type, "linkedRecordId"));
-
+		spiderDataGroup.addAction(Action.READ);
+		return spiderDataGroup;
 	}
 
 	private void possiblyThrowExceptionForRead(String authToken, String id) {
