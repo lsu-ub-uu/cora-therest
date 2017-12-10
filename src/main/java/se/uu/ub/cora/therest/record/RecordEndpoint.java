@@ -238,22 +238,34 @@ public class RecordEndpoint {
 	@Path("{type}/")
 	@Produces("application/vnd.uub.recordList+json")
 	public Response readRecordList(@HeaderParam("authToken") String headerAuthToken,
-			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type) {
+			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
+			@QueryParam("filter") String filterAsJson) {
 		String usedToken = getExistingTokenPreferHeader(headerAuthToken, queryAuthToken);
-		return readRecordListUsingAuthTokenByType(usedToken, type);
+		String filter = createEmptyFilterIfParameterDoesNotExist(filterAsJson);
+		return readRecordListUsingAuthTokenByType(usedToken, type, filter);
 	}
 
-	Response readRecordListUsingAuthTokenByType(String authToken, String type) {
+	private String createEmptyFilterIfParameterDoesNotExist(String filterAsJson) {
+		String filter = filterAsJson;
+		if (filterAsJson == null) {
+			filter = "{\"name\":\"filter\",\"children\":[]}";
+		}
+		return filter;
+	}
+
+	Response readRecordListUsingAuthTokenByType(String authToken, String type,
+			String filterAsJson) {
 		try {
-			return tryReadRecordList(authToken, type);
+			return tryReadRecordList(authToken, type, filterAsJson);
 		} catch (Exception error) {
 			return handleError(authToken, error);
 		}
 	}
 
-	private Response tryReadRecordList(String authToken, String type) {
+	private Response tryReadRecordList(String authToken, String type, String filterAsJson) {
+		SpiderDataGroup filter = convertJsonStringToSpiderDataGroup(filterAsJson);
 		SpiderDataList readRecordList = SpiderInstanceProvider.getSpiderRecordListReader()
-				.readRecordList(authToken, type);
+				.readRecordList(authToken, type, filter);
 		String json = convertSpiderRecordListToJsonString(readRecordList);
 		return Response.status(Response.Status.OK).entity(json).build();
 	}
@@ -397,8 +409,8 @@ public class RecordEndpoint {
 		SpiderInputStream streamOut = SpiderInstanceProvider.getSpiderDownloader()
 				.download(authToken, type, id, streamId);
 		/*
-		 * when we detect and store type of file in spider set it like this return
-		 * Response.ok(streamOut.stream).type("application/octet-stream")
+		 * when we detect and store type of file in spider set it like this
+		 * return Response.ok(streamOut.stream).type("application/octet-stream")
 		 */
 		return Response.ok(streamOut.stream).type(streamOut.mimeType)
 				.header("Content-Disposition", "attachment; filename=" + streamOut.name)
