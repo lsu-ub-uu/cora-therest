@@ -21,6 +21,7 @@
 package se.uu.ub.cora.therest.record;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 
@@ -57,6 +58,7 @@ public class RecordEndpointTest {
 			+ ",\"atomicNameInData2\":\"atomicValue2\"}]}}";
 	private String jsonSearchData = "{\"name\":\"search\",\"children\":[{\"name\":\"include\",\""
 			+ "children\":[{\"name\":\"includePart\",\"children\":[{\"name\":\"text\",\"value\":\"\"}]}]}]}";
+	private String jsonFilterData = "{\"name\":\"filter\",\"children\":[{\"name\":\"part\",\"children\":[{\"name\":\"key\",\"value\":\"movieTitle\"},{\"name\":\"value\",\"value\":\"Some title\"}],\"repeatId\":\"0\"}]}";
 	private RecordEndpoint recordEndpoint;
 	private SpiderInstanceFactorySpy factorySpy;
 	private Response response;
@@ -101,18 +103,40 @@ public class RecordEndpointTest {
 
 	private void expectTokenForReadListToPrefereblyBeHeaderThanQuery(String headerAuthToken,
 			String queryAuthToken, String authTokenExpected) {
-
-		response = recordEndpoint.readRecordList(headerAuthToken, queryAuthToken, PLACE);
+		String jsonFilter = "{\"name\":\"filter\",\"children\":[]}";
+		response = recordEndpoint.readRecordList(headerAuthToken, queryAuthToken, PLACE,
+				jsonFilter);
 
 		SpiderRecordListReaderSpy spiderListReaderSpy = factorySpy.spiderRecordListReaderSpy;
 		assertEquals(spiderListReaderSpy.authToken, authTokenExpected);
 	}
 
 	@Test
-	public void testReadRecordList() {
-		response = recordEndpoint.readRecordList(AUTH_TOKEN, AUTH_TOKEN, PLACE);
+	public void testReadRecordListWithFilter() {
+		response = recordEndpoint.readRecordList(AUTH_TOKEN, AUTH_TOKEN, PLACE, jsonFilterData);
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.OK);
+
+		SpiderRecordListReaderSpy spiderListReaderSpy = factorySpy.spiderRecordListReaderSpy;
+
+		SpiderDataGroup filterData = spiderListReaderSpy.filter;
+		assertEquals(filterData.getNameInData(), "filter");
+		SpiderDataGroup part = filterData.extractGroup("part");
+		assertTrue(part.containsChildWithNameInData("key"));
+		assertTrue(part.containsChildWithNameInData("value"));
+	}
+
+	@Test
+	public void testReadRecordListWithNullAsFilter() {
+		response = recordEndpoint.readRecordList(AUTH_TOKEN, AUTH_TOKEN, PLACE, null);
+		assertEntityExists();
+		assertResponseStatusIs(Response.Status.OK);
+
+		SpiderRecordListReaderSpy spiderListReaderSpy = factorySpy.spiderRecordListReaderSpy;
+
+		SpiderDataGroup filterData = spiderListReaderSpy.filter;
+		assertEquals(filterData.getNameInData(), "filter");
+		assertFalse(filterData.containsChildWithNameInData("part"));
 	}
 
 	private void assertEntityExists() {
@@ -125,20 +149,24 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testReadRecordListNotFound() {
-		response = recordEndpoint.readRecordList(AUTH_TOKEN, AUTH_TOKEN, "place_NOT_FOUND");
+		String jsonFilter = "{\"name\":\"filter\",\"children\":[]}";
+		response = recordEndpoint.readRecordList(AUTH_TOKEN, AUTH_TOKEN, "place_NOT_FOUND",
+				jsonFilter);
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
 	}
 
 	@Test
 	public void testReadRecordListUnauthorized() {
+		String jsonFilter = "{\"name\":\"filter\",\"children\":[]}";
 		response = recordEndpoint.readRecordListUsingAuthTokenByType(DUMMY_NON_AUTHORIZED_TOKEN,
-				PLACE);
+				PLACE, jsonFilter);
 		assertResponseStatusIs(Response.Status.FORBIDDEN);
 	}
 
 	@Test
 	public void testReadRecordListNoTokenAndUnauthorized() {
-		response = recordEndpoint.readRecordListUsingAuthTokenByType(null, PLACE);
+		String jsonFilter = "{\"name\":\"filter\",\"children\":[]}";
+		response = recordEndpoint.readRecordListUsingAuthTokenByType(null, PLACE, jsonFilter);
 		assertResponseStatusIs(Response.Status.UNAUTHORIZED);
 	}
 

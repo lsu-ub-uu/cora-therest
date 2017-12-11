@@ -20,6 +20,7 @@
 package se.uu.ub.cora.therest.record;
 
 import se.uu.ub.cora.spider.authorization.AuthorizationException;
+import se.uu.ub.cora.spider.data.SpiderDataGroup;
 import se.uu.ub.cora.spider.data.SpiderDataList;
 import se.uu.ub.cora.spider.record.SpiderRecordListReader;
 import se.uu.ub.cora.spider.record.storage.RecordNotFoundException;
@@ -28,20 +29,22 @@ public class SpiderRecordListReaderSpy implements SpiderRecordListReader {
 
 	public String authToken;
 	public String type;
+	public SpiderDataGroup filter;
 
 	@Override
-	public SpiderDataList readRecordList(String authToken, String type) {
+	public SpiderDataList readRecordList(String authToken, String type, SpiderDataGroup filter) {
 		this.authToken = authToken;
 		this.type = type;
+		this.filter = filter;
 		possiblyThrowException(authToken, type);
 		return SpiderDataList.withContainDataOfType(type);
 	}
 
 	private void possiblyThrowException(String authToken, String type) {
-		if("place_NOT_FOUND".equals(type)){
+		if ("place_NOT_FOUND".equals(type)) {
 			throw new RecordNotFoundException("Record not found");
 		}
-		if("dummyNonAuthorizedToken".equals(authToken) || authToken == null){
+		if ("dummyNonAuthorizedToken".equals(authToken) || authToken == null) {
 			throw new AuthorizationException("not authorized");
 		}
 	}
