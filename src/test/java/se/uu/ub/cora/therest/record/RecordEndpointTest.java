@@ -94,6 +94,17 @@ public class RecordEndpointTest {
 	}
 
 	@Test
+	public void testReturnedUrl() {
+		request.headers.put("X-Forwarded-Proto", "https");
+		recordEndpoint = new RecordEndpoint(request);
+
+		response = recordEndpoint.readRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001);
+		String entityString = response.getEntity().toString();
+		assertTrue(entityString
+				.contains("\"url\":\"https://cora.epc.ub.uu.se/systemone/rest/record/place/"));
+	}
+
+	@Test
 	public void testPreferredTokenForReadList() throws IOException {
 		expectTokenForReadListToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, "authToken2", AUTH_TOKEN);
 		expectTokenForReadListToPrefereblyBeHeaderThanQuery(null, AUTH_TOKEN, AUTH_TOKEN);

@@ -409,8 +409,8 @@ public class RecordEndpoint {
 		SpiderInputStream streamOut = SpiderInstanceProvider.getSpiderDownloader()
 				.download(authToken, type, id, streamId);
 		/*
-		 * when we detect and store type of file in spider set it like this
-		 * return Response.ok(streamOut.stream).type("application/octet-stream")
+		 * when we detect and store type of file in spider set it like this return
+		 * Response.ok(streamOut.stream).type("application/octet-stream")
 		 */
 		return Response.ok(streamOut.stream).type(streamOut.mimeType)
 				.header("Content-Disposition", "attachment; filename=" + streamOut.name)

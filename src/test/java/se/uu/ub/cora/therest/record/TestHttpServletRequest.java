@@ -347,8 +347,7 @@ public class TestHttpServletRequest implements HttpServletRequest {
 
 	@Override
 	public StringBuffer getRequestURL() {
-		// TODO Auto-generated method stub
-		return new StringBuffer("http://localhost:8080/therest/rest/record/text/");
+		return new StringBuffer("http://cora.epc.ub.uu.se/systemone/rest/record/text/");
 	}
 
 	@Override
