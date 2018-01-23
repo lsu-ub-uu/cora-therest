@@ -74,7 +74,7 @@ import se.uu.ub.cora.therest.data.converter.spider.DataRecordSpiderToRestConvert
 
 @Path("record")
 public class RecordEndpoint {
-
+	private static final int afterHttp = 10;
 	private String url;
 	HttpServletRequest request;
 
@@ -93,7 +93,6 @@ public class RecordEndpoint {
 
 	private String getBaseURLFromRequest() {
 		String tempUrl = request.getRequestURL().toString();
-		int afterHttp = 10;
 		String baseURL = tempUrl.substring(0, tempUrl.indexOf('/', afterHttp));
 		baseURL += SpiderInstanceProvider.getInitInfo().get("publicPathToSystem");
 		baseURL += "record/";
