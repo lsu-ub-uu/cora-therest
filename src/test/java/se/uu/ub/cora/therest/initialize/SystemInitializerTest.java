@@ -82,10 +82,12 @@ public class SystemInitializerTest {
 		assertTrue(SpiderInstanceProvider.getSpiderRecordReader() instanceof SpiderRecordReader);
 	}
 
-	@Test(expectedExceptions = RuntimeException.class)
+	@Test(expectedExceptions = RuntimeException.class, expectedExceptionsMessageRegExp = "Error"
+			+ " invoking classes in The Rest: InitInfo must contain gatekeeperURL")
 	public void testInitializeSystemTargetInvokationError() {
 		source.setInitParameter("dependencyProviderClassName",
 				"se.uu.ub.cora.therest.initialize.DependencyProviderMissingGatekeeperUrlSpy");
+		source.setInitParameter("publicPathToSystem", "/systemOne/rest/");
 		systemInitializer.contextInitialized(context);
 	}
 

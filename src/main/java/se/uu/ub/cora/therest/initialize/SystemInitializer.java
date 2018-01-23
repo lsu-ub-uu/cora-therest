@@ -48,7 +48,7 @@ public class SystemInitializer implements ServletContextListener {
 			tryToInitialize();
 		} catch (InvocationTargetException e) {
 			throw new RuntimeException(
-					"Error starting The Rest: " + e.getTargetException().getMessage());
+					"Error invoking classes in The Rest: " + e.getTargetException().getMessage());
 		} catch (Exception e) {
 			throw new RuntimeException("Error starting The Rest: " + e.getMessage());
 		}
