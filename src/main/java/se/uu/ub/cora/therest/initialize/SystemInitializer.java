@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2018 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -58,6 +58,8 @@ public class SystemInitializer implements ServletContextListener {
 			ClassNotFoundException, InvocationTargetException, NoSuchMethodException {
 		String dependencyProviderString = getClassNameToInitializeAsDependencyProviderFromContext();
 		collectInitInformation();
+		ensurePublicPathToSystemExistsInInitInfo();
+		SpiderInstanceProvider.setInitInfo(initInfo);
 		createInstanceOfDependencyProviderClass(dependencyProviderString);
 		createAndSetFactoryInSpiderInstanceProvider();
 	}
@@ -68,6 +70,12 @@ public class SystemInitializer implements ServletContextListener {
 		while (initParameterNames.hasMoreElements()) {
 			String key = initParameterNames.nextElement();
 			initInfo.put(key, servletContext.getInitParameter(key));
+		}
+	}
+
+	private void ensurePublicPathToSystemExistsInInitInfo() {
+		if (!initInfo.containsKey("publicPathToSystem")) {
+			throw new RuntimeException("Context must have a publicPathToSystem set.");
 		}
 	}
 

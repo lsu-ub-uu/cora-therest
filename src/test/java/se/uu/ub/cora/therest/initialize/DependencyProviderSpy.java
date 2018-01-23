@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Uppsala University Library
+ * Copyright 2017, 2018 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -19,6 +19,8 @@
 
 package se.uu.ub.cora.therest.initialize;
 
+import java.util.Map;
+
 import se.uu.ub.cora.bookkeeper.linkcollector.DataRecordLinkCollector;
 import se.uu.ub.cora.bookkeeper.termcollector.DataGroupTermCollector;
 import se.uu.ub.cora.bookkeeper.validator.DataValidator;
@@ -32,8 +34,6 @@ import se.uu.ub.cora.spider.record.storage.RecordIdGenerator;
 import se.uu.ub.cora.spider.record.storage.RecordStorage;
 import se.uu.ub.cora.spider.search.RecordIndexer;
 import se.uu.ub.cora.spider.stream.storage.StreamStorage;
-
-import java.util.Map;
 
 public class DependencyProviderSpy extends SpiderDependencyProvider {
 
@@ -92,7 +92,7 @@ public class DependencyProviderSpy extends SpiderDependencyProvider {
 	@Override
 	public Authenticator getAuthenticator() {
 		// TODO Auto-generated method stub
-		return null;
+		throw new RuntimeException("Throwing exception from DependencyProviderSpy");
 	}
 
 	public Map<String, String> getInitInfo() {

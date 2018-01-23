@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2016 Uppsala University Library
+ * Copyright 2015, 2016, 2018 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -92,9 +92,9 @@ public class RecordEndpoint {
 	}
 
 	private String getBaseURLFromRequest() {
-		String tempUrl = request.getRequestURL().toString();
-		String baseURL = tempUrl.substring(0, tempUrl.indexOf(request.getPathInfo()));
-		baseURL += "/record/";
+		String baseURL = request.getServerName()
+				+ SpiderInstanceProvider.getInitInfo().get("publicPathToSystem");
+		baseURL += "record/";
 		return baseURL;
 	}
 
@@ -102,7 +102,7 @@ public class RecordEndpoint {
 		String forwardedProtocol = request.getHeader("X-Forwarded-Proto");
 
 		if (ifForwardedProtocolExists(forwardedProtocol)) {
-			return baseURI.replaceAll("http", forwardedProtocol);
+			return baseURI.replaceAll("http:", forwardedProtocol + ":");
 		}
 		return baseURI;
 	}

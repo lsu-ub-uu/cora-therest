@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2016 Uppsala University Library
+ * Copyright 2015, 2016, 2018 Uppsala University Library
  * Copyright 2016 Olov McKie
  *
  * This file is part of Cora.
@@ -31,6 +31,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -63,11 +65,14 @@ public class RecordEndpointTest {
 	private SpiderInstanceFactorySpy factorySpy;
 	private Response response;
 	private TestHttpServletRequest request;
+	private Map<String, String> initInfo = new HashMap<>();
 
 	@BeforeMethod
 	public void beforeMethod() {
+		initInfo.put("publicPathToSystem", "/systemone/rest/");
 		factorySpy = new SpiderInstanceFactorySpy();
 		SpiderInstanceProvider.setSpiderInstanceFactory(factorySpy);
+		SpiderInstanceProvider.setInitInfo(initInfo);
 
 		request = new TestHttpServletRequest();
 		recordEndpoint = new RecordEndpoint(request);
@@ -76,6 +81,18 @@ public class RecordEndpointTest {
 	@Test
 	public void testXForwardedProtoHttps() {
 		request.headers.put("X-Forwarded-Proto", "https");
+		recordEndpoint = new RecordEndpoint(request);
+
+		response = recordEndpoint.readRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001);
+		String entityString = response.getEntity().toString();
+		assertTrue(entityString.contains("\"url\":\"https:/"));
+	}
+
+	@Test
+	public void testXForwardedProtoHttpsWhenAlreadyHttpsInRequestUrl() {
+		request.headers.put("X-Forwarded-Proto", "https");
+		request.requestURL = new StringBuffer(
+				"https://cora.epc.ub.uu.se/systemone/rest/record/text/");
 		recordEndpoint = new RecordEndpoint(request);
 
 		response = recordEndpoint.readRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001);

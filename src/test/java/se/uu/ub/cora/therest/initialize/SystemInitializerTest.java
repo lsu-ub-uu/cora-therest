@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2018 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -19,13 +19,17 @@
 
 package se.uu.ub.cora.therest.initialize;
 
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 
-import static org.testng.Assert.assertEquals;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
+import se.uu.ub.cora.spider.record.SpiderRecordReader;
 
 public class SystemInitializerTest {
 	private SystemInitializer systemInitializer;
@@ -41,23 +45,27 @@ public class SystemInitializerTest {
 
 	@Test
 	public void testInitializeSystem() {
-		source.setInitParameter("dependencyProviderClassName",
-				"se.uu.ub.cora.therest.initialize.DependencyProviderSpy");
+		setNeededInitParameters();
 		systemInitializer.contextInitialized(context);
 
-		assertEquals(systemInitializer.dependencyProvider.getClass(),
-				DependencyProviderSpy.class);
+		assertEquals(systemInitializer.dependencyProvider.getClass(), DependencyProviderSpy.class);
 	}
 
-	@Test(expectedExceptions = RuntimeException.class)
+	private void setNeededInitParameters() {
+		source.setInitParameter("dependencyProviderClassName",
+				"se.uu.ub.cora.therest.initialize.DependencyProviderSpy");
+		source.setInitParameter("publicPathToSystem", "/systemOne/rest/");
+	}
+
+	@Test(expectedExceptions = RuntimeException.class, expectedExceptionsMessageRegExp = "Error "
+			+ "starting The Rest: Context must have a dependencyProviderClassName set.")
 	public void testInitializeSystemWithoutDependencyProviderClassName() {
 		systemInitializer.contextInitialized(context);
 	}
 
 	@Test
 	public void testInitializeSystemInitInfoSetInDependencyProvider() {
-		source.setInitParameter("dependencyProviderClassName",
-				"se.uu.ub.cora.therest.initialize.DependencyProviderSpy");
+		setNeededInitParameters();
 		systemInitializer.contextInitialized(context);
 
 		DependencyProviderSpy dependencyProviderSpy = (DependencyProviderSpy) systemInitializer.dependencyProvider;
@@ -65,11 +73,36 @@ public class SystemInitializerTest {
 				"se.uu.ub.cora.therest.initialize.DependencyProviderSpy");
 	}
 
+	@Test(expectedExceptions = RuntimeException.class, expectedExceptionsMessageRegExp = "Throwing "
+			+ "exception from DependencyProviderSpy")
+	public void testInitializeSystemTryInstanceProviderAndItsFactory() {
+		setNeededInitParameters();
+		systemInitializer.contextInitialized(context);
+
+		assertTrue(SpiderInstanceProvider.getSpiderRecordReader() instanceof SpiderRecordReader);
+	}
+
 	@Test(expectedExceptions = RuntimeException.class)
 	public void testInitializeSystemTargetInvokationError() {
 		source.setInitParameter("dependencyProviderClassName",
 				"se.uu.ub.cora.therest.initialize.DependencyProviderMissingGatekeeperUrlSpy");
 		systemInitializer.contextInitialized(context);
+	}
+
+	@Test(expectedExceptions = RuntimeException.class, expectedExceptionsMessageRegExp = "Error "
+			+ "starting The Rest: Context must have a publicPathToSystem set.")
+	public void testInitializeMissingPublicPathToSystem() {
+		source.setInitParameter("dependencyProviderClassName",
+				"se.uu.ub.cora.therest.initialize.DependencyProviderSpy");
+		systemInitializer.contextInitialized(context);
+	}
+
+	@Test
+	public void testInitInfoSetInSpiderInstanceProvider() throws Exception {
+		setNeededInitParameters();
+		systemInitializer.contextInitialized(context);
+		assertEquals(SpiderInstanceProvider.getInitInfo().get("publicPathToSystem"),
+				"/systemOne/rest/");
 	}
 
 	@Test
