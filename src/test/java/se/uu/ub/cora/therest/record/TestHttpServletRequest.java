@@ -198,7 +198,7 @@ public class TestHttpServletRequest implements HttpServletRequest {
 
 	@Override
 	public String getServerName() {
-		return "http://cora.epc.ub.uu.se";
+		return "cora.epc.ub.uu.se";
 	}
 
 	@Override

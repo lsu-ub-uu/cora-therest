@@ -92,8 +92,10 @@ public class RecordEndpoint {
 	}
 
 	private String getBaseURLFromRequest() {
-		String baseURL = request.getServerName()
-				+ SpiderInstanceProvider.getInitInfo().get("publicPathToSystem");
+		String tempUrl = request.getRequestURL().toString();
+		int afterHttp = 10;
+		String baseURL = tempUrl.substring(0, tempUrl.indexOf('/', afterHttp));
+		baseURL += SpiderInstanceProvider.getInitInfo().get("publicPathToSystem");
 		baseURL += "record/";
 		return baseURL;
 	}
