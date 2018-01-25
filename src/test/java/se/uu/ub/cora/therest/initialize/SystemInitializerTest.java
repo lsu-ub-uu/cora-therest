@@ -54,7 +54,7 @@ public class SystemInitializerTest {
 	private void setNeededInitParameters() {
 		source.setInitParameter("dependencyProviderClassName",
 				"se.uu.ub.cora.therest.initialize.DependencyProviderSpy");
-		source.setInitParameter("publicPathToSystem", "/systemOne/rest/");
+		source.setInitParameter("theRestPublicPathToSystem", "/systemOne/rest/");
 	}
 
 	@Test(expectedExceptions = RuntimeException.class, expectedExceptionsMessageRegExp = "Error "
@@ -87,13 +87,13 @@ public class SystemInitializerTest {
 	public void testInitializeSystemTargetInvokationError() {
 		source.setInitParameter("dependencyProviderClassName",
 				"se.uu.ub.cora.therest.initialize.DependencyProviderMissingGatekeeperUrlSpy");
-		source.setInitParameter("publicPathToSystem", "/systemOne/rest/");
+		source.setInitParameter("theRestPublicPathToSystem", "/systemOne/rest/");
 		systemInitializer.contextInitialized(context);
 	}
 
 	@Test(expectedExceptions = RuntimeException.class, expectedExceptionsMessageRegExp = "Error "
-			+ "starting The Rest: Context must have a publicPathToSystem set.")
-	public void testInitializeMissingPublicPathToSystem() {
+			+ "starting The Rest: Context must have a theRestPublicPathToSystem set.")
+	public void testInitializeMissingtheRestPublicPathToSystem() {
 		source.setInitParameter("dependencyProviderClassName",
 				"se.uu.ub.cora.therest.initialize.DependencyProviderSpy");
 		systemInitializer.contextInitialized(context);
@@ -103,7 +103,7 @@ public class SystemInitializerTest {
 	public void testInitInfoSetInSpiderInstanceProvider() throws Exception {
 		setNeededInitParameters();
 		systemInitializer.contextInitialized(context);
-		assertEquals(SpiderInstanceProvider.getInitInfo().get("publicPathToSystem"),
+		assertEquals(SpiderInstanceProvider.getInitInfo().get("theRestPublicPathToSystem"),
 				"/systemOne/rest/");
 	}
 

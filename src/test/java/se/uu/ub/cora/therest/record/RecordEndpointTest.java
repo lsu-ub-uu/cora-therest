@@ -69,7 +69,7 @@ public class RecordEndpointTest {
 
 	@BeforeMethod
 	public void beforeMethod() {
-		initInfo.put("publicPathToSystem", "/systemone/rest/");
+		initInfo.put("theRestPublicPathToSystem", "/systemone/rest/");
 		factorySpy = new SpiderInstanceFactorySpy();
 		SpiderInstanceProvider.setSpiderInstanceFactory(factorySpy);
 		SpiderInstanceProvider.setInitInfo(initInfo);

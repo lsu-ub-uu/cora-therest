@@ -58,7 +58,7 @@ public class SystemInitializer implements ServletContextListener {
 			ClassNotFoundException, InvocationTargetException, NoSuchMethodException {
 		String dependencyProviderString = getClassNameToInitializeAsDependencyProviderFromContext();
 		collectInitInformation();
-		ensurePublicPathToSystemExistsInInitInfo();
+		ensuretheRestPublicPathToSystemExistsInInitInfo();
 		SpiderInstanceProvider.setInitInfo(initInfo);
 		createInstanceOfDependencyProviderClass(dependencyProviderString);
 		createAndSetFactoryInSpiderInstanceProvider();
@@ -73,9 +73,9 @@ public class SystemInitializer implements ServletContextListener {
 		}
 	}
 
-	private void ensurePublicPathToSystemExistsInInitInfo() {
-		if (!initInfo.containsKey("publicPathToSystem")) {
-			throw new RuntimeException("Context must have a publicPathToSystem set.");
+	private void ensuretheRestPublicPathToSystemExistsInInitInfo() {
+		if (!initInfo.containsKey("theRestPublicPathToSystem")) {
+			throw new RuntimeException("Context must have a theRestPublicPathToSystem set.");
 		}
 	}
 
