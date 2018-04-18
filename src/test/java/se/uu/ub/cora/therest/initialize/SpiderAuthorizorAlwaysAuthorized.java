@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Uppsala University Library
+ * Copyright 2016,2018  Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -19,22 +19,11 @@
 
 package se.uu.ub.cora.therest.initialize;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import se.uu.ub.cora.beefeater.authentication.User;
 import se.uu.ub.cora.bookkeeper.data.DataGroup;
 import se.uu.ub.cora.spider.authorization.SpiderAuthorizator;
 
 public class SpiderAuthorizorAlwaysAuthorized implements SpiderAuthorizator {
-
-	@Override
-	public boolean userSatisfiesRequiredRules(User user,
-			List<Map<String, Set<String>>> requiredRules) {
-		// TODO Auto-generated method stub
-		return true;
-	}
 
 	@Override
 	public void checkUserIsAuthorizedForActionOnRecordType(User user, String action,
@@ -62,6 +51,13 @@ public class SpiderAuthorizorAlwaysAuthorized implements SpiderAuthorizator {
 			String recordType) {
 		// TODO Auto-generated method stub
 		return true;
+	}
+
+	@Override
+	public void checkUserIsAuthorizedForActionOnRecordTypeAndCollectedData(User user, String action,
+			String string, DataGroup collectedData) {
+		// TODO Auto-generated method stub
+
 	}
 
 }
