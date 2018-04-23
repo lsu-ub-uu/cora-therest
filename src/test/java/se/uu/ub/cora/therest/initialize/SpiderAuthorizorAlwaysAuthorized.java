@@ -60,4 +60,11 @@ public class SpiderAuthorizorAlwaysAuthorized implements SpiderAuthorizator {
 
 	}
 
+	@Override
+	public boolean userIsAuthorizedForActionOnRecordTypeAndCollectedData(User user, String action,
+			String string, DataGroup collectedData) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }
