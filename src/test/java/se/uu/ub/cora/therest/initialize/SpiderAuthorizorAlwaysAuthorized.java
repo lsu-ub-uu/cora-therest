@@ -33,20 +33,6 @@ public class SpiderAuthorizorAlwaysAuthorized implements SpiderAuthorizator {
 	}
 
 	@Override
-	public void checkUserIsAuthorizedForActionOnRecordTypeAndRecord(User user, String action,
-			String recordType, DataGroup record) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public boolean userIsAuthorizedForActionOnRecordTypeAndRecord(User user, String action,
-			String string, DataGroup record) {
-		// TODO Auto-generated method stub
-		return true;
-	}
-
-	@Override
 	public boolean userIsAuthorizedForActionOnRecordType(User user, String action,
 			String recordType) {
 		// TODO Auto-generated method stub
