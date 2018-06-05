@@ -421,7 +421,7 @@ public class RecordEndpoint {
 	@POST
 	@Path("{type}/{id}/{streamId}")
 	@Consumes("multipart/form-data")
-	@Produces("application/vnd.uub.record+json2")
+	@Produces("application/vnd.uub.record+json")
 	public Response uploadFile(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			@PathParam("id") String id, @FormDataParam("file") InputStream uploadedInputStream,
