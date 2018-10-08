@@ -65,4 +65,6 @@ public class DataListToJsonConverterTest {
 				"{\"dataList\":{\"fromNo\":\"0\",\"" + "data\":[{\"name\":\"groupId\"}],"
 						+ "\"totalNo\":\"1\",\"containDataOfType\":\"place\",\"toNo\":\"1\"}}");
 	}
+
+
 }

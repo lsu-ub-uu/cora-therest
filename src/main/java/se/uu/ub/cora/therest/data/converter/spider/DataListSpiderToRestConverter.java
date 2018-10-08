@@ -47,7 +47,7 @@ public final class DataListSpiderToRestConverter {
 		RestDataList restDataList = RestDataList
 				.withContainDataOfType(spiderDataList.getContainDataOfType());
 
-		restDataList.setTotalNo(spiderDataList.getToNo());
+		restDataList.setTotalNo(spiderDataList.getTotalNumberOfTypeInStorage());
 		restDataList.setFromNo(spiderDataList.getFromNo());
 		restDataList.setToNo(spiderDataList.getToNo());
 
@@ -59,22 +59,22 @@ public final class DataListSpiderToRestConverter {
 
 	private void convertSpiderDataToRest(RestDataList restDataList, SpiderData spiderData) {
 		if (spiderData instanceof SpiderDataRecord) {
-			convertSpiderRecordToRest(restDataList, spiderData);
+			convertSpiderRecordToRest(restDataList, (SpiderDataRecord) spiderData);
 		} else {
-			convertSpiderGroupToRest(restDataList, spiderData);
+			convertSpiderGroupToRest(restDataList, (SpiderDataGroup) spiderData);
 		}
 	}
 
-	private void convertSpiderRecordToRest(RestDataList restDataList, SpiderData spiderData) {
+	private void convertSpiderRecordToRest(RestDataList restDataList, SpiderDataRecord spiderData) {
 		RestDataRecord restRecord = DataRecordSpiderToRestConverter
-				.fromSpiderDataRecordWithBaseURL((SpiderDataRecord) spiderData, baseURL).toRest();
+				.fromSpiderDataRecordWithBaseURL(spiderData, baseURL).toRest();
 		restDataList.addData(restRecord);
 	}
 
-	private void convertSpiderGroupToRest(RestDataList restDataList, SpiderData spiderData) {
+	private void convertSpiderGroupToRest(RestDataList restDataList, SpiderDataGroup spiderData) {
 		ConverterInfo converterInfo = ConverterInfo.withBaseURLAndRecordURL(baseURL, "");
 		RestDataGroup restGroup = DataGroupSpiderToRestConverter
-				.fromSpiderDataGroupWithBaseURL((SpiderDataGroup) spiderData, converterInfo)
+				.fromSpiderDataGroupWithBaseURL(spiderData, converterInfo)
 				.toRest();
 		restDataList.addData(restGroup);
 	}

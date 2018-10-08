@@ -62,8 +62,8 @@ public class RestDataListTest {
 	@Test
 	public void testFromNo() {
 		RestDataList restDataList = RestDataList.withContainDataOfType("metadata");
-		restDataList.setFromNo("0");
-		assertEquals(restDataList.getFromNo(), "0");
+		restDataList.setFromNo("1");
+		assertEquals(restDataList.getFromNo(), "1");
 	}
 
 	@Test
@@ -71,5 +71,17 @@ public class RestDataListTest {
 		RestDataList restDataList = RestDataList.withContainDataOfType("metadata");
 		restDataList.setToNo("2");
 		assertEquals(restDataList.getToNo(), "2");
+	}
+
+	@Test
+	public void testAll() {
+		RestDataList restDataList = RestDataList.withContainDataOfType("metadata");
+		restDataList.setFromNo("1");
+		restDataList.setToNo("2");
+		restDataList.setTotalNo("3");
+
+		assertEquals(restDataList.getFromNo(), "1");
+		assertEquals(restDataList.getToNo(), "2");
+		assertEquals(restDataList.getTotalNo(), "3");
 	}
 }

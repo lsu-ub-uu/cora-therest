@@ -41,13 +41,17 @@ public class DataListSpiderToRestConverterTest {
 		SpiderDataList spiderDataList = SpiderDataList.withContainDataOfType("place");
 		spiderDataList.addData(spiderDataRecord);
 		spiderDataList.setTotalNo("10");
-		spiderDataList.setFromNo("0");
+		spiderDataList.setFromNo("1");
 		spiderDataList.setToNo("1");
 
 		DataListSpiderToRestConverter converter = DataListSpiderToRestConverter
 				.fromSpiderDataListWithBaseURL(spiderDataList, baseURL);
 
 		RestDataList recordList = converter.toRest();
+
+		assertEquals(recordList.getFromNo(), "1");
+		assertEquals(recordList.getToNo(), "1");
+		assertEquals(recordList.getTotalNo(), "10");
 
 		RestDataGroup restDataGroup = ((RestDataRecord) recordList.getDataList().get(0))
 				.getRestDataGroup();
@@ -74,13 +78,17 @@ public class DataListSpiderToRestConverterTest {
 		SpiderDataList spiderDataList = SpiderDataList.withContainDataOfType("place");
 		spiderDataList.addData(spiderDataGroup);
 		spiderDataList.setTotalNo("10");
-		spiderDataList.setFromNo("0");
+		spiderDataList.setFromNo("1");
 		spiderDataList.setToNo("1");
 
 		DataListSpiderToRestConverter converter = DataListSpiderToRestConverter
 				.fromSpiderDataListWithBaseURL(spiderDataList, baseURL);
 
 		RestDataList recordList = converter.toRest();
+
+		assertEquals(recordList.getFromNo(), "1");
+		assertEquals(recordList.getToNo(), "1");
+		assertEquals(recordList.getTotalNo(), "10");
 
 		RestDataGroup restDataGroup = ((RestDataGroup) recordList.getDataList().get(0));
 
