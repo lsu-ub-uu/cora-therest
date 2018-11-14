@@ -19,6 +19,8 @@
 
 package se.uu.ub.cora.therest.initialize;
 
+import java.util.Map;
+
 import se.uu.ub.cora.bookkeeper.linkcollector.DataRecordLinkCollector;
 import se.uu.ub.cora.bookkeeper.termcollector.DataGroupTermCollector;
 import se.uu.ub.cora.bookkeeper.validator.DataValidator;
@@ -32,8 +34,6 @@ import se.uu.ub.cora.spider.record.storage.RecordIdGenerator;
 import se.uu.ub.cora.spider.record.storage.RecordStorage;
 import se.uu.ub.cora.spider.search.RecordIndexer;
 import se.uu.ub.cora.spider.stream.storage.StreamStorage;
-
-import java.util.Map;
 
 public class DependencyProviderMissingGatekeeperUrlSpy extends SpiderDependencyProvider {
 
@@ -116,6 +116,18 @@ public class DependencyProviderMissingGatekeeperUrlSpy extends SpiderDependencyP
 	public RecordIndexer getRecordIndexer() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	protected void tryToInitialize() throws Exception {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	protected void readInitInfo() {
+		// TODO Auto-generated method stub
+
 	}
 
 }

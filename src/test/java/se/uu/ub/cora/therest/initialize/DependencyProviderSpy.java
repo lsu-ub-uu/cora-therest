@@ -117,4 +117,16 @@ public class DependencyProviderSpy extends SpiderDependencyProvider {
 		return null;
 	}
 
+	@Override
+	protected void tryToInitialize() throws Exception {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	protected void readInitInfo() {
+		// TODO Auto-generated method stub
+
+	}
+
 }
