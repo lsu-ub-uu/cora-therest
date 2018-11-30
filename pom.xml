@@ -16,17 +16,17 @@
 	<parent>
 		<groupId>se.uu.ub.cora</groupId>
 		<artifactId>cora-parent</artifactId>
-		<version>0.7-SNAPSHOT</version>
+		<version>0.8-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>therest</artifactId>
 	<packaging>war</packaging>
-	<version>0.16-SNAPSHOT</version>
+	<version>0.17-SNAPSHOT</version>
 	<name>The Rest</name>
 
 	<properties>
-		<json.version>0.4-SNAPSHOT</json.version>
-		<spider.version>0.15-SNAPSHOT</spider.version>
+		<json.version>0.5-SNAPSHOT</json.version>
+		<spider.version>0.16-SNAPSHOT</spider.version>
 		<javax.ws.rs.version>2.1.1</javax.ws.rs.version>
 		<jersey.version>2.27</jersey.version>
 	</properties>
@@ -103,12 +103,6 @@
 			<artifactId>javax.servlet-api</artifactId>
 			<version>3.0.1</version>
 			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.11</version>
-			<scope>test</scope>
 		</dependency>
 		<!-- The JAXB APIs are considered to be Java EE APIs, and therefore are 
 			no longer contained on the default class path in Java SE 9. In Java 11 they 
