@@ -6,36 +6,35 @@
 	be useful, ~ but WITHOUT ANY WARRANTY; without even the implied warranty 
 	of ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the ~ GNU General 
 	Public License for more details. ~ ~ You should have received a copy of the 
-	GNU General Public License ~ along with Cora. If not, see <http://www.gnu.org/licenses/>. -->
+	GNU General Public License ~ along with Cora. If not, see <http://www.gnu.org/licenses />. -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
 		<groupId>se.uu.ub.cora</groupId>
 		<artifactId>cora-parent</artifactId>
-		<version>0.7-SNAPSHOT</version>
+		<version>0.8.6</version>
 	</parent>
 
 	<artifactId>therest</artifactId>
 	<packaging>war</packaging>
-	<version>0.16-SNAPSHOT</version>
+	<version>0.18-SNAPSHOT</version>
 	<name>The Rest</name>
 
 	<properties>
-		<json.version>0.4-SNAPSHOT</json.version>
-		<spider.version>0.15-SNAPSHOT</spider.version>
+		<json.version>0.5.7</json.version>
+		<spider.version>0.16.0</spider.version>
 		<javax.ws.rs.version>2.1.1</javax.ws.rs.version>
 		<jersey.version>2.27</jersey.version>
 	</properties>
 
 	<scm>
-		<connection>scm:git:https://github.com/lsu-ub-uu/therest.git</connection>
-		<developerConnection>scm:git:https://github.com/lsu-ub-uu/therest.git</developerConnection>
-		<url>https://github.com/lsu-ub-uu/therest.git</url>
-	</scm>
+		<connection>scm:git:https://github.com/lsu-ub-uu/cora-therest.git</connection>
+		<developerConnection>scm:git:https://github.com/lsu-ub-uu/cora-therest.git</developerConnection>
+		<url>https://github.com/lsu-ub-uu/cora-therest.git</url>
+	  <tag>HEAD</tag>
+  </scm>
 
 	<repositories>
 		<repository>
@@ -103,12 +102,6 @@
 			<artifactId>javax.servlet-api</artifactId>
 			<version>3.0.1</version>
 			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.11</version>
-			<scope>test</scope>
 		</dependency>
 		<!-- The JAXB APIs are considered to be Java EE APIs, and therefore are 
 			no longer contained on the default class path in Java SE 9. In Java 11 they 
