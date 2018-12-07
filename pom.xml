@@ -32,9 +32,9 @@
 	</properties>
 
 	<scm>
-		<connection>scm:git:https://github.com/lsu-ub-uu/therest.git</connection>
-		<developerConnection>scm:git:https://github.com/lsu-ub-uu/therest.git</developerConnection>
-		<url>https://github.com/lsu-ub-uu/therest.git</url>
+		<connection>scm:git:https://github.com/lsu-ub-uu/cora-therest.git</connection>
+		<developerConnection>scm:git:https://github.com/lsu-ub-uu/cora-therest.git</developerConnection>
+		<url>https://github.com/lsu-ub-uu/cora-therest.git</url>
 	</scm>
 
 	<repositories>
