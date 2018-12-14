@@ -19,7 +19,7 @@
 
 	<artifactId>therest</artifactId>
 	<packaging>war</packaging>
-	<version>0.18.0</version>
+	<version>0.18.1-SNAPSHOT</version>
 	<name>The Rest</name>
 
 	<properties>
@@ -33,7 +33,7 @@
 		<connection>scm:git:https://github.com/lsu-ub-uu/cora-therest.git</connection>
 		<developerConnection>scm:git:https://github.com/lsu-ub-uu/cora-therest.git</developerConnection>
 		<url>https://github.com/lsu-ub-uu/cora-therest.git</url>
-	  <tag>therest-0.18.0</tag>
+	  <tag>release/0.18</tag>
   </scm>
 
 	<repositories>
