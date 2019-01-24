@@ -33,7 +33,7 @@
 		<connection>scm:git:https://github.com/lsu-ub-uu/cora-therest.git</connection>
 		<developerConnection>scm:git:https://github.com/lsu-ub-uu/cora-therest.git</developerConnection>
 		<url>https://github.com/lsu-ub-uu/cora-therest.git</url>
-	  <tag>HEAD</tag>
+	  <tag>release/0.19</tag>
   </scm>
 
 	<repositories>
