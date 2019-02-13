@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2016 Uppsala University Library
+ * Copyright 2015, 2016, 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -19,15 +19,15 @@
 
 package se.uu.ub.cora.therest.data.converter.spider;
 
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 import se.uu.ub.cora.spider.data.Action;
 import se.uu.ub.cora.therest.data.ActionLink;
 import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.converter.ConverterInfo;
-
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 public final class ActionSpiderToRestConverter {
 
@@ -64,10 +64,8 @@ public final class ActionSpiderToRestConverter {
 				actionLink.setURL(urlWithRecordId);
 				actionLink.setAccept(APPLICATION_UUB_RECORD_JSON);
 			} else if (Action.UPDATE.equals(action)) {
-				actionLink.setRequestMethod("POST");
+				setUpPostForSingleRecord(actionLink);
 				actionLink.setURL(urlWithRecordId);
-				actionLink.setAccept(APPLICATION_UUB_RECORD_JSON);
-				actionLink.setContentType(APPLICATION_UUB_RECORD_JSON);
 			} else if (Action.READ_INCOMING_LINKS.equals(action)) {
 				actionLink.setRequestMethod("GET");
 				urlWithRecordId = urlWithRecordId + "/incomingLinks";
@@ -91,6 +89,8 @@ public final class ActionSpiderToRestConverter {
 				actionLink.setAccept(APPLICATION_UUB_RECORD_LIST_JSON);
 			} else if (Action.INDEX.equals(action)) {
 				setUpActionLinkForIndexAction(actionLink);
+			} else if (Action.VALIDATE.equals(action)) {
+				setUpActionLinkForValidateAction(actionLink);
 			} else {
 				// list / search
 				actionLink.setRequestMethod("GET");
@@ -101,6 +101,12 @@ public final class ActionSpiderToRestConverter {
 			actionLinks.put(action.name().toLowerCase(), actionLink);
 		}
 		return actionLinks;
+	}
+
+	private void setUpPostForSingleRecord(ActionLink actionLink) {
+		actionLink.setRequestMethod("POST");
+		actionLink.setAccept(APPLICATION_UUB_RECORD_JSON);
+		actionLink.setContentType(APPLICATION_UUB_RECORD_JSON);
 	}
 
 	private void setUpActionLinkForIndexAction(ActionLink actionLink) {
@@ -124,6 +130,12 @@ public final class ActionSpiderToRestConverter {
 		body.addChild(RestDataAtomic.withNameInDataAndValue("recordId", recordId));
 		body.addChild(RestDataAtomic.withNameInDataAndValue("type", "index"));
 		return body;
+	}
+
+	private void setUpActionLinkForValidateAction(ActionLink actionLink) {
+		setUpPostForSingleRecord(actionLink);
+		String validateUrl = converterInfo.baseURL + "validate/" + recordType + "/update";
+		actionLink.setURL(validateUrl);
 	}
 
 }

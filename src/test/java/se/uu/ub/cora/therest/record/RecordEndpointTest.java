@@ -748,4 +748,71 @@ public class RecordEndpointTest {
 				jsonSearchData);
 		assertResponseStatusIs(Response.Status.UNAUTHORIZED);
 	}
+
+	@Test
+	public void testPreferredTokenForValidate() throws IOException {
+		expectTokenForValidateToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, "authToken2", AUTH_TOKEN);
+		expectTokenForValidateToPrefereblyBeHeaderThanQuery(null, AUTH_TOKEN, AUTH_TOKEN);
+		expectTokenForValidateToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, null, AUTH_TOKEN);
+		expectTokenForValidateToPrefereblyBeHeaderThanQuery(null, null, null);
+	}
+
+	private void expectTokenForValidateToPrefereblyBeHeaderThanQuery(String headerAuthToken,
+			String queryAuthToken, String authTokenExpected) {
+
+		response = recordEndpoint.validateRecord(headerAuthToken, queryAuthToken, PLACE, "update",
+				jsonToUpdateWith);
+
+		SpiderRecordValidatorSpy spiderRecordValidatorSpy = factorySpy.spiderRecordValidatorSpy;
+
+		assertEquals(spiderRecordValidatorSpy.authToken, authTokenExpected);
+	}
+
+	// @Test
+	// public void testUpdateRecord() {
+	// response = recordEndpoint.updateRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE,
+	// PLACE_0001,
+	// jsonToUpdateWith);
+	// assertResponseStatusIs(Response.Status.OK);
+	// }
+	//
+	// @Test
+	// public void testUpdateRecordUnauthorized() {
+	// response =
+	// recordEndpoint.updateRecordUsingAuthTokenWithRecord(DUMMY_NON_AUTHORIZED_TOKEN,
+	// PLACE, PLACE_0001, jsonToUpdateWith);
+	// assertResponseStatusIs(Response.Status.FORBIDDEN);
+	// }
+	//
+	// @Test
+	// public void testUpdateRecordNotFound() {
+	// response = recordEndpoint.updateRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE,
+	// PLACE_0001 + "_NOT_FOUND", jsonToUpdateWithNotFound);
+	// assertResponseStatusIs(Response.Status.NOT_FOUND);
+	// }
+	//
+	// @Test
+	// public void testUpdateRecordTypeNotFound() {
+	// response = recordEndpoint.updateRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE +
+	// "_NOT_FOUND",
+	// PLACE_0001, jsonToUpdateWithNotFound);
+	// assertResponseStatusIs(Response.Status.NOT_FOUND);
+	// }
+	//
+	// @Test
+	// public void testUpdateRecordBadContentInJson() {
+	// response = recordEndpoint.updateRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE,
+	// PLACE_0001,
+	// jsonWithBadContent);
+	// assertResponseStatusIs(Response.Status.BAD_REQUEST);
+	// }
+	//
+	// @Test
+	// public void testUpdateRecordWrongDataTypeInJson() {
+	// response = recordEndpoint.updateRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE,
+	// PLACE_0001,
+	// jsonToUpdateWithAttributeAsChild);
+	// assertResponseStatusIs(Response.Status.BAD_REQUEST);
+	// }
+
 }

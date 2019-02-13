@@ -476,4 +476,22 @@ public class RecordEndpoint {
 		String json = convertSpiderRecordListToJsonString(searchRecordList);
 		return Response.status(Response.Status.OK).entity(json).build();
 	}
+
+	@POST
+	@Path("validate/{type}/{actionToPerform}")
+	@Consumes("application/vnd.uub.record+json")
+	@Produces("application/vnd.uub.record+json")
+	public Response validateRecord(@HeaderParam("authToken") String headerAuthToken,
+			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
+			@PathParam("actionToPerform") String actionToPerform, String jsonRecord) {
+		String usedToken = getExistingTokenPreferHeader(headerAuthToken, queryAuthToken);
+		SpiderDataGroup record = convertJsonStringToSpiderDataGroup(jsonRecord);
+		SpiderInstanceProvider.getSpiderRecordValidator().validateRecord(usedToken, type, record,
+				"update");
+		return Response.status(Response.Status.OK).entity("ok from validation " + actionToPerform)
+				.build();
+		// String usedToken = getExistingTokenPreferHeader(headerAuthToken,
+		// queryAuthToken);
+		// return createRecordUsingAuthTokenWithRecord(usedToken, type, jsonRecord);
+	}
 }
