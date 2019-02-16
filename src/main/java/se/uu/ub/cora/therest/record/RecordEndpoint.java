@@ -478,14 +478,14 @@ public class RecordEndpoint {
 	}
 
 	@POST
-	@Path("validate/{type}/{actionToPerform}")
-	@Consumes("application/vnd.uub.record+json")
-	@Produces("application/vnd.uub.record+json")
+	@Path("{type}")
+	@Consumes("application/vnd.uub.validationrecord+json")
+	@Produces("application/vnd.uub.validationrecord+json")
 	public Response validateRecord(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
-			@PathParam("actionToPerform") String actionToPerform, String jsonRecord) {
+			@PathParam("actionToPerform") String actionToPerform, String jsonValidationRecord) {
 		String usedToken = getExistingTokenPreferHeader(headerAuthToken, queryAuthToken);
-		SpiderDataGroup record = convertJsonStringToSpiderDataGroup(jsonRecord);
+		SpiderDataGroup record = convertJsonStringToSpiderDataGroup(jsonValidationRecord);
 		SpiderInstanceProvider.getSpiderRecordValidator().validateRecord(usedToken, type, record,
 				"update");
 		return Response.status(Response.Status.OK).entity("ok from validation " + actionToPerform)
