@@ -135,12 +135,4 @@ public final class ActionSpiderToRestConverter {
 		body.addChild(RestDataAtomic.withNameInDataAndValue("type", "index"));
 		return body;
 	}
-
-	// private void setUpActionLinkForValidateAction(ActionLink actionLink) {
-	// setUpPostForSingleRecord(actionLink);
-	// String validateUrl = urlForRecordTypeActions;
-	//// converterInfo.baseURL + "validate/" + recordType + "/update";
-	// actionLink.setURL(validateUrl);
-	// }
-
 }
