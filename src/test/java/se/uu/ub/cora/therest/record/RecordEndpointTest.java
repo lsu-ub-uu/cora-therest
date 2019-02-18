@@ -61,6 +61,7 @@ public class RecordEndpointTest {
 	private String jsonSearchData = "{\"name\":\"search\",\"children\":[{\"name\":\"include\",\""
 			+ "children\":[{\"name\":\"includePart\",\"children\":[{\"name\":\"text\",\"value\":\"\"}]}]}]}";
 	private String jsonFilterData = "{\"name\":\"filter\",\"children\":[{\"name\":\"part\",\"children\":[{\"name\":\"key\",\"value\":\"movieTitle\"},{\"name\":\"value\",\"value\":\"Some title\"}],\"repeatId\":\"0\"}]}";
+	private String jsonToValidate = "{\"validationInfo\":{\"name\":\"validationOrder\",\"children\":[{\"name\":\"recordInfo\",\"children\":[{\"name\":\"dataDivider\",\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"system\"},{\"name\":\"linkedRecordId\",\"value\":\"testSystem\"}]}]},{\"name\":\"recordType\",\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"recordType\"},{\"name\":\"linkedRecordId\",\"value\":\"someRecordType\"}]},{\"name\":\"metadataToValidate\",\"value\":\"existing\"},{\"name\":\"validateLinks\",\"value\":\"false\"}]},\"record\":{\"name\":\"text\",\"children\":[{\"name\":\"recordInfo\",\"children\":[{\"name\":\"id\",\"value\":\"workOrderRecordIdTextVar2Text\"},{\"name\":\"dataDivider\",\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"system\"},{\"name\":\"linkedRecordId\",\"value\":\"cora\"}]}]},{\"name\":\"textPart\",\"children\":[{\"name\":\"text\",\"value\":\"Id på länkad post\"}],\"attributes\":{\"type\":\"default\",\"lang\":\"sv\"}},{\"name\":\"textPart\",\"children\":[{\"name\":\"text\",\"value\":\"Linked record id\"}],\"attributes\":{\"type\":\"alternative\",\"lang\":\"en\"}}]}}";
 	private RecordEndpoint recordEndpoint;
 	private SpiderInstanceFactorySpy factorySpy;
 	private Response response;
@@ -760,59 +761,46 @@ public class RecordEndpointTest {
 	private void expectTokenForValidateToPrefereblyBeHeaderThanQuery(String headerAuthToken,
 			String queryAuthToken, String authTokenExpected) {
 
-		response = recordEndpoint.validateRecord(headerAuthToken, queryAuthToken, PLACE, "update",
-				jsonToUpdateWith);
+		response = recordEndpoint.validateRecord(headerAuthToken, queryAuthToken, PLACE,
+				jsonToValidate);
 
 		SpiderRecordValidatorSpy spiderRecordValidatorSpy = factorySpy.spiderRecordValidatorSpy;
 
 		assertEquals(spiderRecordValidatorSpy.authToken, authTokenExpected);
 	}
 
-	// @Test
-	// public void testUpdateRecord() {
-	// response = recordEndpoint.updateRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE,
-	// PLACE_0001,
-	// jsonToUpdateWith);
-	// assertResponseStatusIs(Response.Status.OK);
-	// }
-	//
-	// @Test
-	// public void testUpdateRecordUnauthorized() {
-	// response =
-	// recordEndpoint.updateRecordUsingAuthTokenWithRecord(DUMMY_NON_AUTHORIZED_TOKEN,
-	// PLACE, PLACE_0001, jsonToUpdateWith);
-	// assertResponseStatusIs(Response.Status.FORBIDDEN);
-	// }
-	//
-	// @Test
-	// public void testUpdateRecordNotFound() {
-	// response = recordEndpoint.updateRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE,
-	// PLACE_0001 + "_NOT_FOUND", jsonToUpdateWithNotFound);
-	// assertResponseStatusIs(Response.Status.NOT_FOUND);
-	// }
-	//
-	// @Test
-	// public void testUpdateRecordTypeNotFound() {
-	// response = recordEndpoint.updateRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE +
-	// "_NOT_FOUND",
-	// PLACE_0001, jsonToUpdateWithNotFound);
-	// assertResponseStatusIs(Response.Status.NOT_FOUND);
-	// }
-	//
-	// @Test
-	// public void testUpdateRecordBadContentInJson() {
-	// response = recordEndpoint.updateRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE,
-	// PLACE_0001,
-	// jsonWithBadContent);
-	// assertResponseStatusIs(Response.Status.BAD_REQUEST);
-	// }
-	//
-	// @Test
-	// public void testUpdateRecordWrongDataTypeInJson() {
-	// response = recordEndpoint.updateRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE,
-	// PLACE_0001,
-	// jsonToUpdateWithAttributeAsChild);
-	// assertResponseStatusIs(Response.Status.BAD_REQUEST);
-	// }
+	@Test
+	public void testValidateRecord() {
+		response = recordEndpoint.validateRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, jsonToValidate);
+
+		SpiderRecordValidatorSpy spiderRecordValidatorSpy = factorySpy.spiderRecordValidatorSpy;
+		SpiderDataGroup validationRecord = spiderRecordValidatorSpy.validationRecord;
+		assertEquals(validationRecord.getNameInData(), "validationOrder");
+
+		SpiderDataGroup recordToValidate = spiderRecordValidatorSpy.recordToValidate;
+		assertEquals(recordToValidate.getNameInData(), "text");
+
+		assertResponseStatusIs(Response.Status.OK);
+	}
+
+	@Test
+	public void testValidateRecordUnauthorized() {
+		response = recordEndpoint.validateRecordUsingAuthTokenWithRecord(DUMMY_NON_AUTHORIZED_TOKEN,
+				PLACE, jsonToValidate);
+		assertResponseStatusIs(Response.Status.FORBIDDEN);
+	}
+
+	@Test
+	public void testValidateRecordTypeNotFound() {
+		response = recordEndpoint.validateRecord(AUTH_TOKEN, AUTH_TOKEN, "recordType_NON_EXISTING",
+				jsonToValidate);
+		assertResponseStatusIs(Response.Status.NOT_FOUND);
+	}
+
+	@Test
+	public void testValidateRecordBadContentInJson() {
+		response = recordEndpoint.validateRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, jsonWithBadContent);
+		assertResponseStatusIs(Response.Status.BAD_REQUEST);
+	}
 
 }

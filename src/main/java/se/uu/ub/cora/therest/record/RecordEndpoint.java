@@ -42,6 +42,7 @@ import org.glassfish.jersey.media.multipart.FormDataParam;
 
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.org.OrgJsonBuilderFactoryAdapter;
+import se.uu.ub.cora.json.parser.JsonObject;
 import se.uu.ub.cora.json.parser.JsonParseException;
 import se.uu.ub.cora.json.parser.JsonParser;
 import se.uu.ub.cora.json.parser.JsonValue;
@@ -56,6 +57,7 @@ import se.uu.ub.cora.spider.data.SpiderInputStream;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
 import se.uu.ub.cora.spider.record.DataException;
 import se.uu.ub.cora.spider.record.MisuseException;
+import se.uu.ub.cora.spider.record.ValidationResult;
 import se.uu.ub.cora.spider.record.storage.RecordConflictException;
 import se.uu.ub.cora.spider.record.storage.RecordNotFoundException;
 import se.uu.ub.cora.therest.data.RestDataElement;
@@ -483,15 +485,63 @@ public class RecordEndpoint {
 	@Produces("application/vnd.uub.validationrecord+json")
 	public Response validateRecord(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
-			@PathParam("actionToPerform") String actionToPerform, String jsonValidationRecord) {
+			String jsonValidationRecord) {
 		String usedToken = getExistingTokenPreferHeader(headerAuthToken, queryAuthToken);
-		SpiderDataGroup record = convertJsonStringToSpiderDataGroup(jsonValidationRecord);
-		SpiderInstanceProvider.getSpiderRecordValidator().validateRecord(usedToken, type, record,
-				"update");
-		return Response.status(Response.Status.OK).entity("ok from validation " + actionToPerform)
-				.build();
-		// String usedToken = getExistingTokenPreferHeader(headerAuthToken,
-		// queryAuthToken);
+		// SpiderDataGroup validationRecord =
+		// convertJsonStringToSpiderDataGroup(jsonValidationRecord);
+		// SpiderDataGroup recordToValidate =
+		// convertJsonStringToSpiderDataGroup(jsonValidationRecord);
+
+		// return Response.status(Response.Status.OK).entity("ok from validation " +
+		// actionToPerform)
+		// .build();
+		return validateRecordUsingAuthTokenWithRecord(usedToken, type, jsonValidationRecord);
 		// return createRecordUsingAuthTokenWithRecord(usedToken, type, jsonRecord);
 	}
+
+	public Response validateRecordUsingAuthTokenWithRecord(String authToken, String type,
+			String jsonRecord) {
+		try {
+			return tryValidateRecord(authToken, type, jsonRecord);
+		} catch (Exception error) {
+			return handleError(authToken, error);
+		}
+	}
+
+	private Response tryValidateRecord(String authToken, String type, String jsonRecord)
+			throws URISyntaxException {
+		JsonParser jsonParser = new OrgJsonParser();
+		JsonValue jsonValue = jsonParser.parseString(jsonRecord);
+		JsonObject jsonObject = (JsonObject) jsonValue;
+		SpiderDataGroup validationOrder = getDataGroupFromJsonObjectUsingName(jsonObject,
+				"validationInfo");
+
+		// JsonObject recordToValidate = jsonObject.getValueAsJsonObject("record");
+
+		SpiderDataGroup recordToValidate = getDataGroupFromJsonObjectUsingName(jsonObject,
+				"record");
+
+		ValidationResult validationResult = SpiderInstanceProvider.getSpiderRecordValidator()
+				.validateRecord(authToken, type, validationOrder, recordToValidate);
+
+		//
+		// String json = convertSpiderDataRecordToJsonString(createdRecord);
+		//
+		// URI uri = new URI("record/" + type + "/" + createdId);
+		// return Response.created(uri).entity(json).build();
+		return Response.status(Response.Status.OK).entity("ok from validation ").build();
+	}
+
+	private SpiderDataGroup getDataGroupFromJsonObjectUsingName(JsonObject jsonObject,
+			String name) {
+		JsonValue validationInfoJson = jsonObject.getValue(name);
+
+		JsonToDataConverterFactory jsonToDataConverterFactory = new JsonToDataConverterFactoryImp();
+		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
+				.createForJsonObject(validationInfoJson);
+
+		RestDataGroup restDataGroup = (RestDataGroup) jsonToDataConverter.toInstance();
+		return DataGroupRestToSpiderConverter.fromRestDataGroup(restDataGroup).toSpider();
+	}
+
 }
