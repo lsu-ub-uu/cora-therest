@@ -57,7 +57,6 @@ import se.uu.ub.cora.spider.data.SpiderInputStream;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
 import se.uu.ub.cora.spider.record.DataException;
 import se.uu.ub.cora.spider.record.MisuseException;
-import se.uu.ub.cora.spider.record.ValidationResult;
 import se.uu.ub.cora.spider.record.storage.RecordConflictException;
 import se.uu.ub.cora.spider.record.storage.RecordNotFoundException;
 import se.uu.ub.cora.therest.data.RestDataElement;
@@ -481,22 +480,15 @@ public class RecordEndpoint {
 
 	@POST
 	@Path("{type}")
-	@Consumes("application/vnd.uub.validationrecord+json")
-	@Produces("application/vnd.uub.validationrecord+json")
+	@Consumes("application/vnd.uub.workorder+json")
+	@Produces("application/vnd.uub.record+json")
 	public Response validateRecord(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			String jsonValidationRecord) {
 		String usedToken = getExistingTokenPreferHeader(headerAuthToken, queryAuthToken);
-		// SpiderDataGroup validationRecord =
-		// convertJsonStringToSpiderDataGroup(jsonValidationRecord);
-		// SpiderDataGroup recordToValidate =
-		// convertJsonStringToSpiderDataGroup(jsonValidationRecord);
-
-		// return Response.status(Response.Status.OK).entity("ok from validation " +
-		// actionToPerform)
-		// .build();
-		return validateRecordUsingAuthTokenWithRecord(usedToken, type, jsonValidationRecord);
-		// return createRecordUsingAuthTokenWithRecord(usedToken, type, jsonRecord);
+		String recordTypeToUse = "validationOrder";
+		return validateRecordUsingAuthTokenWithRecord(usedToken, recordTypeToUse,
+				jsonValidationRecord);
 	}
 
 	public Response validateRecordUsingAuthTokenWithRecord(String authToken, String type,
@@ -508,40 +500,36 @@ public class RecordEndpoint {
 		}
 	}
 
-	private Response tryValidateRecord(String authToken, String type, String jsonRecord)
-			throws URISyntaxException {
-		JsonParser jsonParser = new OrgJsonParser();
-		JsonValue jsonValue = jsonParser.parseString(jsonRecord);
-		JsonObject jsonObject = (JsonObject) jsonValue;
-		SpiderDataGroup validationOrder = getDataGroupFromJsonObjectUsingName(jsonObject,
-				"validationInfo");
-
-		// JsonObject recordToValidate = jsonObject.getValueAsJsonObject("record");
-
+	private Response tryValidateRecord(String authToken, String type, String jsonRecord) {
+		JsonObject jsonObject = getJsonObjectFromJsonRecordString(jsonRecord);
+		SpiderDataGroup validationOrder = getDataGroupFromJsonObjectUsingName(jsonObject, "order");
 		SpiderDataGroup recordToValidate = getDataGroupFromJsonObjectUsingName(jsonObject,
 				"record");
 
-		ValidationResult validationResult = SpiderInstanceProvider.getSpiderRecordValidator()
+		SpiderDataRecord validationResult = SpiderInstanceProvider.getSpiderRecordValidator()
 				.validateRecord(authToken, type, validationOrder, recordToValidate);
 
-		//
-		// String json = convertSpiderDataRecordToJsonString(createdRecord);
-		//
-		// URI uri = new URI("record/" + type + "/" + createdId);
-		// return Response.created(uri).entity(json).build();
-		return Response.status(Response.Status.OK).entity("ok from validation ").build();
+		String json = convertSpiderDataRecordToJsonString(validationResult);
+		return Response.status(Response.Status.OK).entity(json).build();
+	}
+
+	private JsonObject getJsonObjectFromJsonRecordString(String jsonRecord) {
+		JsonParser jsonParser = new OrgJsonParser();
+		JsonValue jsonValue = jsonParser.parseString(jsonRecord);
+		return (JsonObject) jsonValue;
 	}
 
 	private SpiderDataGroup getDataGroupFromJsonObjectUsingName(JsonObject jsonObject,
 			String name) {
-		JsonValue validationInfoJson = jsonObject.getValue(name);
-
-		JsonToDataConverterFactory jsonToDataConverterFactory = new JsonToDataConverterFactoryImp();
-		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
-				.createForJsonObject(validationInfoJson);
-
+		JsonToDataConverter jsonToDataConverter = createConverter(jsonObject, name);
 		RestDataGroup restDataGroup = (RestDataGroup) jsonToDataConverter.toInstance();
 		return DataGroupRestToSpiderConverter.fromRestDataGroup(restDataGroup).toSpider();
+	}
+
+	private JsonToDataConverter createConverter(JsonObject jsonObject, String name) {
+		JsonValue validationInfoJson = jsonObject.getValue(name);
+		JsonToDataConverterFactory jsonToDataConverterFactory = new JsonToDataConverterFactoryImp();
+		return jsonToDataConverterFactory.createForJsonObject(validationInfoJson);
 	}
 
 }

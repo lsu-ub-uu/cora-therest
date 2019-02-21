@@ -33,7 +33,6 @@ public final class ActionSpiderToRestConverter {
 
 	private static final String APPLICATION_UUB_RECORD_LIST_JSON = "application/vnd.uub.recordList+json";
 	private static final String APPLICATION_UUB_RECORD_JSON = "application/vnd.uub.record+json";
-	private static final String APPLICATION_UUB_VALIDATIONRECORD_JSON = "application/vnd.uub.validationrecord+json";
 	private ConverterInfo converterInfo;
 	private List<Action> actions;
 	private String recordType;
@@ -92,9 +91,9 @@ public final class ActionSpiderToRestConverter {
 				setUpActionLinkForIndexAction(actionLink);
 			} else if (Action.VALIDATE.equals(action)) {
 				actionLink.setRequestMethod("POST");
-				actionLink.setURL(urlForRecordTypeActions);
-				actionLink.setAccept(APPLICATION_UUB_VALIDATIONRECORD_JSON);
-				actionLink.setContentType(APPLICATION_UUB_VALIDATIONRECORD_JSON);
+				actionLink.setURL(converterInfo.baseURL + "workOrder/");
+				actionLink.setAccept(APPLICATION_UUB_RECORD_JSON);
+				actionLink.setContentType("application/vnd.uub.workorder+json");
 			} else {
 				// list / search
 				actionLink.setRequestMethod("GET");

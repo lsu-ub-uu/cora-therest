@@ -228,7 +228,6 @@ public class ActionSpiderToRestConverterTest {
 		assertEquals(actionLink.getContentType(), null);
 	}
 
-	// TODO: lös create/update
 	@Test
 	public void testToRestWithActionLinkVALIDATE() {
 		Action action = Action.VALIDATE;
@@ -241,10 +240,10 @@ public class ActionSpiderToRestConverterTest {
 		ActionLink actionLink = actionLinks.get("validate");
 		assertEquals(actionLink.getAction(), Action.VALIDATE);
 
-		assertEquals(actionLink.getURL(), "http://localhost:8080/therest/rest/record/text/");
+		assertEquals(actionLink.getURL(), "http://localhost:8080/therest/rest/record/workOrder/");
 		assertEquals(actionLink.getRequestMethod(), "POST");
-		assertEquals(actionLink.getAccept(), "application/vnd.uub.validationrecord+json");
-		assertEquals(actionLink.getContentType(), "application/vnd.uub.validationrecord+json");
+		assertEquals(actionLink.getAccept(), "application/vnd.uub.record+json");
+		assertEquals(actionLink.getContentType(), "application/vnd.uub.workorder+json");
 	}
 
 	@Test
@@ -292,7 +291,7 @@ public class ActionSpiderToRestConverterTest {
 				"http://localhost:8080/therest/rest/record/recordType/text/master");
 
 		ActionLink validate = actionLinks.get("validate");
-		assertEquals(validate.getURL(), "http://localhost:8080/therest/rest/record/text/");
+		assertEquals(validate.getURL(), "http://localhost:8080/therest/rest/record/workOrder/");
 
 	}
 }
