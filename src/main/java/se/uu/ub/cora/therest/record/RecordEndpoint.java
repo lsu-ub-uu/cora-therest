@@ -146,7 +146,8 @@ public class RecordEndpoint {
 
 		String json = convertSpiderDataRecordToJsonString(createdRecord);
 
-		URI uri = new URI("record/" + type + "/" + createdId);
+		String urlDelimiter = "/";
+		URI uri = new URI("record/" + type + urlDelimiter + createdId);
 		return Response.created(uri).entity(json).build();
 	}
 
@@ -507,9 +508,10 @@ public class RecordEndpoint {
 		SpiderDataGroup recordToValidate = getDataGroupFromJsonObjectUsingName(jsonObject,
 				"record");
 
-		SpiderRecordValidator spiderRecordValidator = SpiderInstanceProvider.getSpiderRecordValidator();
-		SpiderDataRecord validationResult = spiderRecordValidator
-				.validateRecord(authToken, type, validationOrder, recordToValidate);
+		SpiderRecordValidator spiderRecordValidator = SpiderInstanceProvider
+				.getSpiderRecordValidator();
+		SpiderDataRecord validationResult = spiderRecordValidator.validateRecord(authToken, type,
+				validationOrder, recordToValidate);
 
 		String json = convertSpiderDataRecordToJsonString(validationResult);
 		return Response.status(Response.Status.OK).entity(json).build();
