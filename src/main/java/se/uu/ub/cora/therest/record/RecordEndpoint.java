@@ -57,6 +57,7 @@ import se.uu.ub.cora.spider.data.SpiderInputStream;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
 import se.uu.ub.cora.spider.record.DataException;
 import se.uu.ub.cora.spider.record.MisuseException;
+import se.uu.ub.cora.spider.record.SpiderRecordValidator;
 import se.uu.ub.cora.spider.record.storage.RecordConflictException;
 import se.uu.ub.cora.spider.record.storage.RecordNotFoundException;
 import se.uu.ub.cora.therest.data.RestDataElement;
@@ -506,7 +507,8 @@ public class RecordEndpoint {
 		SpiderDataGroup recordToValidate = getDataGroupFromJsonObjectUsingName(jsonObject,
 				"record");
 
-		SpiderDataRecord validationResult = SpiderInstanceProvider.getSpiderRecordValidator()
+		SpiderRecordValidator spiderRecordValidator = SpiderInstanceProvider.getSpiderRecordValidator();
+		SpiderDataRecord validationResult = spiderRecordValidator
 				.validateRecord(authToken, type, validationOrder, recordToValidate);
 
 		String json = convertSpiderDataRecordToJsonString(validationResult);
