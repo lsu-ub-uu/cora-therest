@@ -20,7 +20,16 @@
 package se.uu.ub.cora.therest.record;
 
 import se.uu.ub.cora.spider.dependency.SpiderInstanceFactory;
-import se.uu.ub.cora.spider.record.*;
+import se.uu.ub.cora.spider.record.SpiderDownloader;
+import se.uu.ub.cora.spider.record.SpiderRecordCreator;
+import se.uu.ub.cora.spider.record.SpiderRecordDeleter;
+import se.uu.ub.cora.spider.record.SpiderRecordIncomingLinksReader;
+import se.uu.ub.cora.spider.record.SpiderRecordListReader;
+import se.uu.ub.cora.spider.record.SpiderRecordReader;
+import se.uu.ub.cora.spider.record.SpiderRecordSearcher;
+import se.uu.ub.cora.spider.record.SpiderRecordUpdater;
+import se.uu.ub.cora.spider.record.SpiderRecordValidator;
+import se.uu.ub.cora.spider.record.SpiderUploader;
 
 public class SpiderInstanceFactorySpy implements SpiderInstanceFactory {
 
@@ -30,6 +39,7 @@ public class SpiderInstanceFactorySpy implements SpiderInstanceFactory {
 	public SpiderRecordUpdaterSpy spiderRecordUpdaterSpy;
 	public SpiderRecordDeleterSpy spiderRecordDeleterSpy;
 	public SpiderRecordReaderSpy spiderRecordReaderSpy;
+	public SpiderRecordValidatorSpy spiderRecordValidatorSpy;
 	public SpiderRecordIncomingLinksReaderSpy spiderRecordIncomingLinksReaderSpy;
 	public SpiderRecordListReaderSpy spiderRecordListReaderSpy;
 	public SpiderRecordSearcherSpy spiderRecordSearcherSpy;
@@ -86,6 +96,12 @@ public class SpiderInstanceFactorySpy implements SpiderInstanceFactory {
 	public SpiderRecordIncomingLinksReader factorSpiderRecordIncomingLinksReader() {
 		spiderRecordIncomingLinksReaderSpy = new SpiderRecordIncomingLinksReaderSpy();
 		return spiderRecordIncomingLinksReaderSpy;
+	}
+
+	@Override
+	public SpiderRecordValidator factorSpiderRecordValidator() {
+		spiderRecordValidatorSpy = new SpiderRecordValidatorSpy();
+		return spiderRecordValidatorSpy;
 	}
 
 }

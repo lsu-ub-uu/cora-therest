@@ -42,6 +42,7 @@ import org.glassfish.jersey.media.multipart.FormDataParam;
 
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.org.OrgJsonBuilderFactoryAdapter;
+import se.uu.ub.cora.json.parser.JsonObject;
 import se.uu.ub.cora.json.parser.JsonParseException;
 import se.uu.ub.cora.json.parser.JsonParser;
 import se.uu.ub.cora.json.parser.JsonValue;
@@ -56,6 +57,7 @@ import se.uu.ub.cora.spider.data.SpiderInputStream;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
 import se.uu.ub.cora.spider.record.DataException;
 import se.uu.ub.cora.spider.record.MisuseException;
+import se.uu.ub.cora.spider.record.SpiderRecordValidator;
 import se.uu.ub.cora.spider.record.storage.RecordConflictException;
 import se.uu.ub.cora.spider.record.storage.RecordNotFoundException;
 import se.uu.ub.cora.therest.data.RestDataElement;
@@ -476,4 +478,60 @@ public class RecordEndpoint {
 		String json = convertSpiderRecordListToJsonString(searchRecordList);
 		return Response.status(Response.Status.OK).entity(json).build();
 	}
+
+	@POST
+	@Path("{type}")
+	@Consumes("application/vnd.uub.workorder+json")
+	@Produces("application/vnd.uub.record+json")
+	public Response validateRecord(@HeaderParam("authToken") String headerAuthToken,
+			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
+			String jsonValidationRecord) {
+		String usedToken = getExistingTokenPreferHeader(headerAuthToken, queryAuthToken);
+		String recordTypeToUse = "validationOrder";
+		return validateRecordUsingAuthTokenWithRecord(usedToken, recordTypeToUse,
+				jsonValidationRecord);
+	}
+
+	public Response validateRecordUsingAuthTokenWithRecord(String authToken, String type,
+			String jsonRecord) {
+		try {
+			return tryValidateRecord(authToken, type, jsonRecord);
+		} catch (Exception error) {
+			return handleError(authToken, error);
+		}
+	}
+
+	private Response tryValidateRecord(String authToken, String type, String jsonRecord) {
+		JsonObject jsonObject = getJsonObjectFromJsonRecordString(jsonRecord);
+		SpiderDataGroup validationOrder = getDataGroupFromJsonObjectUsingName(jsonObject, "order");
+		SpiderDataGroup recordToValidate = getDataGroupFromJsonObjectUsingName(jsonObject,
+				"record");
+
+		SpiderRecordValidator spiderRecordValidator = SpiderInstanceProvider.getSpiderRecordValidator();
+		SpiderDataRecord validationResult = spiderRecordValidator
+				.validateRecord(authToken, type, validationOrder, recordToValidate);
+
+		String json = convertSpiderDataRecordToJsonString(validationResult);
+		return Response.status(Response.Status.OK).entity(json).build();
+	}
+
+	private JsonObject getJsonObjectFromJsonRecordString(String jsonRecord) {
+		JsonParser jsonParser = new OrgJsonParser();
+		JsonValue jsonValue = jsonParser.parseString(jsonRecord);
+		return (JsonObject) jsonValue;
+	}
+
+	private SpiderDataGroup getDataGroupFromJsonObjectUsingName(JsonObject jsonObject,
+			String name) {
+		JsonToDataConverter jsonToDataConverter = createConverter(jsonObject, name);
+		RestDataGroup restDataGroup = (RestDataGroup) jsonToDataConverter.toInstance();
+		return DataGroupRestToSpiderConverter.fromRestDataGroup(restDataGroup).toSpider();
+	}
+
+	private JsonToDataConverter createConverter(JsonObject jsonObject, String name) {
+		JsonValue validationInfoJson = jsonObject.getValue(name);
+		JsonToDataConverterFactory jsonToDataConverterFactory = new JsonToDataConverterFactoryImp();
+		return jsonToDataConverterFactory.createForJsonObject(validationInfoJson);
+	}
+
 }

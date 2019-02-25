@@ -24,7 +24,7 @@
 
 	<properties>
 		<json.version>0.5.7</json.version>
-		<spider.version>0.18.0</spider.version>
+		<spider.version>0.19.0</spider.version>
 		<javax.ws.rs.version>2.1.1</javax.ws.rs.version>
 		<jersey.version>2.27</jersey.version>
 	</properties>

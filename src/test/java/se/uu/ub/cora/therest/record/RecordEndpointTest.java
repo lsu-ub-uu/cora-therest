@@ -61,6 +61,8 @@ public class RecordEndpointTest {
 	private String jsonSearchData = "{\"name\":\"search\",\"children\":[{\"name\":\"include\",\""
 			+ "children\":[{\"name\":\"includePart\",\"children\":[{\"name\":\"text\",\"value\":\"\"}]}]}]}";
 	private String jsonFilterData = "{\"name\":\"filter\",\"children\":[{\"name\":\"part\",\"children\":[{\"name\":\"key\",\"value\":\"movieTitle\"},{\"name\":\"value\",\"value\":\"Some title\"}],\"repeatId\":\"0\"}]}";
+	private String jsonToValidate = "{\"order\":{\"name\":\"validationOrder\",\"children\":[{\"name\":\"recordInfo\",\"children\":[{\"name\":\"dataDivider\",\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"system\"},{\"name\":\"linkedRecordId\",\"value\":\"testSystem\"}]}]},{\"name\":\"recordType\",\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"recordType\"},{\"name\":\"linkedRecordId\",\"value\":\"someRecordType\"}]},{\"name\":\"metadataToValidate\",\"value\":\"existing\"},{\"name\":\"validateLinks\",\"value\":\"false\"}]},\"record\":{\"name\":\"text\",\"children\":[{\"name\":\"recordInfo\",\"children\":[{\"name\":\"id\",\"value\":\"workOrderRecordIdTextVar2Text\"},{\"name\":\"dataDivider\",\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"system\"},{\"name\":\"linkedRecordId\",\"value\":\"cora\"}]}]},{\"name\":\"textPart\",\"children\":[{\"name\":\"text\",\"value\":\"Id på länkad post\"}],\"attributes\":{\"type\":\"default\",\"lang\":\"sv\"}},{\"name\":\"textPart\",\"children\":[{\"name\":\"text\",\"value\":\"Linked record id\"}],\"attributes\":{\"type\":\"alternative\",\"lang\":\"en\"}}]}}";
+	private String jsonToValidateNonExistingRecordType = "{\"order\":{\"name\":\"validationOrder\",\"children\":[{\"name\":\"recordInfo\",\"children\":[{\"name\":\"dataDivider\",\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"system\"},{\"name\":\"linkedRecordId\",\"value\":\"testSystem\"}]}]},{\"name\":\"recordType\",\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"recordType\"},{\"name\":\"linkedRecordId\",\"value\":\"someRecordType\"}]},{\"name\":\"metadataToValidate\",\"value\":\"existing\"},{\"name\":\"validateLinks\",\"value\":\"false\"}]},\"record\":{\"name\":\"recordType_NON_EXISTING\",\"children\":[{\"name\":\"recordInfo\",\"children\":[{\"name\":\"id\",\"value\":\"recordType_NON_EXISTING\"},{\"name\":\"dataDivider\",\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"system\"},{\"name\":\"linkedRecordId\",\"value\":\"cora\"}]}]},{\"name\":\"textPart\",\"children\":[{\"name\":\"text\",\"value\":\"Id på länkad post\"}],\"attributes\":{\"type\":\"default\",\"lang\":\"sv\"}},{\"name\":\"textPart\",\"children\":[{\"name\":\"text\",\"value\":\"Linked record id\"}],\"attributes\":{\"type\":\"alternative\",\"lang\":\"en\"}}]}}";
 	private RecordEndpoint recordEndpoint;
 	private SpiderInstanceFactorySpy factorySpy;
 	private Response response;
@@ -748,4 +750,67 @@ public class RecordEndpointTest {
 				jsonSearchData);
 		assertResponseStatusIs(Response.Status.UNAUTHORIZED);
 	}
+
+	@Test
+	public void testPreferredTokenForValidate() throws IOException {
+		expectTokenForValidateToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, "authToken2", AUTH_TOKEN);
+		expectTokenForValidateToPrefereblyBeHeaderThanQuery(null, AUTH_TOKEN, AUTH_TOKEN);
+		expectTokenForValidateToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, null, AUTH_TOKEN);
+		expectTokenForValidateToPrefereblyBeHeaderThanQuery(null, null, null);
+	}
+
+	private void expectTokenForValidateToPrefereblyBeHeaderThanQuery(String headerAuthToken,
+			String queryAuthToken, String authTokenExpected) {
+
+		response = recordEndpoint.validateRecord(headerAuthToken, queryAuthToken, PLACE,
+				jsonToValidate);
+
+		SpiderRecordValidatorSpy spiderRecordValidatorSpy = factorySpy.spiderRecordValidatorSpy;
+
+		assertEquals(spiderRecordValidatorSpy.authToken, authTokenExpected);
+	}
+
+	@Test
+	public void testValidateRecord() {
+		response = recordEndpoint.validateRecord(AUTH_TOKEN, AUTH_TOKEN, "workOrder",
+				jsonToValidate);
+
+		SpiderRecordValidatorSpy spiderRecordValidatorSpy = factorySpy.spiderRecordValidatorSpy;
+		SpiderDataGroup validationRecord = spiderRecordValidatorSpy.validationRecord;
+		assertEquals(validationRecord.getNameInData(), "validationOrder");
+
+		SpiderDataGroup recordToValidate = spiderRecordValidatorSpy.recordToValidate;
+		assertEquals(recordToValidate.getNameInData(), "text");
+		assertEquals(spiderRecordValidatorSpy.recordType, "validationOrder");
+
+		assertResponseStatusIs(Response.Status.OK);
+		String expectedJson = getExpectedValidationResultJson();
+		assertEquals(response.getEntity(), expectedJson);
+	}
+
+	private String getExpectedValidationResultJson() {
+		return "{\"record\":{\"data\":{\"children\":[{\"name\":\"valid\",\"value\":\"true\"},{\"children\":[{\"name\":\"id\",\"value\":\"someSpyId\"},{\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"recordType\"},{\"name\":\"linkedRecordId\",\"value\":\"validationOrder\"}],\"name\":\"type\"}],\"name\":\"recordInfo\"}],\"name\":\"validationResult\"}}}";
+	}
+
+	@Test
+	public void testValidateRecordUnauthorized() {
+		response = recordEndpoint.validateRecordUsingAuthTokenWithRecord(DUMMY_NON_AUTHORIZED_TOKEN,
+				PLACE, jsonToValidate);
+		assertResponseStatusIs(Response.Status.FORBIDDEN);
+	}
+
+	@Test
+	public void testValidateRecordTypeNotFound() {
+		response = recordEndpoint.validateRecord(AUTH_TOKEN, AUTH_TOKEN, "workOrder",
+				jsonToValidateNonExistingRecordType);
+		assertResponseStatusIs(Response.Status.NOT_FOUND);
+	}
+
+	@Test
+	public void testValidateRecordBadContentInJson() {
+		response = recordEndpoint.validateRecord(AUTH_TOKEN, AUTH_TOKEN, "workOrder",
+				jsonWithBadContent);
+		assertResponseStatusIs(Response.Status.BAD_REQUEST);
+	}
+
 }
