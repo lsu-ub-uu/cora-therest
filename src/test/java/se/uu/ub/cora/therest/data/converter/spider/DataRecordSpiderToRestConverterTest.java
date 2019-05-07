@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2016 Uppsala University Library
+ * Copyright 2015, 2016, 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -19,8 +19,11 @@
 
 package se.uu.ub.cora.therest.data.converter.spider;
 
+import static org.testng.Assert.assertEquals;
+
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
 import se.uu.ub.cora.spider.data.Action;
 import se.uu.ub.cora.spider.data.SpiderDataAtomic;
 import se.uu.ub.cora.spider.data.SpiderDataGroup;
@@ -31,8 +34,6 @@ import se.uu.ub.cora.therest.data.RestDataRecord;
 import se.uu.ub.cora.therest.data.RestDataResourceLink;
 import se.uu.ub.cora.therest.data.converter.ConverterException;
 import se.uu.ub.cora.therest.testdata.DataCreator;
-
-import static org.testng.Assert.assertEquals;
 
 public class DataRecordSpiderToRestConverterTest {
 	private String baseURL = "http://localhost:8080/therest/rest/record/";
@@ -51,7 +52,7 @@ public class DataRecordSpiderToRestConverterTest {
 
 	@Test
 	public void testToRest() {
-		spiderDataGroup.addChild(createRecordInfo());
+		spiderDataGroup.addChild(createRecordInfo("place"));
 
 		RestDataRecord restDataRecord = dataRecordSpiderToRestConverter.toRest();
 		RestDataGroup restDataGroup = restDataRecord.getRestDataGroup();
@@ -103,7 +104,7 @@ public class DataRecordSpiderToRestConverterTest {
 	public void testToRestWithActionLinkREAD() {
 		spiderDataRecord.addAction(Action.READ);
 
-		spiderDataGroup.addChild(createRecordInfo());
+		spiderDataGroup.addChild(createRecordInfo("place"));
 
 		RestDataRecord restDataRecord = dataRecordSpiderToRestConverter.toRest();
 		ActionLink actionLink = restDataRecord.getActionLink("read");
@@ -113,23 +114,37 @@ public class DataRecordSpiderToRestConverterTest {
 		assertEquals(actionLink.getRequestMethod(), "GET");
 	}
 
-	private SpiderDataGroup createRecordInfo() {
+	private SpiderDataGroup createRecordInfo(String type) {
 		SpiderDataGroup recordInfo = SpiderDataGroup.withNameInData("recordInfo");
 		recordInfo.addChild(SpiderDataAtomic.withNameInDataAndValue("id", "place:0001"));
 		SpiderDataGroup typeGroup = SpiderDataGroup.withNameInData("type");
 		typeGroup.addChild(
 				SpiderDataAtomic.withNameInDataAndValue("linkedRecordType", "recordType"));
-		typeGroup.addChild(SpiderDataAtomic.withNameInDataAndValue("linkedRecordId", "place"));
+		typeGroup.addChild(SpiderDataAtomic.withNameInDataAndValue("linkedRecordId", type));
 		recordInfo.addChild(typeGroup);
 		recordInfo.addChild(SpiderDataAtomic.withNameInDataAndValue("createdBy", "userId"));
 		return recordInfo;
 	}
 
 	@Test
+	public void testToRestWithActionLinkSEARCHWhenRecordTypeIsRecordType() {
+		spiderDataRecord.addAction(Action.READ);
+
+		spiderDataGroup.addChild(createRecordInfo("recordType"));
+
+		RestDataRecord restDataRecord = dataRecordSpiderToRestConverter.toRest();
+		ActionLink actionLink = restDataRecord.getActionLink("read");
+		assertEquals(actionLink.getAction(), Action.READ);
+		assertEquals(actionLink.getURL(),
+				"http://localhost:8080/therest/rest/record/recordType/place:0001");
+		assertEquals(actionLink.getRequestMethod(), "GET");
+	}
+
+	@Test
 	public void testToRestWithActionLinkUPDATE() {
 		spiderDataRecord.addAction(Action.UPDATE);
 
-		spiderDataGroup.addChild(createRecordInfo());
+		spiderDataGroup.addChild(createRecordInfo("place"));
 
 		RestDataRecord restDataRecord = dataRecordSpiderToRestConverter.toRest();
 		ActionLink actionLink = restDataRecord.getActionLink("update");
@@ -143,7 +158,7 @@ public class DataRecordSpiderToRestConverterTest {
 	public void testToRestWithActionLinkDELETE() {
 		spiderDataRecord.addAction(Action.DELETE);
 
-		spiderDataGroup.addChild(createRecordInfo());
+		spiderDataGroup.addChild(createRecordInfo("place"));
 
 		RestDataRecord restDataRecord = dataRecordSpiderToRestConverter.toRest();
 		ActionLink actionLink = restDataRecord.getActionLink("delete");
@@ -155,7 +170,7 @@ public class DataRecordSpiderToRestConverterTest {
 
 	@Test
 	public void testToRestWithResourceLink() {
-		spiderDataGroup.addChild(createRecordInfo());
+		spiderDataGroup.addChild(createRecordInfo("place"));
 		spiderDataGroup.addChild(DataCreator.createResourceLinkMaster());
 
 		RestDataRecord restDataRecord = dataRecordSpiderToRestConverter.toRest();
@@ -171,7 +186,7 @@ public class DataRecordSpiderToRestConverterTest {
 
 	@Test
 	public void testToRestWithKeys() {
-		spiderDataGroup.addChild(createRecordInfo());
+		spiderDataGroup.addChild(createRecordInfo("place"));
 
 		spiderDataRecord.addKey("KEY1");
 

@@ -29,6 +29,8 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.spider.data.Action;
+import se.uu.ub.cora.spider.data.SpiderDataAtomic;
+import se.uu.ub.cora.spider.data.SpiderDataGroup;
 import se.uu.ub.cora.therest.data.ActionLink;
 import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataGroup;
@@ -51,7 +53,7 @@ public class ActionSpiderToRestConverterTest {
 		Action action = Action.READ;
 		actions.add(action);
 
-		ActionSpiderToRestConverter actionSpiderToRestConverter = ActionSpiderToRestConverter
+		ActionSpiderToRestConverter actionSpiderToRestConverter = ActionSpiderToRestConverterImp
 				.fromSpiderActionsWithBaseURLAndRecordTypeAndRecordId(actions, converterInfo,
 						"recordType", "recordId");
 		Map<String, ActionLink> actionLinks = actionSpiderToRestConverter.toRest();
@@ -68,7 +70,7 @@ public class ActionSpiderToRestConverterTest {
 	public void testToRestReadIncomingList() {
 		Action action = Action.READ_INCOMING_LINKS;
 		actions.add(action);
-		ActionSpiderToRestConverter actionSpiderToRestConverter = ActionSpiderToRestConverter
+		ActionSpiderToRestConverter actionSpiderToRestConverter = ActionSpiderToRestConverterImp
 				.fromSpiderActionsWithBaseURLAndRecordTypeAndRecordId(actions, converterInfo,
 						"recordType", "recordId");
 		Map<String, ActionLink> actionLinks = actionSpiderToRestConverter.toRest();
@@ -85,7 +87,7 @@ public class ActionSpiderToRestConverterTest {
 	public void testToRestWithActionLinkUPDATE() {
 		Action action = Action.UPDATE;
 		actions.add(action);
-		ActionSpiderToRestConverter actionSpiderToRestConverter = ActionSpiderToRestConverter
+		ActionSpiderToRestConverter actionSpiderToRestConverter = ActionSpiderToRestConverterImp
 				.fromSpiderActionsWithBaseURLAndRecordTypeAndRecordId(actions, converterInfo,
 						"recordType", "recordId");
 		Map<String, ActionLink> actionLinks = actionSpiderToRestConverter.toRest();
@@ -104,7 +106,7 @@ public class ActionSpiderToRestConverterTest {
 		Action action = Action.DELETE;
 		actions.add(action);
 
-		ActionSpiderToRestConverter actionSpiderToRestConverter = ActionSpiderToRestConverter
+		ActionSpiderToRestConverter actionSpiderToRestConverter = ActionSpiderToRestConverterImp
 				.fromSpiderActionsWithBaseURLAndRecordTypeAndRecordId(actions, converterInfo,
 						"recordType", "recordId");
 		Map<String, ActionLink> actionLinks = actionSpiderToRestConverter.toRest();
@@ -123,7 +125,7 @@ public class ActionSpiderToRestConverterTest {
 		Action action = Action.CREATE;
 		actions.add(action);
 
-		ActionSpiderToRestConverter actionSpiderToRestConverter = ActionSpiderToRestConverter
+		ActionSpiderToRestConverter actionSpiderToRestConverter = ActionSpiderToRestConverterImp
 				.fromSpiderActionsWithBaseURLAndRecordTypeAndRecordId(actions, converterInfo,
 						"recordType", "text");
 		Map<String, ActionLink> actionLinks = actionSpiderToRestConverter.toRest();
@@ -141,7 +143,7 @@ public class ActionSpiderToRestConverterTest {
 		Action actionUpload = Action.UPLOAD;
 		actions.add(actionUpload);
 
-		ActionSpiderToRestConverter actionSpiderToRestConverter = ActionSpiderToRestConverter
+		ActionSpiderToRestConverter actionSpiderToRestConverter = ActionSpiderToRestConverterImp
 				.fromSpiderActionsWithBaseURLAndRecordTypeAndRecordId(actions, converterInfo,
 						"image", "image:0001");
 		Map<String, ActionLink> actionLinks = actionSpiderToRestConverter.toRest();
@@ -161,7 +163,7 @@ public class ActionSpiderToRestConverterTest {
 		Action action = Action.LIST;
 		actions.add(action);
 
-		ActionSpiderToRestConverter actionSpiderToRestConverter = ActionSpiderToRestConverter
+		ActionSpiderToRestConverter actionSpiderToRestConverter = ActionSpiderToRestConverterImp
 				.fromSpiderActionsWithBaseURLAndRecordTypeAndRecordId(actions, converterInfo,
 						"recordType", "text");
 		Map<String, ActionLink> actionLinks = actionSpiderToRestConverter.toRest();
@@ -179,7 +181,7 @@ public class ActionSpiderToRestConverterTest {
 		Action action = Action.INDEX;
 		actions.add(action);
 
-		ActionSpiderToRestConverter actionSpiderToRestConverter = ActionSpiderToRestConverter
+		ActionSpiderToRestConverter actionSpiderToRestConverter = ActionSpiderToRestConverterImp
 				.fromSpiderActionsWithBaseURLAndRecordTypeAndRecordId(actions, converterInfo,
 						"person", "somePersonId");
 		Map<String, ActionLink> actionLinks = actionSpiderToRestConverter.toRest();
@@ -210,11 +212,11 @@ public class ActionSpiderToRestConverterTest {
 	}
 
 	@Test
-	public void testToRestWithActionLinkSEARCH() {
+	public void testToRestWithActionLinkSEARCHForRecordTypeSearch() {
 		Action action = Action.SEARCH;
 		actions.add(action);
 
-		ActionSpiderToRestConverter actionSpiderToRestConverter = ActionSpiderToRestConverter
+		ActionSpiderToRestConverter actionSpiderToRestConverter = ActionSpiderToRestConverterImp
 				.fromSpiderActionsWithBaseURLAndRecordTypeAndRecordId(actions, converterInfo,
 						"search", "aSearchId");
 		Map<String, ActionLink> actionLinks = actionSpiderToRestConverter.toRest();
@@ -229,10 +231,35 @@ public class ActionSpiderToRestConverterTest {
 	}
 
 	@Test
+	public void testToRestWithActionLinkSEARCHForRecordTypeRecordType() {
+		Action action = Action.SEARCH;
+		actions.add(action);
+
+		SpiderDataGroup dataGroup = SpiderDataGroup.withNameInData("someRecordType");
+		SpiderDataGroup search = SpiderDataGroup.withNameInData("search");
+		search.addChild(SpiderDataAtomic.withNameInDataAndValue("linkedRecordType", "search"));
+		search.addChild(SpiderDataAtomic.withNameInDataAndValue("linkedRecordId",
+				"defaultSearchForRecordType"));
+		dataGroup.addChild(search);
+		ActionSpiderToRestConverter actionSpiderToRestConverter = ActionSpiderToRestConverterImp
+				.fromSpiderActionsWithBaseURLAndRecordTypeAndRecordIdAndDataGroup(actions,
+						converterInfo, "recordType", "aRecordType", dataGroup);
+		Map<String, ActionLink> actionLinks = actionSpiderToRestConverter.toRest();
+
+		ActionLink actionLink = actionLinks.get("search");
+		assertEquals(actionLink.getAction(), Action.SEARCH);
+		assertEquals(actionLink.getURL(),
+				"http://localhost:8080/therest/rest/record/searchResult/defaultSearchForRecordType");
+		assertEquals(actionLink.getRequestMethod(), "GET");
+		assertEquals(actionLink.getAccept(), "application/vnd.uub.recordList+json");
+		assertEquals(actionLink.getContentType(), null);
+	}
+
+	@Test
 	public void testToRestWithActionLinkVALIDATE() {
 		Action action = Action.VALIDATE;
 		actions.add(action);
-		ActionSpiderToRestConverter actionSpiderToRestConverter = ActionSpiderToRestConverter
+		ActionSpiderToRestConverter actionSpiderToRestConverter = ActionSpiderToRestConverterImp
 				.fromSpiderActionsWithBaseURLAndRecordTypeAndRecordId(actions, converterInfo,
 						"recordType", "text");
 		Map<String, ActionLink> actionLinks = actionSpiderToRestConverter.toRest();
@@ -258,7 +285,7 @@ public class ActionSpiderToRestConverterTest {
 		actions.add(Action.UPLOAD);
 		actions.add(Action.VALIDATE);
 
-		ActionSpiderToRestConverter actionSpiderToRestConverter = ActionSpiderToRestConverter
+		ActionSpiderToRestConverter actionSpiderToRestConverter = ActionSpiderToRestConverterImp
 				.fromSpiderActionsWithBaseURLAndRecordTypeAndRecordId(actions, converterInfo,
 						"recordType", "text");
 		Map<String, ActionLink> actionLinks = actionSpiderToRestConverter.toRest();

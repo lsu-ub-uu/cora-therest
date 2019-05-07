@@ -18,12 +18,16 @@
  */
 package se.uu.ub.cora.therest.data.converter.spider;
 
-import java.util.Map;
+import se.uu.ub.cora.spider.data.SpiderDataGroup;
+import se.uu.ub.cora.therest.data.converter.ConverterInfo;
 
-import se.uu.ub.cora.therest.data.ActionLink;
+public class SpiderToRestConverterFactoryImp implements SpiderToRestConverterFactory {
 
-public interface ActionSpiderToRestConverter {
-
-	Map<String, ActionLink> toRest();
+	@Override
+	public SpiderToRestConverter factorForSpiderDataGroupWithConverterInfo(
+			SpiderDataGroup spiderDataGroup, ConverterInfo converterInfo) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

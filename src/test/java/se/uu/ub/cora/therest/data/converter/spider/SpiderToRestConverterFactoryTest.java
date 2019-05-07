@@ -18,12 +18,25 @@
  */
 package se.uu.ub.cora.therest.data.converter.spider;
 
-import java.util.Map;
+import static org.testng.Assert.assertTrue;
 
-import se.uu.ub.cora.therest.data.ActionLink;
+import org.testng.annotations.Test;
 
-public interface ActionSpiderToRestConverter {
+import se.uu.ub.cora.spider.data.SpiderDataGroup;
+import se.uu.ub.cora.therest.data.converter.ConverterInfo;
 
-	Map<String, ActionLink> toRest();
+public class SpiderToRestConverterFactoryTest {
+
+	@Test
+	public void testFactorForDataGroup() {
+		SpiderDataGroup spiderDataGroup = SpiderDataGroup.withNameInData("someDataGroup");
+		ConverterInfo converterInfo = ConverterInfo.withBaseURLAndRecordURL("someBaseUrl",
+				"someRecordUrl");
+		SpiderToRestConverterFactory factory = new SpiderToRestConverterFactoryImp();
+		SpiderToRestConverter converter = factory
+				.factorForSpiderDataGroupWithConverterInfo(spiderDataGroup, converterInfo);
+
+		assertTrue(converter instanceof DataGroupSpiderToRestConverter);
+	}
 
 }

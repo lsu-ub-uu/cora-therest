@@ -113,7 +113,7 @@ public final class DataRecordLinkSpiderToRestConverter {
 	}
 
 	private void createRestLinks(String recordType, String recordId) {
-		ActionSpiderToRestConverter actionSpiderToRestConverter = ActionSpiderToRestConverter
+		ActionSpiderToRestConverter actionSpiderToRestConverter = ActionSpiderToRestConverterImp
 				.fromSpiderActionsWithBaseURLAndRecordTypeAndRecordId(
 						spiderDataRecordLink.getActions(), baseURL, recordType, recordId);
 		restDataRecordLink.setActionLinks(actionSpiderToRestConverter.toRest());

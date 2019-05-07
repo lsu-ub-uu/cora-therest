@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2016 Uppsala University Library
+ * Copyright 2015, 2016, 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -94,10 +94,25 @@ public final class DataRecordSpiderToRestConverter {
 	}
 
 	private void createRestLinks() {
-		ActionSpiderToRestConverter actionSpiderToRestConverter = ActionSpiderToRestConverter
-				.fromSpiderActionsWithBaseURLAndRecordTypeAndRecordId(spiderDataRecord.getActions(),
-						converterInfo, recordType, recordId);
+		ActionSpiderToRestConverter actionSpiderToRestConverter;
+		if ("recordType".equals(recordType)) {
+			actionSpiderToRestConverter = createConverterForLinksForRecordType();
+		} else {
+			actionSpiderToRestConverter = createConverterForLinks();
+		}
 		restDataRecord.setActionLinks(actionSpiderToRestConverter.toRest());
+	}
+
+	private ActionSpiderToRestConverter createConverterForLinksForRecordType() {
+		return ActionSpiderToRestConverterImp
+				.fromSpiderActionsWithBaseURLAndRecordTypeAndRecordIdAndDataGroup(
+						spiderDataRecord.getActions(), converterInfo, recordType, recordId,
+						spiderDataGroup);
+	}
+
+	private ActionSpiderToRestConverter createConverterForLinks() {
+		return ActionSpiderToRestConverterImp.fromSpiderActionsWithBaseURLAndRecordTypeAndRecordId(
+				spiderDataRecord.getActions(), converterInfo, recordType, recordId);
 	}
 
 	private boolean hasKeys() {
