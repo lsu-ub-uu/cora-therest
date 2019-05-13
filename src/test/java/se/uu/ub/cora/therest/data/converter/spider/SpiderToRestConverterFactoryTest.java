@@ -18,10 +18,15 @@
  */
 package se.uu.ub.cora.therest.data.converter.spider;
 
-import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertSame;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.spider.data.Action;
 import se.uu.ub.cora.spider.data.SpiderDataGroup;
 import se.uu.ub.cora.therest.data.converter.ConverterInfo;
 
@@ -30,13 +35,33 @@ public class SpiderToRestConverterFactoryTest {
 	@Test
 	public void testFactorForDataGroup() {
 		SpiderDataGroup spiderDataGroup = SpiderDataGroup.withNameInData("someDataGroup");
-		ConverterInfo converterInfo = ConverterInfo.withBaseURLAndRecordURL("someBaseUrl",
-				"someRecordUrl");
+		ConverterInfo converterInfo = ConverterInfo.withBaseURLAndRecordURLAndTypeAndId(
+				"someBaseUrl", "someRecordUrl", "someRecordType", "someRecordId");
 		SpiderToRestConverterFactory factory = new SpiderToRestConverterFactoryImp();
-		SpiderToRestConverter converter = factory
+		DataGroupSpiderToRestConverter converter = (DataGroupSpiderToRestConverter) factory
 				.factorForSpiderDataGroupWithConverterInfo(spiderDataGroup, converterInfo);
 
-		assertTrue(converter instanceof DataGroupSpiderToRestConverter);
+		assertEquals(converter.convertInfo.baseURL, "someBaseUrl");
+		assertSame(converter.spiderDataGroup, spiderDataGroup);
+	}
+
+	@Test
+	public void testFactorForActions() {
+		List<Action> actions = new ArrayList<>();
+		Action action = Action.READ;
+		actions.add(action);
+
+		SpiderDataGroup spiderDataGroup = SpiderDataGroup.withNameInData("someDataGroup");
+		ConverterInfo converterInfo = ConverterInfo.withBaseURLAndRecordURLAndTypeAndId(
+				"someBaseUrl", "someRecordUrl", "someRecordType", "someRecordId");
+		SpiderToRestConverterFactory factory = new SpiderToRestConverterFactoryImp();
+		ActionSpiderToRestConverterImp converter = (ActionSpiderToRestConverterImp) factory
+				.factorForActionsUsingConverterInfoAndDataGroup(actions, converterInfo,
+						spiderDataGroup);
+
+		assertSame(converter.getDataGroup(), spiderDataGroup);
+		assertSame(converter.getConverterInfo(), converterInfo);
+		assertSame(converter.getActions(), actions);
 	}
 
 }

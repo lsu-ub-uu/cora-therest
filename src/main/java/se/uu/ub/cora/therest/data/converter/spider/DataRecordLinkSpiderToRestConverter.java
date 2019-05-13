@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -30,29 +30,29 @@ import se.uu.ub.cora.therest.data.converter.ConverterInfo;
 public final class DataRecordLinkSpiderToRestConverter {
 	private static final String LINKED_REPEAT_ID = "linkedRepeatId";
 	private SpiderDataRecordLink spiderDataRecordLink;
-	private ConverterInfo baseURL;
+	private ConverterInfo converterInfo;
 	private RestDataRecordLink restDataRecordLink;
 
 	private DataRecordLinkSpiderToRestConverter(SpiderDataRecordLink spiderDataRecordLink,
-			ConverterInfo baseURL2) {
+			ConverterInfo converterInfo) {
 		this.spiderDataRecordLink = spiderDataRecordLink;
-		this.baseURL = baseURL2;
+		this.converterInfo = converterInfo;
 	}
 
-	public static DataRecordLinkSpiderToRestConverter fromSpiderDataRecordLinkWithBaseURL(
-			SpiderDataRecordLink spiderDataRecordLink, ConverterInfo baseURL2) {
-		return new DataRecordLinkSpiderToRestConverter(spiderDataRecordLink, baseURL2);
+	public static DataRecordLinkSpiderToRestConverter fromSpiderDataRecordLinkWithConverterInfo(
+			SpiderDataRecordLink spiderDataRecordLink, ConverterInfo converterInfo) {
+		return new DataRecordLinkSpiderToRestConverter(spiderDataRecordLink, converterInfo);
 	}
 
 	public RestDataRecordLink toRest() {
 		createDataRestRecordLinkSetNameInData();
-		
+
 		RestDataAtomic restLinkedRecordType = addLinkedRecordTypeToRestDataRecordLink();
 		RestDataAtomic restLinkedRecordId = addLinkedRecordIdToRestDataRecordLink();
 
 		restDataRecordLink.setRepeatId(spiderDataRecordLink.getRepeatId());
 		restDataRecordLink.getAttributes().putAll(spiderDataRecordLink.getAttributes());
-		
+
 		addLinkedRepeatIdIfItExists();
 		addLinkedPathIfItExists();
 		createRestLinks(restLinkedRecordType.getValue(), restLinkedRecordId.getValue());
@@ -67,34 +67,32 @@ public final class DataRecordLinkSpiderToRestConverter {
 	private RestDataAtomic addLinkedRecordTypeToRestDataRecordLink() {
 		return createAndAddRestAtomicChildWithNameInData("linkedRecordType");
 	}
-	
+
 	private RestDataAtomic createAndAddRestAtomicChildWithNameInData(String nameInData) {
 		RestDataAtomic restLinkedRecordId = createRestDataAtomicFromSpiderDataAtomic(nameInData);
 		restDataRecordLink.addChild(restLinkedRecordId);
 		return restLinkedRecordId;
 	}
-	
+
 	private RestDataAtomic createRestDataAtomicFromSpiderDataAtomic(String nameInData) {
-		SpiderDataAtomic linkedRecordId = 
-				getAtomicChildFromSpiderDataRecordLinkByNameInData(nameInData);
-		return RestDataAtomic.withNameInDataAndValue(nameInData,
-				linkedRecordId.getValue());
+		SpiderDataAtomic linkedRecordId = getAtomicChildFromSpiderDataRecordLinkByNameInData(
+				nameInData);
+		return RestDataAtomic.withNameInDataAndValue(nameInData, linkedRecordId.getValue());
 	}
-	
+
 	private SpiderDataAtomic getAtomicChildFromSpiderDataRecordLinkByNameInData(String nameInData) {
-		return (SpiderDataAtomic) spiderDataRecordLink
-				.getFirstChildWithNameInData(nameInData);
+		return (SpiderDataAtomic) spiderDataRecordLink.getFirstChildWithNameInData(nameInData);
 	}
 
 	private RestDataAtomic addLinkedRecordIdToRestDataRecordLink() {
 		return createAndAddRestAtomicChildWithNameInData("linkedRecordId");
 	}
-	
+
 	private void addLinkedRepeatIdIfItExists() {
 		if (spiderDataRecordLink.containsChildWithNameInData(LINKED_REPEAT_ID)) {
 
-			RestDataAtomic restLinkedRepeatId = 
-					createRestDataAtomicFromSpiderDataAtomic(LINKED_REPEAT_ID);
+			RestDataAtomic restLinkedRepeatId = createRestDataAtomicFromSpiderDataAtomic(
+					LINKED_REPEAT_ID);
 
 			restDataRecordLink.addChild(restLinkedRepeatId);
 		}
@@ -105,7 +103,8 @@ public final class DataRecordLinkSpiderToRestConverter {
 			SpiderDataGroup spiderLinkedPath = (SpiderDataGroup) spiderDataRecordLink
 					.getFirstChildWithNameInData("linkedPath");
 			DataGroupSpiderToRestConverter dataGroupSpiderToRestConverter = DataGroupSpiderToRestConverter
-					.fromSpiderDataGroupWithBaseURL(spiderLinkedPath, baseURL);
+					.fromSpiderDataGroupWithDataGroupAndConverterInfo(spiderLinkedPath,
+							converterInfo);
 			RestDataGroup restLinkedPath = dataGroupSpiderToRestConverter.toRest();
 
 			restDataRecordLink.addChild(restLinkedPath);
@@ -114,8 +113,8 @@ public final class DataRecordLinkSpiderToRestConverter {
 
 	private void createRestLinks(String recordType, String recordId) {
 		ActionSpiderToRestConverter actionSpiderToRestConverter = ActionSpiderToRestConverterImp
-				.fromSpiderActionsWithBaseURLAndRecordTypeAndRecordId(
-						spiderDataRecordLink.getActions(), baseURL, recordType, recordId);
+				.fromSpiderActionsWithConverterInfo(spiderDataRecordLink.getActions(),
+						converterInfo);
 		restDataRecordLink.setActionLinks(actionSpiderToRestConverter.toRest());
 	}
 }

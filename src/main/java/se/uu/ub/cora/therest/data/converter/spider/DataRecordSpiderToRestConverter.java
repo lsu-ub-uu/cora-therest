@@ -35,15 +35,19 @@ public final class DataRecordSpiderToRestConverter {
 	private String recordId;
 	private String recordType;
 	private ConverterInfo converterInfo;
+	private SpiderToRestConverterFactory converterFactory;
 
-	public static DataRecordSpiderToRestConverter fromSpiderDataRecordWithBaseURL(
-			SpiderDataRecord spiderDataRecord, String url) {
-		return new DataRecordSpiderToRestConverter(spiderDataRecord, url);
+	public static DataRecordSpiderToRestConverter fromSpiderDataRecordWithBaseURLAndConverterFactory(
+			SpiderDataRecord spiderDataRecord, String url,
+			SpiderToRestConverterFactory converterFactory) {
+		return new DataRecordSpiderToRestConverter(spiderDataRecord, url, converterFactory);
 	}
 
-	private DataRecordSpiderToRestConverter(SpiderDataRecord spiderDataRecord, String url) {
+	private DataRecordSpiderToRestConverter(SpiderDataRecord spiderDataRecord, String url,
+			SpiderToRestConverterFactory converterFactory) {
 		this.spiderDataRecord = spiderDataRecord;
 		this.baseURL = url;
+		this.converterFactory = converterFactory;
 	}
 
 	public RestDataRecord toRest() {
@@ -79,12 +83,13 @@ public final class DataRecordSpiderToRestConverter {
 
 	private void createConverterInfo() {
 		String recordURL = baseURL + String.join("/", recordType, recordId);
-		converterInfo = ConverterInfo.withBaseURLAndRecordURL(baseURL, recordURL);
+		converterInfo = ConverterInfo.withBaseURLAndRecordURLAndTypeAndId(baseURL, recordURL,
+				recordType, recordId);
 	}
 
 	private void convertToRestRecord() {
-		DataGroupSpiderToRestConverter dataGroupSpiderToRestConverter = DataGroupSpiderToRestConverter
-				.fromSpiderDataGroupWithBaseURL(spiderDataGroup, converterInfo);
+		SpiderToRestConverter dataGroupSpiderToRestConverter = converterFactory
+				.factorForSpiderDataGroupWithConverterInfo(spiderDataGroup, converterInfo);
 		RestDataGroup restDataGroup = dataGroupSpiderToRestConverter.toRest();
 		restDataRecord = RestDataRecord.withRestDataGroup(restDataGroup);
 	}
@@ -94,26 +99,28 @@ public final class DataRecordSpiderToRestConverter {
 	}
 
 	private void createRestLinks() {
-		ActionSpiderToRestConverter actionSpiderToRestConverter;
-		if ("recordType".equals(recordType)) {
-			actionSpiderToRestConverter = createConverterForLinksForRecordType();
-		} else {
-			actionSpiderToRestConverter = createConverterForLinks();
-		}
+		ActionSpiderToRestConverter actionSpiderToRestConverter = converterFactory
+				.factorForActionsUsingConverterInfoAndDataGroup(spiderDataRecord.getActions(),
+						converterInfo, spiderDataGroup);
+
+		// ActionSpiderToRestConverter actionSpiderToRestConverter;
+		// if ("recordType".equals(recordType)) {
+		// actionSpiderToRestConverter = createConverterForLinksForRecordType();
+		// } else {
+		// actionSpiderToRestConverter = createConverterForLinks();
+		// }
 		restDataRecord.setActionLinks(actionSpiderToRestConverter.toRest());
 	}
 
-	private ActionSpiderToRestConverter createConverterForLinksForRecordType() {
-		return ActionSpiderToRestConverterImp
-				.fromSpiderActionsWithBaseURLAndRecordTypeAndRecordIdAndDataGroup(
-						spiderDataRecord.getActions(), converterInfo, recordType, recordId,
-						spiderDataGroup);
-	}
-
-	private ActionSpiderToRestConverter createConverterForLinks() {
-		return ActionSpiderToRestConverterImp.fromSpiderActionsWithBaseURLAndRecordTypeAndRecordId(
-				spiderDataRecord.getActions(), converterInfo, recordType, recordId);
-	}
+	// private ActionSpiderToRestConverter createConverterForLinksForRecordType() {
+	// return ActionSpiderToRestConverterImp.fromSpiderActionsWithConverterInfoAndDataGroup(
+	// spiderDataRecord.getActions(), converterInfo, spiderDataGroup);
+	// }
+	//
+	// private ActionSpiderToRestConverter createConverterForLinks() {
+	// return ActionSpiderToRestConverterImp
+	// .fromSpiderActionsWithConverterInfo(spiderDataRecord.getActions(), converterInfo);
+	// }
 
 	private boolean hasKeys() {
 		return !spiderDataRecord.getKeys().isEmpty();

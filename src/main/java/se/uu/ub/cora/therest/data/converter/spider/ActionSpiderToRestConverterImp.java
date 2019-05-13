@@ -32,6 +32,7 @@ import se.uu.ub.cora.therest.data.converter.ConverterInfo;
 
 public final class ActionSpiderToRestConverterImp implements ActionSpiderToRestConverter {
 
+	private static final String RECORD_TYPE = "recordType";
 	private static final String APPLICATION_UUB_RECORD_LIST_JSON = "application/vnd.uub.recordList+json";
 	private static final String APPLICATION_UUB_RECORD_JSON = "application/vnd.uub.record+json";
 	private ConverterInfo converterInfo;
@@ -40,100 +41,113 @@ public final class ActionSpiderToRestConverterImp implements ActionSpiderToRestC
 	private String recordId;
 	private SpiderDataGroup dataGroup;
 
-	private ActionSpiderToRestConverterImp(List<Action> actions, ConverterInfo converterInfo,
-			String recordType, String recordId) {
+	public ActionSpiderToRestConverterImp(List<Action> actions, ConverterInfo converterInfo) {
 		this.actions = actions;
 		this.converterInfo = converterInfo;
-		this.recordType = recordType;
-		this.recordId = recordId;
 	}
 
 	public ActionSpiderToRestConverterImp(List<Action> actions, ConverterInfo converterInfo,
-			String recordType, String recordId, SpiderDataGroup dataGroup) {
+			SpiderDataGroup dataGroup) {
 		this.actions = actions;
 		this.converterInfo = converterInfo;
-		this.recordType = recordType;
-		this.recordId = recordId;
 		this.dataGroup = dataGroup;
 	}
 
-	public static ActionSpiderToRestConverter fromSpiderActionsWithBaseURLAndRecordTypeAndRecordId(
-			List<Action> actions, ConverterInfo converterInfo, String recordType, String recordId) {
-		return new ActionSpiderToRestConverterImp(actions, converterInfo, recordType, recordId);
+	public static ActionSpiderToRestConverter fromSpiderActionsWithConverterInfo(
+			List<Action> actions, ConverterInfo converterInfo) {
+		return new ActionSpiderToRestConverterImp(actions, converterInfo);
 	}
 
-	public static ActionSpiderToRestConverter fromSpiderActionsWithBaseURLAndRecordTypeAndRecordIdAndDataGroup(
-			List<Action> actions, ConverterInfo converterInfo, String recordType, String recordId,
-			SpiderDataGroup dataGroup) {
-		return new ActionSpiderToRestConverterImp(actions, converterInfo, recordType, recordId,
-				dataGroup);
+	public static ActionSpiderToRestConverter fromSpiderActionsWithConverterInfoAndDataGroup(
+			List<Action> actions, ConverterInfo converterInfo, SpiderDataGroup dataGroup) {
+		return new ActionSpiderToRestConverterImp(actions, converterInfo, dataGroup);
 	}
 
 	@Override
 	public Map<String, ActionLink> toRest() {
+		recordType = converterInfo.recordType;
+		recordId = converterInfo.recordId;
 		Map<String, ActionLink> actionLinks = new LinkedHashMap<>();
 		for (Action action : actions) {
-			String url = converterInfo.baseURL + recordType + "/";
-			String urlWithRecordId = url + recordId;
-			String urlForRecordTypeActions = converterInfo.baseURL + recordId + "/";
-			ActionLink actionLink = ActionLink.withAction(action);
-
-			if (Action.READ.equals(action)) {
-				actionLink.setRequestMethod("GET");
-				actionLink.setURL(urlWithRecordId);
-				actionLink.setAccept(APPLICATION_UUB_RECORD_JSON);
-			} else if (Action.UPDATE.equals(action)) {
-				setUpPostForSingleRecord(actionLink);
-				actionLink.setURL(urlWithRecordId);
-			} else if (Action.READ_INCOMING_LINKS.equals(action)) {
-				actionLink.setRequestMethod("GET");
-				urlWithRecordId = urlWithRecordId + "/incomingLinks";
-				actionLink.setURL(urlWithRecordId);
-				actionLink.setAccept(APPLICATION_UUB_RECORD_LIST_JSON);
-			} else if (Action.DELETE.equals(action)) {
-				actionLink.setRequestMethod("DELETE");
-				actionLink.setURL(urlWithRecordId);
-			} else if (Action.CREATE.equals(action)) {
-				actionLink.setRequestMethod("POST");
-				actionLink.setURL(urlForRecordTypeActions);
-				actionLink.setAccept(APPLICATION_UUB_RECORD_JSON);
-				actionLink.setContentType(APPLICATION_UUB_RECORD_JSON);
-			} else if (Action.UPLOAD.equals(action)) {
-				actionLink.setRequestMethod("POST");
-				actionLink.setURL(urlWithRecordId + "/master");
-				actionLink.setContentType("multipart/form-data");
-			} else if (Action.SEARCH.equals(action)) {
-				setUpActionLinkForSearch(actionLink);
-			} else if (Action.INDEX.equals(action)) {
-				setUpActionLinkForIndexAction(actionLink);
-			} else if (Action.VALIDATE.equals(action)) {
-				actionLink.setRequestMethod("POST");
-				actionLink.setURL(converterInfo.baseURL + "workOrder/");
-				actionLink.setAccept(APPLICATION_UUB_RECORD_JSON);
-				actionLink.setContentType("application/vnd.uub.workorder+json");
-			} else {
-				// list / search
-				actionLink.setRequestMethod("GET");
-				actionLink.setURL(urlForRecordTypeActions);
-				actionLink.setAccept(APPLICATION_UUB_RECORD_LIST_JSON);
-			}
-
-			actionLinks.put(action.name().toLowerCase(), actionLink);
+			actionToRest(actionLinks, action);
 		}
 		return actionLinks;
 	}
 
-	private void setUpActionLinkForSearch(ActionLink actionLink) {
-		String searchId = recordId;
-		if ("recordType".equals(recordType)) {
-			if (dataGroup != null && dataGroup.containsChildWithNameInData("search")) {
-				SpiderDataGroup searchGroup = dataGroup.extractGroup("search");
-				searchId = searchGroup.extractAtomicValue("linkedRecordId");
-			}
+	private void actionToRest(Map<String, ActionLink> actionLinks, Action action) {
+		String url = converterInfo.baseURL + recordType + "/";
+		String urlWithRecordId = url + recordId;
+		String urlForRecordTypeActions = converterInfo.baseURL + recordId + "/";
+		ActionLink actionLink = ActionLink.withAction(action);
+
+		if (Action.READ.equals(action)) {
+			actionLink.setRequestMethod("GET");
+			actionLink.setURL(urlWithRecordId);
+			actionLink.setAccept(APPLICATION_UUB_RECORD_JSON);
+		} else if (Action.UPDATE.equals(action)) {
+			setUpPostForSingleRecord(actionLink);
+			actionLink.setURL(urlWithRecordId);
+		} else if (Action.READ_INCOMING_LINKS.equals(action)) {
+			actionLink.setRequestMethod("GET");
+			urlWithRecordId = urlWithRecordId + "/incomingLinks";
+			actionLink.setURL(urlWithRecordId);
+			actionLink.setAccept(APPLICATION_UUB_RECORD_LIST_JSON);
+		} else if (Action.DELETE.equals(action)) {
+			actionLink.setRequestMethod("DELETE");
+			actionLink.setURL(urlWithRecordId);
+		} else if (Action.CREATE.equals(action)) {
+			actionLink.setRequestMethod("POST");
+			actionLink.setURL(urlForRecordTypeActions);
+			actionLink.setAccept(APPLICATION_UUB_RECORD_JSON);
+			actionLink.setContentType(APPLICATION_UUB_RECORD_JSON);
+		} else if (Action.UPLOAD.equals(action)) {
+			actionLink.setRequestMethod("POST");
+			actionLink.setURL(urlWithRecordId + "/master");
+			actionLink.setContentType("multipart/form-data");
+		} else if (Action.SEARCH.equals(action)) {
+			setUpActionLinkForSearch(actionLink);
+		} else if (Action.INDEX.equals(action)) {
+			setUpActionLinkForIndexAction(actionLink);
+		} else if (Action.VALIDATE.equals(action)) {
+			actionLink.setRequestMethod("POST");
+			actionLink.setURL(converterInfo.baseURL + "workOrder/");
+			actionLink.setAccept(APPLICATION_UUB_RECORD_JSON);
+			actionLink.setContentType("application/vnd.uub.workorder+json");
+		} else {
+			// list / search
+			actionLink.setRequestMethod("GET");
+			actionLink.setURL(urlForRecordTypeActions);
+			actionLink.setAccept(APPLICATION_UUB_RECORD_LIST_JSON);
 		}
+
+		actionLinks.put(action.name().toLowerCase(), actionLink);
+	}
+
+	private void setUpActionLinkForSearch(ActionLink actionLink) {
+		String searchId = getSearchId();
 		actionLink.setRequestMethod("GET");
 		actionLink.setURL(converterInfo.baseURL + "searchResult/" + searchId);
 		actionLink.setAccept(APPLICATION_UUB_RECORD_LIST_JSON);
+	}
+
+	private String getSearchId() {
+		String searchId = recordId;
+		if (RECORD_TYPE.equals(recordType)) {
+			searchId = getSearchIdIfPresentInMetadata(searchId);
+		}
+		return searchId;
+	}
+
+	private String getSearchIdIfPresentInMetadata(String searchId) {
+		if (metadataContainsSearch()) {
+			SpiderDataGroup searchGroup = dataGroup.extractGroup("search");
+			return searchGroup.extractAtomicValue("linkedRecordId");
+		}
+		return searchId;
+	}
+
+	private boolean metadataContainsSearch() {
+		return dataGroup != null && dataGroup.containsChildWithNameInData("search");
 	}
 
 	private void setUpPostForSingleRecord(ActionLink actionLink) {
@@ -154,9 +168,9 @@ public final class ActionSpiderToRestConverterImp implements ActionSpiderToRestC
 	private RestDataGroup createDataGroupForBody() {
 		RestDataGroup body = RestDataGroup.withNameInData("workOrder");
 
-		RestDataGroup recordTypeGroup = RestDataGroup.withNameInData("recordType");
+		RestDataGroup recordTypeGroup = RestDataGroup.withNameInData(RECORD_TYPE);
 		recordTypeGroup
-				.addChild(RestDataAtomic.withNameInDataAndValue("linkedRecordType", "recordType"));
+				.addChild(RestDataAtomic.withNameInDataAndValue("linkedRecordType", RECORD_TYPE));
 		recordTypeGroup
 				.addChild(RestDataAtomic.withNameInDataAndValue("linkedRecordId", recordType));
 		body.addChild(recordTypeGroup);
@@ -168,6 +182,14 @@ public final class ActionSpiderToRestConverterImp implements ActionSpiderToRestC
 	public SpiderDataGroup getDataGroup() {
 		// needed for test
 		return dataGroup;
+	}
+
+	protected ConverterInfo getConverterInfo() {
+		return converterInfo;
+	}
+
+	public List<Action> getActions() {
+		return actions;
 	}
 
 }

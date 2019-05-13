@@ -18,26 +18,41 @@
  */
 package se.uu.ub.cora.therest.data.converter.spider;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import se.uu.ub.cora.spider.data.Action;
 import se.uu.ub.cora.spider.data.SpiderDataGroup;
 import se.uu.ub.cora.therest.data.converter.ConverterInfo;
 
-public class SpiderToRestConverterFactoryImp implements SpiderToRestConverterFactory {
+public class SpiderToRestConverterFactorySpy implements SpiderToRestConverterFactory {
+
+	public List<SpiderDataGroup> dataGroups = new ArrayList<>();
+	public List<Action> addedActions = new ArrayList<>();
+	public List<ConverterInfo> converterInfos = new ArrayList<>();
+	public List<SpiderToRestConverterSpy> factoredSpiderToRestConverters = new ArrayList<>();
+	public List<ActionSpiderToRestConverterSpy> factoredActionsToRestConverters = new ArrayList<>();
 
 	@Override
 	public SpiderToRestConverter factorForSpiderDataGroupWithConverterInfo(
 			SpiderDataGroup spiderDataGroup, ConverterInfo converterInfo) {
-		return DataGroupSpiderToRestConverter
-				.fromSpiderDataGroupWithDataGroupAndConverterInfo(spiderDataGroup, converterInfo);
+		dataGroups.add(spiderDataGroup);
+		converterInfos.add(converterInfo);
+		SpiderToRestConverterSpy converter = new SpiderToRestConverterSpy();
+		factoredSpiderToRestConverters.add(converter);
+
+		return converter;
 	}
 
 	@Override
 	public ActionSpiderToRestConverter factorForActionsUsingConverterInfoAndDataGroup(
 			List<Action> actions, ConverterInfo converterInfo, SpiderDataGroup spiderDataGroup) {
-		return ActionSpiderToRestConverterImp.fromSpiderActionsWithConverterInfoAndDataGroup(
-				actions, converterInfo, spiderDataGroup);
+		addedActions.addAll(actions);
+		dataGroups.add(spiderDataGroup);
+		converterInfos.add(converterInfo);
+		ActionSpiderToRestConverterSpy converter = new ActionSpiderToRestConverterSpy();
+		factoredActionsToRestConverters.add(converter);
+		return converter;
 	}
 
 }

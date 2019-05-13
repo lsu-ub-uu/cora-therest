@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Uppsala University Library
+ * Copyright 2016, 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -27,12 +27,16 @@ public class ConverterInfoTest {
 	private ConverterInfo converterInfo;
 
 	@Test
-	public void testURLs() {
+	public void testCompleteConverterInfoURLs() {
 		String baseURL = "baseURL";
 		String recordURL = "recordURL";
-
-		converterInfo = ConverterInfo.withBaseURLAndRecordURL(baseURL, recordURL);
+		String recordType = "someType";
+		String recordId = "someId";
+		converterInfo = ConverterInfo.withBaseURLAndRecordURLAndTypeAndId(baseURL, recordURL,
+				recordType, recordId);
 		assertEquals(converterInfo.baseURL, "baseURL");
 		assertEquals(converterInfo.recordURL, "recordURL");
+		assertEquals(converterInfo.recordType, recordType);
+		assertEquals(converterInfo.recordId, recordId);
 	}
 }

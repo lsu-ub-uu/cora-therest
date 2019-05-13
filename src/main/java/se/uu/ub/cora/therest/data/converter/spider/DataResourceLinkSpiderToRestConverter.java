@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2016 Uppsala University Library
+ * Copyright 2015, 2016, 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -33,7 +33,7 @@ public final class DataResourceLinkSpiderToRestConverter extends DataGroupSpider
 	private SpiderDataResourceLink spiderDataResourceLink;
 	private RestDataResourceLink restDataResourceLink;
 
-	public static DataResourceLinkSpiderToRestConverter fromSpiderDataResourceLinkWithBaseURL(
+	public static DataResourceLinkSpiderToRestConverter fromSpiderDataResourceLinkWithConverterInfo(
 			SpiderDataResourceLink spiderDataResourceLink, ConverterInfo converterInfo) {
 		return new DataResourceLinkSpiderToRestConverter(spiderDataResourceLink, converterInfo);
 	}

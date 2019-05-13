@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -40,11 +40,12 @@ public class DataGroupSpiderToRestConverter implements SpiderToRestConverter {
 		this.convertInfo = converterInfo;
 	}
 
-	public static DataGroupSpiderToRestConverter fromSpiderDataGroupWithBaseURL(
-			SpiderDataGroup spiderDataGroup, ConverterInfo baseURL) {
-		return new DataGroupSpiderToRestConverter(spiderDataGroup, baseURL);
+	public static DataGroupSpiderToRestConverter fromSpiderDataGroupWithDataGroupAndConverterInfo(
+			SpiderDataGroup spiderDataGroup, ConverterInfo converterInfo) {
+		return new DataGroupSpiderToRestConverter(spiderDataGroup, converterInfo);
 	}
 
+	@Override
 	public RestDataGroup toRest() {
 		restDataGroup = createNewRest();
 		restDataGroup.getAttributes().putAll(spiderDataGroup.getAttributes());
@@ -67,15 +68,15 @@ public class DataGroupSpiderToRestConverter implements SpiderToRestConverter {
 	private RestDataElement convertToElementEquivalentDataClass(
 			SpiderDataElement spiderDataElement) {
 		if (spiderDataElement instanceof SpiderDataRecordLink) {
-			return DataRecordLinkSpiderToRestConverter.fromSpiderDataRecordLinkWithBaseURL(
+			return DataRecordLinkSpiderToRestConverter.fromSpiderDataRecordLinkWithConverterInfo(
 					(SpiderDataRecordLink) spiderDataElement, convertInfo).toRest();
 		}
 		if (spiderDataElement instanceof SpiderDataResourceLink) {
-			return DataResourceLinkSpiderToRestConverter.fromSpiderDataResourceLinkWithBaseURL(
+			return DataResourceLinkSpiderToRestConverter.fromSpiderDataResourceLinkWithConverterInfo(
 					(SpiderDataResourceLink) spiderDataElement, convertInfo).toRest();
 		}
 		if (spiderDataElement instanceof SpiderDataGroup) {
-			return DataGroupSpiderToRestConverter.fromSpiderDataGroupWithBaseURL(
+			return DataGroupSpiderToRestConverter.fromSpiderDataGroupWithDataGroupAndConverterInfo(
 					(SpiderDataGroup) spiderDataElement, convertInfo).toRest();
 		}
 		return DataAtomicSpiderToRestConverter

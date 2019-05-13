@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -19,8 +19,12 @@
 
 package se.uu.ub.cora.therest.data.converter.spider;
 
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
 import se.uu.ub.cora.spider.data.Action;
 import se.uu.ub.cora.spider.data.SpiderDataAtomic;
 import se.uu.ub.cora.spider.data.SpiderDataGroup;
@@ -31,13 +35,11 @@ import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.RestDataRecordLink;
 import se.uu.ub.cora.therest.data.converter.ConverterInfo;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
-
 public class DataRecordLinkSpiderToRestConverterTest {
-	private ConverterInfo converterInfo = ConverterInfo.withBaseURLAndRecordURL(
+	private ConverterInfo converterInfo = ConverterInfo.withBaseURLAndRecordURLAndTypeAndId(
 			"http://localhost:8080/therest/rest/record/",
-			"http://localhost:8080/therest/rest/record/someRecordType/someRecordId");
+			"http://localhost:8080/therest/rest/record/someRecordType/someRecordId",
+			"someRecordType", "someRecordId");
 
 	private SpiderDataRecordLink spiderDataRecordLink;
 	private DataRecordLinkSpiderToRestConverter dataRecordLinkSpiderToRestConverter;
@@ -55,7 +57,7 @@ public class DataRecordLinkSpiderToRestConverterTest {
 		spiderDataRecordLink.addChild(linkedRecordId);
 
 		dataRecordLinkSpiderToRestConverter = DataRecordLinkSpiderToRestConverter
-				.fromSpiderDataRecordLinkWithBaseURL(spiderDataRecordLink, converterInfo);
+				.fromSpiderDataRecordLinkWithConverterInfo(spiderDataRecordLink, converterInfo);
 
 	}
 
@@ -73,13 +75,13 @@ public class DataRecordLinkSpiderToRestConverterTest {
 		assertEquals(linkedRecordId.getValue(), "linkedRecordId");
 		assertFalse(restDataRecordLink.containsChildWithNameInData("linkedPath"));
 	}
-	
+
 	@Test
 	public void testToRestWithAttributes() {
 		spiderDataRecordLink.addAttributeByIdWithValue("attributeNameInData", "attributeValue");
 
 		RestDataRecordLink restDataRecordLink = dataRecordLinkSpiderToRestConverter.toRest();
-			
+
 		String attributeId = restDataRecordLink.getAttributes().keySet().iterator().next();
 		String attributeValue = restDataRecordLink.getAttributes().get(attributeId);
 		assertEquals(attributeValue, "attributeValue");
@@ -125,6 +127,13 @@ public class DataRecordLinkSpiderToRestConverterTest {
 
 	@Test
 	public void testToRestWithAction() {
+		converterInfo = ConverterInfo.withBaseURLAndRecordURLAndTypeAndId(
+				"http://localhost:8080/therest/rest/record/",
+				"http://localhost:8080/therest/rest/record/linkedRecordType/linkedRecordId",
+				"linkedRecordType", "linkedRecordId");
+		dataRecordLinkSpiderToRestConverter = DataRecordLinkSpiderToRestConverter
+				.fromSpiderDataRecordLinkWithConverterInfo(spiderDataRecordLink, converterInfo);
+
 		spiderDataRecordLink.addAction(Action.READ);
 		RestDataRecordLink restDataRecordLink = dataRecordLinkSpiderToRestConverter.toRest();
 		assertEquals(restDataRecordLink.getNameInData(), "nameInData");
