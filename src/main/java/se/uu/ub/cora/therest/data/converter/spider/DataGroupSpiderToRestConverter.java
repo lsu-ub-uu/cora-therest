@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -19,12 +19,16 @@
 
 package se.uu.ub.cora.therest.data.converter.spider;
 
-import se.uu.ub.cora.spider.data.*;
+import se.uu.ub.cora.spider.data.SpiderDataAtomic;
+import se.uu.ub.cora.spider.data.SpiderDataElement;
+import se.uu.ub.cora.spider.data.SpiderDataGroup;
+import se.uu.ub.cora.spider.data.SpiderDataRecordLink;
+import se.uu.ub.cora.spider.data.SpiderDataResourceLink;
 import se.uu.ub.cora.therest.data.RestDataElement;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.converter.ConverterInfo;
 
-public class DataGroupSpiderToRestConverter {
+public class DataGroupSpiderToRestConverter implements SpiderToRestConverter {
 
 	private RestDataGroup restDataGroup;
 	protected SpiderDataGroup spiderDataGroup;
@@ -36,11 +40,12 @@ public class DataGroupSpiderToRestConverter {
 		this.convertInfo = converterInfo;
 	}
 
-	public static DataGroupSpiderToRestConverter fromSpiderDataGroupWithBaseURL(
-			SpiderDataGroup spiderDataGroup, ConverterInfo baseURL) {
-		return new DataGroupSpiderToRestConverter(spiderDataGroup, baseURL);
+	public static DataGroupSpiderToRestConverter fromSpiderDataGroupWithDataGroupAndConverterInfo(
+			SpiderDataGroup spiderDataGroup, ConverterInfo converterInfo) {
+		return new DataGroupSpiderToRestConverter(spiderDataGroup, converterInfo);
 	}
 
+	@Override
 	public RestDataGroup toRest() {
 		restDataGroup = createNewRest();
 		restDataGroup.getAttributes().putAll(spiderDataGroup.getAttributes());
@@ -63,17 +68,16 @@ public class DataGroupSpiderToRestConverter {
 	private RestDataElement convertToElementEquivalentDataClass(
 			SpiderDataElement spiderDataElement) {
 		if (spiderDataElement instanceof SpiderDataRecordLink) {
-			return DataRecordLinkSpiderToRestConverter.fromSpiderDataRecordLinkWithBaseURL(
+			return DataRecordLinkSpiderToRestConverter.fromSpiderDataRecordLinkWithConverterInfo(
 					(SpiderDataRecordLink) spiderDataElement, convertInfo).toRest();
 		}
 		if (spiderDataElement instanceof SpiderDataResourceLink) {
-			return DataResourceLinkSpiderToRestConverter.fromSpiderDataResourceLinkWithBaseURL(
+			return DataResourceLinkSpiderToRestConverter.fromSpiderDataResourceLinkWithConverterInfo(
 					(SpiderDataResourceLink) spiderDataElement, convertInfo).toRest();
 		}
 		if (spiderDataElement instanceof SpiderDataGroup) {
-			return DataGroupSpiderToRestConverter
-					.fromSpiderDataGroupWithBaseURL((SpiderDataGroup) spiderDataElement, convertInfo)
-					.toRest();
+			return DataGroupSpiderToRestConverter.fromSpiderDataGroupWithDataGroupAndConverterInfo(
+					(SpiderDataGroup) spiderDataElement, convertInfo).toRest();
 		}
 		return DataAtomicSpiderToRestConverter
 				.fromSpiderDataAtomic((SpiderDataAtomic) spiderDataElement).toRest();

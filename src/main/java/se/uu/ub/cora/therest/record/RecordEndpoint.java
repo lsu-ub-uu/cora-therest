@@ -73,6 +73,8 @@ import se.uu.ub.cora.therest.data.converter.JsonToDataConverterFactoryImp;
 import se.uu.ub.cora.therest.data.converter.spider.DataGroupRestToSpiderConverter;
 import se.uu.ub.cora.therest.data.converter.spider.DataListSpiderToRestConverter;
 import se.uu.ub.cora.therest.data.converter.spider.DataRecordSpiderToRestConverter;
+import se.uu.ub.cora.therest.data.converter.spider.SpiderToRestConverterFactory;
+import se.uu.ub.cora.therest.data.converter.spider.SpiderToRestConverterFactoryImp;
 
 @Path("record")
 public class RecordEndpoint {
@@ -173,9 +175,9 @@ public class RecordEndpoint {
 	}
 
 	private RestDataRecord convertSpiderDataRecordToRestDataRecord(SpiderDataRecord record) {
-
+		SpiderToRestConverterFactory converterFactory = new SpiderToRestConverterFactoryImp();
 		DataRecordSpiderToRestConverter converter = DataRecordSpiderToRestConverter
-				.fromSpiderDataRecordWithBaseURL(record, url);
+				.fromSpiderDataRecordWithBaseURLAndConverterFactory(record, url, converterFactory);
 		return converter.toRest();
 	}
 

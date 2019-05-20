@@ -18,12 +18,10 @@
  */
 package se.uu.ub.cora.therest.data.converter.spider;
 
-import java.util.Map;
+import se.uu.ub.cora.therest.data.RestDataGroup;
 
-import se.uu.ub.cora.therest.data.ActionLink;
+public interface SpiderToRestConverter {
 
-public interface ActionSpiderToRestConverter {
-
-	Map<String, ActionLink> toRest();
+	RestDataGroup toRest();
 
 }

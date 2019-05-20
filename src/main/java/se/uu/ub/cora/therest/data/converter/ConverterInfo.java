@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Uppsala University Library
+ * Copyright 2016, 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -23,14 +23,19 @@ public final class ConverterInfo {
 
 	public final String baseURL;
 	public final String recordURL;
+	public final String recordType;
+	public final String recordId;
 
-	public static ConverterInfo withBaseURLAndRecordURL(String baseURL, String recordURL) {
-		return new ConverterInfo(baseURL, recordURL);
-	}
-
-	private ConverterInfo(String baseURL, String recordURL) {
+	public ConverterInfo(String baseURL, String recordURL, String recordType, String recordId) {
 		this.baseURL = baseURL;
 		this.recordURL = recordURL;
+		this.recordType = recordType;
+		this.recordId = recordId;
+	}
+
+	public static ConverterInfo withBaseURLAndRecordURLAndTypeAndId(String baseURL,
+			String recordURL, String recordType, String recordId) {
+		return new ConverterInfo(baseURL, recordURL, recordType, recordId);
 	}
 
 }

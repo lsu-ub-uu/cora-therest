@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -66,15 +66,19 @@ public final class DataListSpiderToRestConverter {
 	}
 
 	private void convertSpiderRecordToRest(RestDataList restDataList, SpiderDataRecord spiderData) {
+		SpiderToRestConverterFactory converterFactory = new SpiderToRestConverterFactoryImp();
 		RestDataRecord restRecord = DataRecordSpiderToRestConverter
-				.fromSpiderDataRecordWithBaseURL(spiderData, baseURL).toRest();
+				.fromSpiderDataRecordWithBaseURLAndConverterFactory(spiderData, baseURL,
+						converterFactory)
+				.toRest();
 		restDataList.addData(restRecord);
 	}
 
 	private void convertSpiderGroupToRest(RestDataList restDataList, SpiderDataGroup spiderData) {
-		ConverterInfo converterInfo = ConverterInfo.withBaseURLAndRecordURL(baseURL, "");
+		ConverterInfo converterInfo = ConverterInfo.withBaseURLAndRecordURLAndTypeAndId(baseURL, "",
+				"", "");
 		RestDataGroup restGroup = DataGroupSpiderToRestConverter
-				.fromSpiderDataGroupWithBaseURL(spiderData, converterInfo)
+				.fromSpiderDataGroupWithDataGroupAndConverterInfo(spiderData, converterInfo)
 				.toRest();
 		restDataList.addData(restGroup);
 	}

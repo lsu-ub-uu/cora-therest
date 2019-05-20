@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -40,9 +40,10 @@ import se.uu.ub.cora.therest.data.converter.ConverterInfo;
 import se.uu.ub.cora.therest.testdata.DataCreator;
 
 public class DataGroupSpiderToRestConverterTest {
-	private ConverterInfo converterInfo = ConverterInfo.withBaseURLAndRecordURL(
+	private ConverterInfo converterInfo = ConverterInfo.withBaseURLAndRecordURLAndTypeAndId(
 			"http://localhost:8080/therest/rest/record/",
-			"http://localhost:8080/therest/rest/record/someRecordType/someRecordId");
+			"http://localhost:8080/therest/rest/record/someRecordType/someRecordId",
+			"someRecordType", "someRecordId");
 
 	private SpiderDataGroup spiderDataGroup;
 	private DataGroupSpiderToRestConverter dataGroupSpiderToRestConverter;
@@ -51,7 +52,7 @@ public class DataGroupSpiderToRestConverterTest {
 	public void beforeMethod() {
 		spiderDataGroup = SpiderDataGroup.withNameInData("nameInData");
 		dataGroupSpiderToRestConverter = DataGroupSpiderToRestConverter
-				.fromSpiderDataGroupWithBaseURL(spiderDataGroup, converterInfo);
+				.fromSpiderDataGroupWithDataGroupAndConverterInfo(spiderDataGroup, converterInfo);
 	}
 
 	@Test

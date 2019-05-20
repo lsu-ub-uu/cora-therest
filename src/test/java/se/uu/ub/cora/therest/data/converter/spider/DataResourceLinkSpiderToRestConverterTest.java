@@ -1,5 +1,5 @@
 /*
- * Copyright 2015,2016 Uppsala University Library
+ * Copyright 2015, 2016, 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -33,9 +33,9 @@ import se.uu.ub.cora.therest.data.RestDataResourceLink;
 import se.uu.ub.cora.therest.data.converter.ConverterInfo;
 
 public class DataResourceLinkSpiderToRestConverterTest {
-	private ConverterInfo converterInfo = ConverterInfo.withBaseURLAndRecordURL(
+	private ConverterInfo converterInfo = ConverterInfo.withBaseURLAndRecordURLAndTypeAndId(
 			"http://localhost:8080/therest/rest/record/",
-			"http://localhost:8080/therest/rest/record/image/someImageId");
+			"http://localhost:8080/therest/rest/record/image/someImageId", "image", "someImageId");
 	private SpiderDataResourceLink spiderDataResourceLink;
 	private DataResourceLinkSpiderToRestConverter dataResourceLinkSpiderToRestConverter;
 
@@ -49,7 +49,7 @@ public class DataResourceLinkSpiderToRestConverterTest {
 				.addChild(SpiderDataAtomic.withNameInDataAndValue("mimeType", "application/png"));
 
 		dataResourceLinkSpiderToRestConverter = DataResourceLinkSpiderToRestConverter
-				.fromSpiderDataResourceLinkWithBaseURL(spiderDataResourceLink, converterInfo);
+				.fromSpiderDataResourceLinkWithConverterInfo(spiderDataResourceLink, converterInfo);
 
 	}
 
