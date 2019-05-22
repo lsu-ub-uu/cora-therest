@@ -103,24 +103,8 @@ public final class DataRecordSpiderToRestConverter {
 				.factorForActionsUsingConverterInfoAndDataGroup(spiderDataRecord.getActions(),
 						converterInfo, spiderDataGroup);
 
-		// ActionSpiderToRestConverter actionSpiderToRestConverter;
-		// if ("recordType".equals(recordType)) {
-		// actionSpiderToRestConverter = createConverterForLinksForRecordType();
-		// } else {
-		// actionSpiderToRestConverter = createConverterForLinks();
-		// }
 		restDataRecord.setActionLinks(actionSpiderToRestConverter.toRest());
 	}
-
-	// private ActionSpiderToRestConverter createConverterForLinksForRecordType() {
-	// return ActionSpiderToRestConverterImp.fromSpiderActionsWithConverterInfoAndDataGroup(
-	// spiderDataRecord.getActions(), converterInfo, spiderDataGroup);
-	// }
-	//
-	// private ActionSpiderToRestConverter createConverterForLinks() {
-	// return ActionSpiderToRestConverterImp
-	// .fromSpiderActionsWithConverterInfo(spiderDataRecord.getActions(), converterInfo);
-	// }
 
 	private boolean hasKeys() {
 		return !spiderDataRecord.getKeys().isEmpty();

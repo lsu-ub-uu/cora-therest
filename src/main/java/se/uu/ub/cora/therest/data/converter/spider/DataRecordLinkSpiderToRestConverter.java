@@ -47,15 +47,15 @@ public final class DataRecordLinkSpiderToRestConverter {
 	public RestDataRecordLink toRest() {
 		createDataRestRecordLinkSetNameInData();
 
-		RestDataAtomic restLinkedRecordType = addLinkedRecordTypeToRestDataRecordLink();
-		RestDataAtomic restLinkedRecordId = addLinkedRecordIdToRestDataRecordLink();
+		addLinkedRecordTypeToRestDataRecordLink();
+		addLinkedRecordIdToRestDataRecordLink();
 
 		restDataRecordLink.setRepeatId(spiderDataRecordLink.getRepeatId());
 		restDataRecordLink.getAttributes().putAll(spiderDataRecordLink.getAttributes());
 
 		addLinkedRepeatIdIfItExists();
 		addLinkedPathIfItExists();
-		createRestLinks(restLinkedRecordType.getValue(), restLinkedRecordId.getValue());
+		createRestLinks();
 		return restDataRecordLink;
 	}
 
@@ -64,14 +64,13 @@ public final class DataRecordLinkSpiderToRestConverter {
 				.withNameInData(spiderDataRecordLink.getNameInData());
 	}
 
-	private RestDataAtomic addLinkedRecordTypeToRestDataRecordLink() {
-		return createAndAddRestAtomicChildWithNameInData("linkedRecordType");
+	private void addLinkedRecordTypeToRestDataRecordLink() {
+		createAndAddRestAtomicChildWithNameInData("linkedRecordType");
 	}
 
-	private RestDataAtomic createAndAddRestAtomicChildWithNameInData(String nameInData) {
+	private void createAndAddRestAtomicChildWithNameInData(String nameInData) {
 		RestDataAtomic restLinkedRecordId = createRestDataAtomicFromSpiderDataAtomic(nameInData);
 		restDataRecordLink.addChild(restLinkedRecordId);
-		return restLinkedRecordId;
 	}
 
 	private RestDataAtomic createRestDataAtomicFromSpiderDataAtomic(String nameInData) {
@@ -84,8 +83,8 @@ public final class DataRecordLinkSpiderToRestConverter {
 		return (SpiderDataAtomic) spiderDataRecordLink.getFirstChildWithNameInData(nameInData);
 	}
 
-	private RestDataAtomic addLinkedRecordIdToRestDataRecordLink() {
-		return createAndAddRestAtomicChildWithNameInData("linkedRecordId");
+	private void addLinkedRecordIdToRestDataRecordLink() {
+		createAndAddRestAtomicChildWithNameInData("linkedRecordId");
 	}
 
 	private void addLinkedRepeatIdIfItExists() {
@@ -111,7 +110,7 @@ public final class DataRecordLinkSpiderToRestConverter {
 		}
 	}
 
-	private void createRestLinks(String recordType, String recordId) {
+	private void createRestLinks() {
 		ActionSpiderToRestConverter actionSpiderToRestConverter = ActionSpiderToRestConverterImp
 				.fromSpiderActionsWithConverterInfo(spiderDataRecordLink.getActions(),
 						converterInfo);
