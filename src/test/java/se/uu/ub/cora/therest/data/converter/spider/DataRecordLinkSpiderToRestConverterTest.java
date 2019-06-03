@@ -127,10 +127,6 @@ public class DataRecordLinkSpiderToRestConverterTest {
 
 	@Test
 	public void testToRestWithAction() {
-		converterInfo = ConverterInfo.withBaseURLAndRecordURLAndTypeAndId(
-				"http://localhost:8080/therest/rest/record/",
-				"http://localhost:8080/therest/rest/record/linkedRecordType/linkedRecordId",
-				"linkedRecordType", "linkedRecordId");
 		dataRecordLinkSpiderToRestConverter = DataRecordLinkSpiderToRestConverter
 				.fromSpiderDataRecordLinkWithConverterInfo(spiderDataRecordLink, converterInfo);
 

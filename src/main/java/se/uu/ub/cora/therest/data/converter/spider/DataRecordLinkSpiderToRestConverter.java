@@ -111,9 +111,23 @@ public final class DataRecordLinkSpiderToRestConverter {
 	}
 
 	private void createRestLinks() {
+		ConverterInfo linkConverterInfo = createConverterInfoForLink();
 		ActionSpiderToRestConverter actionSpiderToRestConverter = ActionSpiderToRestConverterImp
 				.fromSpiderActionsWithConverterInfo(spiderDataRecordLink.getActions(),
-						converterInfo);
+						linkConverterInfo);
 		restDataRecordLink.setActionLinks(actionSpiderToRestConverter.toRest());
+	}
+
+	private ConverterInfo createConverterInfoForLink() {
+		String linkedRecordType = getAtomicValueFromRestLinkUsingNameInData("linkedRecordType");
+		String linkedRecordId = getAtomicValueFromRestLinkUsingNameInData("linkedRecordId");
+		return ConverterInfo.withBaseURLAndRecordURLAndTypeAndId(converterInfo.baseURL,
+				converterInfo.recordURL, linkedRecordType, linkedRecordId);
+	}
+
+	private String getAtomicValueFromRestLinkUsingNameInData(String nameInData) {
+		RestDataAtomic linkedRecordType = (RestDataAtomic) restDataRecordLink
+				.getFirstChildWithNameInData(nameInData);
+		return linkedRecordType.getValue();
 	}
 }
