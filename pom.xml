@@ -23,6 +23,8 @@
 	<name>The Rest</name>
 
 	<properties>
+		<logger.version>1.0.0</logger.version>
+		<storage.version>1.0-SNAPSHOT</storage.version>
 		<json.version>1.0.0</json.version>
 		<spider.version>1.2.0</spider.version>
 		<javax.ws.rs.version>2.1.1</javax.ws.rs.version>
@@ -57,6 +59,18 @@
 			<artifactId>testng</artifactId>
 			<version>${testng.version}</version>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>se.uu.ub.cora</groupId>
+			<artifactId>logger</artifactId>
+			<version>${logger.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>se.uu.ub.cora</groupId>
+			<artifactId>storage</artifactId>
+			<version>${storage.version}</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>se.uu.ub.cora</groupId>
