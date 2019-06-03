@@ -18,10 +18,14 @@
  */
 package se.uu.ub.cora.therest.initialize;
 
+import se.uu.ub.cora.storage.RecordIdGeneratorProvider;
 import se.uu.ub.cora.storage.RecordStorageProvider;
+import se.uu.ub.cora.storage.StreamStorageProvider;
 
 public class Providers {
 
 	public Iterable<RecordStorageProvider> recordStorageProviderImplementations;
+	public Iterable<StreamStorageProvider> streamStorageProviderImplementations;
+	public Iterable<RecordIdGeneratorProvider> recordIdGeneratorProviderImplementations;
 
 }

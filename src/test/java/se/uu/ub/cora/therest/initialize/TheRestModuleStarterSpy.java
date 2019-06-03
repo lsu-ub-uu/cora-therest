@@ -20,17 +20,23 @@ package se.uu.ub.cora.therest.initialize;
 
 import java.util.Map;
 
+import se.uu.ub.cora.storage.RecordIdGeneratorProvider;
 import se.uu.ub.cora.storage.RecordStorageProvider;
+import se.uu.ub.cora.storage.StreamStorageProvider;
 
 public class TheRestModuleStarterSpy implements TheRestModuleStarter {
 
 	boolean startWasCalled = false;
 	Map<String, String> initInfo;
 	public Iterable<RecordStorageProvider> recordStorageProviderImplementations;
+	public Iterable<StreamStorageProvider> streamStorageProviderImplementations;
+	public Iterable<RecordIdGeneratorProvider> recordIdGeneratorProviderImplementations;
 
 	@Override
 	public void startUsingInitInfoAndProviders(Map<String, String> initInfo, Providers providers) {
 		recordStorageProviderImplementations = providers.recordStorageProviderImplementations;
+		streamStorageProviderImplementations = providers.streamStorageProviderImplementations;
+		recordIdGeneratorProviderImplementations = providers.recordIdGeneratorProviderImplementations;
 		this.initInfo = initInfo;
 		startWasCalled = true;
 

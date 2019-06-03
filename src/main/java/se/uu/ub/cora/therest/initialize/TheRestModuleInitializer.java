@@ -1,5 +1,7 @@
 /*
  * Copyright 2019 Olov McKie
+ * Copyright 2019 Uppsala University Library
+ * 
  *
  * This file is part of Cora.
  *
@@ -29,7 +31,9 @@ import javax.servlet.annotation.WebListener;
 
 import se.uu.ub.cora.logger.Logger;
 import se.uu.ub.cora.logger.LoggerProvider;
+import se.uu.ub.cora.storage.RecordIdGeneratorProvider;
 import se.uu.ub.cora.storage.RecordStorageProvider;
+import se.uu.ub.cora.storage.StreamStorageProvider;
 
 @WebListener
 public class TheRestModuleInitializer implements ServletContextListener {
@@ -49,9 +53,29 @@ public class TheRestModuleInitializer implements ServletContextListener {
 		String simpleName = TheRestModuleInitializer.class.getSimpleName();
 		log.logInfoUsingMessage(simpleName + " starting...");
 		collectInitInformation();
-		collectRecordStorageProviderImplementationsAndAddToProviders();
+		ensuretheRestPublicPathToSystemExistsInInitInfo();
+		collectProviderImplementationsAndAddToProviders();
 		startTheRestStarter();
 		log.logInfoUsingMessage(simpleName + " started");
+	}
+
+	private void ensuretheRestPublicPathToSystemExistsInInitInfo() {
+		tryToGetInitParameter("theRestPublicPathToSystem");
+	}
+
+	private String tryToGetInitParameter(String parameterName) {
+		throwErrorIfKeyIsMissingFromInitInfo(parameterName);
+		String parameter = initInfo.get(parameterName);
+		log.logInfoUsingMessage("Found " + parameter + " as " + parameterName);
+		return parameter;
+	}
+
+	private void throwErrorIfKeyIsMissingFromInitInfo(String key) {
+		if (!initInfo.containsKey(key)) {
+			String errorMessage = "InitInfo must contain " + key;
+			log.logFatalUsingMessage(errorMessage);
+			throw new TheRestInitializationException(errorMessage);
+		}
 	}
 
 	private void collectInitInformation() {
@@ -62,9 +86,13 @@ public class TheRestModuleInitializer implements ServletContextListener {
 		}
 	}
 
-	private void collectRecordStorageProviderImplementationsAndAddToProviders() {
+	private void collectProviderImplementationsAndAddToProviders() {
 		providers.recordStorageProviderImplementations = ServiceLoader
 				.load(RecordStorageProvider.class);
+		providers.streamStorageProviderImplementations = ServiceLoader
+				.load(StreamStorageProvider.class);
+		providers.recordIdGeneratorProviderImplementations = ServiceLoader
+				.load(RecordIdGeneratorProvider.class);
 	}
 
 	private void startTheRestStarter() {
@@ -77,11 +105,10 @@ public class TheRestModuleInitializer implements ServletContextListener {
 	}
 
 	void setStarter(TheRestModuleStarter starter) {
+		// needed for test
 		this.starter = starter;
-
 	}
 
-	//
 	@Override
 	public void contextDestroyed(ServletContextEvent sce) {
 		// TODO Auto-generated method stub

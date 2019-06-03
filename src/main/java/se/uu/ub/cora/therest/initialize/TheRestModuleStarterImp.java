@@ -1,5 +1,6 @@
 /*
  * Copyright 2019 Olov McKie
+ * Copyright 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -22,26 +23,21 @@ import java.util.Map;
 
 import se.uu.ub.cora.logger.Logger;
 import se.uu.ub.cora.logger.LoggerProvider;
+import se.uu.ub.cora.storage.RecordIdGeneratorProvider;
 import se.uu.ub.cora.storage.RecordStorageProvider;
 import se.uu.ub.cora.storage.SelectOrder;
+import se.uu.ub.cora.storage.StreamStorageProvider;
 
 public class TheRestModuleStarterImp implements TheRestModuleStarter {
 	private static final String FOUND = "Found ";
 	private Map<String, String> initInfo;
-	// private Iterable<UserPickerProvider> userPickerProviders;
-	// private Iterable<UserStorageProvider> userStorageProviders;
 	private Logger log = LoggerProvider.getLoggerForClass(TheRestModuleStarterImp.class);
 	private Providers providers;
 
 	@Override
-	public void startUsingInitInfoAndProviders(Map<String, String> initInfo, Providers providers
-	// Iterable<UserPickerProvider> userPickerProviderImplementations,
-	// Iterable<UserStorageProvider> userStorageProviderImplementations) {
-	) {
+	public void startUsingInitInfoAndProviders(Map<String, String> initInfo, Providers providers) {
 		this.initInfo = initInfo;
 		this.providers = providers;
-		// this.userPickerProviders = userPickerProviderImplementations;
-		// this.userStorageProviders = userStorageProviderImplementations;
 		start();
 	}
 
@@ -49,6 +45,15 @@ public class TheRestModuleStarterImp implements TheRestModuleStarter {
 		RecordStorageProvider recordStorageProvider = getImplementationBasedOnPreferenceLevelThrowErrorIfNone(
 				providers.recordStorageProviderImplementations, "RecordStorageProvider");
 		recordStorageProvider.startUsingInitInfo(initInfo);
+
+		StreamStorageProvider streamStorageProvider = getImplementationBasedOnPreferenceLevelThrowErrorIfNone(
+				providers.streamStorageProviderImplementations, "StreamStorageProvider");
+		streamStorageProvider.startUsingInitInfo(initInfo);
+
+		RecordIdGeneratorProvider recordIdGeneratorProvider = getImplementationBasedOnPreferenceLevelThrowErrorIfNone(
+				providers.recordIdGeneratorProviderImplementations, "RecordIdGeneratorProvider");
+		recordIdGeneratorProvider.startUsingInitInfo(initInfo);
+
 		// UserPickerProvider userPickerProvider =
 		// getImplementationBasedOnPreferenceLevelThrowErrorIfNone(
 		// userPickerProviders, "UserPickerProvider");

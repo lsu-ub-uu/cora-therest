@@ -1,5 +1,6 @@
 /*
  * Copyright 2019 Olov McKie
+ * Copyright 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -31,7 +32,9 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.logger.LoggerProvider;
+import se.uu.ub.cora.storage.RecordIdGeneratorProvider;
 import se.uu.ub.cora.storage.RecordStorageProvider;
+import se.uu.ub.cora.storage.StreamStorageProvider;
 import se.uu.ub.cora.therest.log.LoggerFactorySpy;
 
 public class TheRestModuleInitializerTest {
@@ -46,6 +49,7 @@ public class TheRestModuleInitializerTest {
 		loggerFactorySpy = new LoggerFactorySpy();
 		LoggerProvider.setLoggerFactory(loggerFactorySpy);
 		source = new ServletContextSpy();
+		source.setInitParameter("theRestPublicPathToSystem", "/therest/rest/");
 		source.setInitParameter("initParam1", "initValue1");
 		source.setInitParameter("initParam2", "initValue2");
 		context = new ServletContextEvent(source);
@@ -71,14 +75,38 @@ public class TheRestModuleInitializerTest {
 		assertEquals(loggerFactorySpy.getInfoLogMessageUsingClassNameAndNo(testedClassName, 0),
 				"TheRestModuleInitializer starting...");
 		assertEquals(loggerFactorySpy.getInfoLogMessageUsingClassNameAndNo(testedClassName, 1),
+				"Found /therest/rest/ as theRestPublicPathToSystem");
+		assertEquals(loggerFactorySpy.getInfoLogMessageUsingClassNameAndNo(testedClassName, 2),
 				"TheRestModuleInitializer started");
+	}
+
+	@Test(expectedExceptions = TheRestInitializationException.class, expectedExceptionsMessageRegExp = ""
+			+ "InitInfo must contain theRestPublicPathToSystem")
+	public void testErrorIsThrownIfMissingTheRestPublicPathToSystem() throws Exception {
+		source = new ServletContextSpy();
+		context = new ServletContextEvent(source);
+		startTheRestModuleInitializerWithStarterSpy();
+	}
+
+	@Test
+	public void testErrorIsLoggedIfMissingTheRestPublicPathToSystem() throws Exception {
+		source = new ServletContextSpy();
+		context = new ServletContextEvent(source);
+		try {
+			startTheRestModuleInitializerWithStarterSpy();
+		} catch (Exception e) {
+
+		}
+		assertEquals(loggerFactorySpy.getFatalLogMessageUsingClassNameAndNo(testedClassName, 0),
+				"InitInfo must contain theRestPublicPathToSystem");
 	}
 
 	@Test
 	public void testInitParametersArePassedOnToStarter() {
 		TheRestModuleStarterSpy starter = startTheRestModuleInitializerWithStarterSpy();
 		Map<String, String> initInfo = starter.initInfo;
-		assertEquals(initInfo.size(), 2);
+		assertEquals(initInfo.size(), 3);
+		assertEquals(initInfo.get("theRestPublicPathToSystem"), "/therest/rest/");
 		assertEquals(initInfo.get("initParam1"), "initValue1");
 		assertEquals(initInfo.get("initParam2"), "initValue2");
 	}
@@ -88,6 +116,22 @@ public class TheRestModuleInitializerTest {
 		TheRestModuleStarterSpy starter = startTheRestModuleInitializerWithStarterSpy();
 
 		Iterable<RecordStorageProvider> iterable = starter.recordStorageProviderImplementations;
+		assertTrue(iterable instanceof ServiceLoader);
+	}
+
+	@Test
+	public void testStreamStorageProviderImplementationsArePassedOnToStarter() {
+		TheRestModuleStarterSpy starter = startTheRestModuleInitializerWithStarterSpy();
+
+		Iterable<StreamStorageProvider> iterable = starter.streamStorageProviderImplementations;
+		assertTrue(iterable instanceof ServiceLoader);
+	}
+
+	@Test
+	public void testRecordIdGeneratorProviderImplementationsArePassedOnToStarter() {
+		TheRestModuleStarterSpy starter = startTheRestModuleInitializerWithStarterSpy();
+
+		Iterable<RecordIdGeneratorProvider> iterable = starter.recordIdGeneratorProviderImplementations;
 		assertTrue(iterable instanceof ServiceLoader);
 	}
 
