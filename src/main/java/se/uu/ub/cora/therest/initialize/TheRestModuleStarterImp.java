@@ -19,10 +19,17 @@
  */
 package se.uu.ub.cora.therest.initialize;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 import se.uu.ub.cora.logger.Logger;
 import se.uu.ub.cora.logger.LoggerProvider;
+import se.uu.ub.cora.spider.dependency.SpiderDependencyProvider;
+import se.uu.ub.cora.spider.dependency.SpiderInstanceFactory;
+import se.uu.ub.cora.spider.dependency.SpiderInstanceFactoryImp;
+import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
+import se.uu.ub.cora.storage.MetadataStorageProvider;
 import se.uu.ub.cora.storage.RecordIdGeneratorProvider;
 import se.uu.ub.cora.storage.RecordStorageProvider;
 import se.uu.ub.cora.storage.SelectOrder;
@@ -33,6 +40,7 @@ public class TheRestModuleStarterImp implements TheRestModuleStarter {
 	private Map<String, String> initInfo;
 	private Logger log = LoggerProvider.getLoggerForClass(TheRestModuleStarterImp.class);
 	private Providers providers;
+	private SpiderDependencyProvider dependencyProvider;
 
 	@Override
 	public void startUsingInitInfoAndProviders(Map<String, String> initInfo, Providers providers) {
@@ -42,18 +50,34 @@ public class TheRestModuleStarterImp implements TheRestModuleStarter {
 	}
 
 	public void start() {
+
+		SpiderInstanceProvider.setInitInfo(initInfo);
+		try {
+			createInstanceOfDependencyProviderClass();
+		} catch (Exception e) {
+			throw new TheRestInitializationException("Error starting The Rest: " + e.getMessage());
+		}
+		createAndSetFactoryInSpiderInstanceProvider();
+
 		RecordStorageProvider recordStorageProvider = getImplementationBasedOnPreferenceLevelThrowErrorIfNone(
 				providers.recordStorageProviderImplementations, "RecordStorageProvider");
 		recordStorageProvider.startUsingInitInfo(initInfo);
+		dependencyProvider.setRecordStorageProvider(recordStorageProvider);
 
 		StreamStorageProvider streamStorageProvider = getImplementationBasedOnPreferenceLevelThrowErrorIfNone(
 				providers.streamStorageProviderImplementations, "StreamStorageProvider");
 		streamStorageProvider.startUsingInitInfo(initInfo);
+		dependencyProvider.setStreamStorageProvider(streamStorageProvider);
 
 		RecordIdGeneratorProvider recordIdGeneratorProvider = getImplementationBasedOnPreferenceLevelThrowErrorIfNone(
 				providers.recordIdGeneratorProviderImplementations, "RecordIdGeneratorProvider");
 		recordIdGeneratorProvider.startUsingInitInfo(initInfo);
+		dependencyProvider.setRecordIdGeneratorProvider(recordIdGeneratorProvider);
 
+		MetadataStorageProvider metadataStorageProvider = getImplementationBasedOnPreferenceLevelThrowErrorIfNone(
+				providers.metadataStorageProviderImplementations, "MetadataStorageProvider");
+		metadataStorageProvider.startUsingInitInfo(initInfo);
+		dependencyProvider.setMetadataStorageProvider(metadataStorageProvider);
 		// UserPickerProvider userPickerProvider =
 		// getImplementationBasedOnPreferenceLevelThrowErrorIfNone(
 		// userPickerProviders, "UserPickerProvider");
@@ -73,6 +97,20 @@ public class TheRestModuleStarterImp implements TheRestModuleStarter {
 		// GatekeeperImp.INSTANCE.setUserPickerProvider(userPickerProvider);
 	}
 
+	private void createInstanceOfDependencyProviderClass()
+			throws InstantiationException, IllegalAccessException, ClassNotFoundException,
+			InvocationTargetException, NoSuchMethodException {
+		String dependencyProviderString = initInfo.get("dependencyProviderClassName");
+		Constructor<?> constructor = Class.forName(dependencyProviderString)
+				.getConstructor(Map.class);
+		dependencyProvider = (SpiderDependencyProvider) constructor.newInstance(initInfo);
+	}
+
+	private void createAndSetFactoryInSpiderInstanceProvider() {
+		SpiderInstanceFactory factory = SpiderInstanceFactoryImp
+				.usingDependencyProvider(dependencyProvider);
+		SpiderInstanceProvider.setSpiderInstanceFactory(factory);
+	}
 	// private String tryToGetInitParameter(String parameterName) {
 	// throwErrorIfKeyIsMissingFromInitInfo(parameterName);
 	// String parameter = initInfo.get(parameterName);
@@ -120,5 +158,9 @@ public class TheRestModuleStarterImp implements TheRestModuleStarter {
 			log.logFatalUsingMessage(errorMessage);
 			throw new TheRestInitializationException(errorMessage);
 		}
+	}
+
+	SpiderDependencyProvider getStartedDependencyProvider() {
+		return dependencyProvider;
 	}
 }

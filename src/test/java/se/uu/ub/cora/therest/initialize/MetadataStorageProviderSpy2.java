@@ -2,10 +2,11 @@ package se.uu.ub.cora.therest.initialize;
 
 import java.util.Map;
 
-import se.uu.ub.cora.storage.RecordIdGenerator;
-import se.uu.ub.cora.storage.RecordIdGeneratorProvider;
+import se.uu.ub.cora.storage.MetadataStorage;
+import se.uu.ub.cora.storage.MetadataStorageProvider;
 
-public class RecordIdGeneratorProviderSpy2 implements RecordIdGeneratorProvider {
+public class MetadataStorageProviderSpy2 implements MetadataStorageProvider {
+
 	public Map<String, String> initInfo;
 	boolean started = false;
 
@@ -21,7 +22,7 @@ public class RecordIdGeneratorProviderSpy2 implements RecordIdGeneratorProvider 
 	}
 
 	@Override
-	public RecordIdGenerator getRecordIdGenerator() {
+	public MetadataStorage getMetadataStorage() {
 		// TODO Auto-generated method stub
 		return null;
 	}

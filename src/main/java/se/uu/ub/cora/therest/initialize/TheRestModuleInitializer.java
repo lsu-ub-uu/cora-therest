@@ -31,6 +31,7 @@ import javax.servlet.annotation.WebListener;
 
 import se.uu.ub.cora.logger.Logger;
 import se.uu.ub.cora.logger.LoggerProvider;
+import se.uu.ub.cora.storage.MetadataStorageProvider;
 import se.uu.ub.cora.storage.RecordIdGeneratorProvider;
 import se.uu.ub.cora.storage.RecordStorageProvider;
 import se.uu.ub.cora.storage.StreamStorageProvider;
@@ -53,14 +54,15 @@ public class TheRestModuleInitializer implements ServletContextListener {
 		String simpleName = TheRestModuleInitializer.class.getSimpleName();
 		log.logInfoUsingMessage(simpleName + " starting...");
 		collectInitInformation();
-		ensuretheRestPublicPathToSystemExistsInInitInfo();
+		ensureNeededParametersExistsInInitInfo();
 		collectProviderImplementationsAndAddToProviders();
 		startTheRestStarter();
 		log.logInfoUsingMessage(simpleName + " started");
 	}
 
-	private void ensuretheRestPublicPathToSystemExistsInInitInfo() {
+	private void ensureNeededParametersExistsInInitInfo() {
 		tryToGetInitParameter("theRestPublicPathToSystem");
+		tryToGetInitParameter("dependencyProviderClassName");
 	}
 
 	private String tryToGetInitParameter(String parameterName) {
@@ -93,6 +95,8 @@ public class TheRestModuleInitializer implements ServletContextListener {
 				.load(StreamStorageProvider.class);
 		providers.recordIdGeneratorProviderImplementations = ServiceLoader
 				.load(RecordIdGeneratorProvider.class);
+		providers.metadataStorageProviderImplementations = ServiceLoader
+				.load(MetadataStorageProvider.class);
 	}
 
 	private void startTheRestStarter() {

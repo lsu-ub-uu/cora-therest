@@ -19,6 +19,8 @@
 
 package se.uu.ub.cora.therest.record;
 
+import java.io.InputStream;
+
 import se.uu.ub.cora.spider.authorization.AuthorizationException;
 import se.uu.ub.cora.spider.data.DataMissingException;
 import se.uu.ub.cora.spider.data.SpiderDataRecord;
@@ -26,8 +28,6 @@ import se.uu.ub.cora.spider.record.MisuseException;
 import se.uu.ub.cora.spider.record.SpiderUploader;
 import se.uu.ub.cora.spider.record.storage.RecordNotFoundException;
 import se.uu.ub.cora.therest.testdata.DataCreator;
-
-import java.io.InputStream;
 
 public class SpiderUploaderSpy implements SpiderUploader {
 

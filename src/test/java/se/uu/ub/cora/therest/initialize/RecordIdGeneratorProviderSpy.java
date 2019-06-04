@@ -2,8 +2,8 @@ package se.uu.ub.cora.therest.initialize;
 
 import java.util.Map;
 
+import se.uu.ub.cora.storage.RecordIdGenerator;
 import se.uu.ub.cora.storage.RecordIdGeneratorProvider;
-import se.uu.ub.cora.storage.StreamStorage;
 
 public class RecordIdGeneratorProviderSpy implements RecordIdGeneratorProvider {
 	public Map<String, String> initInfo;
@@ -21,7 +21,7 @@ public class RecordIdGeneratorProviderSpy implements RecordIdGeneratorProvider {
 	}
 
 	@Override
-	public StreamStorage getRecordIdGenerator() {
+	public RecordIdGenerator getRecordIdGenerator() {
 		// TODO Auto-generated method stub
 		return null;
 	}
