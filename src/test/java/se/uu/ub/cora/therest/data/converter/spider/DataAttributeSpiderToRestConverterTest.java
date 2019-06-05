@@ -19,11 +19,12 @@
 
 package se.uu.ub.cora.therest.data.converter.spider;
 
+import static org.testng.Assert.assertEquals;
+
 import org.testng.annotations.Test;
+
 import se.uu.ub.cora.spider.data.SpiderDataAttribute;
 import se.uu.ub.cora.therest.data.RestDataAttribute;
-
-import static org.testng.Assert.assertEquals;
 
 public class DataAttributeSpiderToRestConverterTest {
 	@Test

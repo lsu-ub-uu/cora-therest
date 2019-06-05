@@ -19,7 +19,10 @@
 
 package se.uu.ub.cora.therest.data.converter.spider;
 
+import static org.testng.Assert.assertEquals;
+
 import org.testng.annotations.Test;
+
 import se.uu.ub.cora.spider.data.SpiderDataAtomic;
 import se.uu.ub.cora.spider.data.SpiderDataGroup;
 import se.uu.ub.cora.spider.data.SpiderDataList;
@@ -27,8 +30,6 @@ import se.uu.ub.cora.spider.data.SpiderDataRecord;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.RestDataList;
 import se.uu.ub.cora.therest.data.RestDataRecord;
-
-import static org.testng.Assert.assertEquals;
 
 public class DataListSpiderToRestConverterTest {
 	private String baseURL = "http://localhost:8080/therest/rest/record/";

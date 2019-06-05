@@ -19,11 +19,12 @@
 
 package se.uu.ub.cora.therest.data;
 
+import static org.testng.Assert.assertEquals;
+
 import org.testng.annotations.Test;
+
 import se.uu.ub.cora.spider.data.Action;
 import se.uu.ub.cora.therest.testdata.DataCreator;
-
-import static org.testng.Assert.assertEquals;
 
 public class ActionLinkTest {
 	@Test

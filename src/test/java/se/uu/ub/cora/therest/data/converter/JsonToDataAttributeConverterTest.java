@@ -22,13 +22,14 @@ package se.uu.ub.cora.therest.data.converter;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import se.uu.ub.cora.therest.data.RestDataAttribute;
-import se.uu.ub.cora.therest.data.RestDataElement;
+
 import se.uu.ub.cora.json.parser.JsonObject;
 import se.uu.ub.cora.json.parser.JsonParseException;
 import se.uu.ub.cora.json.parser.JsonParser;
 import se.uu.ub.cora.json.parser.JsonValue;
 import se.uu.ub.cora.json.parser.org.OrgJsonParser;
+import se.uu.ub.cora.therest.data.RestDataAttribute;
+import se.uu.ub.cora.therest.data.RestDataElement;
 
 public class JsonToDataAttributeConverterTest {
 	private JsonParser jsonParser;

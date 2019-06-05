@@ -19,12 +19,12 @@
 
 package se.uu.ub.cora.therest.data.converter;
 
+import java.util.Map;
+import java.util.Map.Entry;
+
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.JsonObjectBuilder;
 import se.uu.ub.cora.therest.data.ActionLink;
-
-import java.util.Map;
-import java.util.Map.Entry;
 
 public class ActionLinksToJsonConverter extends DataToJsonConverter {
 

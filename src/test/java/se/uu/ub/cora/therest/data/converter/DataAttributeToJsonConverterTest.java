@@ -22,10 +22,11 @@ package se.uu.ub.cora.therest.data.converter;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import se.uu.ub.cora.therest.data.RestDataAttribute;
-import se.uu.ub.cora.therest.data.RestDataElement;
+
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.org.OrgJsonBuilderFactoryAdapter;
+import se.uu.ub.cora.therest.data.RestDataAttribute;
+import se.uu.ub.cora.therest.data.RestDataElement;
 
 public class DataAttributeToJsonConverterTest {
 	private DataToJsonConverterFactory dataToJsonConverterFactory;

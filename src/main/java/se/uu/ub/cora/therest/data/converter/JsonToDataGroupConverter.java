@@ -21,13 +21,13 @@ package se.uu.ub.cora.therest.data.converter;
 
 import java.util.Map.Entry;
 
-import se.uu.ub.cora.therest.data.RestDataElement;
-import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.json.parser.JsonArray;
 import se.uu.ub.cora.json.parser.JsonObject;
 import se.uu.ub.cora.json.parser.JsonParseException;
 import se.uu.ub.cora.json.parser.JsonString;
 import se.uu.ub.cora.json.parser.JsonValue;
+import se.uu.ub.cora.therest.data.RestDataElement;
+import se.uu.ub.cora.therest.data.RestDataGroup;
 
 public final class JsonToDataGroupConverter implements JsonToDataConverter {
 

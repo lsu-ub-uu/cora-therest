@@ -19,18 +19,19 @@
 
 package se.uu.ub.cora.therest.data.converter;
 
+import static org.testng.Assert.assertEquals;
+
 import java.util.Iterator;
 
 import org.testng.annotations.Test;
-import se.uu.ub.cora.therest.data.RestDataAtomic;
-import se.uu.ub.cora.therest.data.RestDataElement;
-import se.uu.ub.cora.therest.data.RestDataGroup;
+
 import se.uu.ub.cora.json.parser.JsonObject;
 import se.uu.ub.cora.json.parser.JsonParseException;
 import se.uu.ub.cora.json.parser.JsonValue;
 import se.uu.ub.cora.json.parser.org.OrgJsonParser;
-
-import static org.testng.Assert.assertEquals;
+import se.uu.ub.cora.therest.data.RestDataAtomic;
+import se.uu.ub.cora.therest.data.RestDataElement;
+import se.uu.ub.cora.therest.data.RestDataGroup;
 
 public class JsonToDataGroupConverterTest {
 	@Test
