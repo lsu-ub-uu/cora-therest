@@ -24,9 +24,9 @@
 
 	<properties>
 		<logger.version>1.0.0</logger.version>
-		<storage.version>1.0-SNAPSHOT</storage.version>
+		<storage.version>1.0.0</storage.version>
 		<json.version>1.0.0</json.version>
-		<spider.version>1.3-SNAPSHOT</spider.version>
+		<spider.version>1.3.0</spider.version>
 		<javax.ws.rs.version>2.1.1</javax.ws.rs.version>
 		<jersey.version>2.27</jersey.version>
 	</properties>
@@ -114,27 +114,12 @@
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
-			<version>3.0.1</version>
+			<version>4.0.1</version>
 			<scope>provided</scope>
 		</dependency>
 		<!-- The JAXB APIs are considered to be Java EE APIs, and therefore are 
 			no longer contained on the default class path in Java SE 9. In Java 11 they 
 			are completely removed from the JDK. -->
-		<dependency>
-			<groupId>javax.xml.bind</groupId>
-			<artifactId>jaxb-api</artifactId>
-			<version>2.3.0</version>
-		</dependency>
-		<!-- <dependency> -->
-		<!-- <groupId>com.sun.xml.bind</groupId> -->
-		<!-- <artifactId>jaxb-core</artifactId> -->
-		<!-- <version>2.2.11</version> -->
-		<!-- </dependency> -->
-		<!-- <dependency> -->
-		<!-- <groupId>com.sun.xml.bind</groupId> -->
-		<!-- <artifactId>jaxb-impl</artifactId> -->
-		<!-- <version>2.2.11</version> -->
-		<!-- </dependency> -->
 		<dependency>
 			<groupId>javax.xml.bind</groupId>
 			<artifactId>jaxb-api</artifactId>

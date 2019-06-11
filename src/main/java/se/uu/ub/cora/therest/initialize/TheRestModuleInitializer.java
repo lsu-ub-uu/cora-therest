@@ -113,10 +113,4 @@ public class TheRestModuleInitializer implements ServletContextListener {
 		this.starter = starter;
 	}
 
-	@Override
-	public void contextDestroyed(ServletContextEvent sce) {
-		// TODO Auto-generated method stub
-
-	}
-
 }
