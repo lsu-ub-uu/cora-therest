@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -16,19 +16,12 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
+package se.uu.ub.cora.therest.initialize;
 
-package se.uu.ub.cora.therest.data;
+import java.util.Map;
 
-import static org.testng.Assert.assertEquals;
+public interface TheRestModuleStarter {
 
-import org.testng.annotations.Test;
+	void startUsingInitInfoAndProviders(Map<String, String> initInfo, Providers providers);
 
-public class RestDataAttributeTest {
-	@Test
-	public void testInit() {
-		RestDataAttribute restDataAttribute = RestDataAttribute.withNameInDataAndValue("nameInData",
-				"value");
-		assertEquals(restDataAttribute.getNameInData(), "nameInData");
-		assertEquals(restDataAttribute.getValue(), "value");
-	}
 }

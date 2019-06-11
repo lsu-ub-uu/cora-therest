@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -16,19 +16,18 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
+package se.uu.ub.cora.therest.initialize;
 
-package se.uu.ub.cora.therest.data;
+import se.uu.ub.cora.storage.MetadataStorageProvider;
+import se.uu.ub.cora.storage.RecordIdGeneratorProvider;
+import se.uu.ub.cora.storage.RecordStorageProvider;
+import se.uu.ub.cora.storage.StreamStorageProvider;
 
-import static org.testng.Assert.assertEquals;
+public class Providers {
 
-import org.testng.annotations.Test;
+	public Iterable<RecordStorageProvider> recordStorageProviderImplementations;
+	public Iterable<StreamStorageProvider> streamStorageProviderImplementations;
+	public Iterable<RecordIdGeneratorProvider> recordIdGeneratorProviderImplementations;
+	public Iterable<MetadataStorageProvider> metadataStorageProviderImplementations;
 
-public class RestDataAttributeTest {
-	@Test
-	public void testInit() {
-		RestDataAttribute restDataAttribute = RestDataAttribute.withNameInDataAndValue("nameInData",
-				"value");
-		assertEquals(restDataAttribute.getNameInData(), "nameInData");
-		assertEquals(restDataAttribute.getValue(), "value");
-	}
 }

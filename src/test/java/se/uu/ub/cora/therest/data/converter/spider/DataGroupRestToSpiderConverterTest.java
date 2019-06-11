@@ -19,8 +19,11 @@
 
 package se.uu.ub.cora.therest.data.converter.spider;
 
+import static org.testng.Assert.assertEquals;
+
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
 import se.uu.ub.cora.spider.data.SpiderDataAtomic;
 import se.uu.ub.cora.spider.data.SpiderDataGroup;
 import se.uu.ub.cora.therest.data.RestDataAtomic;
@@ -28,8 +31,6 @@ import se.uu.ub.cora.therest.data.RestDataAttribute;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.RestDataRecordLink;
 import se.uu.ub.cora.therest.data.converter.ConverterException;
-
-import static org.testng.Assert.assertEquals;
 
 public class DataGroupRestToSpiderConverterTest {
 	private RestDataGroup restDataGroup;

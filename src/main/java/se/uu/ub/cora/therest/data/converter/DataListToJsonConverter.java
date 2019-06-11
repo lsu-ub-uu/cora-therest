@@ -19,13 +19,13 @@
 
 package se.uu.ub.cora.therest.data.converter;
 
+import se.uu.ub.cora.json.builder.JsonArrayBuilder;
+import se.uu.ub.cora.json.builder.JsonBuilderFactory;
+import se.uu.ub.cora.json.builder.JsonObjectBuilder;
 import se.uu.ub.cora.therest.data.RestData;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.RestDataList;
 import se.uu.ub.cora.therest.data.RestDataRecord;
-import se.uu.ub.cora.json.builder.JsonArrayBuilder;
-import se.uu.ub.cora.json.builder.JsonBuilderFactory;
-import se.uu.ub.cora.json.builder.JsonObjectBuilder;
 
 public final class DataListToJsonConverter {
 

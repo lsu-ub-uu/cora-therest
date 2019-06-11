@@ -19,12 +19,12 @@
 
 package se.uu.ub.cora.therest.data.converter;
 
-import se.uu.ub.cora.therest.data.RestDataAttribute;
-import se.uu.ub.cora.therest.data.RestDataElement;
 import se.uu.ub.cora.json.parser.JsonObject;
 import se.uu.ub.cora.json.parser.JsonParseException;
 import se.uu.ub.cora.json.parser.JsonString;
 import se.uu.ub.cora.json.parser.JsonValue;
+import se.uu.ub.cora.therest.data.RestDataAttribute;
+import se.uu.ub.cora.therest.data.RestDataElement;
 
 public final class JsonToDataAttributeConverter implements JsonToDataConverter {
 

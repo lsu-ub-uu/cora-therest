@@ -19,14 +19,15 @@
 
 package se.uu.ub.cora.therest.data.converter;
 
+import static org.testng.Assert.assertEquals;
+
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.org.OrgJsonBuilderFactoryAdapter;
 import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataGroup;
-
-import static org.testng.Assert.assertEquals;
 
 public class DataGroupToJsonConverterTest {
 	private DataToJsonConverterFactory dataToJsonConverterFactory;

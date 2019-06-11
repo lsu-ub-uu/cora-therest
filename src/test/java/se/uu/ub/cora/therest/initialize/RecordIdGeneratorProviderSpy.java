@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -16,19 +16,32 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
+package se.uu.ub.cora.therest.initialize;
 
-package se.uu.ub.cora.therest.data;
+import java.util.Map;
 
-import static org.testng.Assert.assertEquals;
+import se.uu.ub.cora.storage.RecordIdGenerator;
+import se.uu.ub.cora.storage.RecordIdGeneratorProvider;
 
-import org.testng.annotations.Test;
+public class RecordIdGeneratorProviderSpy implements RecordIdGeneratorProvider {
+	public Map<String, String> initInfo;
+	boolean started = false;
 
-public class RestDataAttributeTest {
-	@Test
-	public void testInit() {
-		RestDataAttribute restDataAttribute = RestDataAttribute.withNameInDataAndValue("nameInData",
-				"value");
-		assertEquals(restDataAttribute.getNameInData(), "nameInData");
-		assertEquals(restDataAttribute.getValue(), "value");
+	@Override
+	public int getOrderToSelectImplementionsBy() {
+		return 0;
 	}
+
+	@Override
+	public void startUsingInitInfo(Map<String, String> initInfo) {
+		started = true;
+		this.initInfo = initInfo;
+	}
+
+	@Override
+	public RecordIdGenerator getRecordIdGenerator() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

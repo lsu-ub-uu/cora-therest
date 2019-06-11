@@ -19,12 +19,13 @@
 
 package se.uu.ub.cora.therest.data.converter.spider;
 
+import static org.testng.Assert.assertEquals;
+
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
 import se.uu.ub.cora.spider.data.SpiderDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataAtomic;
-
-import static org.testng.Assert.assertEquals;
 
 public class DataAtomicSpiderToRestConverterTest {
 	private SpiderDataAtomic spiderDataAtomic;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Uppsala University Library
+ * Copyright 2016, 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -102,6 +102,12 @@ public class SpiderInstanceFactorySpy implements SpiderInstanceFactory {
 	public SpiderRecordValidator factorSpiderRecordValidator() {
 		spiderRecordValidatorSpy = new SpiderRecordValidatorSpy();
 		return spiderRecordValidatorSpy;
+	}
+
+	@Override
+	public String getDependencyProviderClassName() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

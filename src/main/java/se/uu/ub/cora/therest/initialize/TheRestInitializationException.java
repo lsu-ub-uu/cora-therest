@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2019 Olov McKie
  *
  * This file is part of Cora.
  *
@@ -16,19 +16,14 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
+package se.uu.ub.cora.therest.initialize;
 
-package se.uu.ub.cora.therest.data;
+public class TheRestInitializationException extends RuntimeException {
 
-import static org.testng.Assert.assertEquals;
+	private static final long serialVersionUID = 1106993019564065759L;
 
-import org.testng.annotations.Test;
-
-public class RestDataAttributeTest {
-	@Test
-	public void testInit() {
-		RestDataAttribute restDataAttribute = RestDataAttribute.withNameInDataAndValue("nameInData",
-				"value");
-		assertEquals(restDataAttribute.getNameInData(), "nameInData");
-		assertEquals(restDataAttribute.getValue(), "value");
+	public TheRestInitializationException(String message) {
+		super(message);
 	}
+
 }

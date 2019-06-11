@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2019 Olov McKie
  *
  * This file is part of Cora.
  *
@@ -16,24 +16,18 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-package se.uu.ub.cora.therest.data.converter.spider;
+package se.uu.ub.cora.therest.initialize;
 
 import static org.testng.Assert.assertEquals;
 
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.spider.data.SpiderDataAttribute;
-import se.uu.ub.cora.therest.data.RestDataAttribute;
-
-public class DataAttributeRestToSpiderConverterTest {
+public class TheRestInitializationExceptionTest {
 	@Test
-	public void testToSpider() {
-		RestDataAttribute restDataAttribute = RestDataAttribute.withNameInDataAndValue("nameInData", "value");
-		DataAttributeRestToSpiderConverter converter = DataAttributeRestToSpiderConverter
-				.fromRestDataAttribute(restDataAttribute);
-		SpiderDataAttribute spiderDataAttribute = converter.toSpider();
-		assertEquals(spiderDataAttribute.getNameInData(), "nameInData");
-		assertEquals(spiderDataAttribute.getValue(), "value");
+	public void testInit() {
+		TheRestInitializationException notAuthenticated = new TheRestInitializationException(
+				"message");
+
+		assertEquals(notAuthenticated.getMessage(), "message");
 	}
 }

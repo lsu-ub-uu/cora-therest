@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Uppsala University Library
+ * Copyright 2017, 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -30,10 +30,7 @@ import se.uu.ub.cora.spider.authorization.SpiderAuthorizator;
 import se.uu.ub.cora.spider.dependency.SpiderDependencyProvider;
 import se.uu.ub.cora.spider.extended.ExtendedFunctionalityProvider;
 import se.uu.ub.cora.spider.record.RecordSearch;
-import se.uu.ub.cora.spider.record.storage.RecordIdGenerator;
-import se.uu.ub.cora.spider.record.storage.RecordStorage;
 import se.uu.ub.cora.spider.search.RecordIndexer;
-import se.uu.ub.cora.spider.stream.storage.StreamStorage;
 
 public class DependencyProviderMissingGatekeeperUrlSpy extends SpiderDependencyProvider {
 
@@ -44,18 +41,6 @@ public class DependencyProviderMissingGatekeeperUrlSpy extends SpiderDependencyP
 
 	@Override
 	public SpiderAuthorizator getSpiderAuthorizator() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public RecordStorage getRecordStorage() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public RecordIdGenerator getIdGenerator() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -80,12 +65,6 @@ public class DependencyProviderMissingGatekeeperUrlSpy extends SpiderDependencyP
 
 	@Override
 	public ExtendedFunctionalityProvider getExtendedFunctionalityProvider() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public StreamStorage getStreamStorage() {
 		// TODO Auto-generated method stub
 		return null;
 	}

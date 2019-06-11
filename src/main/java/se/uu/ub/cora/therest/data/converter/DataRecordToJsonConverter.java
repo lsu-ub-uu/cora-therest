@@ -21,11 +21,11 @@ package se.uu.ub.cora.therest.data.converter;
 
 import java.util.Map;
 
-import se.uu.ub.cora.therest.data.ActionLink;
-import se.uu.ub.cora.therest.data.RestDataRecord;
 import se.uu.ub.cora.json.builder.JsonArrayBuilder;
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.JsonObjectBuilder;
+import se.uu.ub.cora.therest.data.ActionLink;
+import se.uu.ub.cora.therest.data.RestDataRecord;
 
 public final class DataRecordToJsonConverter {
 
