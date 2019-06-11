@@ -78,23 +78,6 @@ public class TheRestModuleStarterImp implements TheRestModuleStarter {
 				providers.metadataStorageProviderImplementations, "MetadataStorageProvider");
 		metadataStorageProvider.startUsingInitInfo(initInfo);
 		dependencyProvider.setMetadataStorageProvider(metadataStorageProvider);
-		// UserPickerProvider userPickerProvider =
-		// getImplementationBasedOnPreferenceLevelThrowErrorIfNone(
-		// userPickerProviders, "UserPickerProvider");
-		//
-		// UserStorageProvider userStorageProvider =
-		// getImplementationBasedOnPreferenceLevelThrowErrorIfNone(
-		// userStorageProviders, "UserStorageProvider");
-		//
-		// userStorageProvider.startUsingInitInfo(initInfo);
-		// UserStorage userStorage = userStorageProvider.getUserStorage();
-		//
-		// String guestUserId = tryToGetInitParameter("guestUserId");
-		// userPickerProvider.startUsingUserStorageAndGuestUserId(userStorage, guestUserId);
-		//
-		// GatekeeperLocator locator = new GatekeeperLocatorImp();
-		// GatekeeperInstanceProvider.setGatekeeperLocator(locator);
-		// GatekeeperImp.INSTANCE.setUserPickerProvider(userPickerProvider);
 	}
 
 	private void createInstanceOfDependencyProviderClass()
@@ -111,20 +94,6 @@ public class TheRestModuleStarterImp implements TheRestModuleStarter {
 				.usingDependencyProvider(dependencyProvider);
 		SpiderInstanceProvider.setSpiderInstanceFactory(factory);
 	}
-	// private String tryToGetInitParameter(String parameterName) {
-	// throwErrorIfKeyIsMissingFromInitInfo(parameterName);
-	// String parameter = initInfo.get(parameterName);
-	// log.logInfoUsingMessage(FOUND + parameter + " as " + parameterName);
-	// return parameter;
-	// }
-	//
-	// private void throwErrorIfKeyIsMissingFromInitInfo(String key) {
-	// if (!initInfo.containsKey(key)) {
-	// String errorMessage = "InitInfo must contain " + key;
-	// log.logFatalUsingMessage(errorMessage);
-	// throw new GatekeeperInitializationException(errorMessage);
-	// }
-	// }
 
 	private <T extends SelectOrder> T getImplementationBasedOnPreferenceLevelThrowErrorIfNone(
 			Iterable<T> implementations, String interfaceClassName) {
