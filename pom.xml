@@ -1,12 +1,21 @@
-<!-- ~ Copyright 2015, 2018 Uppsala University Library ~ ~ This file is part of 
-	Cora. ~ ~ Cora is free software: you can redistribute it and/or modify ~ 
-	it under the terms of the GNU General Public License as published by ~ the 
-	Free Software Foundation, either version 3 of the License, or ~ (at your 
-	option) any later version. ~ ~ Cora is distributed in the hope that it will 
-	be useful, ~ but WITHOUT ANY WARRANTY; without even the implied warranty 
-	of ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the ~ GNU General 
-	Public License for more details. ~ ~ You should have received a copy of the 
-	GNU General Public License ~ along with Cora. If not, see <http://www.gnu.org/licenses />. -->
+<!--
+  ~ Copyright 2015, 2018, 2019 Uppsala University Library
+  ~
+  ~ This file is part of Cora.
+  ~
+  ~     Cora is free software: you can redistribute it and/or modify
+  ~     it under the terms of the GNU General Public License as published by
+  ~     the Free Software Foundation, either version 3 of the License, or
+  ~     (at your option) any later version.
+  ~
+  ~     Cora is distributed in the hope that it will be useful,
+  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~     GNU General Public License for more details.
+  ~
+  ~     You should have received a copy of the GNU General Public License
+  ~     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
+  -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
@@ -18,17 +27,28 @@
 	</parent>
 
 	<artifactId>therest</artifactId>
-	<packaging>war</packaging>
-	<version>1.5-SNAPSHOT</version>
+	<packaging>jar</packaging>
+	<version>2.0-SNAPSHOT</version>
 	<name>The Rest</name>
-
+	<build>
+		<finalName>cora-therest</finalName>
+	</build>
+	
 	<properties>
-		<logger.version>1.0.0</logger.version>
-		<storage.version>1.0.0</storage.version>
 		<json.version>1.0.0</json.version>
 		<spider.version>1.3.0</spider.version>
 		<javax.ws.rs.version>2.1.1</javax.ws.rs.version>
 		<jersey.version>2.27</jersey.version>
+		<gatekeeperclient.version>1.1.0</gatekeeperclient.version>
+		<metacreator.version>1.1.0</metacreator.version>
+		<solrsearch.version>1.2.0</solrsearch.version>
+		<httphandler.version>1.0.0</httphandler.version>
+		
+		<logger.version>1.0.0</logger.version>
+		<storage.version>1.0.0</storage.version>
+		
+		<coralog4j.version>1.0.0</coralog4j.version>
+		
 	</properties>
 
 	<scm>
@@ -38,52 +58,69 @@
 	  <tag>HEAD</tag>
   </scm>
 
-	<repositories>
-		<repository>
-			<id>maven-public</id>
-			<name>LSU Nexus Repository</name>
-			<url>http://epc.ub.uu.se/nexus/repository/maven-public/</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<updatePolicy>daily</updatePolicy>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
-
 	<dependencies>
+		<!-- test -->
 		<dependency>
 			<groupId>org.testng</groupId>
 			<artifactId>testng</artifactId>
 			<version>${testng.version}</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>se.uu.ub.cora</groupId>
-			<artifactId>logger</artifactId>
-			<version>${logger.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>se.uu.ub.cora</groupId>
-			<artifactId>storage</artifactId>
-			<version>${storage.version}</version>
-			<scope>provided</scope>
-		</dependency>
+		
 		<dependency>
 			<groupId>se.uu.ub.cora</groupId>
 			<artifactId>json</artifactId>
 			<version>${json.version}</version>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>se.uu.ub.cora</groupId>
 			<artifactId>spider</artifactId>
 			<version>${spider.version}</version>
-			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>se.uu.ub.cora</groupId>
+			<artifactId>gatekeeperclient</artifactId>
+			<version>${gatekeeperclient.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>se.uu.ub.cora</groupId>
+			<artifactId>metacreator</artifactId>
+			<version>${metacreator.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>se.uu.ub.cora</groupId>
+			<artifactId>solrsearch</artifactId>
+			<version>${solrsearch.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>se.uu.ub.cora</groupId>
+			<artifactId>httphandler</artifactId>
+			<version>${httphandler.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>se.uu.ub.cora</groupId>
+			<artifactId>logger</artifactId>
+			<version>${logger.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>se.uu.ub.cora</groupId>
+			<artifactId>storage</artifactId>
+			<version>${storage.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>se.uu.ub.cora</groupId>
+			<artifactId>log4j</artifactId>
+			<version>${coralog4j.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+
+
 		<dependency>
 			<groupId>javax.ws.rs</groupId>
 			<artifactId>javax.ws.rs-api</artifactId>
@@ -136,8 +173,4 @@
 			<version>1.2.0</version>
 		</dependency>
 	</dependencies>
-
-	<build>
-		<finalName>therest</finalName>
-	</build>
 </project>

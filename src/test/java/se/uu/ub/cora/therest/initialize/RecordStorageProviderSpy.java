@@ -27,6 +27,7 @@ public class RecordStorageProviderSpy implements RecordStorageProvider {
 
 	public Map<String, String> initInfo;
 	boolean started = false;
+	RecordStorageSpy recordStorageSpy = new RecordStorageSpy();
 
 	@Override
 	public int getOrderToSelectImplementionsBy() {
@@ -42,8 +43,7 @@ public class RecordStorageProviderSpy implements RecordStorageProvider {
 
 	@Override
 	public RecordStorage getRecordStorage() {
-		// TODO Auto-generated method stub
-		return null;
+		return recordStorageSpy;
 	}
 
 }
