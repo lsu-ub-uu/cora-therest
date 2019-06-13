@@ -37,14 +37,23 @@ public class LoggerFactorySpy implements LoggerFactory {
 		return createdLoggers.get(name);
 	}
 
+	public int getNoOfFatalLogMessagesUsingClassName(String className) {
+		List<String> fatalMessages = (createdLoggers.get(className)).fatalMessages;
+		return fatalMessages.size();
+	}
+
 	public String getFatalLogMessageUsingClassNameAndNo(String className, int messageNo) {
 		List<String> fatalMessages = (createdLoggers.get(className)).fatalMessages;
 		return fatalMessages.get(messageNo);
+	}
+
+	public int getNoOfInfoLogMessagesUsingClassName(String className) {
+		List<String> infoMessages = (createdLoggers.get(className)).infoMessages;
+		return infoMessages.size();
 	}
 
 	public String getInfoLogMessageUsingClassNameAndNo(String className, int messageNo) {
 		List<String> infoMessages = (createdLoggers.get(className)).infoMessages;
 		return infoMessages.get(messageNo);
 	}
-
 }
