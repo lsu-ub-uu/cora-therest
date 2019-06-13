@@ -34,7 +34,6 @@ import se.uu.ub.cora.spider.dependency.SpiderDependencyProvider;
 import se.uu.ub.cora.spider.extended.ExtendedFunctionalityProvider;
 import se.uu.ub.cora.spider.record.RecordSearch;
 import se.uu.ub.cora.spider.search.RecordIndexer;
-import se.uu.ub.cora.storage.RecordStorage;
 import se.uu.ub.cora.storage.SearchStorage;
 
 /**
@@ -45,12 +44,10 @@ import se.uu.ub.cora.storage.SearchStorage;
  */
 public class TheRestDependencyProvider extends SpiderDependencyProvider {
 
-	private RecordStorage recordStorage;
 	private String gatekeeperUrl;
 	private String solrUrl;
 	private SolrRecordIndexer solrRecordIndexer;
 	private SolrClientProviderImp solrClientProvider;
-	private SearchStorage searchStorage;
 
 	public TheRestDependencyProvider(Map<String, String> initInfo) {
 		super(initInfo);
@@ -79,7 +76,6 @@ public class TheRestDependencyProvider extends SpiderDependencyProvider {
 		solrClientProvider = SolrClientProviderImp.usingBaseUrl(solrUrl);
 		solrRecordIndexer = SolrRecordIndexer
 				.createSolrRecordIndexerUsingSolrClientProvider(solrClientProvider);
-		searchStorage = (SearchStorage) recordStorage;
 	}
 
 	@Override
@@ -98,8 +94,6 @@ public class TheRestDependencyProvider extends SpiderDependencyProvider {
 	public RecordSearch getRecordSearch() {
 		return SolrRecordSearch.createSolrRecordSearchUsingSolrClientProviderAndSearchStorage(
 				solrClientProvider, (SearchStorage) getRecordStorage());
-		// return SolrRecordSearch.createSolrRecordSearchUsingSolrClientProviderAndSearchStorage(
-		// solrClientProvider, searchStorage);
 	}
 
 	@Override
