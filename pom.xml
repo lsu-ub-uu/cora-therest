@@ -28,7 +28,7 @@
 
 	<artifactId>therest</artifactId>
 	<packaging>jar</packaging>
-	<version>2.2-SNAPSHOT</version>
+	<version>2.2.0</version>
 	<name>The Rest</name>
 	<build>
 		<finalName>cora-therest</finalName>
@@ -54,7 +54,7 @@
 		<connection>scm:git:https://github.com/lsu-ub-uu/cora-therest.git</connection>
 		<developerConnection>scm:git:https://github.com/lsu-ub-uu/cora-therest.git</developerConnection>
 		<url>https://github.com/lsu-ub-uu/cora-therest.git</url>
-	  <tag>release/2.2</tag>
+	  <tag>therest-2.2.0</tag>
   </scm>
 
 	<dependencies>
