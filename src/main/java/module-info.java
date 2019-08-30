@@ -1,4 +1,5 @@
 module se.uu.ub.cora.therest {
+	requires transitive se.uu.ub.cora.beefeater;
 	requires transitive se.uu.ub.cora.logger;
 	requires transitive se.uu.ub.cora.storage;
 	requires transitive se.uu.ub.cora.spider;
