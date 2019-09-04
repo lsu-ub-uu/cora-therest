@@ -31,15 +31,16 @@
 	<version>2.4-SNAPSHOT</version>
 	<name>The Rest</name>
 	<build>
-		<finalName>cora-therest</finalName>
+		<finalName>cora-${artifactId}-${version}</finalName>
 	</build>
+	
 	
 	<properties>
 		<json.version>1.0.0</json.version>
 		<spider.version>1.6.0</spider.version>
 		<javax.ws.rs.version>2.1.1</javax.ws.rs.version>
 		<jersey.version>2.27</jersey.version>
-		<gatekeeperclient.version>1.2.0</gatekeeperclient.version>
+		<gatekeeperclient.version>1.3.0</gatekeeperclient.version>
 		<metacreator.version>1.3.0</metacreator.version>
 		<solrsearch.version>1.5.1</solrsearch.version>
 		<httphandler.version>1.0.0</httphandler.version>
@@ -117,13 +118,13 @@
 			<groupId>se.uu.ub.cora</groupId>
 			<artifactId>search</artifactId>
 			<version>${search.version}</version>
-			<scope>provided</scope>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>se.uu.ub.cora</groupId>
 			<artifactId>searchstorage</artifactId>
 			<version>${searchstorage.version}</version>
-			<scope>provided</scope>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>se.uu.ub.cora</groupId>
