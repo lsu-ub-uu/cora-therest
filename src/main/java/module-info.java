@@ -11,6 +11,7 @@ module se.uu.ub.cora.therest {
 	requires transitive se.uu.ub.cora.metacreator;
 	requires transitive se.uu.ub.cora.gatekeeperclient;
 	requires transitive se.uu.ub.cora.solrsearch;
+	requires se.uu.ub.cora.searchstorage;
 
 	uses se.uu.ub.cora.storage.RecordStorageProvider;
 	uses se.uu.ub.cora.storage.StreamStorageProvider;

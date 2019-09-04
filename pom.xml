@@ -36,14 +36,16 @@
 	
 	<properties>
 		<json.version>1.0.0</json.version>
-		<spider.version>1.5.0</spider.version>
+		<spider.version>1.6.0</spider.version>
 		<javax.ws.rs.version>2.1.1</javax.ws.rs.version>
 		<jersey.version>2.27</jersey.version>
 		<gatekeeperclient.version>1.2.0</gatekeeperclient.version>
-		<metacreator.version>1.2.0</metacreator.version>
-		<solrsearch.version>1.4.0</solrsearch.version>
+		<metacreator.version>1.3.0</metacreator.version>
+		<solrsearch.version>1.5.1</solrsearch.version>
 		<httphandler.version>1.0.0</httphandler.version>
-		<storage.version>1.2.0</storage.version>
+		<storage.version>1.3.0</storage.version>
+		<search.version>1.0.0</search.version>
+		<searchstorage.version>1.1.0</searchstorage.version>
 		<logger.version>1.0.0</logger.version>
 		
 		<coralog4j.version>1.0.0</coralog4j.version>
@@ -111,7 +113,18 @@
 			<artifactId>storage</artifactId>
 			<version>${storage.version}</version>
 		</dependency>
-		
+		<dependency>
+			<groupId>se.uu.ub.cora</groupId>
+			<artifactId>search</artifactId>
+			<version>${search.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>se.uu.ub.cora</groupId>
+			<artifactId>searchstorage</artifactId>
+			<version>${searchstorage.version}</version>
+			<scope>provided</scope>
+		</dependency>
 		<dependency>
 			<groupId>se.uu.ub.cora</groupId>
 			<artifactId>log4j</artifactId>
