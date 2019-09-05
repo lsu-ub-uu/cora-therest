@@ -20,10 +20,10 @@ package se.uu.ub.cora.therest.initialize;
 
 import java.util.Collection;
 
-import se.uu.ub.cora.bookkeeper.data.DataGroup;
+import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.searchstorage.SearchStorage;
 import se.uu.ub.cora.storage.RecordStorage;
-import se.uu.ub.cora.storage.SearchStorage;
-import se.uu.ub.cora.storage.SpiderReadResult;
+import se.uu.ub.cora.storage.StorageReadResult;
 
 public class RecordStorageSpy implements RecordStorage, SearchStorage {
 
@@ -59,7 +59,7 @@ public class RecordStorageSpy implements RecordStorage, SearchStorage {
 	}
 
 	@Override
-	public SpiderReadResult readAbstractList(String arg0, DataGroup arg1) {
+	public StorageReadResult readAbstractList(String arg0, DataGroup arg1) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -71,7 +71,7 @@ public class RecordStorageSpy implements RecordStorage, SearchStorage {
 	}
 
 	@Override
-	public SpiderReadResult readList(String arg0, DataGroup arg1) {
+	public StorageReadResult readList(String arg0, DataGroup arg1) {
 		// TODO Auto-generated method stub
 		return null;
 	}

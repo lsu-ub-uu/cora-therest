@@ -26,15 +26,15 @@ import se.uu.ub.cora.gatekeeperclient.authentication.AuthenticatorImp;
 import se.uu.ub.cora.httphandler.HttpHandlerFactory;
 import se.uu.ub.cora.httphandler.HttpHandlerFactoryImp;
 import se.uu.ub.cora.metacreator.extended.MetacreatorExtendedFunctionalityProvider;
+import se.uu.ub.cora.search.RecordIndexer;
+import se.uu.ub.cora.search.RecordSearch;
+import se.uu.ub.cora.searchstorage.SearchStorage;
 import se.uu.ub.cora.solr.SolrClientProviderImp;
 import se.uu.ub.cora.solrindex.SolrRecordIndexer;
 import se.uu.ub.cora.solrsearch.SolrRecordSearch;
 import se.uu.ub.cora.spider.authentication.Authenticator;
 import se.uu.ub.cora.spider.dependency.SpiderDependencyProvider;
 import se.uu.ub.cora.spider.extended.ExtendedFunctionalityProvider;
-import se.uu.ub.cora.spider.record.RecordSearch;
-import se.uu.ub.cora.spider.search.RecordIndexer;
-import se.uu.ub.cora.storage.SearchStorage;
 
 /**
  * SystemOneDependencyProvider wires up the system for use in "production", as this is in SystemOne
