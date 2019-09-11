@@ -41,7 +41,7 @@
 		<javax.ws.rs.version>2.1.1</javax.ws.rs.version>
 		<jersey.version>2.27</jersey.version>
 		<gatekeeperclient.version>1.3.0</gatekeeperclient.version>
-		<metacreator.version>1.3.0</metacreator.version>
+		<metacreator.version>1.4.0</metacreator.version>
 		<solrsearch.version>1.5.1</solrsearch.version>
 		<httphandler.version>1.0.0</httphandler.version>
 		<storage.version>1.3.0</storage.version>
