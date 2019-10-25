@@ -80,35 +80,35 @@ public final class ActionSpiderToRestConverterImp implements ActionSpiderToRestC
 		String urlForRecordTypeActions = converterInfo.baseURL + recordId + "/";
 		ActionLink actionLink = ActionLink.withAction(action);
 
-		if (Action.READ.equals(action)) {
+		if (Action.READ == action) {
 			actionLink.setRequestMethod("GET");
 			actionLink.setURL(urlWithRecordId);
 			actionLink.setAccept(APPLICATION_UUB_RECORD_JSON);
-		} else if (Action.UPDATE.equals(action)) {
+		} else if (Action.UPDATE == action) {
 			setUpPostForSingleRecord(actionLink);
 			actionLink.setURL(urlWithRecordId);
-		} else if (Action.READ_INCOMING_LINKS.equals(action)) {
+		} else if (Action.READ_INCOMING_LINKS == action) {
 			actionLink.setRequestMethod("GET");
 			urlWithRecordId = urlWithRecordId + "/incomingLinks";
 			actionLink.setURL(urlWithRecordId);
 			actionLink.setAccept(APPLICATION_UUB_RECORD_LIST_JSON);
-		} else if (Action.DELETE.equals(action)) {
+		} else if (Action.DELETE == action) {
 			actionLink.setRequestMethod("DELETE");
 			actionLink.setURL(urlWithRecordId);
-		} else if (Action.CREATE.equals(action)) {
+		} else if (Action.CREATE == action) {
 			actionLink.setRequestMethod("POST");
 			actionLink.setURL(urlForRecordTypeActions);
 			actionLink.setAccept(APPLICATION_UUB_RECORD_JSON);
 			actionLink.setContentType(APPLICATION_UUB_RECORD_JSON);
-		} else if (Action.UPLOAD.equals(action)) {
+		} else if (Action.UPLOAD == action) {
 			actionLink.setRequestMethod("POST");
 			actionLink.setURL(urlWithRecordId + "/master");
 			actionLink.setContentType("multipart/form-data");
-		} else if (Action.SEARCH.equals(action)) {
+		} else if (Action.SEARCH == action) {
 			setUpActionLinkForSearch(actionLink);
-		} else if (Action.INDEX.equals(action)) {
+		} else if (Action.INDEX == action) {
 			setUpActionLinkForIndexAction(actionLink);
-		} else if (Action.VALIDATE.equals(action)) {
+		} else if (Action.VALIDATE == action) {
 			actionLink.setRequestMethod("POST");
 			actionLink.setURL(converterInfo.baseURL + "workOrder/");
 			actionLink.setAccept(APPLICATION_UUB_RECORD_JSON);
