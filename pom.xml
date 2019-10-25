@@ -23,31 +23,27 @@
 	<parent>
 		<groupId>se.uu.ub.cora</groupId>
 		<artifactId>cora-parent</artifactId>
-		<version>0.9.0</version>
+		<version>1.0.2</version>
 	</parent>
 
 	<artifactId>therest</artifactId>
 	<packaging>jar</packaging>
 	<version>2.7-SNAPSHOT</version>
 	<name>The Rest</name>
-	<build>
-		<finalName>cora-${artifactId}-${version}</finalName>
-	</build>
-	
 	
 	<properties>
-		<json.version>1.0.0</json.version>
-		<spider.version>1.7.0</spider.version>
+		<json.version>2.0.1</json.version>
+		<spider.version>2.0.0</spider.version>
 		<javax.ws.rs.version>2.1.1</javax.ws.rs.version>
 		<jersey.version>2.27</jersey.version>
-		<gatekeeperclient.version>1.4.0</gatekeeperclient.version>
-		<metacreator.version>1.5.0</metacreator.version>
-		<solrsearch.version>1.5.1</solrsearch.version>
-		<httphandler.version>1.0.0</httphandler.version>
-		<storage.version>1.3.0</storage.version>
-		<search.version>1.0.0</search.version>
-		<searchstorage.version>1.1.0</searchstorage.version>
-		<logger.version>1.0.0</logger.version>
+		<gatekeeperclient.version>2.0.0</gatekeeperclient.version>
+		<metacreator.version>2.0.0</metacreator.version>
+		<solrsearch.version>2.0.0</solrsearch.version>
+		<httphandler.version>2.0.0</httphandler.version>
+		<storage.version>2.1.0</storage.version>
+		<search.version>2.0.0</search.version>
+		<searchstorage.version>2.0.0</searchstorage.version>
+		<logger.version>2.0.0</logger.version>
 		
 		<coralog4j.version>1.0.0</coralog4j.version>
 		
