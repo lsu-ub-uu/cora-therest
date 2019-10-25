@@ -26,4 +26,8 @@ public class TheRestInitializationException extends RuntimeException {
 		super(message);
 	}
 
+	public TheRestInitializationException(String message, Exception exception) {
+		super(message, exception);
+	}
+
 }

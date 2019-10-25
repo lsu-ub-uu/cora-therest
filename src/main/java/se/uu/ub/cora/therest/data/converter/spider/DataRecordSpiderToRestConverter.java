@@ -54,7 +54,7 @@ public final class DataRecordSpiderToRestConverter {
 		try {
 			return convertToRest();
 		} catch (Exception e) {
-			throw new ConverterException("No recordInfo found conversion not possible: " + e);
+			throw new ConverterException("No recordInfo found conversion not possible: " + e, e);
 		}
 	}
 

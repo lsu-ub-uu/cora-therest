@@ -27,6 +27,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.spider.data.Action;
+import se.uu.ub.cora.spider.data.DataMissingException;
 import se.uu.ub.cora.spider.data.SpiderDataAtomic;
 import se.uu.ub.cora.spider.data.SpiderDataGroup;
 import se.uu.ub.cora.spider.data.SpiderDataRecord;
@@ -93,7 +94,9 @@ public class DataRecordSpiderToRestConverterTest {
 		dataRecordSpiderToRestConverter.toRest();
 	}
 
-	@Test(expectedExceptions = ConverterException.class)
+	@Test(expectedExceptions = ConverterException.class, expectedExceptionsMessageRegExp = ""
+			+ "No recordInfo found conversion not possible:"
+			+ " se.uu.ub.cora.spider.data.DataMissingException: Requested dataGroup type doesn't exist")
 	public void testToRestWithActionLinkNoType() {
 		spiderDataRecord.addAction(Action.READ);
 
@@ -103,6 +106,22 @@ public class DataRecordSpiderToRestConverterTest {
 		spiderDataGroup.addChild(recordInfo);
 
 		dataRecordSpiderToRestConverter.toRest();
+	}
+
+	@Test
+	public void testToRestWithActionLinkNoTypeInitalExceptionIsSentAlong() {
+		spiderDataRecord.addAction(Action.READ);
+
+		SpiderDataGroup recordInfo = SpiderDataGroup.withNameInData("recordInfo");
+		recordInfo.addChild(SpiderDataAtomic.withNameInDataAndValue("id", "place:0001"));
+		recordInfo.addChild(SpiderDataAtomic.withNameInDataAndValue("createdBy", "userId"));
+		spiderDataGroup.addChild(recordInfo);
+		try {
+			dataRecordSpiderToRestConverter.toRest();
+
+		} catch (Exception e) {
+			assertTrue(e.getCause() instanceof DataMissingException);
+		}
 	}
 
 	@Test

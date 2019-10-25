@@ -87,7 +87,7 @@ public class RecordEndpoint {
 		url = getBaseURLFromURI();
 	}
 
-	private String getBaseURLFromURI() {
+	private final String getBaseURLFromURI() {
 		String baseURL = getBaseURLFromRequest();
 
 		baseURL = changeHttpToHttpsIfHeaderSaysSo(baseURL);
