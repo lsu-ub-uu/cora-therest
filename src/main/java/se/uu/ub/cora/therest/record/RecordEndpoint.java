@@ -95,7 +95,7 @@ public class RecordEndpoint {
 		return baseURL;
 	}
 
-	private String getBaseURLFromRequest() {
+	private final String getBaseURLFromRequest() {
 		String tempUrl = request.getRequestURL().toString();
 		String baseURL = tempUrl.substring(0, tempUrl.indexOf('/', AFTERHTTP));
 		baseURL += SpiderInstanceProvider.getInitInfo().get("theRestPublicPathToSystem");
@@ -107,7 +107,7 @@ public class RecordEndpoint {
 		String forwardedProtocol = request.getHeader("X-Forwarded-Proto");
 
 		if (ifForwardedProtocolExists(forwardedProtocol)) {
-			return baseURI.replaceAll("http:", forwardedProtocol + ":");
+			return baseURI.replace("http:", forwardedProtocol + ":");
 		}
 		return baseURI;
 	}
