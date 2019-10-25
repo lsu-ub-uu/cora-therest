@@ -45,7 +45,7 @@
 		<searchstorage.version>2.0.0</searchstorage.version>
 		<logger.version>2.0.0</logger.version>
 		
-		<coralog4j.version>1.0.0</coralog4j.version>
+		<coralog4j.version>2.0.0</coralog4j.version>
 		
 	</properties>
 
