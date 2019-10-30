@@ -3,7 +3,7 @@ module se.uu.ub.cora.therest {
 	requires transitive se.uu.ub.cora.logger;
 	requires transitive se.uu.ub.cora.storage;
 	requires transitive se.uu.ub.cora.spider;
-	requires transitive java.activation;
+	requires transitive jakarta.activation;
 	requires transitive java.ws.rs;
 	requires transitive javax.servlet.api;
 	requires transitive jersey.media.multipart;
