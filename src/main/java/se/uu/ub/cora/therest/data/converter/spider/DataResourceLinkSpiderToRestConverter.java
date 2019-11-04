@@ -20,6 +20,7 @@
 package se.uu.ub.cora.therest.data.converter.spider;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import se.uu.ub.cora.spider.data.Action;
@@ -60,16 +61,22 @@ public final class DataResourceLinkSpiderToRestConverter extends DataGroupSpider
 	private void createRestLinks() {
 		String url = convertInfo.recordURL + "/" + spiderDataResourceLink.getNameInData();
 		String mimeType = spiderDataResourceLink.extractAtomicValue("mimeType");
-		Map<String, ActionLink> actionLinks = new LinkedHashMap<>();
-		for (Action action : spiderDataResourceLink.getActions()) {
-			ActionLink actionLink = ActionLink.withAction(action);
+		List<Action> actions = spiderDataResourceLink.getActions();
 
-			actionLink.setRequestMethod("GET");
-			actionLink.setURL(url);
-			actionLink.setAccept(mimeType);
-
-			actionLinks.put("read", actionLink);
+		Map<String, ActionLink> actionLinks = new LinkedHashMap<>(actions.size());
+		for (Action action : actions) {
+			createRestLink(url, mimeType, actionLinks, action);
 		}
 		restDataResourceLink.setActionLinks(actionLinks);
+	}
+
+	private void createRestLink(String url, String mimeType, Map<String, ActionLink> actionLinks,
+			Action action) {
+		ActionLink actionLink = ActionLink.withAction(action);
+		actionLink.setRequestMethod("GET");
+		actionLink.setURL(url);
+		actionLink.setAccept(mimeType);
+
+		actionLinks.put("read", actionLink);
 	}
 }

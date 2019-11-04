@@ -55,7 +55,8 @@ public class TheRestModuleStarterImp implements TheRestModuleStarter {
 		try {
 			createInstanceOfDependencyProviderClass();
 		} catch (Exception e) {
-			throw new TheRestInitializationException("Error starting The Rest: " + e.getMessage());
+			throw new TheRestInitializationException("Error starting The Rest: " + e.getMessage(),
+					e);
 		}
 		createAndSetFactoryInSpiderInstanceProvider();
 

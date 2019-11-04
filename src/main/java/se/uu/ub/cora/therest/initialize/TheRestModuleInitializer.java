@@ -45,8 +45,8 @@ public class TheRestModuleInitializer implements ServletContextListener {
 	private Providers providers = new Providers();
 
 	@Override
-	public void contextInitialized(ServletContextEvent arg0) {
-		servletContext = arg0.getServletContext();
+	public void contextInitialized(ServletContextEvent contextEvent) {
+		servletContext = contextEvent.getServletContext();
 		initializeTheRest();
 	}
 

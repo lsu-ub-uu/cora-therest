@@ -25,9 +25,19 @@ import org.testng.annotations.Test;
 public class TheRestInitializationExceptionTest {
 	@Test
 	public void testInit() {
-		TheRestInitializationException notAuthenticated = new TheRestInitializationException(
+		TheRestInitializationException initializationException = new TheRestInitializationException(
 				"message");
 
-		assertEquals(notAuthenticated.getMessage(), "message");
+		assertEquals(initializationException.getMessage(), "message");
+	}
+
+	@Test
+	public void testInitWithException() {
+		Exception exception = new Exception();
+		TheRestInitializationException initializationException = new TheRestInitializationException(
+				"message", exception);
+
+		assertEquals(initializationException.getMessage(), "message");
+		assertEquals(initializationException.getCause(), exception);
 	}
 }

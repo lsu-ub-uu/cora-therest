@@ -57,9 +57,9 @@ public final class DataRecordLinkToJsonConverter extends DataGroupToJsonConverte
 	}
 
 	private boolean hasEmptyLinkedRepeatId() {
-		return restDataGroup.containsChildWithNameInData(LINKED_REPEAT_ID)
-				&& ((RestDataAtomic) restDataGroup.getFirstChildWithNameInData(LINKED_REPEAT_ID))
-						.getValue().equals("");
+		return restDataGroup.containsChildWithNameInData(LINKED_REPEAT_ID) && "".equals(
+				((RestDataAtomic) restDataGroup.getFirstChildWithNameInData(LINKED_REPEAT_ID))
+						.getValue());
 	}
 
 	private void possiblyAddActionLinks() {

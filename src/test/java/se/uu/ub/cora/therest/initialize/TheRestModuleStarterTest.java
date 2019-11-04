@@ -93,12 +93,27 @@ public class TheRestModuleStarterTest {
 
 	@Test(expectedExceptions = TheRestInitializationException.class, expectedExceptionsMessageRegExp = ""
 			+ "Error starting The Rest: se.uu.ub.cora.therest.initialize.NOTEXISTING")
-	public void testErrorIsThrownIfStarupOfDependencyProviderFails() throws Exception {
+	public void testErrorIsThrownIfStartupOfDependencyProviderFails() throws Exception {
 		initInfo.put("dependencyProviderClassName", "se.uu.ub.cora.therest.initialize.NOTEXISTING");
 		startTheRestModuleStarter();
 		String dependencyProviderClassName = SpiderInstanceProvider
 				.getDependencyProviderClassName();
 		assertEquals(dependencyProviderClassName, initInfo.get("dependencyProviderClassName"));
+	}
+
+	@Test
+	public void testErrorIsThrownIfStartupOfDependencyProviderFailsInitialExceptionIsSentAlong()
+			throws Exception {
+		initInfo.put("dependencyProviderClassName", "se.uu.ub.cora.therest.initialize.NOTEXISTING");
+		try {
+			startTheRestModuleStarter();
+			String dependencyProviderClassName = SpiderInstanceProvider
+					.getDependencyProviderClassName();
+			assertEquals(dependencyProviderClassName, initInfo.get("dependencyProviderClassName"));
+
+		} catch (Exception e) {
+			assertTrue(e.getCause() instanceof ClassNotFoundException);
+		}
 	}
 
 	@Test

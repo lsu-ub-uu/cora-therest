@@ -47,6 +47,8 @@ import se.uu.ub.cora.json.parser.JsonParseException;
 import se.uu.ub.cora.json.parser.JsonParser;
 import se.uu.ub.cora.json.parser.JsonValue;
 import se.uu.ub.cora.json.parser.org.OrgJsonParser;
+import se.uu.ub.cora.logger.Logger;
+import se.uu.ub.cora.logger.LoggerProvider;
 import se.uu.ub.cora.spider.authentication.AuthenticationException;
 import se.uu.ub.cora.spider.authorization.AuthorizationException;
 import se.uu.ub.cora.spider.data.DataMissingException;
@@ -81,13 +83,14 @@ public class RecordEndpoint {
 	private static final int AFTERHTTP = 10;
 	private String url;
 	HttpServletRequest request;
+	private Logger log = LoggerProvider.getLoggerForClass(RecordEndpoint.class);
 
 	public RecordEndpoint(@Context HttpServletRequest req) {
 		request = req;
 		url = getBaseURLFromURI();
 	}
 
-	private String getBaseURLFromURI() {
+	private final String getBaseURLFromURI() {
 		String baseURL = getBaseURLFromRequest();
 
 		baseURL = changeHttpToHttpsIfHeaderSaysSo(baseURL);
@@ -95,7 +98,7 @@ public class RecordEndpoint {
 		return baseURL;
 	}
 
-	private String getBaseURLFromRequest() {
+	private final String getBaseURLFromRequest() {
 		String tempUrl = request.getRequestURL().toString();
 		String baseURL = tempUrl.substring(0, tempUrl.indexOf('/', AFTERHTTP));
 		baseURL += SpiderInstanceProvider.getInitInfo().get("theRestPublicPathToSystem");
@@ -107,7 +110,7 @@ public class RecordEndpoint {
 		String forwardedProtocol = request.getHeader("X-Forwarded-Proto");
 
 		if (ifForwardedProtocolExists(forwardedProtocol)) {
-			return baseURI.replaceAll("http:", forwardedProtocol + ":");
+			return baseURI.replace("http:", forwardedProtocol + ":");
 		}
 		return baseURI;
 	}
@@ -216,7 +219,8 @@ public class RecordEndpoint {
 		if (error instanceof AuthenticationException) {
 			return buildResponse(Response.Status.UNAUTHORIZED);
 		}
-
+		log.logErrorUsingMessageAndException("Error handling request: " + error.getMessage(),
+				error);
 		return buildResponseIncludingMessage(error, Response.Status.INTERNAL_SERVER_ERROR);
 	}
 

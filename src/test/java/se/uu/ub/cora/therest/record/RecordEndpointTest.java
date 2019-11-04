@@ -42,8 +42,10 @@ import org.glassfish.jersey.media.multipart.FormDataContentDisposition.FormDataC
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.logger.LoggerProvider;
 import se.uu.ub.cora.spider.data.SpiderDataGroup;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
+import se.uu.ub.cora.therest.log.LoggerFactorySpy;
 
 public class RecordEndpointTest {
 	private static final String DUMMY_NON_AUTHORIZED_TOKEN = "dummyNonAuthorizedToken";
@@ -68,9 +70,13 @@ public class RecordEndpointTest {
 	private Response response;
 	private TestHttpServletRequest request;
 	private Map<String, String> initInfo = new HashMap<>();
+	private LoggerFactorySpy loggerFactorySpy;
+	private String testedClassName = "RecordEndpoint";
 
 	@BeforeMethod
 	public void beforeMethod() {
+		loggerFactorySpy = new LoggerFactorySpy();
+		LoggerProvider.setLoggerFactory(loggerFactorySpy);
 		initInfo.put("theRestPublicPathToSystem", "/systemone/rest/");
 		factorySpy = new SpiderInstanceFactorySpy();
 		SpiderInstanceProvider.setSpiderInstanceFactory(factorySpy);
@@ -501,9 +507,16 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testCreateRecordUnexpectedError() {
+		assertEquals(loggerFactorySpy.getNoOfErrorExceptionsUsingClassName(testedClassName), 0);
 		response = recordEndpoint.createRecord(AUTH_TOKEN, AUTH_TOKEN, "place_unexpected_error",
 				jsonToCreateFrom);
 		assertResponseStatusIs(Response.Status.INTERNAL_SERVER_ERROR);
+		assertEquals(loggerFactorySpy.getNoOfErrorExceptionsUsingClassName(testedClassName), 1);
+		assertEquals(loggerFactorySpy.getErrorLogMessageUsingClassNameAndNo(testedClassName, 0),
+				"Error handling request: Some error");
+		Exception caughtException = loggerFactorySpy
+				.getErrorExceptionUsingClassNameAndNo(testedClassName, 0);
+		assertTrue(caughtException instanceof NullPointerException);
 	}
 
 	@Test
