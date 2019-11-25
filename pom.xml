@@ -33,21 +33,23 @@
 	
 	<properties>
 		<json.version>2.0.1</json.version>
-		<spider.version>2.0.1</spider.version>
+		<spider.version>3.1.0</spider.version>
 		<javax.ws.rs.version>2.1.1</javax.ws.rs.version>
 		<jaxb-api.version>2.3.1</jaxb-api.version>
 		<servlet-api.version>4.0.1</servlet-api.version>
 		<jersey.version>2.29.1</jersey.version>
-		<gatekeeperclient.version>2.0.1</gatekeeperclient.version>
-		<metacreator.version>2.0.1</metacreator.version>
-		<solrsearch.version>2.0.0</solrsearch.version>
+		<gatekeeperclient.version>3.0.0</gatekeeperclient.version>
+		<metacreator.version>3.0.0</metacreator.version>
+		<solrsearch.version>3.1.0</solrsearch.version>
 		<httphandler.version>2.0.0</httphandler.version>
-		<storage.version>2.1.0</storage.version>
-		<search.version>2.0.0</search.version>
-		<searchstorage.version>2.0.0</searchstorage.version>
+		<storage.version>3.1.0</storage.version>
+		<search.version>3.1.0</search.version>
+		<searchstorage.version>3.1.0</searchstorage.version>
 		<logger.version>2.0.0</logger.version>
-		
 		<coralog4j.version>2.0.0</coralog4j.version>
+		
+		<coradata.version>3.1.0</coradata.version>
+		<basicdata.version>1.1.0</basicdata.version>
 		
 	</properties>
 
@@ -128,6 +130,17 @@
 			<groupId>se.uu.ub.cora</groupId>
 			<artifactId>log4j</artifactId>
 			<version>${coralog4j.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>se.uu.ub.cora</groupId>
+			<artifactId>coradata</artifactId>
+			<version>${coradata.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>se.uu.ub.cora</groupId>
+			<artifactId>basicdata</artifactId>
+			<version>${basicdata.version}</version>
 			<scope>runtime</scope>
 		</dependency>
 

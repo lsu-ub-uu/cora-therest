@@ -21,12 +21,13 @@ package se.uu.ub.cora.therest.record;
 
 import se.uu.ub.cora.bookkeeper.linkcollector.DataRecordLinkCollector;
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.therest.data.DataGroupSpy;
 
 public class DataRecordLinkCollectorSpy implements DataRecordLinkCollector {
 
 	public boolean collectLinksWasCalled = false;
 
-	public DataGroup collectedDataLinks = DataGroup.withNameInData("collectedDataLinks");
+	public DataGroup collectedDataLinks = new DataGroupSpy("collectedDataLinks");
 
 	@Override
 	public DataGroup collectLinks(String metadataId, DataGroup dataGroup, String fromRecordType,
