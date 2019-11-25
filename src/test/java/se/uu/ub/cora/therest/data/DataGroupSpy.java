@@ -20,11 +20,13 @@
 package se.uu.ub.cora.therest.data;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import se.uu.ub.cora.data.DataAtomic;
+import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
 
@@ -151,6 +153,13 @@ public class DataGroupSpy implements DataGroup {
 
 	@Override
 	public Map<String, String> getAttributes() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Collection<DataGroup> getAllGroupsWithNameInDataAndAttributes(String childNameInData,
+			DataAttribute... childAttributes) {
 		// TODO Auto-generated method stub
 		return null;
 	}
