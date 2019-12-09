@@ -18,17 +18,26 @@
  */
 package se.uu.ub.cora.therest.data.converter.spider;
 
-import java.util.List;
+import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataGroupFactory;
 
-import se.uu.ub.cora.spider.data.SpiderDataGroup;
-import se.uu.ub.cora.therest.data.converter.ConverterInfo;
+public class DataGroupFactorySpy implements DataGroupFactory {
 
-public interface SpiderToRestConverterFactory {
+	public String nameInData;
+	private DataGroupSpy factoredDataGroup;
 
-	SpiderToRestConverter factorForSpiderDataGroupWithConverterInfo(SpiderDataGroup spiderDataGroup,
-			ConverterInfo converterInfo);
+	@Override
+	public DataGroup factorUsingNameInData(String nameInData) {
+		this.nameInData = nameInData;
+		factoredDataGroup = new DataGroupSpy(nameInData);
+		return factoredDataGroup;
+	}
 
-	ActionSpiderToRestConverter factorForActionsUsingConverterInfoAndDataGroup(List<Action> actions,
-			ConverterInfo converterInfo, SpiderDataGroup spiderDataGroup);
+	@Override
+	public DataGroup factorAsLinkWithNameInDataTypeAndId(String nameInData, String recordType,
+			String recordId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

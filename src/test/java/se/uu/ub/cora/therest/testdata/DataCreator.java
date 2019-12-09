@@ -20,7 +20,6 @@
 package se.uu.ub.cora.therest.testdata;
 
 import se.uu.ub.cora.data.DataGroup;
-import se.uu.ub.cora.spider.data.Action;
 import se.uu.ub.cora.spider.data.SpiderDataAtomic;
 import se.uu.ub.cora.spider.data.SpiderDataGroup;
 import se.uu.ub.cora.spider.data.SpiderDataResourceLink;

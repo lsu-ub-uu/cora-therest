@@ -25,39 +25,37 @@ import static org.testng.Assert.assertFalse;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.spider.data.Action;
-import se.uu.ub.cora.spider.data.SpiderDataAtomic;
-import se.uu.ub.cora.spider.data.SpiderDataGroup;
-import se.uu.ub.cora.spider.data.SpiderDataRecordLink;
+import se.uu.ub.cora.data.Action;
+import se.uu.ub.cora.data.DataAtomic;
+import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataRecordLink;
 import se.uu.ub.cora.therest.data.ActionLink;
 import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.RestDataRecordLink;
 import se.uu.ub.cora.therest.data.converter.ConverterInfo;
 
-public class DataRecordLinkSpiderToRestConverterTest {
+public class DataRecordLinkToRestConverterTest {
 	private ConverterInfo converterInfo = ConverterInfo.withBaseURLAndRecordURLAndTypeAndId(
 			"http://localhost:8080/therest/rest/record/",
 			"http://localhost:8080/therest/rest/record/someRecordType/someRecordId",
 			"someRecordType", "someRecordId");
 
-	private SpiderDataRecordLink spiderDataRecordLink;
-	private DataRecordLinkSpiderToRestConverter dataRecordLinkSpiderToRestConverter;
+	private DataRecordLink spiderDataRecordLink;
+	private DataRecordLinkToRestConverter dataRecordLinkSpiderToRestConverter;
 
 	@BeforeMethod
 	public void setUp() {
-		spiderDataRecordLink = SpiderDataRecordLink.withNameInData("nameInData");
+		spiderDataRecordLink = new DataRecordLinkSpy("nameInData");
 
-		SpiderDataAtomic linkedRecordType = SpiderDataAtomic
-				.withNameInDataAndValue("linkedRecordType", "linkedRecordType");
+		DataAtomic linkedRecordType = new DataAtomicSpy("linkedRecordType", "linkedRecordType");
 		spiderDataRecordLink.addChild(linkedRecordType);
 
-		SpiderDataAtomic linkedRecordId = SpiderDataAtomic.withNameInDataAndValue("linkedRecordId",
-				"linkedRecordId");
+		DataAtomic linkedRecordId = new DataAtomicSpy("linkedRecordId", "linkedRecordId");
 		spiderDataRecordLink.addChild(linkedRecordId);
 
-		dataRecordLinkSpiderToRestConverter = DataRecordLinkSpiderToRestConverter
-				.fromSpiderDataRecordLinkWithConverterInfo(spiderDataRecordLink, converterInfo);
+		dataRecordLinkSpiderToRestConverter = DataRecordLinkToRestConverter
+				.fromDataRecordLinkWithConverterInfo(spiderDataRecordLink, converterInfo);
 
 	}
 
@@ -105,8 +103,7 @@ public class DataRecordLinkSpiderToRestConverterTest {
 
 	@Test
 	public void testToRestWithLinkedRepeatId() {
-		SpiderDataAtomic linkedRepeatId = SpiderDataAtomic.withNameInDataAndValue("linkedRepeatId",
-				"linkedOne");
+		DataAtomic linkedRepeatId = new DataAtomicSpy("linkedRepeatId", "linkedOne");
 		spiderDataRecordLink.addChild(linkedRepeatId);
 		RestDataRecordLink restDataRecordLink = dataRecordLinkSpiderToRestConverter.toRest();
 
@@ -117,7 +114,7 @@ public class DataRecordLinkSpiderToRestConverterTest {
 
 	@Test
 	public void testToRestWithLinkedPath() {
-		SpiderDataGroup spiderDataGroup = SpiderDataGroup.withNameInData("linkedPath");
+		DataGroup spiderDataGroup = new DataGroupSpy("linkedPath");
 		spiderDataRecordLink.addChild(spiderDataGroup);
 		RestDataRecordLink restDataRecordLink = dataRecordLinkSpiderToRestConverter.toRest();
 		RestDataGroup linkedPath = (RestDataGroup) restDataRecordLink
@@ -127,8 +124,8 @@ public class DataRecordLinkSpiderToRestConverterTest {
 
 	@Test
 	public void testToRestWithAction() {
-		dataRecordLinkSpiderToRestConverter = DataRecordLinkSpiderToRestConverter
-				.fromSpiderDataRecordLinkWithConverterInfo(spiderDataRecordLink, converterInfo);
+		dataRecordLinkSpiderToRestConverter = DataRecordLinkToRestConverter
+				.fromDataRecordLinkWithConverterInfo(spiderDataRecordLink, converterInfo);
 
 		spiderDataRecordLink.addAction(Action.READ);
 		RestDataRecordLink restDataRecordLink = dataRecordLinkSpiderToRestConverter.toRest();

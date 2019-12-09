@@ -18,17 +18,38 @@
  */
 package se.uu.ub.cora.therest.data.converter.spider;
 
-import java.util.List;
+import se.uu.ub.cora.data.DataAtomic;
 
-import se.uu.ub.cora.spider.data.SpiderDataGroup;
-import se.uu.ub.cora.therest.data.converter.ConverterInfo;
+public class DataAtomicSpy implements DataAtomic {
 
-public interface SpiderToRestConverterFactory {
+	public String nameInData;
+	public String value;
+	public String repeatId;
 
-	SpiderToRestConverter factorForSpiderDataGroupWithConverterInfo(SpiderDataGroup spiderDataGroup,
-			ConverterInfo converterInfo);
+	public DataAtomicSpy(String nameInData, String value) {
+		this.nameInData = nameInData;
+		this.value = value;
+	}
 
-	ActionSpiderToRestConverter factorForActionsUsingConverterInfoAndDataGroup(List<Action> actions,
-			ConverterInfo converterInfo, SpiderDataGroup spiderDataGroup);
+	@Override
+	public String getRepeatId() {
+		return repeatId;
+	}
+
+	@Override
+	public String getNameInData() {
+		return nameInData;
+	}
+
+	@Override
+	public String getValue() {
+		return value;
+	}
+
+	@Override
+	public void setRepeatId(String repeatId) {
+		this.repeatId = repeatId;
+
+	}
 
 }

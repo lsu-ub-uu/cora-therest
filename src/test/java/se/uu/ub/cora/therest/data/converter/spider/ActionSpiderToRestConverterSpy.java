@@ -3,7 +3,7 @@ package se.uu.ub.cora.therest.data.converter.spider;
 import java.util.HashMap;
 import java.util.Map;
 
-import se.uu.ub.cora.spider.data.Action;
+import se.uu.ub.cora.data.Action;
 import se.uu.ub.cora.therest.data.ActionLink;
 
 public class ActionSpiderToRestConverterSpy implements ActionSpiderToRestConverter {

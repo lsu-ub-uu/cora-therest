@@ -19,7 +19,7 @@
 
 package se.uu.ub.cora.therest.data;
 
-import se.uu.ub.cora.spider.data.Action;
+import se.uu.ub.cora.data.Action;
 
 public final class ActionLink {
 

@@ -24,33 +24,34 @@ import static org.testng.Assert.assertEquals;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.spider.data.SpiderDataAtomic;
+import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.therest.data.RestDataAtomic;
 
-public class DataAtomicRestToSpiderConverterTest {
-	private RestDataAtomic restDataAtomic;
-	private DataAtomicRestToSpiderConverter converter;
+public class DataAtomicToRestConverterTest {
+	private DataAtomic dataAtomic;
+	private DataAtomicToRestConverter atomicSpiderToRestConverter;
 
 	@BeforeMethod
 	public void setUp() {
-		restDataAtomic = RestDataAtomic.withNameInDataAndValue("nameInData", "value");
-		converter = DataAtomicRestToSpiderConverter.fromRestDataAtomic(restDataAtomic);
+		dataAtomic = new DataAtomicSpy("nameInData", "value");
+		atomicSpiderToRestConverter = DataAtomicToRestConverter
+				.fromSpiderDataAtomic(dataAtomic);
 
 	}
 
 	@Test
-	public void testToSpider() {
-		SpiderDataAtomic spiderDataAtomic = converter.toSpider();
-		assertEquals(spiderDataAtomic.getNameInData(), "nameInData");
-		assertEquals(spiderDataAtomic.getValue(), "value");
+	public void testToRest() {
+		RestDataAtomic restDataAtomic = atomicSpiderToRestConverter.toRest();
+		assertEquals(restDataAtomic.getNameInData(), "nameInData");
+		assertEquals(restDataAtomic.getValue(), "value");
 	}
 
 	@Test
-	public void testToSpiderWithRepeatId() {
-		restDataAtomic.setRepeatId("x3");
-		SpiderDataAtomic spiderDataAtomic = converter.toSpider();
-		assertEquals(spiderDataAtomic.getNameInData(), "nameInData");
-		assertEquals(spiderDataAtomic.getValue(), "value");
-		assertEquals(spiderDataAtomic.getRepeatId(), "x3");
+	public void testToRestWithRepeatId() {
+		dataAtomic.setRepeatId("e4");
+		RestDataAtomic restDataAtomic = atomicSpiderToRestConverter.toRest();
+		assertEquals(restDataAtomic.getNameInData(), "nameInData");
+		assertEquals(restDataAtomic.getValue(), "value");
+		assertEquals(restDataAtomic.getRepeatId(), "e4");
 	}
 }

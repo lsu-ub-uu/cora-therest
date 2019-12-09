@@ -15,7 +15,8 @@
  *
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
- */package se.uu.ub.cora.therest.data;
+ */
+package se.uu.ub.cora.therest.data;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
@@ -24,7 +25,7 @@ import static org.testng.Assert.assertTrue;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.spider.data.Action;
+import se.uu.ub.cora.data.Action;
 
 public class RestDataResourceLinkTest {
 	private RestDataResourceLink resourceLink;

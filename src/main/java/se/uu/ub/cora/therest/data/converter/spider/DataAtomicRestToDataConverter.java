@@ -19,27 +19,28 @@
 
 package se.uu.ub.cora.therest.data.converter.spider;
 
-import se.uu.ub.cora.spider.data.SpiderDataAtomic;
+import se.uu.ub.cora.data.DataAtomic;
+import se.uu.ub.cora.data.DataAtomicProvider;
 import se.uu.ub.cora.therest.data.RestDataAtomic;
 
-public final class DataAtomicSpiderToRestConverter {
+public final class DataAtomicRestToDataConverter {
 
-	public static DataAtomicSpiderToRestConverter fromSpiderDataAtomic(
-			SpiderDataAtomic spiderDataAtomic) {
-		return new DataAtomicSpiderToRestConverter(spiderDataAtomic);
+	public static DataAtomicRestToDataConverter fromRestDataAtomic(
+			RestDataAtomic restDataAtomic) {
+		return new DataAtomicRestToDataConverter(restDataAtomic);
 	}
 
-	private SpiderDataAtomic spiderDataAtomic;
+	private RestDataAtomic restDataAtomic;
 
-	private DataAtomicSpiderToRestConverter(SpiderDataAtomic spiderDataAtomic) {
-		this.spiderDataAtomic = spiderDataAtomic;
+	private DataAtomicRestToDataConverter(RestDataAtomic restDataAtomic) {
+		this.restDataAtomic = restDataAtomic;
 	}
 
-	public RestDataAtomic toRest() {
-		RestDataAtomic restDataAtomic = RestDataAtomic.withNameInDataAndValue(
-				spiderDataAtomic.getNameInData(), spiderDataAtomic.getValue());
-		restDataAtomic.setRepeatId(spiderDataAtomic.getRepeatId());
-		return restDataAtomic;
+	public DataAtomic convert() {
+		DataAtomic spiderDataAtomic = DataAtomicProvider.getDataAtomicUsingNameInDataAndValue(
+				restDataAtomic.getNameInData(), restDataAtomic.getValue());
+		spiderDataAtomic.setRepeatId(restDataAtomic.getRepeatId());
+		return spiderDataAtomic;
 	}
 
 }

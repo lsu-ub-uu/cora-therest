@@ -28,9 +28,8 @@ import java.util.Map;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.spider.data.Action;
-import se.uu.ub.cora.spider.data.SpiderDataAtomic;
-import se.uu.ub.cora.spider.data.SpiderDataGroup;
+import se.uu.ub.cora.data.Action;
+import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.therest.data.ActionLink;
 import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataGroup;
@@ -241,11 +240,10 @@ public class ActionSpiderToRestConverterTest {
 		Action action = Action.SEARCH;
 		actions.add(action);
 
-		SpiderDataGroup dataGroup = SpiderDataGroup.withNameInData("someRecordType");
-		SpiderDataGroup search = SpiderDataGroup.withNameInData("search");
-		search.addChild(SpiderDataAtomic.withNameInDataAndValue("linkedRecordType", "search"));
-		search.addChild(SpiderDataAtomic.withNameInDataAndValue("linkedRecordId",
-				"defaultSearchForRecordType"));
+		DataGroup dataGroup = new DataGroupSpy("someRecordType");
+		DataGroup search = new DataGroupSpy("search");
+		search.addChild(new DataAtomicSpy("linkedRecordType", "search"));
+		search.addChild(new DataAtomicSpy("linkedRecordId", "defaultSearchForRecordType"));
 		dataGroup.addChild(search);
 		ConverterInfo converterInfo = ConverterInfo.withBaseURLAndRecordURLAndTypeAndId(
 				defaultConverterInfo.baseURL, defaultConverterInfo.recordURL, "recordType",
@@ -269,7 +267,7 @@ public class ActionSpiderToRestConverterTest {
 		Action action = Action.SEARCH;
 		actions.add(action);
 
-		SpiderDataGroup dataGroup = SpiderDataGroup.withNameInData("someRecordType");
+		DataGroup dataGroup = new DataGroupSpy("someRecordType");
 
 		ConverterInfo converterInfo = ConverterInfo.withBaseURLAndRecordURLAndTypeAndId(
 				defaultConverterInfo.baseURL, defaultConverterInfo.recordURL, "recordType",

@@ -72,7 +72,7 @@ import se.uu.ub.cora.therest.data.converter.DataRecordToJsonConverter;
 import se.uu.ub.cora.therest.data.converter.JsonToDataConverter;
 import se.uu.ub.cora.therest.data.converter.JsonToDataConverterFactory;
 import se.uu.ub.cora.therest.data.converter.JsonToDataConverterFactoryImp;
-import se.uu.ub.cora.therest.data.converter.spider.DataGroupRestToSpiderConverter;
+import se.uu.ub.cora.therest.data.converter.spider.DataGroupRestToDataConverter;
 import se.uu.ub.cora.therest.data.converter.spider.DataListSpiderToRestConverter;
 import se.uu.ub.cora.therest.data.converter.spider.DataRecordSpiderToRestConverter;
 import se.uu.ub.cora.therest.data.converter.spider.SpiderToRestConverterFactory;
@@ -158,7 +158,7 @@ public class RecordEndpoint {
 
 	private SpiderDataGroup convertJsonStringToSpiderDataGroup(String jsonRecord) {
 		RestDataGroup restDataGroup = convertJsonStringToRestDataGroup(jsonRecord);
-		return DataGroupRestToSpiderConverter.fromRestDataGroup(restDataGroup).toSpider();
+		return DataGroupRestToDataConverter.fromRestDataGroup(restDataGroup).convert();
 	}
 
 	private RestDataGroup convertJsonStringToRestDataGroup(String jsonRecord) {
@@ -533,7 +533,7 @@ public class RecordEndpoint {
 			String name) {
 		JsonToDataConverter jsonToDataConverter = createConverter(jsonObject, name);
 		RestDataGroup restDataGroup = (RestDataGroup) jsonToDataConverter.toInstance();
-		return DataGroupRestToSpiderConverter.fromRestDataGroup(restDataGroup).toSpider();
+		return DataGroupRestToDataConverter.fromRestDataGroup(restDataGroup).convert();
 	}
 
 	private JsonToDataConverter createConverter(JsonObject jsonObject, String name) {

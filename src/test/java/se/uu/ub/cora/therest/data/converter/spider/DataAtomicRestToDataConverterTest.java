@@ -24,34 +24,37 @@ import static org.testng.Assert.assertEquals;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.spider.data.SpiderDataAtomic;
+import se.uu.ub.cora.data.DataAtomic;
+import se.uu.ub.cora.data.DataAtomicProvider;
 import se.uu.ub.cora.therest.data.RestDataAtomic;
 
-public class DataAtomicSpiderToRestConverterTest {
-	private SpiderDataAtomic spiderDataAtomic;
-	private DataAtomicSpiderToRestConverter atomicSpiderToRestConverter;
+public class DataAtomicRestToDataConverterTest {
+	private RestDataAtomic restDataAtomic;
+	private DataAtomicRestToDataConverter converter;
+	private DataAtomicFactorySpy dataAtomicFactory;
 
 	@BeforeMethod
 	public void setUp() {
-		spiderDataAtomic = SpiderDataAtomic.withNameInDataAndValue("nameInData", "value");
-		atomicSpiderToRestConverter = DataAtomicSpiderToRestConverter
-				.fromSpiderDataAtomic(spiderDataAtomic);
+		dataAtomicFactory = new DataAtomicFactorySpy();
+		DataAtomicProvider.setDataAtomicFactory(dataAtomicFactory);
+		restDataAtomic = RestDataAtomic.withNameInDataAndValue("nameInData", "value");
+		converter = DataAtomicRestToDataConverter.fromRestDataAtomic(restDataAtomic);
 
 	}
 
 	@Test
-	public void testToRest() {
-		RestDataAtomic restDataAtomic = atomicSpiderToRestConverter.toRest();
-		assertEquals(restDataAtomic.getNameInData(), "nameInData");
-		assertEquals(restDataAtomic.getValue(), "value");
+	public void testToSpider() {
+		DataAtomic spiderDataAtomic = converter.convert();
+		assertEquals(spiderDataAtomic.getNameInData(), "nameInData");
+		assertEquals(spiderDataAtomic.getValue(), "value");
 	}
 
 	@Test
-	public void testToRestWithRepeatId() {
-		spiderDataAtomic.setRepeatId("e4");
-		RestDataAtomic restDataAtomic = atomicSpiderToRestConverter.toRest();
-		assertEquals(restDataAtomic.getNameInData(), "nameInData");
-		assertEquals(restDataAtomic.getValue(), "value");
-		assertEquals(restDataAtomic.getRepeatId(), "e4");
+	public void testToSpiderWithRepeatId() {
+		restDataAtomic.setRepeatId("x3");
+		DataAtomic spiderDataAtomic = converter.convert();
+		assertEquals(spiderDataAtomic.getNameInData(), "nameInData");
+		assertEquals(spiderDataAtomic.getValue(), "value");
+		assertEquals(spiderDataAtomic.getRepeatId(), "x3");
 	}
 }

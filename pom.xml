@@ -33,7 +33,7 @@
 	
 	<properties>
 		<json.version>2.0.1</json.version>
-		<spider.version>3.1.0</spider.version>
+		<spider.version>3.2-SNAPSHOT</spider.version>
 		<javax.ws.rs.version>2.1.1</javax.ws.rs.version>
 		<jaxb-api.version>2.3.1</jaxb-api.version>
 		<servlet-api.version>4.0.1</servlet-api.version>
@@ -48,7 +48,7 @@
 		<logger.version>2.0.0</logger.version>
 		<coralog4j.version>2.0.0</coralog4j.version>
 		
-		<coradata.version>3.1.0</coradata.version>
+		<coradata.version>3.2-SNAPSHOT</coradata.version>
 		<basicdata.version>1.1.0</basicdata.version>
 		
 	</properties>

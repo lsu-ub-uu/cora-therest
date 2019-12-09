@@ -28,9 +28,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.spider.data.SpiderDataAtomic;
-import se.uu.ub.cora.spider.data.SpiderDataGroup;
-import se.uu.ub.cora.spider.data.SpiderDataRecordLink;
+import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataElement;
 import se.uu.ub.cora.therest.data.RestDataGroup;
@@ -45,12 +43,12 @@ public class DataGroupSpiderToRestConverterTest {
 			"http://localhost:8080/therest/rest/record/someRecordType/someRecordId",
 			"someRecordType", "someRecordId");
 
-	private SpiderDataGroup spiderDataGroup;
+	private DataGroup spiderDataGroup;
 	private DataGroupSpiderToRestConverter dataGroupSpiderToRestConverter;
 
 	@BeforeMethod
 	public void beforeMethod() {
-		spiderDataGroup = SpiderDataGroup.withNameInData("nameInData");
+		spiderDataGroup = new DataGroupSpy("nameInData");
 		dataGroupSpiderToRestConverter = DataGroupSpiderToRestConverter
 				.fromSpiderDataGroupWithDataGroupAndConverterInfo(spiderDataGroup, converterInfo);
 	}
@@ -128,7 +126,7 @@ public class DataGroupSpiderToRestConverterTest {
 
 	@Test
 	public void testToRestWithGroupChild() {
-		spiderDataGroup.addChild(SpiderDataGroup.withNameInData("childNameInData"));
+		spiderDataGroup.addChild(DataGroup.withNameInData("childNameInData"));
 		RestDataGroup restDataGroup = dataGroupSpiderToRestConverter.toRest();
 		RestDataGroup restDataGroupChild = (RestDataGroup) restDataGroup.getChildren().iterator()
 				.next();
@@ -139,8 +137,8 @@ public class DataGroupSpiderToRestConverterTest {
 	public void testToRestWithGroupLevelsOfChildren() {
 		spiderDataGroup.addChild(
 				SpiderDataAtomic.withNameInDataAndValue("atomicNameInData", "atomicValue"));
-		SpiderDataGroup dataGroup2 = SpiderDataGroup.withNameInData("childNameInData");
-		dataGroup2.addChild(SpiderDataGroup.withNameInData("grandChildNameInData"));
+		DataGroup dataGroup2 = DataGroup.withNameInData("childNameInData");
+		dataGroup2.addChild(DataGroup.withNameInData("grandChildNameInData"));
 		spiderDataGroup.addChild(dataGroup2);
 		RestDataGroup restDataGroup = dataGroupSpiderToRestConverter.toRest();
 		Iterator<RestDataElement> iterator = restDataGroup.getChildren().iterator();

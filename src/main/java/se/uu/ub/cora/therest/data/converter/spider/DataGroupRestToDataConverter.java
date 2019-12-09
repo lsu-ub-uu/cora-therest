@@ -22,56 +22,57 @@ package se.uu.ub.cora.therest.data.converter.spider;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import se.uu.ub.cora.spider.data.SpiderDataAtomic;
-import se.uu.ub.cora.spider.data.SpiderDataGroup;
+import se.uu.ub.cora.data.DataAtomic;
+import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataGroupProvider;
 import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataElement;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.converter.ConverterException;
 
-public final class DataGroupRestToSpiderConverter {
+public final class DataGroupRestToDataConverter {
 	private RestDataGroup restDataGroup;
-	private SpiderDataGroup spiderDataGroup;
+	private DataGroup dataGroup;
 
-	public static DataGroupRestToSpiderConverter fromRestDataGroup(RestDataGroup restDataGroup) {
-		return new DataGroupRestToSpiderConverter(restDataGroup);
+	public static DataGroupRestToDataConverter fromRestDataGroup(RestDataGroup restDataGroup) {
+		return new DataGroupRestToDataConverter(restDataGroup);
 	}
 
-	private DataGroupRestToSpiderConverter(RestDataGroup restDataGroup) {
+	private DataGroupRestToDataConverter(RestDataGroup restDataGroup) {
 		this.restDataGroup = restDataGroup;
 	}
 
-	public SpiderDataGroup toSpider() {
+	public DataGroup convert() {
 		try {
-			return tryToSpiderate();
+			return tryToConvert();
 		} catch (ClassCastException e) {
 			throw new ConverterException("Data has misplaced data types, conversion not possible",
 					e);
 		}
 	}
 
-	private SpiderDataGroup tryToSpiderate() {
-		spiderDataGroup = SpiderDataGroup.withNameInData(restDataGroup.getNameInData());
-		spiderDataGroup.setRepeatId(restDataGroup.getRepeatId());
-		addAttributesToSpiderGroup();
-		addChildrenToSpiderGroup();
-		return spiderDataGroup;
+	private DataGroup tryToConvert() {
+		dataGroup = DataGroupProvider.getDataGroupUsingNameInData(restDataGroup.getNameInData());
+		dataGroup.setRepeatId(restDataGroup.getRepeatId());
+		addAttributesToDataGroup();
+		addChildrenToDataGroup();
+		return dataGroup;
 	}
 
-	private void addAttributesToSpiderGroup() {
+	private void addAttributesToDataGroup() {
 		Map<String, String> attributes = restDataGroup.getAttributes();
 		for (Entry<String, String> entry : attributes.entrySet()) {
-			spiderDataGroup.addAttributeByIdWithValue(entry.getKey(), entry.getValue());
+			dataGroup.addAttributeByIdWithValue(entry.getKey(), entry.getValue());
 		}
 	}
 
-	private void addChildrenToSpiderGroup() {
+	private void addChildrenToDataGroup() {
 		for (RestDataElement restDataElement : restDataGroup.getChildren()) {
-			addChildToSpiderGroup(restDataElement);
+			addChildToDataGroup(restDataElement);
 		}
 	}
 
-	private void addChildToSpiderGroup(RestDataElement restDataElement) {
+	private void addChildToDataGroup(RestDataElement restDataElement) {
 		if (restDataElement instanceof RestDataGroup) {
 			addGroupChild(restDataElement);
 		} else {
@@ -80,15 +81,15 @@ public final class DataGroupRestToSpiderConverter {
 	}
 
 	private void addGroupChild(RestDataElement restDataElement) {
-		SpiderDataGroup spiderDataGroupChild = DataGroupRestToSpiderConverter
-				.fromRestDataGroup((RestDataGroup) restDataElement).toSpider();
-		spiderDataGroup.addChild(spiderDataGroupChild);
+		DataGroup dataGroupChild = DataGroupRestToDataConverter
+				.fromRestDataGroup((RestDataGroup) restDataElement).convert();
+		dataGroup.addChild(dataGroupChild);
 	}
 
 	private void addAtomicChild(RestDataElement restDataElement) {
-		SpiderDataAtomic spiderDataAtomic = DataAtomicRestToSpiderConverter
-				.fromRestDataAtomic((RestDataAtomic) restDataElement).toSpider();
-		spiderDataGroup.addChild(spiderDataAtomic);
+		DataAtomic dataAtomic = DataAtomicRestToDataConverter
+				.fromRestDataAtomic((RestDataAtomic) restDataElement).convert();
+		dataGroup.addChild(dataAtomic);
 	}
 
 }

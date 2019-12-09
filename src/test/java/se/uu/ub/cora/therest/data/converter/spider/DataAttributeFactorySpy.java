@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -16,26 +16,24 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.uu.ub.cora.therest.data.converter.spider;
 
-import se.uu.ub.cora.spider.data.SpiderDataAttribute;
-import se.uu.ub.cora.therest.data.RestDataAttribute;
+import se.uu.ub.cora.data.DataAttribute;
+import se.uu.ub.cora.data.DataAttributeFactory;
 
-public final class DataAttributeSpiderToRestConverter {
-	public static DataAttributeSpiderToRestConverter fromSpiderDataAttribute(
-			SpiderDataAttribute spiderDataAttribute) {
-		return new DataAttributeSpiderToRestConverter(spiderDataAttribute);
+public class DataAttributeFactorySpy implements DataAttributeFactory {
+
+	public String nameInData;
+	public String value;
+	public DataAttribute factoredDataAttribute;
+
+	@Override
+	public DataAttribute factorUsingNameInDataAndValue(String nameInData, String value) {
+		this.nameInData = nameInData;
+		this.value = value;
+
+		factoredDataAttribute = new DataAttributeSpy(nameInData, value);
+		return factoredDataAttribute;
 	}
 
-	private SpiderDataAttribute spiderDataAttribute;
-
-	private DataAttributeSpiderToRestConverter(SpiderDataAttribute spiderDataAttribute) {
-		this.spiderDataAttribute = spiderDataAttribute;
-	}
-
-	public RestDataAttribute toRest() {
-		return RestDataAttribute.withNameInDataAndValue(spiderDataAttribute.getNameInData(),
-				spiderDataAttribute.getValue());
-	}
 }

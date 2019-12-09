@@ -23,8 +23,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import se.uu.ub.cora.spider.data.Action;
-import se.uu.ub.cora.spider.data.SpiderDataGroup;
+import se.uu.ub.cora.data.Action;
+import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.therest.data.ActionLink;
 import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataGroup;
@@ -39,7 +39,7 @@ public final class ActionSpiderToRestConverterImp implements ActionSpiderToRestC
 	private List<Action> actions;
 	private String recordType;
 	private String recordId;
-	private SpiderDataGroup dataGroup;
+	private DataGroup dataGroup;
 
 	public ActionSpiderToRestConverterImp(List<Action> actions, ConverterInfo converterInfo) {
 		this.actions = actions;
@@ -47,7 +47,7 @@ public final class ActionSpiderToRestConverterImp implements ActionSpiderToRestC
 	}
 
 	public ActionSpiderToRestConverterImp(List<Action> actions, ConverterInfo converterInfo,
-			SpiderDataGroup dataGroup) {
+			DataGroup dataGroup) {
 		this.actions = actions;
 		this.converterInfo = converterInfo;
 		this.dataGroup = dataGroup;
@@ -59,7 +59,7 @@ public final class ActionSpiderToRestConverterImp implements ActionSpiderToRestC
 	}
 
 	public static ActionSpiderToRestConverter fromSpiderActionsWithConverterInfoAndDataGroup(
-			List<Action> actions, ConverterInfo converterInfo, SpiderDataGroup dataGroup) {
+			List<Action> actions, ConverterInfo converterInfo, DataGroup dataGroup) {
 		return new ActionSpiderToRestConverterImp(actions, converterInfo, dataGroup);
 	}
 
@@ -140,8 +140,8 @@ public final class ActionSpiderToRestConverterImp implements ActionSpiderToRestC
 
 	private String getSearchIdIfPresentInMetadata(String searchId) {
 		if (metadataContainsSearch()) {
-			SpiderDataGroup searchGroup = dataGroup.extractGroup("search");
-			return searchGroup.extractAtomicValue("linkedRecordId");
+			DataGroup searchGroup = dataGroup.getFirstGroupWithNameInData("search");
+			return searchGroup.getFirstAtomicValueWithNameInData("linkedRecordId");
 		}
 		return searchId;
 	}
@@ -179,7 +179,7 @@ public final class ActionSpiderToRestConverterImp implements ActionSpiderToRestC
 		return body;
 	}
 
-	public SpiderDataGroup getDataGroup() {
+	public DataGroup getDataGroup() {
 		// needed for test
 		return dataGroup;
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Uppsala University Library
+ * Copyright 2015 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -16,19 +16,30 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package se.uu.ub.cora.therest.data.converter.spider;
 
-import java.util.List;
+import se.uu.ub.cora.data.DataAtomic;
+import se.uu.ub.cora.therest.data.RestDataAtomic;
 
-import se.uu.ub.cora.spider.data.SpiderDataGroup;
-import se.uu.ub.cora.therest.data.converter.ConverterInfo;
+public final class DataAtomicToRestConverter {
 
-public interface SpiderToRestConverterFactory {
+	private DataAtomic dataAtomic;
 
-	SpiderToRestConverter factorForSpiderDataGroupWithConverterInfo(SpiderDataGroup spiderDataGroup,
-			ConverterInfo converterInfo);
+	public static DataAtomicToRestConverter fromSpiderDataAtomic(
+			DataAtomic spiderDataAtomic) {
+		return new DataAtomicToRestConverter(spiderDataAtomic);
+	}
 
-	ActionSpiderToRestConverter factorForActionsUsingConverterInfoAndDataGroup(List<Action> actions,
-			ConverterInfo converterInfo, SpiderDataGroup spiderDataGroup);
+	private DataAtomicToRestConverter(DataAtomic spiderDataAtomic) {
+		this.dataAtomic = spiderDataAtomic;
+	}
+
+	public RestDataAtomic toRest() {
+		RestDataAtomic restDataAtomic = RestDataAtomic.withNameInDataAndValue(
+				dataAtomic.getNameInData(), dataAtomic.getValue());
+		restDataAtomic.setRepeatId(dataAtomic.getRepeatId());
+		return restDataAtomic;
+	}
 
 }

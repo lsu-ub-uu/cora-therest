@@ -20,20 +20,38 @@
 package se.uu.ub.cora.therest.data.converter.spider;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertSame;
 
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.spider.data.SpiderDataAttribute;
+import se.uu.ub.cora.data.DataAttribute;
+import se.uu.ub.cora.data.DataAttributeProvider;
 import se.uu.ub.cora.therest.data.RestDataAttribute;
 
 public class DataAttributeRestToSpiderConverterTest {
+
+	DataAttributeFactorySpy dataAttributeFactory;
+
+	@BeforeMethod
+	public void setUp() {
+		dataAttributeFactory = new DataAttributeFactorySpy();
+		DataAttributeProvider.setDataAttributeFactory(dataAttributeFactory);
+	}
+
 	@Test
 	public void testToSpider() {
-		RestDataAttribute restDataAttribute = RestDataAttribute.withNameInDataAndValue("nameInData", "value");
+		String nameInData = "type";
+		String value = "someTypeValue";
+		RestDataAttribute restDataAttribute = RestDataAttribute.withNameInDataAndValue(nameInData,
+				value);
 		DataAttributeRestToSpiderConverter converter = DataAttributeRestToSpiderConverter
 				.fromRestDataAttribute(restDataAttribute);
-		SpiderDataAttribute spiderDataAttribute = converter.toSpider();
-		assertEquals(spiderDataAttribute.getNameInData(), "nameInData");
-		assertEquals(spiderDataAttribute.getValue(), "value");
+		DataAttribute spiderDataAttribute = converter.toSpider();
+		assertSame(spiderDataAttribute, dataAttributeFactory.factoredDataAttribute);
+
+		assertEquals(dataAttributeFactory.nameInData, nameInData);
+		assertEquals(dataAttributeFactory.value, value);
+
 	}
 }

@@ -23,9 +23,9 @@ import static org.testng.Assert.assertEquals;
 
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.data.Action;
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.org.OrgJsonBuilderFactoryAdapter;
-import se.uu.ub.cora.spider.data.Action;
 import se.uu.ub.cora.therest.data.ActionLink;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.RestDataRecord;
@@ -87,11 +87,12 @@ public class DataRecordToJsonConverterTest {
 				.usingJsonFactoryForRestDataRecord(jsonFactory, restDataRecord);
 		String jsonString = dataRecordToJsonConverter.toJson();
 
-		assertEquals(jsonString, "{\"record\":{\"data\":{\"name\":\"groupNameInData\"}"
-				+ ",\"actionLinks\":{" + "\"read\":{\"requestMethod\":\"GET\",\"rel\":\"read\","
-				+ "\"contentType\":\"application/metadata_record+json\","
-				+ "\"url\":\"http://localhost:8080/therest/rest/record/place/place:0001\","
-				+ "\"accept\":\"application/metadata_record+json\"}" + "}}}");
+		assertEquals(jsonString,
+				"{\"record\":{\"data\":{\"name\":\"groupNameInData\"}" + ",\"actionLinks\":{"
+						+ "\"read\":{\"requestMethod\":\"GET\",\"rel\":\"read\","
+						+ "\"contentType\":\"application/metadata_record+json\","
+						+ "\"url\":\"http://localhost:8080/therest/rest/record/place/place:0001\","
+						+ "\"accept\":\"application/metadata_record+json\"}" + "}}}");
 	}
 
 	private ActionLink createReadActionLink() {

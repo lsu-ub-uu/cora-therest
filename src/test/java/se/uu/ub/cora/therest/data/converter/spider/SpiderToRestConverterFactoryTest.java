@@ -26,7 +26,6 @@ import java.util.List;
 
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.spider.data.Action;
 import se.uu.ub.cora.spider.data.SpiderDataGroup;
 import se.uu.ub.cora.therest.data.converter.ConverterInfo;
 

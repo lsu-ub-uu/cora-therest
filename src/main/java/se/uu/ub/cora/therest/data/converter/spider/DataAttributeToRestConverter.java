@@ -19,21 +19,23 @@
 
 package se.uu.ub.cora.therest.data.converter.spider;
 
-import static org.testng.Assert.assertEquals;
-
-import org.testng.annotations.Test;
-
-import se.uu.ub.cora.spider.data.SpiderDataAttribute;
+import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.therest.data.RestDataAttribute;
 
-public class DataAttributeSpiderToRestConverterTest {
-	@Test
-	public void testToRest() {
-		SpiderDataAttribute spiderDataAttribute = SpiderDataAttribute.withNameInDataAndValue("nameInData", "value");
-		DataAttributeSpiderToRestConverter atomicSpiderToRestConverter = DataAttributeSpiderToRestConverter
-				.fromSpiderDataAttribute(spiderDataAttribute);
-		RestDataAttribute restDataAttribute = atomicSpiderToRestConverter.toRest();
-		assertEquals(restDataAttribute.getNameInData(), "nameInData");
-		assertEquals(restDataAttribute.getValue(), "value");
+public final class DataAttributeToRestConverter {
+	private DataAttribute dataAttribute;
+
+	public static DataAttributeToRestConverter fromDataAttribute(
+			DataAttribute dataAttribute) {
+		return new DataAttributeToRestConverter(dataAttribute);
+	}
+
+	private DataAttributeToRestConverter(DataAttribute dataAttribute) {
+		this.dataAttribute = dataAttribute;
+	}
+
+	public RestDataAttribute toRest() {
+		return RestDataAttribute.withNameInDataAndValue(dataAttribute.getNameInData(),
+				dataAttribute.getValue());
 	}
 }

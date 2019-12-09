@@ -19,11 +19,11 @@
 
 package se.uu.ub.cora.therest.data.converter.spider;
 
-import se.uu.ub.cora.spider.data.SpiderDataAtomic;
-import se.uu.ub.cora.spider.data.SpiderDataElement;
-import se.uu.ub.cora.spider.data.SpiderDataGroup;
-import se.uu.ub.cora.spider.data.SpiderDataRecordLink;
-import se.uu.ub.cora.spider.data.SpiderDataResourceLink;
+import se.uu.ub.cora.data.DataAtomic;
+import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataRecordLink;
+import se.uu.ub.cora.data.DataResourceLink;
 import se.uu.ub.cora.therest.data.RestDataElement;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.converter.ConverterInfo;
@@ -31,17 +31,17 @@ import se.uu.ub.cora.therest.data.converter.ConverterInfo;
 public class DataGroupSpiderToRestConverter implements SpiderToRestConverter {
 
 	private RestDataGroup restDataGroup;
-	protected SpiderDataGroup spiderDataGroup;
+	protected DataGroup spiderDataGroup;
 	protected ConverterInfo convertInfo;
 
-	protected DataGroupSpiderToRestConverter(SpiderDataGroup spiderDataGroup,
+	protected DataGroupSpiderToRestConverter(DataGroup spiderDataGroup,
 			ConverterInfo converterInfo) {
 		this.spiderDataGroup = spiderDataGroup;
 		this.convertInfo = converterInfo;
 	}
 
 	public static DataGroupSpiderToRestConverter fromSpiderDataGroupWithDataGroupAndConverterInfo(
-			SpiderDataGroup spiderDataGroup, ConverterInfo converterInfo) {
+			DataGroup spiderDataGroup, ConverterInfo converterInfo) {
 		return new DataGroupSpiderToRestConverter(spiderDataGroup, converterInfo);
 	}
 
@@ -59,27 +59,28 @@ public class DataGroupSpiderToRestConverter implements SpiderToRestConverter {
 	}
 
 	private void convertAndSetChildren() {
-		for (SpiderDataElement spiderDataElement : spiderDataGroup.getChildren()) {
+		for (DataElement spiderDataElement : spiderDataGroup.getChildren()) {
 			RestDataElement convertedChild = convertToElementEquivalentDataClass(spiderDataElement);
 			restDataGroup.getChildren().add(convertedChild);
 		}
 	}
 
-	private RestDataElement convertToElementEquivalentDataClass(
-			SpiderDataElement spiderDataElement) {
-		if (spiderDataElement instanceof SpiderDataRecordLink) {
-			return DataRecordLinkSpiderToRestConverter.fromSpiderDataRecordLinkWithConverterInfo(
-					(SpiderDataRecordLink) spiderDataElement, convertInfo).toRest();
+	private RestDataElement convertToElementEquivalentDataClass(DataElement spiderDataElement) {
+		if (spiderDataElement instanceof DataRecordLink) {
+			return DataRecordLinkToRestConverter.fromDataRecordLinkWithConverterInfo(
+					(DataRecordLink) spiderDataElement, convertInfo).toRest();
 		}
-		if (spiderDataElement instanceof SpiderDataResourceLink) {
-			return DataResourceLinkSpiderToRestConverter.fromSpiderDataResourceLinkWithConverterInfo(
-					(SpiderDataResourceLink) spiderDataElement, convertInfo).toRest();
+		if (spiderDataElement instanceof DataResourceLink) {
+			return DataResourceLinkSpiderToRestConverter
+					.fromSpiderDataResourceLinkWithConverterInfo(
+							(DataResourceLink) spiderDataElement, convertInfo)
+					.toRest();
 		}
-		if (spiderDataElement instanceof SpiderDataGroup) {
+		if (spiderDataElement instanceof DataGroup) {
 			return DataGroupSpiderToRestConverter.fromSpiderDataGroupWithDataGroupAndConverterInfo(
-					(SpiderDataGroup) spiderDataElement, convertInfo).toRest();
+					(DataGroup) spiderDataElement, convertInfo).toRest();
 		}
-		return DataAtomicSpiderToRestConverter
-				.fromSpiderDataAtomic((SpiderDataAtomic) spiderDataElement).toRest();
+		return DataAtomicToRestConverter.fromSpiderDataAtomic((DataAtomic) spiderDataElement)
+				.toRest();
 	}
 }

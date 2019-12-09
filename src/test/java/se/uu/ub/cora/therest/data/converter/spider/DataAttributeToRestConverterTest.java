@@ -19,27 +19,21 @@
 
 package se.uu.ub.cora.therest.data.converter.spider;
 
-import se.uu.ub.cora.spider.data.SpiderDataAtomic;
-import se.uu.ub.cora.therest.data.RestDataAtomic;
+import static org.testng.Assert.assertEquals;
 
-public final class DataAtomicRestToSpiderConverter {
+import org.testng.annotations.Test;
 
-	public static DataAtomicRestToSpiderConverter fromRestDataAtomic(
-			RestDataAtomic restDataAtomic) {
-		return new DataAtomicRestToSpiderConverter(restDataAtomic);
+import se.uu.ub.cora.data.DataAttribute;
+import se.uu.ub.cora.therest.data.RestDataAttribute;
+
+public class DataAttributeToRestConverterTest {
+	@Test
+	public void testToRest() {
+		DataAttribute spiderDataAttribute = new DataAttributeSpy("nameInData", "value");
+		DataAttributeToRestConverter atomicSpiderToRestConverter = DataAttributeToRestConverter
+				.fromDataAttribute(spiderDataAttribute);
+		RestDataAttribute restDataAttribute = atomicSpiderToRestConverter.toRest();
+		assertEquals(restDataAttribute.getNameInData(), "nameInData");
+		assertEquals(restDataAttribute.getValue(), "value");
 	}
-
-	private RestDataAtomic restDataAtomic;
-
-	private DataAtomicRestToSpiderConverter(RestDataAtomic restDataAtomic) {
-		this.restDataAtomic = restDataAtomic;
-	}
-
-	public SpiderDataAtomic toSpider() {
-		SpiderDataAtomic spiderDataAtomic = SpiderDataAtomic
-				.withNameInDataAndValue(restDataAtomic.getNameInData(), restDataAtomic.getValue());
-		spiderDataAtomic.setRepeatId(restDataAtomic.getRepeatId());
-		return spiderDataAtomic;
-	}
-
 }
