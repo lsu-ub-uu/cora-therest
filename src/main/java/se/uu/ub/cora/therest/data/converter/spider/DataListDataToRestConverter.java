@@ -28,17 +28,17 @@ import se.uu.ub.cora.therest.data.RestDataList;
 import se.uu.ub.cora.therest.data.RestDataRecord;
 import se.uu.ub.cora.therest.data.converter.ConverterInfo;
 
-public final class DataListSpiderToRestConverter {
+public final class DataListDataToRestConverter {
 
 	private DataList spiderDataList;
 	private String baseURL;
 
-	public static DataListSpiderToRestConverter fromSpiderDataListWithBaseURL(
+	public static DataListDataToRestConverter fromSpiderDataListWithBaseURL(
 			DataList spiderDataList, String url) {
-		return new DataListSpiderToRestConverter(spiderDataList, url);
+		return new DataListDataToRestConverter(spiderDataList, url);
 	}
 
-	private DataListSpiderToRestConverter(DataList spiderDataList, String url) {
+	private DataListDataToRestConverter(DataList spiderDataList, String url) {
 		this.spiderDataList = spiderDataList;
 		this.baseURL = url;
 	}
@@ -66,9 +66,9 @@ public final class DataListSpiderToRestConverter {
 	}
 
 	private void convertSpiderRecordToRest(RestDataList restDataList, DataRecord spiderData) {
-		SpiderToRestConverterFactory converterFactory = new SpiderToRestConverterFactoryImp();
-		RestDataRecord restRecord = DataRecordSpiderToRestConverter
-				.fromSpiderDataRecordWithBaseURLAndConverterFactory(spiderData, baseURL,
+		DataToRestConverterFactory converterFactory = new DataToRestConverterFactoryImp();
+		RestDataRecord restRecord = DataRecordToRestConverter
+				.fromDataRecordWithBaseURLAndConverterFactory(spiderData, baseURL,
 						converterFactory)
 				.toRest();
 		restDataList.addData(restRecord);
@@ -77,7 +77,7 @@ public final class DataListSpiderToRestConverter {
 	private void convertSpiderGroupToRest(RestDataList restDataList, DataGroup spiderData) {
 		ConverterInfo converterInfo = ConverterInfo.withBaseURLAndRecordURLAndTypeAndId(baseURL, "",
 				"", "");
-		RestDataGroup restGroup = DataGroupSpiderToRestConverter
+		RestDataGroup restGroup = DataGroupDataToRestConverter
 				.fromDataGroupWithDataGroupAndConverterInfo(spiderData, converterInfo).toRest();
 		restDataList.addData(restGroup);
 	}

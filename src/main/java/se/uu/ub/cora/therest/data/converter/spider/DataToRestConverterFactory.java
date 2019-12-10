@@ -18,12 +18,18 @@
  */
 package se.uu.ub.cora.therest.data.converter.spider;
 
-import java.util.Map;
+import java.util.List;
 
-import se.uu.ub.cora.therest.data.ActionLink;
+import se.uu.ub.cora.data.Action;
+import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.therest.data.converter.ConverterInfo;
 
-public interface ActionSpiderToRestConverter {
+public interface DataToRestConverterFactory {
 
-	Map<String, ActionLink> toRest();
+	DataToRestConverter factorForSpiderDataGroupWithConverterInfo(DataGroup dataGroup,
+			ConverterInfo converterInfo);
+
+	ActionDataToRestConverter factorForActionsUsingConverterInfoAndDataGroup(List<Action> actions,
+			ConverterInfo converterInfo, DataGroup dataGroup);
 
 }

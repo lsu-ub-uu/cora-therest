@@ -23,15 +23,15 @@ import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataAttributeProvider;
 import se.uu.ub.cora.therest.data.RestDataAttribute;
 
-public final class DataAttributeRestToSpiderConverter {
-	public static DataAttributeRestToSpiderConverter fromRestDataAttribute(
+public final class DataAttributeRestToDataConverter {
+	public static DataAttributeRestToDataConverter fromRestDataAttribute(
 			RestDataAttribute restDataAttribute) {
-		return new DataAttributeRestToSpiderConverter(restDataAttribute);
+		return new DataAttributeRestToDataConverter(restDataAttribute);
 	}
 
 	private RestDataAttribute restDataAttribute;
 
-	private DataAttributeRestToSpiderConverter(RestDataAttribute restDataAttribute) {
+	private DataAttributeRestToDataConverter(RestDataAttribute restDataAttribute) {
 		this.restDataAttribute = restDataAttribute;
 	}
 

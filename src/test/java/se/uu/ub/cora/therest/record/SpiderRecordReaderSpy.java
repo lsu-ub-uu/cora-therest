@@ -19,11 +19,13 @@
 
 package se.uu.ub.cora.therest.record;
 
+import se.uu.ub.cora.data.Action;
+import se.uu.ub.cora.data.DataRecord;
 import se.uu.ub.cora.spider.authentication.AuthenticationException;
 import se.uu.ub.cora.spider.authorization.AuthorizationException;
-import se.uu.ub.cora.spider.data.SpiderDataRecord;
 import se.uu.ub.cora.spider.record.SpiderRecordReader;
 import se.uu.ub.cora.storage.RecordNotFoundException;
+import se.uu.ub.cora.therest.data.DataRecordSpy;
 import se.uu.ub.cora.therest.testdata.DataCreator;
 
 public class SpiderRecordReaderSpy implements SpiderRecordReader {
@@ -33,13 +35,13 @@ public class SpiderRecordReaderSpy implements SpiderRecordReader {
 	public String id;
 
 	@Override
-	public SpiderDataRecord readRecord(String authToken, String type, String id) {
+	public DataRecord readRecord(String authToken, String type, String id) {
 		this.authToken = authToken;
 		this.type = type;
 		this.id = id;
 		possiblyThrowExceptionForRead(authToken, id);
 
-		SpiderDataRecord spiderDataGroup = SpiderDataRecord.withSpiderDataGroup(
+		DataRecord spiderDataGroup = new DataRecordSpy(
 				DataCreator.createRecordWithNameInDataAndIdAndTypeAndLinkedRecordId("nameInData",
 						id, type, "linkedRecordId"));
 		spiderDataGroup.addAction(Action.READ);

@@ -19,25 +19,26 @@
 
 package se.uu.ub.cora.therest.record;
 
+import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataList;
 import se.uu.ub.cora.spider.authorization.AuthorizationException;
-import se.uu.ub.cora.spider.data.SpiderDataGroup;
-import se.uu.ub.cora.spider.data.SpiderDataList;
 import se.uu.ub.cora.spider.record.SpiderRecordListReader;
 import se.uu.ub.cora.storage.RecordNotFoundException;
+import se.uu.ub.cora.therest.data.DataListSpy;
 
 public class SpiderRecordListReaderSpy implements SpiderRecordListReader {
 
 	public String authToken;
 	public String type;
-	public SpiderDataGroup filter;
+	public DataGroup filter;
 
 	@Override
-	public SpiderDataList readRecordList(String authToken, String type, SpiderDataGroup filter) {
+	public DataList readRecordList(String authToken, String type, DataGroup filter) {
 		this.authToken = authToken;
 		this.type = type;
 		this.filter = filter;
 		possiblyThrowException(authToken, type);
-		return SpiderDataList.withContainDataOfType(type);
+		return new DataListSpy(type);
 	}
 
 	private void possiblyThrowException(String authToken, String type) {

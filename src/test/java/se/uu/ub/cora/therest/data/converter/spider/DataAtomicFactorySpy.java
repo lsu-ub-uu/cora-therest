@@ -20,6 +20,7 @@ package se.uu.ub.cora.therest.data.converter.spider;
 
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataAtomicFactory;
+import se.uu.ub.cora.therest.data.DataAtomicSpy;
 
 public class DataAtomicFactorySpy implements DataAtomicFactory {
 

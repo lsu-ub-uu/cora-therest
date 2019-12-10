@@ -100,7 +100,7 @@ public final class DataRecordLinkToRestConverter {
 		if (dataRecordLink.containsChildWithNameInData("linkedPath")) {
 			DataGroup spiderLinkedPath = (DataGroup) dataRecordLink
 					.getFirstChildWithNameInData("linkedPath");
-			DataGroupSpiderToRestConverter dataGroupSpiderToRestConverter = DataGroupSpiderToRestConverter
+			DataGroupDataToRestConverter dataGroupSpiderToRestConverter = DataGroupDataToRestConverter
 					.fromDataGroupWithDataGroupAndConverterInfo(spiderLinkedPath,
 							converterInfo);
 			RestDataGroup restLinkedPath = dataGroupSpiderToRestConverter.toRest();
@@ -111,7 +111,7 @@ public final class DataRecordLinkToRestConverter {
 
 	private void createRestLinks() {
 		ConverterInfo linkConverterInfo = createConverterInfoForLink();
-		ActionSpiderToRestConverter actionSpiderToRestConverter = ActionSpiderToRestConverterImp
+		ActionDataToRestConverter actionSpiderToRestConverter = ActionDataToRestConverterImp
 				.fromSpiderActionsWithConverterInfo(dataRecordLink.getActions(),
 						linkConverterInfo);
 		restDataRecordLink.setActionLinks(actionSpiderToRestConverter.toRest());

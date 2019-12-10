@@ -21,7 +21,7 @@ package se.uu.ub.cora.therest.data.converter.spider;
 import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 
-public class SpiderToRestConverterSpy implements SpiderToRestConverter {
+public class DataToRestConverterSpy implements DataToRestConverter {
 
 	public boolean toRestWasCalled = false;
 

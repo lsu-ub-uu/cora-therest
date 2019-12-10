@@ -26,18 +26,20 @@ import java.util.List;
 
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.spider.data.SpiderDataGroup;
+import se.uu.ub.cora.data.Action;
+import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.therest.data.DataGroupSpy;
 import se.uu.ub.cora.therest.data.converter.ConverterInfo;
 
-public class SpiderToRestConverterFactoryTest {
+public class DataToRestConverterFactoryTest {
 
 	@Test
 	public void testFactorForDataGroup() {
-		SpiderDataGroup spiderDataGroup = SpiderDataGroup.withNameInData("someDataGroup");
+		DataGroup spiderDataGroup = new DataGroupSpy("someDataGroup");
 		ConverterInfo converterInfo = ConverterInfo.withBaseURLAndRecordURLAndTypeAndId(
 				"someBaseUrl", "someRecordUrl", "someRecordType", "someRecordId");
-		SpiderToRestConverterFactory factory = new SpiderToRestConverterFactoryImp();
-		DataGroupSpiderToRestConverter converter = (DataGroupSpiderToRestConverter) factory
+		DataToRestConverterFactory factory = new DataToRestConverterFactoryImp();
+		DataGroupDataToRestConverter converter = (DataGroupDataToRestConverter) factory
 				.factorForSpiderDataGroupWithConverterInfo(spiderDataGroup, converterInfo);
 
 		assertEquals(converter.convertInfo.baseURL, "someBaseUrl");
@@ -50,11 +52,11 @@ public class SpiderToRestConverterFactoryTest {
 		Action action = Action.READ;
 		actions.add(action);
 
-		SpiderDataGroup spiderDataGroup = SpiderDataGroup.withNameInData("someDataGroup");
+		DataGroup spiderDataGroup = new DataGroupSpy("someDataGroup");
 		ConverterInfo converterInfo = ConverterInfo.withBaseURLAndRecordURLAndTypeAndId(
 				"someBaseUrl", "someRecordUrl", "someRecordType", "someRecordId");
-		SpiderToRestConverterFactory factory = new SpiderToRestConverterFactoryImp();
-		ActionSpiderToRestConverterImp converter = (ActionSpiderToRestConverterImp) factory
+		DataToRestConverterFactory factory = new DataToRestConverterFactoryImp();
+		ActionDataToRestConverterImp converter = (ActionDataToRestConverterImp) factory
 				.factorForActionsUsingConverterInfoAndDataGroup(actions, converterInfo,
 						spiderDataGroup);
 

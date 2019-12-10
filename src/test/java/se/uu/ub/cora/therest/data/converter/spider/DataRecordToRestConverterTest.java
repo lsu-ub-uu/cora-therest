@@ -26,27 +26,30 @@ import static org.testng.Assert.assertTrue;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.data.Action;
+import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataRecord;
 import se.uu.ub.cora.spider.data.DataMissingException;
-import se.uu.ub.cora.spider.data.SpiderDataAtomic;
-import se.uu.ub.cora.spider.data.SpiderDataGroup;
-import se.uu.ub.cora.spider.data.SpiderDataRecord;
+import se.uu.ub.cora.therest.data.DataAtomicSpy;
+import se.uu.ub.cora.therest.data.DataGroupSpy;
+import se.uu.ub.cora.therest.data.DataRecordSpy;
 import se.uu.ub.cora.therest.data.RestDataRecord;
 import se.uu.ub.cora.therest.data.converter.ConverterException;
 
-public class DataRecordSpiderToRestConverterTest {
+public class DataRecordToRestConverterTest {
 	private String baseURL = "http://localhost:8080/therest/rest/record/";
-	private SpiderDataGroup spiderDataGroup;
-	private SpiderDataRecord spiderDataRecord;
-	private DataRecordSpiderToRestConverter dataRecordSpiderToRestConverter;
-	private SpiderToRestConverterFactorySpy converterFactory;
+	private DataGroup spiderDataGroup;
+	private DataRecord spiderDataRecord;
+	private DataRecordToRestConverter dataRecordSpiderToRestConverter;
+	private DataToRestConverterFactorySpy converterFactory;
 
 	@BeforeMethod
 	public void setUp() {
-		spiderDataGroup = SpiderDataGroup.withNameInData("someNameInData");
-		spiderDataRecord = SpiderDataRecord.withSpiderDataGroup(spiderDataGroup);
-		converterFactory = new SpiderToRestConverterFactorySpy();
-		dataRecordSpiderToRestConverter = DataRecordSpiderToRestConverter
-				.fromSpiderDataRecordWithBaseURLAndConverterFactory(spiderDataRecord, baseURL,
+		spiderDataGroup = new DataGroupSpy("someNameInData");
+		spiderDataRecord = new DataRecordSpy(spiderDataGroup);
+		converterFactory = new DataToRestConverterFactorySpy();
+		dataRecordSpiderToRestConverter = DataRecordToRestConverter
+				.fromDataRecordWithBaseURLAndConverterFactory(spiderDataRecord, baseURL,
 						converterFactory);
 	}
 
@@ -60,13 +63,13 @@ public class DataRecordSpiderToRestConverterTest {
 		assertEquals(converterFactory.converterInfos.get(0).recordURL,
 				baseURL + "place/place:0001");
 
-		SpiderToRestConverterSpy converter = converterFactory.factoredSpiderToRestConverters.get(0);
+		DataToRestConverterSpy converter = converterFactory.factoredSpiderToRestConverters.get(0);
 		assertTrue(converter.toRestWasCalled);
 	}
 
 	@Test(expectedExceptions = ConverterException.class)
 	public void testToRestWithActionLinkNoRecordInfoButOtherChild() {
-		spiderDataGroup.addChild(SpiderDataAtomic.withNameInDataAndValue("type", "place"));
+		spiderDataGroup.addChild(new DataAtomicSpy("type", "place"));
 		spiderDataRecord.addAction(Action.READ);
 		dataRecordSpiderToRestConverter.toRest();
 	}
@@ -81,13 +84,13 @@ public class DataRecordSpiderToRestConverterTest {
 	public void testToRestWithActionLinkNoId() {
 		spiderDataRecord.addAction(Action.READ);
 
-		SpiderDataGroup recordInfo = SpiderDataGroup.withNameInData("recordInfo");
-		SpiderDataGroup type = SpiderDataGroup.withNameInData("type");
-		type.addChild(SpiderDataAtomic.withNameInDataAndValue("linkedRecordType", "recordType"));
-		type.addChild(SpiderDataAtomic.withNameInDataAndValue("linkedRecordId", "place"));
+		DataGroup recordInfo = new DataGroupSpy("recordInfo");
+		DataGroup type = new DataGroupSpy("type");
+		type.addChild(new DataAtomicSpy("linkedRecordType", "recordType"));
+		type.addChild(new DataAtomicSpy("linkedRecordId", "place"));
 		recordInfo.addChild(type);
 
-		recordInfo.addChild(SpiderDataAtomic.withNameInDataAndValue("createdBy", "userId"));
+		recordInfo.addChild(new DataAtomicSpy("createdBy", "userId"));
 		spiderDataGroup.addChild(recordInfo);
 
 		dataRecordSpiderToRestConverter.toRest();
@@ -95,13 +98,13 @@ public class DataRecordSpiderToRestConverterTest {
 
 	@Test(expectedExceptions = ConverterException.class, expectedExceptionsMessageRegExp = ""
 			+ "No recordInfo found conversion not possible:"
-			+ " se.uu.ub.cora.spider.data.DataMissingException: Requested dataGroup type doesn't exist")
+			+ " se.uu.ub.cora.spider.data.DataMissingException: Group not found for childNameInData:type")
 	public void testToRestWithActionLinkNoType() {
 		spiderDataRecord.addAction(Action.READ);
 
-		SpiderDataGroup recordInfo = SpiderDataGroup.withNameInData("recordInfo");
-		recordInfo.addChild(SpiderDataAtomic.withNameInDataAndValue("id", "place:0001"));
-		recordInfo.addChild(SpiderDataAtomic.withNameInDataAndValue("createdBy", "userId"));
+		DataGroup recordInfo = new DataGroupSpy("recordInfo");
+		recordInfo.addChild(new DataAtomicSpy("id", "place:0001"));
+		recordInfo.addChild(new DataAtomicSpy("createdBy", "userId"));
 		spiderDataGroup.addChild(recordInfo);
 
 		dataRecordSpiderToRestConverter.toRest();
@@ -111,9 +114,9 @@ public class DataRecordSpiderToRestConverterTest {
 	public void testToRestWithActionLinkNoTypeInitalExceptionIsSentAlong() {
 		spiderDataRecord.addAction(Action.READ);
 
-		SpiderDataGroup recordInfo = SpiderDataGroup.withNameInData("recordInfo");
-		recordInfo.addChild(SpiderDataAtomic.withNameInDataAndValue("id", "place:0001"));
-		recordInfo.addChild(SpiderDataAtomic.withNameInDataAndValue("createdBy", "userId"));
+		DataGroup recordInfo = new DataGroupSpy("recordInfo");
+		recordInfo.addChild(new DataAtomicSpy("id", "place:0001"));
+		recordInfo.addChild(new DataAtomicSpy("createdBy", "userId"));
 		spiderDataGroup.addChild(recordInfo);
 		try {
 			dataRecordSpiderToRestConverter.toRest();
@@ -144,22 +147,21 @@ public class DataRecordSpiderToRestConverterTest {
 		assertTrue(converterFactory.addedActions.contains(Action.DELETE));
 		assertEquals(converterFactory.addedActions.size(), 3);
 
-		ActionSpiderToRestConverterSpy factoredActionsConverter = converterFactory.factoredActionsToRestConverters
+		ActionDataToRestConverterSpy factoredActionsConverter = converterFactory.factoredActionsToRestConverters
 				.get(0);
 		assertTrue(factoredActionsConverter.toRestWasCalled);
 
 		assertEquals(factoredActionsConverter.actionLinks, restDataRecord.getActionLinks());
 	}
 
-	private SpiderDataGroup createRecordInfo(String type) {
-		SpiderDataGroup recordInfo = SpiderDataGroup.withNameInData("recordInfo");
-		recordInfo.addChild(SpiderDataAtomic.withNameInDataAndValue("id", "place:0001"));
-		SpiderDataGroup typeGroup = SpiderDataGroup.withNameInData("type");
-		typeGroup.addChild(
-				SpiderDataAtomic.withNameInDataAndValue("linkedRecordType", "recordType"));
-		typeGroup.addChild(SpiderDataAtomic.withNameInDataAndValue("linkedRecordId", type));
+	private DataGroup createRecordInfo(String type) {
+		DataGroup recordInfo = new DataGroupSpy("recordInfo");
+		recordInfo.addChild(new DataAtomicSpy("id", "place:0001"));
+		DataGroup typeGroup = new DataGroupSpy("type");
+		typeGroup.addChild(new DataAtomicSpy("linkedRecordType", "recordType"));
+		typeGroup.addChild(new DataAtomicSpy("linkedRecordId", type));
 		recordInfo.addChild(typeGroup);
-		recordInfo.addChild(SpiderDataAtomic.withNameInDataAndValue("createdBy", "userId"));
+		recordInfo.addChild(new DataAtomicSpy("createdBy", "userId"));
 		return recordInfo;
 	}
 
@@ -180,7 +182,7 @@ public class DataRecordSpiderToRestConverterTest {
 		assertTrue(converterFactory.addedActions.contains(Action.READ));
 		assertEquals(converterFactory.addedActions.size(), 1);
 
-		ActionSpiderToRestConverterSpy factoredActionsConverter = converterFactory.factoredActionsToRestConverters
+		ActionDataToRestConverterSpy factoredActionsConverter = converterFactory.factoredActionsToRestConverters
 				.get(0);
 		assertTrue(factoredActionsConverter.toRestWasCalled);
 

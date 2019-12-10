@@ -19,33 +19,32 @@
 
 package se.uu.ub.cora.therest.data.converter.spider;
 
-import se.uu.ub.cora.spider.data.SpiderDataGroup;
-import se.uu.ub.cora.spider.data.SpiderDataRecord;
+import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataRecord;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.RestDataRecord;
 import se.uu.ub.cora.therest.data.converter.ConverterException;
 import se.uu.ub.cora.therest.data.converter.ConverterInfo;
 
-public final class DataRecordSpiderToRestConverter {
+public final class DataRecordToRestConverter {
 
-	private SpiderDataRecord spiderDataRecord;
+	private DataRecord dataRecord;
 	private String baseURL;
-	private SpiderDataGroup spiderDataGroup;
+	private DataGroup dataGroup;
 	private RestDataRecord restDataRecord;
 	private String recordId;
 	private String recordType;
 	private ConverterInfo converterInfo;
-	private SpiderToRestConverterFactory converterFactory;
+	private DataToRestConverterFactory converterFactory;
 
-	public static DataRecordSpiderToRestConverter fromSpiderDataRecordWithBaseURLAndConverterFactory(
-			SpiderDataRecord spiderDataRecord, String url,
-			SpiderToRestConverterFactory converterFactory) {
-		return new DataRecordSpiderToRestConverter(spiderDataRecord, url, converterFactory);
+	public static DataRecordToRestConverter fromDataRecordWithBaseURLAndConverterFactory(
+			DataRecord spiderDataRecord, String url, DataToRestConverterFactory converterFactory) {
+		return new DataRecordToRestConverter(spiderDataRecord, url, converterFactory);
 	}
 
-	private DataRecordSpiderToRestConverter(SpiderDataRecord spiderDataRecord, String url,
-			SpiderToRestConverterFactory converterFactory) {
-		this.spiderDataRecord = spiderDataRecord;
+	private DataRecordToRestConverter(DataRecord dataRecord, String url,
+			DataToRestConverterFactory converterFactory) {
+		this.dataRecord = dataRecord;
 		this.baseURL = url;
 		this.converterFactory = converterFactory;
 	}
@@ -59,7 +58,7 @@ public final class DataRecordSpiderToRestConverter {
 	}
 
 	private RestDataRecord convertToRest() {
-		spiderDataGroup = spiderDataRecord.getSpiderDataGroup();
+		dataGroup = dataRecord.getDataGroup();
 		extractIdAndType();
 		createConverterInfo();
 
@@ -75,10 +74,10 @@ public final class DataRecordSpiderToRestConverter {
 	}
 
 	private void extractIdAndType() {
-		SpiderDataGroup recordInfo = spiderDataGroup.extractGroup("recordInfo");
-		recordId = recordInfo.extractAtomicValue("id");
-		SpiderDataGroup typeGroup = recordInfo.extractGroup("type");
-		recordType = typeGroup.extractAtomicValue("linkedRecordId");
+		DataGroup recordInfo = dataGroup.getFirstGroupWithNameInData("recordInfo");
+		recordId = recordInfo.getFirstAtomicValueWithNameInData("id");
+		DataGroup typeGroup = recordInfo.getFirstGroupWithNameInData("type");
+		recordType = typeGroup.getFirstAtomicValueWithNameInData("linkedRecordId");
 	}
 
 	private void createConverterInfo() {
@@ -88,30 +87,30 @@ public final class DataRecordSpiderToRestConverter {
 	}
 
 	private void convertToRestRecord() {
-		SpiderToRestConverter dataGroupSpiderToRestConverter = converterFactory
-				.factorForSpiderDataGroupWithConverterInfo(spiderDataGroup, converterInfo);
+		DataToRestConverter dataGroupSpiderToRestConverter = converterFactory
+				.factorForSpiderDataGroupWithConverterInfo(dataGroup, converterInfo);
 		RestDataGroup restDataGroup = dataGroupSpiderToRestConverter.toRest();
 		restDataRecord = RestDataRecord.withRestDataGroup(restDataGroup);
 	}
 
 	private boolean hasActions() {
-		return !spiderDataRecord.getActions().isEmpty();
+		return !dataRecord.getActions().isEmpty();
 	}
 
 	private void createRestLinks() {
-		ActionSpiderToRestConverter actionSpiderToRestConverter = converterFactory
-				.factorForActionsUsingConverterInfoAndDataGroup(spiderDataRecord.getActions(),
-						converterInfo, spiderDataGroup);
+		ActionDataToRestConverter actionSpiderToRestConverter = converterFactory
+				.factorForActionsUsingConverterInfoAndDataGroup(dataRecord.getActions(),
+						converterInfo, dataGroup);
 
 		restDataRecord.setActionLinks(actionSpiderToRestConverter.toRest());
 	}
 
 	private boolean hasKeys() {
-		return !spiderDataRecord.getKeys().isEmpty();
+		return !dataRecord.getKeys().isEmpty();
 	}
 
 	private void convertKeys() {
-		for (String string : spiderDataRecord.getKeys()) {
+		for (String string : dataRecord.getKeys()) {
 			restDataRecord.addKey(string);
 		}
 	}

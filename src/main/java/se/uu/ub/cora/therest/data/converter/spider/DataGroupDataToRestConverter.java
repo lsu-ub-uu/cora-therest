@@ -28,21 +28,21 @@ import se.uu.ub.cora.therest.data.RestDataElement;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.converter.ConverterInfo;
 
-public class DataGroupSpiderToRestConverter implements SpiderToRestConverter {
+public class DataGroupDataToRestConverter implements DataToRestConverter {
 
 	private RestDataGroup restDataGroup;
 	protected DataGroup spiderDataGroup;
 	protected ConverterInfo convertInfo;
 
-	protected DataGroupSpiderToRestConverter(DataGroup spiderDataGroup,
+	protected DataGroupDataToRestConverter(DataGroup spiderDataGroup,
 			ConverterInfo converterInfo) {
 		this.spiderDataGroup = spiderDataGroup;
 		this.convertInfo = converterInfo;
 	}
 
-	public static DataGroupSpiderToRestConverter fromDataGroupWithDataGroupAndConverterInfo(
+	public static DataGroupDataToRestConverter fromDataGroupWithDataGroupAndConverterInfo(
 			DataGroup spiderDataGroup, ConverterInfo converterInfo) {
-		return new DataGroupSpiderToRestConverter(spiderDataGroup, converterInfo);
+		return new DataGroupDataToRestConverter(spiderDataGroup, converterInfo);
 	}
 
 	@Override
@@ -71,13 +71,13 @@ public class DataGroupSpiderToRestConverter implements SpiderToRestConverter {
 					(DataRecordLink) spiderDataElement, convertInfo).toRest();
 		}
 		if (spiderDataElement instanceof DataResourceLink) {
-			return DataResourceLinkSpiderToRestConverter
+			return DataResourceLinkDataToRestConverter
 					.fromDataResourceLinkWithConverterInfo(
 							(DataResourceLink) spiderDataElement, convertInfo)
 					.toRest();
 		}
 		if (spiderDataElement instanceof DataGroup) {
-			return DataGroupSpiderToRestConverter.fromDataGroupWithDataGroupAndConverterInfo(
+			return DataGroupDataToRestConverter.fromDataGroupWithDataGroupAndConverterInfo(
 					(DataGroup) spiderDataElement, convertInfo).toRest();
 		}
 		return DataAtomicToRestConverter.fromSpiderDataAtomic((DataAtomic) spiderDataElement)

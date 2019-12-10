@@ -25,6 +25,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.data.DataAtomic;
+import se.uu.ub.cora.therest.data.DataAtomicSpy;
 import se.uu.ub.cora.therest.data.RestDataAtomic;
 
 public class DataAtomicToRestConverterTest {
@@ -34,8 +35,7 @@ public class DataAtomicToRestConverterTest {
 	@BeforeMethod
 	public void setUp() {
 		dataAtomic = new DataAtomicSpy("nameInData", "value");
-		atomicSpiderToRestConverter = DataAtomicToRestConverter
-				.fromSpiderDataAtomic(dataAtomic);
+		atomicSpiderToRestConverter = DataAtomicToRestConverter.fromSpiderDataAtomic(dataAtomic);
 
 	}
 

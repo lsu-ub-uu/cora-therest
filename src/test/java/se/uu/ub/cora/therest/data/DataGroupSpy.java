@@ -28,6 +28,7 @@ import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.spider.data.DataMissingException;
 
 public class DataGroupSpy implements DataGroup {
 	public String nameInData;
@@ -58,7 +59,7 @@ public class DataGroupSpy implements DataGroup {
 				}
 			}
 		}
-		return null;
+		throw new DataMissingException("Atomic value not found for childNameInData:" + nameInData);
 	}
 
 	@Override
@@ -70,7 +71,7 @@ public class DataGroupSpy implements DataGroup {
 				}
 			}
 		}
-		return null;
+		throw new DataMissingException("Group not found for childNameInData:" + childNameInData);
 	}
 
 	@Override

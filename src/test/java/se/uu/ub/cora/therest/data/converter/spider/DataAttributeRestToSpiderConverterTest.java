@@ -45,7 +45,7 @@ public class DataAttributeRestToSpiderConverterTest {
 		String value = "someTypeValue";
 		RestDataAttribute restDataAttribute = RestDataAttribute.withNameInDataAndValue(nameInData,
 				value);
-		DataAttributeRestToSpiderConverter converter = DataAttributeRestToSpiderConverter
+		DataAttributeRestToDataConverter converter = DataAttributeRestToDataConverter
 				.fromRestDataAttribute(restDataAttribute);
 		DataAttribute spiderDataAttribute = converter.toSpider();
 		assertSame(spiderDataAttribute, dataAttributeFactory.factoredDataAttribute);

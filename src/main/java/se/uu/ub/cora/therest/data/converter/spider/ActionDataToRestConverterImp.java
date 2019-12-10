@@ -30,7 +30,7 @@ import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.converter.ConverterInfo;
 
-public final class ActionSpiderToRestConverterImp implements ActionSpiderToRestConverter {
+public final class ActionDataToRestConverterImp implements ActionDataToRestConverter {
 
 	private static final String RECORD_TYPE = "recordType";
 	private static final String APPLICATION_UUB_RECORD_LIST_JSON = "application/vnd.uub.recordList+json";
@@ -41,26 +41,26 @@ public final class ActionSpiderToRestConverterImp implements ActionSpiderToRestC
 	private String recordId;
 	private DataGroup dataGroup;
 
-	public ActionSpiderToRestConverterImp(List<Action> actions, ConverterInfo converterInfo) {
+	public ActionDataToRestConverterImp(List<Action> actions, ConverterInfo converterInfo) {
 		this.actions = actions;
 		this.converterInfo = converterInfo;
 	}
 
-	public ActionSpiderToRestConverterImp(List<Action> actions, ConverterInfo converterInfo,
+	public ActionDataToRestConverterImp(List<Action> actions, ConverterInfo converterInfo,
 			DataGroup dataGroup) {
 		this.actions = actions;
 		this.converterInfo = converterInfo;
 		this.dataGroup = dataGroup;
 	}
 
-	public static ActionSpiderToRestConverter fromSpiderActionsWithConverterInfo(
+	public static ActionDataToRestConverter fromSpiderActionsWithConverterInfo(
 			List<Action> actions, ConverterInfo converterInfo) {
-		return new ActionSpiderToRestConverterImp(actions, converterInfo);
+		return new ActionDataToRestConverterImp(actions, converterInfo);
 	}
 
-	public static ActionSpiderToRestConverter fromSpiderActionsWithConverterInfoAndDataGroup(
+	public static ActionDataToRestConverter fromSpiderActionsWithConverterInfoAndDataGroup(
 			List<Action> actions, ConverterInfo converterInfo, DataGroup dataGroup) {
-		return new ActionSpiderToRestConverterImp(actions, converterInfo, dataGroup);
+		return new ActionDataToRestConverterImp(actions, converterInfo, dataGroup);
 	}
 
 	@Override

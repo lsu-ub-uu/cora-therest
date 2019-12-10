@@ -33,12 +33,12 @@ import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataResourceLink;
 import se.uu.ub.cora.therest.data.converter.ConverterInfo;
 
-public class DataResourceLinkSpiderToRestConverterTest {
+public class DataResourceLinkDataToRestConverterTest {
 	private ConverterInfo converterInfo = ConverterInfo.withBaseURLAndRecordURLAndTypeAndId(
 			"http://localhost:8080/therest/rest/record/",
 			"http://localhost:8080/therest/rest/record/image/someImageId", "image", "someImageId");
 	private DataResourceLink spiderDataResourceLink;
-	private DataResourceLinkSpiderToRestConverter dataResourceLinkSpiderToRestConverter;
+	private DataResourceLinkDataToRestConverter dataResourceLinkSpiderToRestConverter;
 
 	@BeforeMethod
 	public void setUp() {
@@ -47,7 +47,7 @@ public class DataResourceLinkSpiderToRestConverterTest {
 		spiderDataResourceLink.addChild(new DataAtomicSpy("streamId", "aStreamId"));
 		spiderDataResourceLink.addChild(new DataAtomicSpy("mimeType", "application/png"));
 
-		dataResourceLinkSpiderToRestConverter = DataResourceLinkSpiderToRestConverter
+		dataResourceLinkSpiderToRestConverter = DataResourceLinkDataToRestConverter
 				.fromDataResourceLinkWithConverterInfo(spiderDataResourceLink, converterInfo);
 
 	}

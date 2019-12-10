@@ -6,7 +6,7 @@ import java.util.Map;
 import se.uu.ub.cora.data.Action;
 import se.uu.ub.cora.therest.data.ActionLink;
 
-public class ActionSpiderToRestConverterSpy implements ActionSpiderToRestConverter {
+public class ActionDataToRestConverterSpy implements ActionDataToRestConverter {
 
 	public boolean toRestWasCalled = false;
 	public Map<String, ActionLink> actionLinks = new HashMap<>();

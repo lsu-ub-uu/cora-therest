@@ -1,26 +1,27 @@
 package se.uu.ub.cora.therest.record;
 
+import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataList;
 import se.uu.ub.cora.spider.authentication.AuthenticationException;
 import se.uu.ub.cora.spider.authorization.AuthorizationException;
-import se.uu.ub.cora.spider.data.SpiderDataGroup;
-import se.uu.ub.cora.spider.data.SpiderDataList;
 import se.uu.ub.cora.spider.record.DataException;
 import se.uu.ub.cora.spider.record.SpiderRecordSearcher;
 import se.uu.ub.cora.storage.RecordNotFoundException;
+import se.uu.ub.cora.therest.data.DataListSpy;
 
 public class SpiderRecordSearcherSpy implements SpiderRecordSearcher {
 
 	public String authToken;
 	public String searchId;
-	public SpiderDataGroup searchData;
+	public DataGroup searchData;
 
 	@Override
-	public SpiderDataList search(String authToken, String searchId, SpiderDataGroup searchData) {
+	public DataList search(String authToken, String searchId, DataGroup searchData) {
 		this.authToken = authToken;
 		this.searchId = searchId;
 		this.searchData = searchData;
 		possiblyThrowException(authToken, searchId);
-		SpiderDataList searchResult = SpiderDataList.withContainDataOfType("mix");
+		DataList searchResult = new DataListSpy("mix");
 		searchResult.setFromNo("0");
 		searchResult.setToNo("1");
 		searchResult.setTotalNo("1");

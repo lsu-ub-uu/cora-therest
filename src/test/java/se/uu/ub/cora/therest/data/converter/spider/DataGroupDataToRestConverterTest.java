@@ -41,19 +41,19 @@ import se.uu.ub.cora.therest.data.RestDataResourceLink;
 import se.uu.ub.cora.therest.data.converter.ConverterInfo;
 import se.uu.ub.cora.therest.testdata.DataCreator;
 
-public class DataGroupSpiderToRestConverterTest {
+public class DataGroupDataToRestConverterTest {
 	private ConverterInfo converterInfo = ConverterInfo.withBaseURLAndRecordURLAndTypeAndId(
 			"http://localhost:8080/therest/rest/record/",
 			"http://localhost:8080/therest/rest/record/someRecordType/someRecordId",
 			"someRecordType", "someRecordId");
 
 	private DataGroup spiderDataGroup;
-	private DataGroupSpiderToRestConverter dataGroupSpiderToRestConverter;
+	private DataGroupDataToRestConverter dataGroupSpiderToRestConverter;
 
 	@BeforeMethod
 	public void beforeMethod() {
 		spiderDataGroup = new DataGroupSpy("nameInData");
-		dataGroupSpiderToRestConverter = DataGroupSpiderToRestConverter
+		dataGroupSpiderToRestConverter = DataGroupDataToRestConverter
 				.fromDataGroupWithDataGroupAndConverterInfo(spiderDataGroup, converterInfo);
 	}
 

@@ -30,16 +30,16 @@ import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.RestDataResourceLink;
 import se.uu.ub.cora.therest.data.converter.ConverterInfo;
 
-public final class DataResourceLinkSpiderToRestConverter extends DataGroupSpiderToRestConverter {
+public final class DataResourceLinkDataToRestConverter extends DataGroupDataToRestConverter {
 	private DataResourceLink spiderDataResourceLink;
 	private RestDataResourceLink restDataResourceLink;
 
-	public static DataResourceLinkSpiderToRestConverter fromDataResourceLinkWithConverterInfo(
+	public static DataResourceLinkDataToRestConverter fromDataResourceLinkWithConverterInfo(
 			DataResourceLink spiderDataResourceLink, ConverterInfo converterInfo) {
-		return new DataResourceLinkSpiderToRestConverter(spiderDataResourceLink, converterInfo);
+		return new DataResourceLinkDataToRestConverter(spiderDataResourceLink, converterInfo);
 	}
 
-	private DataResourceLinkSpiderToRestConverter(DataResourceLink spiderDataResourceLink,
+	private DataResourceLinkDataToRestConverter(DataResourceLink spiderDataResourceLink,
 			ConverterInfo converterInfo) {
 		super(spiderDataResourceLink, converterInfo);
 		this.spiderDataResourceLink = spiderDataResourceLink;

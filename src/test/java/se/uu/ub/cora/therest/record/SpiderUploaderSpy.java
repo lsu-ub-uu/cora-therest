@@ -21,12 +21,13 @@ package se.uu.ub.cora.therest.record;
 
 import java.io.InputStream;
 
+import se.uu.ub.cora.data.DataRecord;
 import se.uu.ub.cora.spider.authorization.AuthorizationException;
 import se.uu.ub.cora.spider.data.DataMissingException;
-import se.uu.ub.cora.spider.data.SpiderDataRecord;
 import se.uu.ub.cora.spider.record.MisuseException;
 import se.uu.ub.cora.spider.record.SpiderUploader;
 import se.uu.ub.cora.storage.RecordNotFoundException;
+import se.uu.ub.cora.therest.data.DataRecordSpy;
 import se.uu.ub.cora.therest.testdata.DataCreator;
 
 public class SpiderUploaderSpy implements SpiderUploader {
@@ -38,8 +39,8 @@ public class SpiderUploaderSpy implements SpiderUploader {
 	public String fileName;
 
 	@Override
-	public SpiderDataRecord upload(String authToken, String type, String id,
-			InputStream inputStream, String fileName) {
+	public DataRecord upload(String authToken, String type, String id, InputStream inputStream,
+			String fileName) {
 		this.authToken = authToken;
 		this.type = type;
 		this.id = id;
@@ -47,25 +48,26 @@ public class SpiderUploaderSpy implements SpiderUploader {
 		this.fileName = fileName;
 
 		possiblyThrowException(authToken, type, id, inputStream);
-		return SpiderDataRecord.withSpiderDataGroup(
+		return new DataRecordSpy(
 				DataCreator.createRecordWithNameInDataAndIdAndTypeAndLinkedRecordId("nameInData",
 						"someId", type, "linkedRecordId"));
 	}
 
-	private void possiblyThrowException(String authToken, String type, String id, InputStream inputStream) {
-		if("dummyNonAuthorizedToken".equals(authToken)){
+	private void possiblyThrowException(String authToken, String type, String id,
+			InputStream inputStream) {
+		if ("dummyNonAuthorizedToken".equals(authToken)) {
 			throw new AuthorizationException("not authorized");
 		}
-		if("image:123456789_NOT_FOUND".equals(id)){
+		if ("image:123456789_NOT_FOUND".equals(id)) {
 			throw new RecordNotFoundException("No record exists with recordId: " + id);
 		}
 
-		if("not_child_of_binary_type".equals(type)){
+		if ("not_child_of_binary_type".equals(type)) {
 			throw new MisuseException(
 					"It is only possible to upload files to recordTypes that are children of binary");
 		}
 
-		if(inputStream == null){
+		if (inputStream == null) {
 			throw new DataMissingException("No stream to store");
 		}
 	}

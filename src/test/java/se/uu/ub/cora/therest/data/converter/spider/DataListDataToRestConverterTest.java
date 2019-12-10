@@ -34,7 +34,7 @@ import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.RestDataList;
 import se.uu.ub.cora.therest.data.RestDataRecord;
 
-public class DataListSpiderToRestConverterTest {
+public class DataListDataToRestConverterTest {
 	private String baseURL = "http://localhost:8080/therest/rest/record/";
 
 	@Test
@@ -48,7 +48,7 @@ public class DataListSpiderToRestConverterTest {
 		spiderDataList.setFromNo("1");
 		spiderDataList.setToNo("1");
 
-		DataListSpiderToRestConverter converter = DataListSpiderToRestConverter
+		DataListDataToRestConverter converter = DataListDataToRestConverter
 				.fromSpiderDataListWithBaseURL(spiderDataList, baseURL);
 
 		RestDataList recordList = converter.toRest();
@@ -84,7 +84,7 @@ public class DataListSpiderToRestConverterTest {
 		spiderDataList.setFromNo("1");
 		spiderDataList.setToNo("1");
 
-		DataListSpiderToRestConverter converter = DataListSpiderToRestConverter
+		DataListDataToRestConverter converter = DataListDataToRestConverter
 				.fromSpiderDataListWithBaseURL(spiderDataList, baseURL);
 
 		RestDataList recordList = converter.toRest();
