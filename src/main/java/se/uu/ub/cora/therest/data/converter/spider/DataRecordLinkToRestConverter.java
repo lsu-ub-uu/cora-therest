@@ -101,7 +101,7 @@ public final class DataRecordLinkToRestConverter {
 			DataGroup spiderLinkedPath = (DataGroup) dataRecordLink
 					.getFirstChildWithNameInData("linkedPath");
 			DataGroupSpiderToRestConverter dataGroupSpiderToRestConverter = DataGroupSpiderToRestConverter
-					.fromSpiderDataGroupWithDataGroupAndConverterInfo(spiderLinkedPath,
+					.fromDataGroupWithDataGroupAndConverterInfo(spiderLinkedPath,
 							converterInfo);
 			RestDataGroup restLinkedPath = dataGroupSpiderToRestConverter.toRest();
 

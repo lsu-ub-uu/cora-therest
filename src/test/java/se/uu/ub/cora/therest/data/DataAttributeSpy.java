@@ -16,7 +16,7 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.therest.data.converter.spider;
+package se.uu.ub.cora.therest.data;
 
 import se.uu.ub.cora.data.DataAttribute;
 

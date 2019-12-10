@@ -16,7 +16,6 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.uu.ub.cora.therest.data;
 
 import java.util.ArrayList;
@@ -31,7 +30,6 @@ import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
 
 public class DataGroupSpy implements DataGroup {
-
 	public String nameInData;
 	public List<DataElement> children = new ArrayList<>();
 	public String repeatId;
@@ -43,7 +41,6 @@ public class DataGroupSpy implements DataGroup {
 
 	@Override
 	public String getRepeatId() {
-		// TODO Auto-generated method stub
 		return repeatId;
 	}
 
@@ -79,6 +76,7 @@ public class DataGroupSpy implements DataGroup {
 	@Override
 	public void addChild(DataElement dataElement) {
 		children.add(dataElement);
+
 	}
 
 	@Override
@@ -99,11 +97,13 @@ public class DataGroupSpy implements DataGroup {
 	@Override
 	public void setRepeatId(String repeatId) {
 		this.repeatId = repeatId;
+
 	}
 
 	@Override
 	public void addAttributeByIdWithValue(String id, String value) {
 		attributes.put(id, value);
+
 	}
 
 	@Override
@@ -134,6 +134,11 @@ public class DataGroupSpy implements DataGroup {
 	}
 
 	@Override
+	public Map<String, String> getAttributes() {
+		return attributes;
+	}
+
+	@Override
 	public List<DataAtomic> getAllDataAtomicsWithNameInData(String childNameInData) {
 		List<DataAtomic> matchingDataAtomics = new ArrayList<>();
 		for (DataElement dataElement : children) {
@@ -147,14 +152,15 @@ public class DataGroupSpy implements DataGroup {
 
 	@Override
 	public void removeFirstChildWithNameInData(String childNameInData) {
-		// TODO Auto-generated method stub
-
+		for (DataElement dataElement : getChildren()) {
+			if (dataElementsNameInDataIs(dataElement, childNameInData)) {
+				getChildren().remove(dataElement);
+			}
+		}
 	}
 
-	@Override
-	public Map<String, String> getAttributes() {
-		// TODO Auto-generated method stub
-		return null;
+	private boolean dataElementsNameInDataIs(DataElement dataElement, String childNameInData) {
+		return dataElement.getNameInData().equals(childNameInData);
 	}
 
 	@Override

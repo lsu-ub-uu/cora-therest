@@ -20,6 +20,7 @@ package se.uu.ub.cora.therest.data.converter.spider;
 
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataGroupFactory;
+import se.uu.ub.cora.therest.data.DataGroupSpy;
 
 public class DataGroupFactorySpy implements DataGroupFactory {
 

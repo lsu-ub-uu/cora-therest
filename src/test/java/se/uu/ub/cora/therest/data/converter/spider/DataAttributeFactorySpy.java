@@ -20,6 +20,7 @@ package se.uu.ub.cora.therest.data.converter.spider;
 
 import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataAttributeFactory;
+import se.uu.ub.cora.therest.data.DataAttributeSpy;
 
 public class DataAttributeFactorySpy implements DataAttributeFactory {
 

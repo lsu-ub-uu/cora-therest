@@ -16,33 +16,51 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.therest.data.converter.spider;
+package se.uu.ub.cora.therest.data;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import se.uu.ub.cora.data.Action;
-import se.uu.ub.cora.data.DataRecordLink;
-import se.uu.ub.cora.therest.data.DataGroupSpy;
+import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataRecord;
 
-public class DataRecordLinkSpy extends DataGroupSpy implements DataRecordLink {
+public class DataRecordSpy implements DataRecord {
 
-	public String nameInData;
+	public DataGroup dataGroup;
+	public Set<String> keys = new LinkedHashSet<>();
 	public List<Action> actions = new ArrayList<>();
 
-	public DataRecordLinkSpy(String nameInData) {
-		super(nameInData);
+	public DataRecordSpy(DataGroup dataGroup) {
+		this.dataGroup = dataGroup;
+	}
+
+	@Override
+	public DataGroup getDataGroup() {
+		return dataGroup;
+	}
+
+	@Override
+	public void addKey(String key) {
+		keys.add(key);
+	}
+
+	@Override
+	public Set<String> getKeys() {
+		return keys;
+	}
+
+	@Override
+	public List<Action> getActions() {
+		return actions;
 	}
 
 	@Override
 	public void addAction(Action action) {
 		actions.add(action);
 
-	}
-
-	@Override
-	public List<Action> getActions() {
-		return actions;
 	}
 
 }

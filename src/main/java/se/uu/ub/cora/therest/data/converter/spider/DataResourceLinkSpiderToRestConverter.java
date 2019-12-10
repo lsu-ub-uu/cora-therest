@@ -23,22 +23,23 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import se.uu.ub.cora.spider.data.SpiderDataResourceLink;
+import se.uu.ub.cora.data.Action;
+import se.uu.ub.cora.data.DataResourceLink;
 import se.uu.ub.cora.therest.data.ActionLink;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.RestDataResourceLink;
 import se.uu.ub.cora.therest.data.converter.ConverterInfo;
 
 public final class DataResourceLinkSpiderToRestConverter extends DataGroupSpiderToRestConverter {
-	private SpiderDataResourceLink spiderDataResourceLink;
+	private DataResourceLink spiderDataResourceLink;
 	private RestDataResourceLink restDataResourceLink;
 
-	public static DataResourceLinkSpiderToRestConverter fromSpiderDataResourceLinkWithConverterInfo(
-			SpiderDataResourceLink spiderDataResourceLink, ConverterInfo converterInfo) {
+	public static DataResourceLinkSpiderToRestConverter fromDataResourceLinkWithConverterInfo(
+			DataResourceLink spiderDataResourceLink, ConverterInfo converterInfo) {
 		return new DataResourceLinkSpiderToRestConverter(spiderDataResourceLink, converterInfo);
 	}
 
-	private DataResourceLinkSpiderToRestConverter(SpiderDataResourceLink spiderDataResourceLink,
+	private DataResourceLinkSpiderToRestConverter(DataResourceLink spiderDataResourceLink,
 			ConverterInfo converterInfo) {
 		super(spiderDataResourceLink, converterInfo);
 		this.spiderDataResourceLink = spiderDataResourceLink;
@@ -59,7 +60,7 @@ public final class DataResourceLinkSpiderToRestConverter extends DataGroupSpider
 
 	private void createRestLinks() {
 		String url = convertInfo.recordURL + "/" + spiderDataResourceLink.getNameInData();
-		String mimeType = spiderDataResourceLink.extractAtomicValue("mimeType");
+		String mimeType = spiderDataResourceLink.getFirstAtomicValueWithNameInData("mimeType");
 		List<Action> actions = spiderDataResourceLink.getActions();
 
 		Map<String, ActionLink> actionLinks = new LinkedHashMap<>(actions.size());

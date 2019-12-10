@@ -40,7 +40,7 @@ public class DataGroupSpiderToRestConverter implements SpiderToRestConverter {
 		this.convertInfo = converterInfo;
 	}
 
-	public static DataGroupSpiderToRestConverter fromSpiderDataGroupWithDataGroupAndConverterInfo(
+	public static DataGroupSpiderToRestConverter fromDataGroupWithDataGroupAndConverterInfo(
 			DataGroup spiderDataGroup, ConverterInfo converterInfo) {
 		return new DataGroupSpiderToRestConverter(spiderDataGroup, converterInfo);
 	}
@@ -72,12 +72,12 @@ public class DataGroupSpiderToRestConverter implements SpiderToRestConverter {
 		}
 		if (spiderDataElement instanceof DataResourceLink) {
 			return DataResourceLinkSpiderToRestConverter
-					.fromSpiderDataResourceLinkWithConverterInfo(
+					.fromDataResourceLinkWithConverterInfo(
 							(DataResourceLink) spiderDataElement, convertInfo)
 					.toRest();
 		}
 		if (spiderDataElement instanceof DataGroup) {
-			return DataGroupSpiderToRestConverter.fromSpiderDataGroupWithDataGroupAndConverterInfo(
+			return DataGroupSpiderToRestConverter.fromDataGroupWithDataGroupAndConverterInfo(
 					(DataGroup) spiderDataElement, convertInfo).toRest();
 		}
 		return DataAtomicToRestConverter.fromSpiderDataAtomic((DataAtomic) spiderDataElement)

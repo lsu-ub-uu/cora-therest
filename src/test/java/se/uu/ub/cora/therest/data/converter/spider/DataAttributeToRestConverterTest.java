@@ -24,6 +24,7 @@ import static org.testng.Assert.assertEquals;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.data.DataAttribute;
+import se.uu.ub.cora.therest.data.DataAttributeSpy;
 import se.uu.ub.cora.therest.data.RestDataAttribute;
 
 public class DataAttributeToRestConverterTest {

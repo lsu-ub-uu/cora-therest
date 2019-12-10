@@ -31,6 +31,7 @@ import org.testng.annotations.Test;
 import se.uu.ub.cora.data.Action;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.therest.data.ActionLink;
+import se.uu.ub.cora.therest.data.DataGroupSpy;
 import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.converter.ConverterInfo;

@@ -29,7 +29,7 @@ public class SpiderToRestConverterFactoryImp implements SpiderToRestConverterFac
 	public SpiderToRestConverter factorForSpiderDataGroupWithConverterInfo(
 			SpiderDataGroup spiderDataGroup, ConverterInfo converterInfo) {
 		return DataGroupSpiderToRestConverter
-				.fromSpiderDataGroupWithDataGroupAndConverterInfo(spiderDataGroup, converterInfo);
+				.fromDataGroupWithDataGroupAndConverterInfo(spiderDataGroup, converterInfo);
 	}
 
 	@Override
