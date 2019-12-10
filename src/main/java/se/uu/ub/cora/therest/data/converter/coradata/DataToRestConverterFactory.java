@@ -26,7 +26,7 @@ import se.uu.ub.cora.therest.data.converter.ConverterInfo;
 
 public interface DataToRestConverterFactory {
 
-	DataToRestConverter factorForSpiderDataGroupWithConverterInfo(DataGroup dataGroup,
+	DataToRestConverter factorForDataGroupWithConverterInfo(DataGroup dataGroup,
 			ConverterInfo converterInfo);
 
 	ActionDataToRestConverter factorForActionsUsingConverterInfoAndDataGroup(List<Action> actions,

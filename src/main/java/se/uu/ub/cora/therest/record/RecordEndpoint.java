@@ -141,7 +141,7 @@ public class RecordEndpoint {
 
 	private Response tryCreateRecord(String authToken, String type, String jsonRecord)
 			throws URISyntaxException {
-		DataGroup record = convertJsonStringToSpiderDataGroup(jsonRecord);
+		DataGroup record = convertJsonStringToDataGroup(jsonRecord);
 		DataRecord createdRecord = SpiderInstanceProvider.getSpiderRecordCreator()
 				.createAndStoreRecord(authToken, type, record);
 
@@ -149,14 +149,14 @@ public class RecordEndpoint {
 		DataGroup recordInfo = createdGroup.getFirstGroupWithNameInData("recordInfo");
 		String createdId = recordInfo.getFirstAtomicValueWithNameInData("id");
 
-		String json = convertSpiderDataRecordToJsonString(createdRecord);
+		String json = convertDataRecordToJsonString(createdRecord);
 
 		String urlDelimiter = "/";
 		URI uri = new URI("record/" + type + urlDelimiter + createdId);
 		return Response.created(uri).entity(json).build();
 	}
 
-	private DataGroup convertJsonStringToSpiderDataGroup(String jsonRecord) {
+	private DataGroup convertJsonStringToDataGroup(String jsonRecord) {
 		RestDataGroup restDataGroup = convertJsonStringToRestDataGroup(jsonRecord);
 		return DataGroupRestToDataConverter.fromRestDataGroup(restDataGroup).convert();
 	}
@@ -171,13 +171,13 @@ public class RecordEndpoint {
 		return (RestDataGroup) restDataElement;
 	}
 
-	private String convertSpiderDataRecordToJsonString(DataRecord record) {
-		RestDataRecord restDataRecord = convertSpiderDataRecordToRestDataRecord(record);
+	private String convertDataRecordToJsonString(DataRecord record) {
+		RestDataRecord restDataRecord = convertDataRecordToRestDataRecord(record);
 		DataRecordToJsonConverter dataToJsonConverter = convertRestDataGroupToJson(restDataRecord);
 		return dataToJsonConverter.toJson();
 	}
 
-	private RestDataRecord convertSpiderDataRecordToRestDataRecord(DataRecord record) {
+	private RestDataRecord convertDataRecordToRestDataRecord(DataRecord record) {
 		DataToRestConverterFactory converterFactory = new DataToRestConverterFactoryImp();
 		DataRecordToRestConverter converter = DataRecordToRestConverter
 				.fromDataRecordWithBaseURLAndConverterFactory(record, url, converterFactory);
@@ -273,16 +273,16 @@ public class RecordEndpoint {
 	}
 
 	private Response tryReadRecordList(String authToken, String type, String filterAsJson) {
-		DataGroup filter = convertJsonStringToSpiderDataGroup(filterAsJson);
+		DataGroup filter = convertJsonStringToDataGroup(filterAsJson);
 		DataList readRecordList = SpiderInstanceProvider.getSpiderRecordListReader()
 				.readRecordList(authToken, type, filter);
-		String json = convertSpiderRecordListToJsonString(readRecordList);
+		String json = convertRecordListToJsonString(readRecordList);
 		return Response.status(Response.Status.OK).entity(json).build();
 	}
 
-	private String convertSpiderRecordListToJsonString(DataList readRecordList) {
+	private String convertRecordListToJsonString(DataList readRecordList) {
 		DataListDataToRestConverter listSpiderToRestConverter = DataListDataToRestConverter
-				.fromSpiderDataListWithBaseURL(readRecordList, url);
+				.fromDataListWithBaseURL(readRecordList, url);
 		RestDataList restRecordList = listSpiderToRestConverter.toRest();
 
 		JsonBuilderFactory jsonBuilderFactory = new OrgJsonBuilderFactoryAdapter();
@@ -312,7 +312,7 @@ public class RecordEndpoint {
 	private Response tryReadRecord(String authToken, String type, String id) {
 		DataRecord record = SpiderInstanceProvider.getSpiderRecordReader().readRecord(authToken,
 				type, id);
-		String json = convertSpiderDataRecordToJsonString(record);
+		String json = convertDataRecordToJsonString(record);
 		return Response.status(Response.Status.OK).entity(json).build();
 	}
 
@@ -338,7 +338,7 @@ public class RecordEndpoint {
 	private Response tryReadIncomingRecordLinks(String authToken, String type, String id) {
 		DataList dataList = SpiderInstanceProvider.getSpiderRecordIncomingLinksReader()
 				.readIncomingLinks(authToken, type, id);
-		String json = convertSpiderRecordListToJsonString(dataList);
+		String json = convertRecordListToJsonString(dataList);
 		return Response.status(Response.Status.OK).entity(json).build();
 	}
 
@@ -386,10 +386,10 @@ public class RecordEndpoint {
 	}
 
 	private Response tryUpdateRecord(String authToken, String type, String id, String jsonRecord) {
-		DataGroup record = convertJsonStringToSpiderDataGroup(jsonRecord);
+		DataGroup record = convertJsonStringToDataGroup(jsonRecord);
 		DataRecord updatedRecord = SpiderInstanceProvider.getSpiderRecordUpdater()
 				.updateRecord(authToken, type, id, record);
-		String json = convertSpiderDataRecordToJsonString(updatedRecord);
+		String json = convertDataRecordToJsonString(updatedRecord);
 		return Response.status(Response.Status.OK).entity(json).build();
 	}
 
@@ -454,7 +454,7 @@ public class RecordEndpoint {
 			InputStream inputStream, String fileName) {
 		DataRecord updatedRecord = SpiderInstanceProvider.getSpiderUploader().upload(authToken,
 				type, id, inputStream, fileName);
-		String json = convertSpiderDataRecordToJsonString(updatedRecord);
+		String json = convertDataRecordToJsonString(updatedRecord);
 		return Response.ok(json).build();
 	}
 
@@ -478,11 +478,11 @@ public class RecordEndpoint {
 	}
 
 	private Response trySearchRecord(String authToken, String searchId, String searchDataAsJson) {
-		DataGroup searchData = convertJsonStringToSpiderDataGroup(searchDataAsJson);
+		DataGroup searchData = convertJsonStringToDataGroup(searchDataAsJson);
 
 		DataList searchRecordList = SpiderInstanceProvider.getSpiderRecordSearcher()
 				.search(authToken, searchId, searchData);
-		String json = convertSpiderRecordListToJsonString(searchRecordList);
+		String json = convertRecordListToJsonString(searchRecordList);
 		return Response.status(Response.Status.OK).entity(json).build();
 	}
 
@@ -518,7 +518,7 @@ public class RecordEndpoint {
 		DataRecord validationResult = spiderRecordValidator.validateRecord(authToken, type,
 				validationOrder, recordToValidate);
 
-		String json = convertSpiderDataRecordToJsonString(validationResult);
+		String json = convertDataRecordToJsonString(validationResult);
 		return Response.status(Response.Status.OK).entity(json).build();
 	}
 

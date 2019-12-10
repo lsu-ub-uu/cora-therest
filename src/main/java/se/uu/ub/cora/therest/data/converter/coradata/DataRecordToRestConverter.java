@@ -38,8 +38,8 @@ public final class DataRecordToRestConverter {
 	private DataToRestConverterFactory converterFactory;
 
 	public static DataRecordToRestConverter fromDataRecordWithBaseURLAndConverterFactory(
-			DataRecord spiderDataRecord, String url, DataToRestConverterFactory converterFactory) {
-		return new DataRecordToRestConverter(spiderDataRecord, url, converterFactory);
+			DataRecord dataRecord, String url, DataToRestConverterFactory converterFactory) {
+		return new DataRecordToRestConverter(dataRecord, url, converterFactory);
 	}
 
 	private DataRecordToRestConverter(DataRecord dataRecord, String url,
@@ -87,9 +87,9 @@ public final class DataRecordToRestConverter {
 	}
 
 	private void convertToRestRecord() {
-		DataToRestConverter dataGroupSpiderToRestConverter = converterFactory
-				.factorForSpiderDataGroupWithConverterInfo(dataGroup, converterInfo);
-		RestDataGroup restDataGroup = dataGroupSpiderToRestConverter.toRest();
+		DataToRestConverter dataGroupToRestConverter = converterFactory
+				.factorForDataGroupWithConverterInfo(dataGroup, converterInfo);
+		RestDataGroup restDataGroup = dataGroupToRestConverter.toRest();
 		restDataRecord = RestDataRecord.withRestDataGroup(restDataGroup);
 	}
 
@@ -98,11 +98,11 @@ public final class DataRecordToRestConverter {
 	}
 
 	private void createRestLinks() {
-		ActionDataToRestConverter actionSpiderToRestConverter = converterFactory
+		ActionDataToRestConverter actionToRestConverter = converterFactory
 				.factorForActionsUsingConverterInfoAndDataGroup(dataRecord.getActions(),
 						converterInfo, dataGroup);
 
-		restDataRecord.setActionLinks(actionSpiderToRestConverter.toRest());
+		restDataRecord.setActionLinks(actionToRestConverter.toRest());
 	}
 
 	private boolean hasKeys() {

@@ -40,8 +40,8 @@ public final class DataRecordLinkToRestConverter {
 	}
 
 	public static DataRecordLinkToRestConverter fromDataRecordLinkWithConverterInfo(
-			DataRecordLink spiderDataRecordLink, ConverterInfo converterInfo) {
-		return new DataRecordLinkToRestConverter(spiderDataRecordLink, converterInfo);
+			DataRecordLink dataRecordLink, ConverterInfo converterInfo) {
+		return new DataRecordLinkToRestConverter(dataRecordLink, converterInfo);
 	}
 
 	public RestDataRecordLink toRest() {
@@ -69,16 +69,16 @@ public final class DataRecordLinkToRestConverter {
 	}
 
 	private void createAndAddRestAtomicChildWithNameInData(String nameInData) {
-		RestDataAtomic restLinkedRecordId = createRestDataAtomicFromSpiderDataAtomic(nameInData);
+		RestDataAtomic restLinkedRecordId = createRestDataAtomicFromDataAtomic(nameInData);
 		restDataRecordLink.addChild(restLinkedRecordId);
 	}
 
-	private RestDataAtomic createRestDataAtomicFromSpiderDataAtomic(String nameInData) {
-		DataAtomic linkedRecordId = getAtomicChildFromSpiderDataRecordLinkByNameInData(nameInData);
+	private RestDataAtomic createRestDataAtomicFromDataAtomic(String nameInData) {
+		DataAtomic linkedRecordId = getAtomicChildFromDataRecordLinkByNameInData(nameInData);
 		return RestDataAtomic.withNameInDataAndValue(nameInData, linkedRecordId.getValue());
 	}
 
-	private DataAtomic getAtomicChildFromSpiderDataRecordLinkByNameInData(String nameInData) {
+	private DataAtomic getAtomicChildFromDataRecordLinkByNameInData(String nameInData) {
 		return (DataAtomic) dataRecordLink.getFirstChildWithNameInData(nameInData);
 	}
 
@@ -89,7 +89,7 @@ public final class DataRecordLinkToRestConverter {
 	private void addLinkedRepeatIdIfItExists() {
 		if (dataRecordLink.containsChildWithNameInData(LINKED_REPEAT_ID)) {
 
-			RestDataAtomic restLinkedRepeatId = createRestDataAtomicFromSpiderDataAtomic(
+			RestDataAtomic restLinkedRepeatId = createRestDataAtomicFromDataAtomic(
 					LINKED_REPEAT_ID);
 
 			restDataRecordLink.addChild(restLinkedRepeatId);
@@ -98,12 +98,12 @@ public final class DataRecordLinkToRestConverter {
 
 	private void addLinkedPathIfItExists() {
 		if (dataRecordLink.containsChildWithNameInData("linkedPath")) {
-			DataGroup spiderLinkedPath = (DataGroup) dataRecordLink
+			DataGroup linkedPath = (DataGroup) dataRecordLink
 					.getFirstChildWithNameInData("linkedPath");
-			DataGroupDataToRestConverter dataGroupSpiderToRestConverter = DataGroupDataToRestConverter
-					.fromDataGroupWithDataGroupAndConverterInfo(spiderLinkedPath,
+			DataGroupDataToRestConverter dataGroupToRestConverter = DataGroupDataToRestConverter
+					.fromDataGroupWithDataGroupAndConverterInfo(linkedPath,
 							converterInfo);
-			RestDataGroup restLinkedPath = dataGroupSpiderToRestConverter.toRest();
+			RestDataGroup restLinkedPath = dataGroupToRestConverter.toRest();
 
 			restDataRecordLink.addChild(restLinkedPath);
 		}
@@ -111,10 +111,10 @@ public final class DataRecordLinkToRestConverter {
 
 	private void createRestLinks() {
 		ConverterInfo linkConverterInfo = createConverterInfoForLink();
-		ActionDataToRestConverter actionSpiderToRestConverter = ActionDataToRestConverterImp
-				.fromSpiderActionsWithConverterInfo(dataRecordLink.getActions(),
+		ActionDataToRestConverter actionToRestConverter = ActionDataToRestConverterImp
+				.fromDataActionsWithConverterInfo(dataRecordLink.getActions(),
 						linkConverterInfo);
-		restDataRecordLink.setActionLinks(actionSpiderToRestConverter.toRest());
+		restDataRecordLink.setActionLinks(actionToRestConverter.toRest());
 	}
 
 	private ConverterInfo createConverterInfoForLink() {

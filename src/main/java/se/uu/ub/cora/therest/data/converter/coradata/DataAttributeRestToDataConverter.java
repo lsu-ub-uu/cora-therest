@@ -35,7 +35,7 @@ public final class DataAttributeRestToDataConverter {
 		this.restDataAttribute = restDataAttribute;
 	}
 
-	public DataAttribute toSpider() {
+	public DataAttribute convert() {
 		return DataAttributeProvider.getDataAttributeUsingNameInDataAndValue(
 				restDataAttribute.getNameInData(), restDataAttribute.getValue());
 	}

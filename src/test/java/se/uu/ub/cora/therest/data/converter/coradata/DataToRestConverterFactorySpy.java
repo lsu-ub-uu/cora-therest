@@ -37,7 +37,7 @@ public class DataToRestConverterFactorySpy implements DataToRestConverterFactory
 	public List<ActionDataToRestConverterSpy> factoredActionsToRestConverters = new ArrayList<>();
 
 	@Override
-	public DataToRestConverter factorForSpiderDataGroupWithConverterInfo(
+	public DataToRestConverter factorForDataGroupWithConverterInfo(
 			DataGroup spiderDataGroup, ConverterInfo converterInfo) {
 		dataGroups.add(spiderDataGroup);
 		converterInfos.add(converterInfo);

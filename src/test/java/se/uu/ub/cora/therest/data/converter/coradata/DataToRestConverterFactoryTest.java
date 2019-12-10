@@ -44,10 +44,10 @@ public class DataToRestConverterFactoryTest {
 				"someBaseUrl", "someRecordUrl", "someRecordType", "someRecordId");
 		DataToRestConverterFactory factory = new DataToRestConverterFactoryImp();
 		DataGroupDataToRestConverter converter = (DataGroupDataToRestConverter) factory
-				.factorForSpiderDataGroupWithConverterInfo(spiderDataGroup, converterInfo);
+				.factorForDataGroupWithConverterInfo(spiderDataGroup, converterInfo);
 
 		assertEquals(converter.convertInfo.baseURL, "someBaseUrl");
-		assertSame(converter.spiderDataGroup, spiderDataGroup);
+		assertSame(converter.dataGroup, spiderDataGroup);
 	}
 
 	@Test

@@ -27,17 +27,17 @@ import se.uu.ub.cora.therest.data.converter.ConverterInfo;
 public class DataToRestConverterFactoryImp implements DataToRestConverterFactory {
 
 	@Override
-	public DataToRestConverter factorForSpiderDataGroupWithConverterInfo(DataGroup spiderDataGroup,
+	public DataToRestConverter factorForDataGroupWithConverterInfo(DataGroup dataGroup,
 			ConverterInfo converterInfo) {
 		return DataGroupDataToRestConverter
-				.fromDataGroupWithDataGroupAndConverterInfo(spiderDataGroup, converterInfo);
+				.fromDataGroupWithDataGroupAndConverterInfo(dataGroup, converterInfo);
 	}
 
 	@Override
 	public ActionDataToRestConverter factorForActionsUsingConverterInfoAndDataGroup(
-			List<Action> actions, ConverterInfo converterInfo, DataGroup spiderDataGroup) {
-		return ActionDataToRestConverterImp.fromSpiderActionsWithConverterInfoAndDataGroup(
-				actions, converterInfo, spiderDataGroup);
+			List<Action> actions, ConverterInfo converterInfo, DataGroup dataGroup) {
+		return ActionDataToRestConverterImp.fromDataActionsWithConverterInfoAndDataGroup(
+				actions, converterInfo, dataGroup);
 	}
 
 }

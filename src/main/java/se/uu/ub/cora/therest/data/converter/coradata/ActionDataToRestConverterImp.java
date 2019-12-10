@@ -53,12 +53,12 @@ public final class ActionDataToRestConverterImp implements ActionDataToRestConve
 		this.dataGroup = dataGroup;
 	}
 
-	public static ActionDataToRestConverter fromSpiderActionsWithConverterInfo(
+	public static ActionDataToRestConverter fromDataActionsWithConverterInfo(
 			List<Action> actions, ConverterInfo converterInfo) {
 		return new ActionDataToRestConverterImp(actions, converterInfo);
 	}
 
-	public static ActionDataToRestConverter fromSpiderActionsWithConverterInfoAndDataGroup(
+	public static ActionDataToRestConverter fromDataActionsWithConverterInfoAndDataGroup(
 			List<Action> actions, ConverterInfo converterInfo, DataGroup dataGroup) {
 		return new ActionDataToRestConverterImp(actions, converterInfo, dataGroup);
 	}

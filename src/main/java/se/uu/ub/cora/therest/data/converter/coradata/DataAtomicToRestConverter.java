@@ -26,13 +26,13 @@ public final class DataAtomicToRestConverter {
 
 	private DataAtomic dataAtomic;
 
-	public static DataAtomicToRestConverter fromSpiderDataAtomic(
-			DataAtomic spiderDataAtomic) {
-		return new DataAtomicToRestConverter(spiderDataAtomic);
+	public static DataAtomicToRestConverter fromDataAtomic(
+			DataAtomic dataAtomic) {
+		return new DataAtomicToRestConverter(dataAtomic);
 	}
 
-	private DataAtomicToRestConverter(DataAtomic spiderDataAtomic) {
-		this.dataAtomic = spiderDataAtomic;
+	private DataAtomicToRestConverter(DataAtomic dataAtomic) {
+		this.dataAtomic = dataAtomic;
 	}
 
 	public RestDataAtomic toRest() {

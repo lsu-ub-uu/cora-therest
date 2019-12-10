@@ -50,7 +50,7 @@ public class DataListDataToRestConverterTest {
 		spiderDataList.setToNo("1");
 
 		DataListDataToRestConverter converter = DataListDataToRestConverter
-				.fromSpiderDataListWithBaseURL(spiderDataList, baseURL);
+				.fromDataListWithBaseURL(spiderDataList, baseURL);
 
 		RestDataList recordList = converter.toRest();
 
@@ -86,7 +86,7 @@ public class DataListDataToRestConverterTest {
 		spiderDataList.setToNo("1");
 
 		DataListDataToRestConverter converter = DataListDataToRestConverter
-				.fromSpiderDataListWithBaseURL(spiderDataList, baseURL);
+				.fromDataListWithBaseURL(spiderDataList, baseURL);
 
 		RestDataList recordList = converter.toRest();
 

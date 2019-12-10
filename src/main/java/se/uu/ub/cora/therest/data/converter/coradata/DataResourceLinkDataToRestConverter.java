@@ -31,23 +31,23 @@ import se.uu.ub.cora.therest.data.RestDataResourceLink;
 import se.uu.ub.cora.therest.data.converter.ConverterInfo;
 
 public final class DataResourceLinkDataToRestConverter extends DataGroupDataToRestConverter {
-	private DataResourceLink spiderDataResourceLink;
+	private DataResourceLink dataResourceLink;
 	private RestDataResourceLink restDataResourceLink;
 
 	public static DataResourceLinkDataToRestConverter fromDataResourceLinkWithConverterInfo(
-			DataResourceLink spiderDataResourceLink, ConverterInfo converterInfo) {
-		return new DataResourceLinkDataToRestConverter(spiderDataResourceLink, converterInfo);
+			DataResourceLink dataResourceLink, ConverterInfo converterInfo) {
+		return new DataResourceLinkDataToRestConverter(dataResourceLink, converterInfo);
 	}
 
-	private DataResourceLinkDataToRestConverter(DataResourceLink spiderDataResourceLink,
+	private DataResourceLinkDataToRestConverter(DataResourceLink dataResourceLink,
 			ConverterInfo converterInfo) {
-		super(spiderDataResourceLink, converterInfo);
-		this.spiderDataResourceLink = spiderDataResourceLink;
+		super(dataResourceLink, converterInfo);
+		this.dataResourceLink = dataResourceLink;
 	}
 
 	@Override
 	protected RestDataGroup createNewRest() {
-		return RestDataResourceLink.withNameInData(spiderDataGroup.getNameInData());
+		return RestDataResourceLink.withNameInData(dataGroup.getNameInData());
 	}
 
 	@Override
@@ -59,9 +59,9 @@ public final class DataResourceLinkDataToRestConverter extends DataGroupDataToRe
 	}
 
 	private void createRestLinks() {
-		String url = convertInfo.recordURL + "/" + spiderDataResourceLink.getNameInData();
-		String mimeType = spiderDataResourceLink.getFirstAtomicValueWithNameInData("mimeType");
-		List<Action> actions = spiderDataResourceLink.getActions();
+		String url = convertInfo.recordURL + "/" + dataResourceLink.getNameInData();
+		String mimeType = dataResourceLink.getFirstAtomicValueWithNameInData("mimeType");
+		List<Action> actions = dataResourceLink.getActions();
 
 		Map<String, ActionLink> actionLinks = new LinkedHashMap<>(actions.size());
 		for (Action action : actions) {

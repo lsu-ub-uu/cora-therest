@@ -48,7 +48,7 @@ public class DataAttributeRestToSpiderConverterTest {
 				value);
 		DataAttributeRestToDataConverter converter = DataAttributeRestToDataConverter
 				.fromRestDataAttribute(restDataAttribute);
-		DataAttribute spiderDataAttribute = converter.toSpider();
+		DataAttribute spiderDataAttribute = converter.convert();
 		assertSame(spiderDataAttribute, dataAttributeFactory.factoredDataAttribute);
 
 		assertEquals(dataAttributeFactory.nameInData, nameInData);

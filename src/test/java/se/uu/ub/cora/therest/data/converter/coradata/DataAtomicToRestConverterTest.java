@@ -36,7 +36,7 @@ public class DataAtomicToRestConverterTest {
 	@BeforeMethod
 	public void setUp() {
 		dataAtomic = new DataAtomicSpy("nameInData", "value");
-		atomicSpiderToRestConverter = DataAtomicToRestConverter.fromSpiderDataAtomic(dataAtomic);
+		atomicSpiderToRestConverter = DataAtomicToRestConverter.fromDataAtomic(dataAtomic);
 
 	}
 
