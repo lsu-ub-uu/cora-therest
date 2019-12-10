@@ -72,11 +72,11 @@ import se.uu.ub.cora.therest.data.converter.DataRecordToJsonConverter;
 import se.uu.ub.cora.therest.data.converter.JsonToDataConverter;
 import se.uu.ub.cora.therest.data.converter.JsonToDataConverterFactory;
 import se.uu.ub.cora.therest.data.converter.JsonToDataConverterFactoryImp;
-import se.uu.ub.cora.therest.data.converter.spider.DataGroupRestToDataConverter;
-import se.uu.ub.cora.therest.data.converter.spider.DataListDataToRestConverter;
-import se.uu.ub.cora.therest.data.converter.spider.DataRecordToRestConverter;
-import se.uu.ub.cora.therest.data.converter.spider.DataToRestConverterFactory;
-import se.uu.ub.cora.therest.data.converter.spider.DataToRestConverterFactoryImp;
+import se.uu.ub.cora.therest.data.converter.coradata.DataGroupRestToDataConverter;
+import se.uu.ub.cora.therest.data.converter.coradata.DataListDataToRestConverter;
+import se.uu.ub.cora.therest.data.converter.coradata.DataRecordToRestConverter;
+import se.uu.ub.cora.therest.data.converter.coradata.DataToRestConverterFactory;
+import se.uu.ub.cora.therest.data.converter.coradata.DataToRestConverterFactoryImp;
 
 @Path("record")
 public class RecordEndpoint {
