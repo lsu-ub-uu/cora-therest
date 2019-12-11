@@ -38,8 +38,8 @@ public class DataToRestConverterFactorySpy implements DataToRestConverterFactory
 
 	@Override
 	public DataToRestConverter factorForDataGroupWithConverterInfo(
-			DataGroup spiderDataGroup, ConverterInfo converterInfo) {
-		dataGroups.add(spiderDataGroup);
+			DataGroup dataGroup, ConverterInfo converterInfo) {
+		dataGroups.add(dataGroup);
 		converterInfos.add(converterInfo);
 		DataToRestConverterSpy converter = new DataToRestConverterSpy();
 		factoredSpiderToRestConverters.add(converter);
@@ -49,9 +49,9 @@ public class DataToRestConverterFactorySpy implements DataToRestConverterFactory
 
 	@Override
 	public ActionDataToRestConverter factorForActionsUsingConverterInfoAndDataGroup(
-			List<Action> actions, ConverterInfo converterInfo, DataGroup spiderDataGroup) {
+			List<Action> actions, ConverterInfo converterInfo, DataGroup dataGroup) {
 		addedActions.addAll(actions);
-		dataGroups.add(spiderDataGroup);
+		dataGroups.add(dataGroup);
 		converterInfos.add(converterInfo);
 		ActionDataToRestConverterSpy converter = new ActionDataToRestConverterSpy();
 		factoredActionsToRestConverters.add(converter);

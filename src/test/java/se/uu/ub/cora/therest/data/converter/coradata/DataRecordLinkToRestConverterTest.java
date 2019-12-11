@@ -44,21 +44,21 @@ public class DataRecordLinkToRestConverterTest {
 			"http://localhost:8080/therest/rest/record/someRecordType/someRecordId",
 			"someRecordType", "someRecordId");
 
-	private DataRecordLink spiderDataRecordLink;
+	private DataRecordLink dataRecordLink;
 	private DataRecordLinkToRestConverter dataRecordLinkSpiderToRestConverter;
 
 	@BeforeMethod
 	public void setUp() {
-		spiderDataRecordLink = new DataRecordLinkSpy("nameInData");
+		dataRecordLink = new DataRecordLinkSpy("nameInData");
 
 		DataAtomic linkedRecordType = new DataAtomicSpy("linkedRecordType", "linkedRecordType");
-		spiderDataRecordLink.addChild(linkedRecordType);
+		dataRecordLink.addChild(linkedRecordType);
 
 		DataAtomic linkedRecordId = new DataAtomicSpy("linkedRecordId", "linkedRecordId");
-		spiderDataRecordLink.addChild(linkedRecordId);
+		dataRecordLink.addChild(linkedRecordId);
 
 		dataRecordLinkSpiderToRestConverter = DataRecordLinkToRestConverter
-				.fromDataRecordLinkWithConverterInfo(spiderDataRecordLink, converterInfo);
+				.fromDataRecordLinkWithConverterInfo(dataRecordLink, converterInfo);
 
 	}
 
@@ -79,7 +79,7 @@ public class DataRecordLinkToRestConverterTest {
 
 	@Test
 	public void testToRestWithAttributes() {
-		spiderDataRecordLink.addAttributeByIdWithValue("attributeNameInData", "attributeValue");
+		dataRecordLink.addAttributeByIdWithValue("attributeNameInData", "attributeValue");
 
 		RestDataRecordLink restDataRecordLink = dataRecordLinkSpiderToRestConverter.toRest();
 
@@ -90,7 +90,7 @@ public class DataRecordLinkToRestConverterTest {
 
 	@Test
 	public void testToRestWithRepeatId() {
-		spiderDataRecordLink.setRepeatId("j");
+		dataRecordLink.setRepeatId("j");
 		RestDataRecordLink restDataRecordLink = dataRecordLinkSpiderToRestConverter.toRest();
 		assertEquals(restDataRecordLink.getNameInData(), "nameInData");
 
@@ -107,7 +107,7 @@ public class DataRecordLinkToRestConverterTest {
 	@Test
 	public void testToRestWithLinkedRepeatId() {
 		DataAtomic linkedRepeatId = new DataAtomicSpy("linkedRepeatId", "linkedOne");
-		spiderDataRecordLink.addChild(linkedRepeatId);
+		dataRecordLink.addChild(linkedRepeatId);
 		RestDataRecordLink restDataRecordLink = dataRecordLinkSpiderToRestConverter.toRest();
 
 		RestDataAtomic restLinkedRepeatId = (RestDataAtomic) restDataRecordLink
@@ -117,8 +117,8 @@ public class DataRecordLinkToRestConverterTest {
 
 	@Test
 	public void testToRestWithLinkedPath() {
-		DataGroup spiderDataGroup = new DataGroupSpy("linkedPath");
-		spiderDataRecordLink.addChild(spiderDataGroup);
+		DataGroup dataGroup = new DataGroupSpy("linkedPath");
+		dataRecordLink.addChild(dataGroup);
 		RestDataRecordLink restDataRecordLink = dataRecordLinkSpiderToRestConverter.toRest();
 		RestDataGroup linkedPath = (RestDataGroup) restDataRecordLink
 				.getFirstChildWithNameInData("linkedPath");
@@ -128,9 +128,9 @@ public class DataRecordLinkToRestConverterTest {
 	@Test
 	public void testToRestWithAction() {
 		dataRecordLinkSpiderToRestConverter = DataRecordLinkToRestConverter
-				.fromDataRecordLinkWithConverterInfo(spiderDataRecordLink, converterInfo);
+				.fromDataRecordLinkWithConverterInfo(dataRecordLink, converterInfo);
 
-		spiderDataRecordLink.addAction(Action.READ);
+		dataRecordLink.addAction(Action.READ);
 		RestDataRecordLink restDataRecordLink = dataRecordLinkSpiderToRestConverter.toRest();
 		assertEquals(restDataRecordLink.getNameInData(), "nameInData");
 

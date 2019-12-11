@@ -40,17 +40,17 @@ public class DataListDataToRestConverterTest {
 
 	@Test
 	public void testToRest() {
-		DataGroup spiderDataGroup = new DataGroupSpy("groupId");
-		spiderDataGroup.addChild(createRecordInfo());
-		DataRecord spiderDataRecord = new DataRecordSpy(spiderDataGroup);
-		DataList spiderDataList = new DataListSpy("place");
-		spiderDataList.addData(spiderDataRecord);
-		spiderDataList.setTotalNo("10");
-		spiderDataList.setFromNo("1");
-		spiderDataList.setToNo("1");
+		DataGroup dataGroup = new DataGroupSpy("groupId");
+		dataGroup.addChild(createRecordInfo());
+		DataRecord dataRecord = new DataRecordSpy(dataGroup);
+		DataList dataList = new DataListSpy("place");
+		dataList.addData(dataRecord);
+		dataList.setTotalNo("10");
+		dataList.setFromNo("1");
+		dataList.setToNo("1");
 
 		DataListDataToRestConverter converter = DataListDataToRestConverter
-				.fromDataListWithBaseURL(spiderDataList, baseURL);
+				.fromDataListWithBaseURL(dataList, baseURL);
 
 		RestDataList recordList = converter.toRest();
 
@@ -77,16 +77,16 @@ public class DataListDataToRestConverterTest {
 
 	@Test
 	public void testToRestWithGroup() {
-		DataGroup spiderDataGroup = new DataGroupSpy("groupId");
-		spiderDataGroup.addChild(createRecordInfo());
-		DataList spiderDataList = new DataListSpy("place");
-		spiderDataList.addData(spiderDataGroup);
-		spiderDataList.setTotalNo("10");
-		spiderDataList.setFromNo("1");
-		spiderDataList.setToNo("1");
+		DataGroup dataGroup = new DataGroupSpy("groupId");
+		dataGroup.addChild(createRecordInfo());
+		DataList dataList = new DataListSpy("place");
+		dataList.addData(dataGroup);
+		dataList.setTotalNo("10");
+		dataList.setFromNo("1");
+		dataList.setToNo("1");
 
 		DataListDataToRestConverter converter = DataListDataToRestConverter
-				.fromDataListWithBaseURL(spiderDataList, baseURL);
+				.fromDataListWithBaseURL(dataList, baseURL);
 
 		RestDataList recordList = converter.toRest();
 

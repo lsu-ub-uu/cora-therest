@@ -48,14 +48,14 @@ public class DataGroupDataToRestConverterTest {
 			"http://localhost:8080/therest/rest/record/someRecordType/someRecordId",
 			"someRecordType", "someRecordId");
 
-	private DataGroup spiderDataGroup;
+	private DataGroup dataGroup;
 	private DataGroupDataToRestConverter dataGroupSpiderToRestConverter;
 
 	@BeforeMethod
 	public void beforeMethod() {
-		spiderDataGroup = new DataGroupSpy("nameInData");
+		dataGroup = new DataGroupSpy("nameInData");
 		dataGroupSpiderToRestConverter = DataGroupDataToRestConverter
-				.fromDataGroupWithDataGroupAndConverterInfo(spiderDataGroup, converterInfo);
+				.fromDataGroupWithDataGroupAndConverterInfo(dataGroup, converterInfo);
 	}
 
 	@Test
@@ -66,7 +66,7 @@ public class DataGroupDataToRestConverterTest {
 
 	@Test
 	public void testToRestWithRepeatId() {
-		spiderDataGroup.setRepeatId("2");
+		dataGroup.setRepeatId("2");
 		RestDataGroup restDataGroup = dataGroupSpiderToRestConverter.toRest();
 		assertEquals(restDataGroup.getNameInData(), "nameInData");
 		assertEquals(restDataGroup.getRepeatId(), "2");
@@ -74,7 +74,7 @@ public class DataGroupDataToRestConverterTest {
 
 	@Test
 	public void testToRestWithAttributes() {
-		spiderDataGroup.addAttributeByIdWithValue("attributeNameInData", "attributeValue");
+		dataGroup.addAttributeByIdWithValue("attributeNameInData", "attributeValue");
 		RestDataGroup restDataGroup = dataGroupSpiderToRestConverter.toRest();
 		String attributeId = restDataGroup.getAttributes().keySet().iterator().next();
 		String attributeValue = restDataGroup.getAttributes().get(attributeId);
@@ -83,7 +83,7 @@ public class DataGroupDataToRestConverterTest {
 
 	@Test
 	public void testToRestWithAtomicChild() {
-		spiderDataGroup.addChild(new DataAtomicSpy("childNameInData", "atomicValue"));
+		dataGroup.addChild(new DataAtomicSpy("childNameInData", "atomicValue"));
 		RestDataGroup restDataGroup = dataGroupSpiderToRestConverter.toRest();
 		RestDataAtomic restDataAtomic = (RestDataAtomic) restDataGroup.getChildren().iterator()
 				.next();
@@ -101,7 +101,7 @@ public class DataGroupDataToRestConverterTest {
 		DataAtomic linkedRecordIdChild = new DataAtomicSpy("linkedRecordId", "someRecordId");
 		dataRecordLink.addChild(linkedRecordIdChild);
 
-		spiderDataGroup.addChild(dataRecordLink);
+		dataGroup.addChild(dataRecordLink);
 
 		RestDataGroup restDataGroup = dataGroupSpiderToRestConverter.toRest();
 		RestDataRecordLink restDataRecordLink = (RestDataRecordLink) restDataGroup.getChildren()
@@ -119,7 +119,7 @@ public class DataGroupDataToRestConverterTest {
 
 	@Test
 	public void testToRestWithResourceLinkChild() {
-		spiderDataGroup.addChild(DataCreator.createResourceLinkMaster());
+		dataGroup.addChild(DataCreator.createResourceLinkMaster());
 		RestDataGroup restDataGroup = dataGroupSpiderToRestConverter.toRest();
 		RestDataElement restMaster = restDataGroup.getFirstChildWithNameInData("master");
 		assertTrue((RestDataResourceLink) restMaster instanceof RestDataResourceLink);
@@ -127,7 +127,7 @@ public class DataGroupDataToRestConverterTest {
 
 	@Test
 	public void testToRestWithGroupChild() {
-		spiderDataGroup.addChild(new DataGroupSpy("childNameInData"));
+		dataGroup.addChild(new DataGroupSpy("childNameInData"));
 		RestDataGroup restDataGroup = dataGroupSpiderToRestConverter.toRest();
 		RestDataGroup restDataGroupChild = (RestDataGroup) restDataGroup.getChildren().iterator()
 				.next();
@@ -136,10 +136,10 @@ public class DataGroupDataToRestConverterTest {
 
 	@Test
 	public void testToRestWithGroupLevelsOfChildren() {
-		spiderDataGroup.addChild(new DataAtomicSpy("atomicNameInData", "atomicValue"));
+		dataGroup.addChild(new DataAtomicSpy("atomicNameInData", "atomicValue"));
 		DataGroup dataGroup2 = new DataGroupSpy("childNameInData");
 		dataGroup2.addChild(new DataGroupSpy("grandChildNameInData"));
-		spiderDataGroup.addChild(dataGroup2);
+		dataGroup.addChild(dataGroup2);
 		RestDataGroup restDataGroup = dataGroupSpiderToRestConverter.toRest();
 		Iterator<RestDataElement> iterator = restDataGroup.getChildren().iterator();
 		Assert.assertTrue(iterator.hasNext(), "dataGroupRest should have at least one child");

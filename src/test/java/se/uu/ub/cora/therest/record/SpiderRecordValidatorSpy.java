@@ -13,7 +13,7 @@ public class SpiderRecordValidatorSpy implements SpiderRecordValidator {
 
 	public String authToken;
 	public String recordType;
-	public DataGroup spiderDataGroup;
+	public DataGroup dataGroup;
 	public DataGroup recordToValidate;
 	public DataGroup validationRecord;
 
@@ -23,7 +23,7 @@ public class SpiderRecordValidatorSpy implements SpiderRecordValidator {
 		this.authToken = authToken;
 		this.recordType = recordType;
 		this.validationRecord = validationRecord;
-		this.spiderDataGroup = validationRecord;
+		this.dataGroup = validationRecord;
 		this.recordToValidate = recordToValidate;
 
 		if ("dummyNonAuthorizedToken".equals(authToken)) {

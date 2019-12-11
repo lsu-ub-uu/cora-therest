@@ -45,17 +45,17 @@ public class DataAtomicRestToDataConverterTest {
 
 	@Test
 	public void testToSpider() {
-		DataAtomic spiderDataAtomic = converter.convert();
-		assertEquals(spiderDataAtomic.getNameInData(), "nameInData");
-		assertEquals(spiderDataAtomic.getValue(), "value");
+		DataAtomic dataAtomic = converter.convert();
+		assertEquals(dataAtomic.getNameInData(), "nameInData");
+		assertEquals(dataAtomic.getValue(), "value");
 	}
 
 	@Test
 	public void testToSpiderWithRepeatId() {
 		restDataAtomic.setRepeatId("x3");
-		DataAtomic spiderDataAtomic = converter.convert();
-		assertEquals(spiderDataAtomic.getNameInData(), "nameInData");
-		assertEquals(spiderDataAtomic.getValue(), "value");
-		assertEquals(spiderDataAtomic.getRepeatId(), "x3");
+		DataAtomic dataAtomic = converter.convert();
+		assertEquals(dataAtomic.getNameInData(), "nameInData");
+		assertEquals(dataAtomic.getValue(), "value");
+		assertEquals(dataAtomic.getRepeatId(), "x3");
 	}
 }
