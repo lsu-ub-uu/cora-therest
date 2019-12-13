@@ -28,7 +28,7 @@ import java.util.Set;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.spider.data.Action;
+import se.uu.ub.cora.data.Action;
 
 public class RestDataRecordTest {
 	private RestDataRecord restDataRecord;

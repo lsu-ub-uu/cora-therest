@@ -24,9 +24,9 @@ import static org.testng.Assert.assertEquals;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.data.Action;
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.org.OrgJsonBuilderFactoryAdapter;
-import se.uu.ub.cora.spider.data.Action;
 import se.uu.ub.cora.therest.data.ActionLink;
 import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataGroup;
@@ -70,12 +70,13 @@ public class DataRecordLinkToJsonConverterTest {
 		recordLink.addAttributeByIdWithValue("attributeNameInData", "attributeValue");
 		String jsonString = converter.toJson();
 
-		assertEquals(jsonString,"{\"children\":[" + "{\"name\":\"linkedRecordType\",\"value\":\"aRecordType\"},"
-				+ "{\"name\":\"linkedRecordId\",\"value\":\"aRecordId\"}]"
-				+ ",\"name\":\"nameInData\","
-				+ "\"attributes\":{\"attributeNameInData\":\"attributeValue\"}}");
+		assertEquals(jsonString,
+				"{\"children\":[" + "{\"name\":\"linkedRecordType\",\"value\":\"aRecordType\"},"
+						+ "{\"name\":\"linkedRecordId\",\"value\":\"aRecordId\"}]"
+						+ ",\"name\":\"nameInData\","
+						+ "\"attributes\":{\"attributeNameInData\":\"attributeValue\"}}");
 	}
-	
+
 	@Test
 	public void testToJsonWithRepeatId() {
 		recordLink.setRepeatId("22");

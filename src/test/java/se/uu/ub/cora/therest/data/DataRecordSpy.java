@@ -18,44 +18,48 @@
  */
 package se.uu.ub.cora.therest.data;
 
-import se.uu.ub.cora.data.DataAtomic;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
-public class DataAtomicSpy implements DataAtomic {
+import se.uu.ub.cora.data.Action;
+import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataRecord;
 
-	public String nameInData;
-	public String value;
-	public String repeatId;
+public class DataRecordSpy implements DataRecord {
 
-	public DataAtomicSpy(String nameInData, String value) {
-		this.nameInData = nameInData;
-		this.value = value;
-	}
+	public DataGroup dataGroup;
+	public Set<String> keys = new LinkedHashSet<>();
+	public List<Action> actions = new ArrayList<>();
 
-	public DataAtomicSpy(String nameInData, String value, String repeatId) {
-		this.nameInData = nameInData;
-		this.value = value;
-		this.repeatId = repeatId;
-
-	}
-
-	@Override
-	public String getRepeatId() {
-		return repeatId;
+	public DataRecordSpy(DataGroup dataGroup) {
+		this.dataGroup = dataGroup;
 	}
 
 	@Override
-	public String getNameInData() {
-		return nameInData;
+	public DataGroup getDataGroup() {
+		return dataGroup;
 	}
 
 	@Override
-	public String getValue() {
-		return value;
+	public void addKey(String key) {
+		keys.add(key);
 	}
 
 	@Override
-	public void setRepeatId(String repeatId) {
-		this.repeatId = repeatId;
+	public Set<String> getKeys() {
+		return keys;
+	}
+
+	@Override
+	public List<Action> getActions() {
+		return actions;
+	}
+
+	@Override
+	public void addAction(Action action) {
+		actions.add(action);
 
 	}
 

@@ -18,45 +18,30 @@
  */
 package se.uu.ub.cora.therest.data;
 
-import se.uu.ub.cora.data.DataAtomic;
+import java.util.ArrayList;
+import java.util.List;
 
-public class DataAtomicSpy implements DataAtomic {
+import se.uu.ub.cora.data.Action;
+import se.uu.ub.cora.data.DataResourceLink;
+
+public class DataResourceLinkSpy extends DataGroupSpy implements DataResourceLink {
 
 	public String nameInData;
-	public String value;
-	public String repeatId;
+	public List<Action> actions = new ArrayList<>();
 
-	public DataAtomicSpy(String nameInData, String value) {
-		this.nameInData = nameInData;
-		this.value = value;
+	public DataResourceLinkSpy(String nameInData) {
+		super(nameInData);
 	}
 
-	public DataAtomicSpy(String nameInData, String value, String repeatId) {
-		this.nameInData = nameInData;
-		this.value = value;
-		this.repeatId = repeatId;
+	@Override
+	public void addAction(Action action) {
+		actions.add(action);
 
 	}
 
 	@Override
-	public String getRepeatId() {
-		return repeatId;
-	}
-
-	@Override
-	public String getNameInData() {
-		return nameInData;
-	}
-
-	@Override
-	public String getValue() {
-		return value;
-	}
-
-	@Override
-	public void setRepeatId(String repeatId) {
-		this.repeatId = repeatId;
-
+	public List<Action> getActions() {
+		return actions;
 	}
 
 }

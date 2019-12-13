@@ -16,47 +16,29 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.therest.data;
+package se.uu.ub.cora.therest.data.converter.coradata;
 
-import se.uu.ub.cora.data.DataAtomic;
+import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataGroupFactory;
+import se.uu.ub.cora.therest.data.DataGroupSpy;
 
-public class DataAtomicSpy implements DataAtomic {
+public class DataGroupFactorySpy implements DataGroupFactory {
 
 	public String nameInData;
-	public String value;
-	public String repeatId;
+	private DataGroupSpy factoredDataGroup;
 
-	public DataAtomicSpy(String nameInData, String value) {
+	@Override
+	public DataGroup factorUsingNameInData(String nameInData) {
 		this.nameInData = nameInData;
-		this.value = value;
-	}
-
-	public DataAtomicSpy(String nameInData, String value, String repeatId) {
-		this.nameInData = nameInData;
-		this.value = value;
-		this.repeatId = repeatId;
-
+		factoredDataGroup = new DataGroupSpy(nameInData);
+		return factoredDataGroup;
 	}
 
 	@Override
-	public String getRepeatId() {
-		return repeatId;
-	}
-
-	@Override
-	public String getNameInData() {
-		return nameInData;
-	}
-
-	@Override
-	public String getValue() {
-		return value;
-	}
-
-	@Override
-	public void setRepeatId(String repeatId) {
-		this.repeatId = repeatId;
-
+	public DataGroup factorAsLinkWithNameInDataTypeAndId(String nameInData, String recordType,
+			String recordId) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

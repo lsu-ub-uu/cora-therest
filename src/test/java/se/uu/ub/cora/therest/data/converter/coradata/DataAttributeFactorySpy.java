@@ -16,47 +16,25 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.therest.data;
+package se.uu.ub.cora.therest.data.converter.coradata;
 
-import se.uu.ub.cora.data.DataAtomic;
+import se.uu.ub.cora.data.DataAttribute;
+import se.uu.ub.cora.data.DataAttributeFactory;
+import se.uu.ub.cora.therest.data.DataAttributeSpy;
 
-public class DataAtomicSpy implements DataAtomic {
+public class DataAttributeFactorySpy implements DataAttributeFactory {
 
 	public String nameInData;
 	public String value;
-	public String repeatId;
+	public DataAttribute factoredDataAttribute;
 
-	public DataAtomicSpy(String nameInData, String value) {
+	@Override
+	public DataAttribute factorUsingNameInDataAndValue(String nameInData, String value) {
 		this.nameInData = nameInData;
 		this.value = value;
-	}
 
-	public DataAtomicSpy(String nameInData, String value, String repeatId) {
-		this.nameInData = nameInData;
-		this.value = value;
-		this.repeatId = repeatId;
-
-	}
-
-	@Override
-	public String getRepeatId() {
-		return repeatId;
-	}
-
-	@Override
-	public String getNameInData() {
-		return nameInData;
-	}
-
-	@Override
-	public String getValue() {
-		return value;
-	}
-
-	@Override
-	public void setRepeatId(String repeatId) {
-		this.repeatId = repeatId;
-
+		factoredDataAttribute = new DataAttributeSpy(nameInData, value);
+		return factoredDataAttribute;
 	}
 
 }

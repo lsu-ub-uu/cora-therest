@@ -16,47 +16,14 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.therest.data;
+package se.uu.ub.cora.therest.data.converter.coradata;
 
-import se.uu.ub.cora.data.DataAtomic;
+import java.util.Map;
 
-public class DataAtomicSpy implements DataAtomic {
+import se.uu.ub.cora.therest.data.ActionLink;
 
-	public String nameInData;
-	public String value;
-	public String repeatId;
+public interface ActionDataToRestConverter {
 
-	public DataAtomicSpy(String nameInData, String value) {
-		this.nameInData = nameInData;
-		this.value = value;
-	}
-
-	public DataAtomicSpy(String nameInData, String value, String repeatId) {
-		this.nameInData = nameInData;
-		this.value = value;
-		this.repeatId = repeatId;
-
-	}
-
-	@Override
-	public String getRepeatId() {
-		return repeatId;
-	}
-
-	@Override
-	public String getNameInData() {
-		return nameInData;
-	}
-
-	@Override
-	public String getValue() {
-		return value;
-	}
-
-	@Override
-	public void setRepeatId(String repeatId) {
-		this.repeatId = repeatId;
-
-	}
+	Map<String, ActionLink> toRest();
 
 }

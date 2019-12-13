@@ -18,29 +18,16 @@
  */
 package se.uu.ub.cora.therest.data;
 
-import se.uu.ub.cora.data.DataAtomic;
+import se.uu.ub.cora.data.DataAttribute;
 
-public class DataAtomicSpy implements DataAtomic {
+public class DataAttributeSpy implements DataAttribute {
 
 	public String nameInData;
 	public String value;
-	public String repeatId;
 
-	public DataAtomicSpy(String nameInData, String value) {
+	public DataAttributeSpy(String nameInData, String value) {
 		this.nameInData = nameInData;
 		this.value = value;
-	}
-
-	public DataAtomicSpy(String nameInData, String value, String repeatId) {
-		this.nameInData = nameInData;
-		this.value = value;
-		this.repeatId = repeatId;
-
-	}
-
-	@Override
-	public String getRepeatId() {
-		return repeatId;
 	}
 
 	@Override
@@ -51,12 +38,6 @@ public class DataAtomicSpy implements DataAtomic {
 	@Override
 	public String getValue() {
 		return value;
-	}
-
-	@Override
-	public void setRepeatId(String repeatId) {
-		this.repeatId = repeatId;
-
 	}
 
 }

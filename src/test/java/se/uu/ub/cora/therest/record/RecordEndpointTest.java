@@ -42,8 +42,8 @@ import org.glassfish.jersey.media.multipart.FormDataContentDisposition.FormDataC
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.logger.LoggerProvider;
-import se.uu.ub.cora.spider.data.SpiderDataGroup;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
 import se.uu.ub.cora.therest.log.LoggerFactorySpy;
 
@@ -155,9 +155,9 @@ public class RecordEndpointTest {
 
 		SpiderRecordListReaderSpy spiderListReaderSpy = factorySpy.spiderRecordListReaderSpy;
 
-		SpiderDataGroup filterData = spiderListReaderSpy.filter;
+		DataGroup filterData = spiderListReaderSpy.filter;
 		assertEquals(filterData.getNameInData(), "filter");
-		SpiderDataGroup part = filterData.extractGroup("part");
+		DataGroup part = filterData.getFirstGroupWithNameInData("part");
 		assertTrue(part.containsChildWithNameInData("key"));
 		assertTrue(part.containsChildWithNameInData("value"));
 	}
@@ -170,7 +170,7 @@ public class RecordEndpointTest {
 
 		SpiderRecordListReaderSpy spiderListReaderSpy = factorySpy.spiderRecordListReaderSpy;
 
-		SpiderDataGroup filterData = spiderListReaderSpy.filter;
+		DataGroup filterData = spiderListReaderSpy.filter;
 		assertEquals(filterData.getNameInData(), "filter");
 		assertFalse(filterData.containsChildWithNameInData("part"));
 	}
@@ -695,12 +695,10 @@ public class RecordEndpointTest {
 		SpiderRecordSearcherSpy spiderRecordSearcherSpy = factorySpy.spiderRecordSearcherSpy;
 		assertEquals(spiderRecordSearcherSpy.authToken, AUTH_TOKEN);
 		assertEquals(spiderRecordSearcherSpy.searchId, "aSearchId");
-		SpiderDataGroup searchData = spiderRecordSearcherSpy.searchData;
+		DataGroup searchData = spiderRecordSearcherSpy.searchData;
 		assertEquals(searchData.getNameInData(), "search");
-		SpiderDataGroup include = (SpiderDataGroup) searchData
-				.getFirstChildWithNameInData("include");
-		SpiderDataGroup includePart = (SpiderDataGroup) include
-				.getFirstChildWithNameInData("includePart");
+		DataGroup include = (DataGroup) searchData.getFirstChildWithNameInData("include");
+		DataGroup includePart = (DataGroup) include.getFirstChildWithNameInData("includePart");
 		assertTrue(includePart.containsChildWithNameInData("text"));
 	}
 
@@ -789,10 +787,10 @@ public class RecordEndpointTest {
 				jsonToValidate);
 
 		SpiderRecordValidatorSpy spiderRecordValidatorSpy = factorySpy.spiderRecordValidatorSpy;
-		SpiderDataGroup validationRecord = spiderRecordValidatorSpy.validationRecord;
+		DataGroup validationRecord = spiderRecordValidatorSpy.validationRecord;
 		assertEquals(validationRecord.getNameInData(), "validationOrder");
 
-		SpiderDataGroup recordToValidate = spiderRecordValidatorSpy.recordToValidate;
+		DataGroup recordToValidate = spiderRecordValidatorSpy.recordToValidate;
 		assertEquals(recordToValidate.getNameInData(), "text");
 		assertEquals(spiderRecordValidatorSpy.recordType, "validationOrder");
 

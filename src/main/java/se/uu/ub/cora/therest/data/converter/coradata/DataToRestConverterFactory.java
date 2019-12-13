@@ -16,47 +16,20 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.therest.data;
+package se.uu.ub.cora.therest.data.converter.coradata;
 
-import se.uu.ub.cora.data.DataAtomic;
+import java.util.List;
 
-public class DataAtomicSpy implements DataAtomic {
+import se.uu.ub.cora.data.Action;
+import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.therest.data.converter.ConverterInfo;
 
-	public String nameInData;
-	public String value;
-	public String repeatId;
+public interface DataToRestConverterFactory {
 
-	public DataAtomicSpy(String nameInData, String value) {
-		this.nameInData = nameInData;
-		this.value = value;
-	}
+	DataToRestConverter factorForDataGroupWithConverterInfo(DataGroup dataGroup,
+			ConverterInfo converterInfo);
 
-	public DataAtomicSpy(String nameInData, String value, String repeatId) {
-		this.nameInData = nameInData;
-		this.value = value;
-		this.repeatId = repeatId;
-
-	}
-
-	@Override
-	public String getRepeatId() {
-		return repeatId;
-	}
-
-	@Override
-	public String getNameInData() {
-		return nameInData;
-	}
-
-	@Override
-	public String getValue() {
-		return value;
-	}
-
-	@Override
-	public void setRepeatId(String repeatId) {
-		this.repeatId = repeatId;
-
-	}
+	ActionDataToRestConverter factorForActionsUsingConverterInfoAndDataGroup(List<Action> actions,
+			ConverterInfo converterInfo, DataGroup dataGroup);
 
 }
