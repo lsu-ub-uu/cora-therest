@@ -19,6 +19,10 @@
 
 package se.uu.ub.cora.therest.data.converter;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import se.uu.ub.cora.json.parser.JsonArray;
 import se.uu.ub.cora.json.parser.JsonObject;
 import se.uu.ub.cora.json.parser.JsonParseException;
 import se.uu.ub.cora.json.parser.JsonValue;
@@ -35,12 +39,49 @@ public class JsonToDataConverterFactoryImp implements JsonToDataConverterFactory
 		jsonObject = (JsonObject) jsonValue;
 
 		if (isGroup()) {
-			return JsonToDataGroupConverter.forJsonObject(jsonObject);
+			return createConverterForGroupOrLink();
 		}
 		if (isAtomicData()) {
 			return JsonToDataAtomicConverter.forJsonObject(jsonObject);
 		}
 		return JsonToDataAttributeConverter.forJsonObject(jsonObject);
+	}
+
+	private JsonToDataConverter createConverterForGroupOrLink() {
+		List<String> foundNames = extractChildNames();
+		if (isRecordLink(foundNames)) {
+			return JsonToDataRecordLinkConverter.forJsonObject(jsonObject);
+		}
+		if (isResourceLink(foundNames)) {
+			return JsonToDataResourceLinkConverter.forJsonObject(jsonObject);
+		}
+
+		return JsonToDataGroupConverter.forJsonObject(jsonObject);
+	}
+
+	private boolean isResourceLink(List<String> foundNames) {
+		return foundNames.size() == 4 && foundNames.contains("streamId")
+				&& foundNames.contains("filename") && foundNames.contains("filesize")
+				&& foundNames.contains("mimeType");
+	}
+
+	private boolean isRecordLink(List<String> foundNames) {
+		return foundNames.size() == 2 && foundNames.contains("linkedRecordType")
+				&& foundNames.contains("linkedRecordId");
+	}
+
+	private List<String> extractChildNames() {
+		JsonArray childrenArray = jsonObject.getValueAsJsonArray("children");
+		List<String> foundNames = new ArrayList<>();
+		for (JsonValue child : childrenArray) {
+			String name = getNameInDataFromChild((JsonObject) child);
+			foundNames.add(name);
+		}
+		return foundNames;
+	}
+
+	private String getNameInDataFromChild(JsonObject child) {
+		return child.getValueAsJsonString("name").getStringValue();
 	}
 
 	private boolean isAtomicData() {

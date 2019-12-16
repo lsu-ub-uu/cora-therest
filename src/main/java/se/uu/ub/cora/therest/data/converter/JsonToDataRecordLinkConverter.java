@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -27,22 +27,22 @@ import se.uu.ub.cora.json.parser.JsonParseException;
 import se.uu.ub.cora.json.parser.JsonString;
 import se.uu.ub.cora.json.parser.JsonValue;
 import se.uu.ub.cora.therest.data.RestDataElement;
-import se.uu.ub.cora.therest.data.RestDataGroup;
+import se.uu.ub.cora.therest.data.RestDataRecordLink;
 
-public class JsonToDataGroupConverter implements JsonToDataConverter {
+public final class JsonToDataRecordLinkConverter implements JsonToDataConverter {
 
 	private static final int ONE_OPTIONAL_KEY_IS_PRESENT = 3;
 	private static final String CHILDREN = "children";
 	private static final String ATTRIBUTES = "attributes";
 	private static final int NUM_OF_ALLOWED_KEYS_AT_TOP_LEVEL = 4;
 	private JsonObject jsonObject;
-	protected RestDataGroup restDataGroup;
+	private RestDataRecordLink restDataRecordLink;
 
-	static JsonToDataGroupConverter forJsonObject(JsonObject jsonObject) {
-		return new JsonToDataGroupConverter(jsonObject);
+	static JsonToDataRecordLinkConverter forJsonObject(JsonObject jsonObject) {
+		return new JsonToDataRecordLinkConverter(jsonObject);
 	}
 
-	protected JsonToDataGroupConverter(JsonObject jsonObject) {
+	private JsonToDataRecordLinkConverter(JsonObject jsonObject) {
 		this.jsonObject = jsonObject;
 	}
 
@@ -57,7 +57,25 @@ public class JsonToDataGroupConverter implements JsonToDataConverter {
 
 	private RestDataElement tryToInstanciate() {
 		validateOnlyCorrectKeysAtTopLevel();
-		return createDataGroupInstance();
+		RestDataRecordLink createDataGroupInstance = (RestDataRecordLink) createDataGroupInstance();
+		throwErrorIfLinkChildrenAreIncorrect(createDataGroupInstance);
+		return createDataGroupInstance;
+	}
+
+	private void throwErrorIfLinkChildrenAreIncorrect(RestDataRecordLink recordLink) {
+		if (incorrectNumberOfChildren(recordLink) || incorrectChildren(recordLink)) {
+			throw new JsonParseException(
+					"RecordLinkData must and can only contain children with name linkedRecordType and linkedRecordId");
+		}
+	}
+
+	private boolean incorrectNumberOfChildren(RestDataRecordLink recordLink) {
+		return recordLink.getChildren().size() != 2;
+	}
+
+	private boolean incorrectChildren(RestDataRecordLink recordLink) {
+		return !recordLink.containsChildWithNameInData("linkedRecordType")
+				|| !recordLink.containsChildWithNameInData("linkedRecordId");
 	}
 
 	private String getNameInDataFromJsonObject() {
@@ -67,11 +85,11 @@ public class JsonToDataGroupConverter implements JsonToDataConverter {
 	private void validateOnlyCorrectKeysAtTopLevel() {
 
 		if (!jsonObject.containsKey("name")) {
-			throw new JsonParseException("Group data must contain key: name");
+			throw new JsonParseException("RecordLink data must contain key: name");
 		}
 
 		if (!hasChildren()) {
-			throw new JsonParseException("Group data must contain key: children");
+			throw new JsonParseException("RecordLink data must contain key: children");
 		}
 
 		validateNoOfKeysAtTopLevel();
@@ -80,7 +98,7 @@ public class JsonToDataGroupConverter implements JsonToDataConverter {
 	private void validateNoOfKeysAtTopLevel() {
 		if (threeKeysAtTopLevelButAttributeAndRepeatIdIsMissing()) {
 			throw new JsonParseException(
-					"Group data must contain name and children, and may contain "
+					"RecordLink data must contain name and children, and may contain "
 							+ "attributes or repeatId");
 		}
 		if (maxKeysAtTopLevelButAttributeOrRepeatIdIsMissing()) {
@@ -89,7 +107,7 @@ public class JsonToDataGroupConverter implements JsonToDataConverter {
 
 		if (moreKeysAtTopLevelThanAllowed()) {
 			throw new JsonParseException(
-					"Group data can only contain keys: name, children and attributes");
+					"RecordLink data can only contain keys: name, children and attributes");
 		}
 	}
 
@@ -110,61 +128,62 @@ public class JsonToDataGroupConverter implements JsonToDataConverter {
 
 	private RestDataElement createDataGroupInstance() {
 		String nameInData = getNameInDataFromJsonObject();
-		createInstanceOfDataElement(nameInData);
-		addRepeatIdToGroup();
-		if (hasAttributes()) {
-			addAttributesToGroup();
-		}
-		addChildrenToGroup();
-		return restDataGroup;
+		restDataRecordLink = RestDataRecordLink.withNameInData(nameInData);
+		possiblyAddRepeatId();
+		possiblyAddAttributes();
+		addChildren();
+		return restDataRecordLink;
 	}
 
-	protected void createInstanceOfDataElement(String nameInData) {
-		restDataGroup = RestDataGroup.withNameInData(nameInData);
-	}
-
-	private void addRepeatIdToGroup() {
+	private void possiblyAddRepeatId() {
 		if (hasRepeatId()) {
-			restDataGroup.setRepeatId(jsonObject.getValueAsJsonString("repeatId").getStringValue());
+			restDataRecordLink
+					.setRepeatId(jsonObject.getValueAsJsonString("repeatId").getStringValue());
 		}
 
-	}
-
-	private boolean hasAttributes() {
-		return jsonObject.containsKey(ATTRIBUTES);
 	}
 
 	private boolean hasRepeatId() {
 		return jsonObject.containsKey("repeatId");
 	}
 
-	private void addAttributesToGroup() {
-		JsonObject attributes = jsonObject.getValueAsJsonObject(ATTRIBUTES);
-		for (Entry<String, JsonValue> attributeEntry : attributes.entrySet()) {
-			addAttributeToGroup(attributeEntry);
+	private void possiblyAddAttributes() {
+		if (hasAttributes()) {
+			addAttributes();
 		}
 	}
 
-	private void addAttributeToGroup(Entry<String, JsonValue> attributeEntry) {
+	private boolean hasAttributes() {
+		return jsonObject.containsKey(ATTRIBUTES);
+	}
+
+	private void addAttributes() {
+		JsonObject attributes = jsonObject.getValueAsJsonObject(ATTRIBUTES);
+		for (Entry<String, JsonValue> attributeEntry : attributes.entrySet()) {
+			addAttribute(attributeEntry);
+		}
+	}
+
+	private void addAttribute(Entry<String, JsonValue> attributeEntry) {
 		String value = ((JsonString) attributeEntry.getValue()).getStringValue();
-		restDataGroup.addAttributeByIdWithValue(attributeEntry.getKey(), value);
+		restDataRecordLink.addAttributeByIdWithValue(attributeEntry.getKey(), value);
 	}
 
 	private boolean hasChildren() {
 		return jsonObject.containsKey(CHILDREN);
 	}
 
-	private void addChildrenToGroup() {
+	private void addChildren() {
 		JsonArray children = jsonObject.getValueAsJsonArray(CHILDREN);
 		for (JsonValue child : children) {
-			addChildToGroup((JsonObject) child);
+			addChild((JsonObject) child);
 		}
 	}
 
-	private void addChildToGroup(JsonObject child) {
+	private void addChild(JsonObject child) {
 		JsonToDataConverterFactoryImp jsonToDataConverterFactoryImp = new JsonToDataConverterFactoryImp();
 		JsonToDataConverter childJsonToDataConverter = jsonToDataConverterFactoryImp
 				.createForJsonObject(child);
-		restDataGroup.addChild(childJsonToDataConverter.toInstance());
+		restDataRecordLink.addChild(childJsonToDataConverter.toInstance());
 	}
 }
