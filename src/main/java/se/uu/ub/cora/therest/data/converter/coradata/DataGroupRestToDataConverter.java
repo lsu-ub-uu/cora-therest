@@ -25,20 +25,24 @@ import java.util.Map.Entry;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataGroupProvider;
+import se.uu.ub.cora.data.DataRecordLink;
+import se.uu.ub.cora.data.DataResourceLink;
 import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataElement;
 import se.uu.ub.cora.therest.data.RestDataGroup;
+import se.uu.ub.cora.therest.data.RestDataRecordLink;
+import se.uu.ub.cora.therest.data.RestDataResourceLink;
 import se.uu.ub.cora.therest.data.converter.ConverterException;
 
-public final class DataGroupRestToDataConverter {
-	private RestDataGroup restDataGroup;
-	private DataGroup dataGroup;
+public class DataGroupRestToDataConverter {
+	protected RestDataGroup restDataGroup;
+	protected DataGroup dataGroup;
 
 	public static DataGroupRestToDataConverter fromRestDataGroup(RestDataGroup restDataGroup) {
 		return new DataGroupRestToDataConverter(restDataGroup);
 	}
 
-	private DataGroupRestToDataConverter(RestDataGroup restDataGroup) {
+	protected DataGroupRestToDataConverter(RestDataGroup restDataGroup) {
 		this.restDataGroup = restDataGroup;
 	}
 
@@ -52,11 +56,15 @@ public final class DataGroupRestToDataConverter {
 	}
 
 	private DataGroup tryToConvert() {
-		dataGroup = DataGroupProvider.getDataGroupUsingNameInData(restDataGroup.getNameInData());
+		createInstanceOfDataElement();
 		dataGroup.setRepeatId(restDataGroup.getRepeatId());
 		addAttributesToDataGroup();
 		addChildrenToDataGroup();
 		return dataGroup;
+	}
+
+	protected void createInstanceOfDataElement() {
+		dataGroup = DataGroupProvider.getDataGroupUsingNameInData(restDataGroup.getNameInData());
 	}
 
 	private void addAttributesToDataGroup() {
@@ -74,10 +82,33 @@ public final class DataGroupRestToDataConverter {
 
 	private void addChildToDataGroup(RestDataElement restDataElement) {
 		if (restDataElement instanceof RestDataGroup) {
-			addGroupChild(restDataElement);
+			handleDataGroup(restDataElement);
 		} else {
 			addAtomicChild(restDataElement);
 		}
+	}
+
+	private void handleDataGroup(RestDataElement restDataElement) {
+		if (restDataElement instanceof RestDataRecordLink) {
+			addRecordLinkChild(restDataElement);
+		} else if (restDataElement instanceof RestDataResourceLink) {
+			addResourceLinkChild(restDataElement);
+		} else {
+			addGroupChild(restDataElement);
+		}
+
+	}
+
+	private void addRecordLinkChild(RestDataElement restDataElement) {
+		DataRecordLink dataGroupChild = (DataRecordLink) DataRecordLinkRestToDataConverter
+				.fromRestDataGroup((RestDataGroup) restDataElement).convert();
+		dataGroup.addChild(dataGroupChild);
+	}
+
+	private void addResourceLinkChild(RestDataElement restDataElement) {
+		DataResourceLink dataResourceLink = (DataResourceLink) DataResourceLinkRestToDataConverter
+				.fromRestDataGroup((RestDataGroup) restDataElement).convert();
+		dataGroup.addChild(dataResourceLink);
 	}
 
 	private void addGroupChild(RestDataElement restDataElement) {
