@@ -33,7 +33,7 @@
 	
 	<properties>
 		<json.version>2.0.1</json.version>
-		<spider.version>3.3.0</spider.version>
+		<spider.version>3.4.0</spider.version>
 		<javax.ws.rs.version>2.1.1</javax.ws.rs.version>
 		<jaxb-api.version>2.3.1</jaxb-api.version>
 		<servlet-api.version>4.0.1</servlet-api.version>
@@ -67,7 +67,6 @@
 			<version>${testng.version}</version>
 			<scope>test</scope>
 		</dependency>
-		
 		<dependency>
 			<groupId>se.uu.ub.cora</groupId>
 			<artifactId>json</artifactId>
