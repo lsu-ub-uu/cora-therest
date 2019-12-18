@@ -29,6 +29,7 @@ import se.uu.ub.cora.json.parser.JsonValue;
 
 public class JsonToDataConverterFactoryImp implements JsonToDataConverterFactory {
 
+	private static final int CORRECT_NUM_OF_CHILDREN = 4;
 	private JsonObject jsonObject;
 
 	@Override
@@ -60,7 +61,7 @@ public class JsonToDataConverterFactoryImp implements JsonToDataConverterFactory
 	}
 
 	private boolean isResourceLink(List<String> foundNames) {
-		return foundNames.size() == 4 && foundNames.contains("streamId")
+		return foundNames.size() == CORRECT_NUM_OF_CHILDREN && foundNames.contains("streamId")
 				&& foundNames.contains("filename") && foundNames.contains("filesize")
 				&& foundNames.contains("mimeType");
 	}

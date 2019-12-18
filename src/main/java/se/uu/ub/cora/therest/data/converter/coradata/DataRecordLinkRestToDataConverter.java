@@ -36,9 +36,4 @@ public class DataRecordLinkRestToDataConverter extends DataGroupRestToDataConver
 		dataGroup = DataRecordLinkProvider
 				.getDataRecordLinkUsingNameInData(restDataGroup.getNameInData());
 	}
-
-	// @Override
-	// public DataGroup convert() {
-	// return super.convert();
-	// }
 }
