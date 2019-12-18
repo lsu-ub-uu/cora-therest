@@ -29,20 +29,20 @@ import se.uu.ub.cora.json.parser.JsonValue;
 import se.uu.ub.cora.therest.data.RestDataElement;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 
-public final class JsonToDataGroupConverter implements JsonToDataConverter {
+public class JsonToDataGroupConverter implements JsonToDataConverter {
 
 	private static final int ONE_OPTIONAL_KEY_IS_PRESENT = 3;
 	private static final String CHILDREN = "children";
 	private static final String ATTRIBUTES = "attributes";
 	private static final int NUM_OF_ALLOWED_KEYS_AT_TOP_LEVEL = 4;
 	private JsonObject jsonObject;
-	private RestDataGroup restDataGroup;
+	protected RestDataGroup restDataGroup;
 
 	static JsonToDataGroupConverter forJsonObject(JsonObject jsonObject) {
 		return new JsonToDataGroupConverter(jsonObject);
 	}
 
-	private JsonToDataGroupConverter(JsonObject jsonObject) {
+	protected JsonToDataGroupConverter(JsonObject jsonObject) {
 		this.jsonObject = jsonObject;
 	}
 
@@ -110,13 +110,17 @@ public final class JsonToDataGroupConverter implements JsonToDataConverter {
 
 	private RestDataElement createDataGroupInstance() {
 		String nameInData = getNameInDataFromJsonObject();
-		restDataGroup = RestDataGroup.withNameInData(nameInData);
+		createInstanceOfDataElement(nameInData);
 		addRepeatIdToGroup();
 		if (hasAttributes()) {
 			addAttributesToGroup();
 		}
 		addChildrenToGroup();
 		return restDataGroup;
+	}
+
+	protected void createInstanceOfDataElement(String nameInData) {
+		restDataGroup = RestDataGroup.withNameInData(nameInData);
 	}
 
 	private void addRepeatIdToGroup() {

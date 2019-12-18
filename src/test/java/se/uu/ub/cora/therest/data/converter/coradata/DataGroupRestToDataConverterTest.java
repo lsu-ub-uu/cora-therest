@@ -28,25 +28,41 @@ import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataGroupFactory;
 import se.uu.ub.cora.data.DataGroupProvider;
+import se.uu.ub.cora.data.DataRecordLink;
+import se.uu.ub.cora.data.DataRecordLinkFactory;
+import se.uu.ub.cora.data.DataRecordLinkProvider;
+import se.uu.ub.cora.data.DataResourceLink;
+import se.uu.ub.cora.data.DataResourceLinkFactory;
+import se.uu.ub.cora.data.DataResourceLinkProvider;
 import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataAttribute;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.RestDataRecordLink;
+import se.uu.ub.cora.therest.data.RestDataResourceLink;
 import se.uu.ub.cora.therest.data.converter.ConverterException;
-import se.uu.ub.cora.therest.data.converter.coradata.DataGroupRestToDataConverter;
 
 public class DataGroupRestToDataConverterTest {
 	private RestDataGroup restDataGroup;
 	private DataGroupRestToDataConverter dataGroupRestToSpiderConverter;
 	private DataGroupFactory dataGroupFactory;
+	private DataRecordLinkFactory dataRecordLinkFactory;
+	private DataResourceLinkFactory dataResourceLinkFactory;
 
 	@BeforeMethod
 	public void setUp() {
-		dataGroupFactory = new DataGroupFactorySpy();
-		DataGroupProvider.setDataGroupFactory(dataGroupFactory);
+		setUpFactoriesAndProviders();
 		restDataGroup = RestDataGroup.withNameInData("nameInData");
 		dataGroupRestToSpiderConverter = DataGroupRestToDataConverter
 				.fromRestDataGroup(restDataGroup);
+	}
+
+	private void setUpFactoriesAndProviders() {
+		dataGroupFactory = new DataGroupFactorySpy();
+		DataGroupProvider.setDataGroupFactory(dataGroupFactory);
+		dataRecordLinkFactory = new DataRecordLinkFactorySpy();
+		DataRecordLinkProvider.setDataRecordLinkFactory(dataRecordLinkFactory);
+		dataResourceLinkFactory = new DataResourceLinkFactorySpy();
+		DataResourceLinkProvider.setDataResourceLinkFactory(dataResourceLinkFactory);
 	}
 
 	@Test
@@ -64,7 +80,7 @@ public class DataGroupRestToDataConverterTest {
 	}
 
 	@Test
-	public void testToDatrWithAttribute() {
+	public void testToDataWithAttribute() {
 		restDataGroup.addAttributeByIdWithValue("attributeId", "attributeValue");
 
 		DataGroup dataGroup = dataGroupRestToSpiderConverter.convert();
@@ -98,7 +114,8 @@ public class DataGroupRestToDataConverterTest {
 
 		DataGroup dataGroup = dataGroupRestToSpiderConverter.convert();
 
-		DataGroup dataRecordLink = (DataGroup) dataGroup.getFirstChildWithNameInData("aLink");
+		DataRecordLink dataRecordLink = (DataRecordLink) dataGroup
+				.getFirstChildWithNameInData("aLink");
 		assertEquals(dataRecordLink.getNameInData(), "aLink");
 
 		DataAtomic linkedRecordType = (DataAtomic) dataRecordLink
@@ -108,12 +125,47 @@ public class DataGroupRestToDataConverterTest {
 
 		assertEquals(linkedRecordType.getValue(), "someRecordType");
 		assertEquals(linkedRecordId.getValue(), "someRecordId");
+
+		assertEquals(dataGroup.getAllGroupsWithNameInData("aLink").size(), 1);
+	}
+
+	@Test
+	public void testToDataWithResourceLinkChild() {
+		createResourceLink();
+
+		DataGroup dataGroup = dataGroupRestToSpiderConverter.convert();
+		DataResourceLink dataRecordLink = (DataResourceLink) dataGroup
+				.getFirstChildWithNameInData("aLink");
+		assertEquals(dataRecordLink.getNameInData(), "aLink");
+
+		DataAtomic streamId = (DataAtomic) dataRecordLink.getFirstChildWithNameInData("streamId");
+		DataAtomic filename = (DataAtomic) dataRecordLink.getFirstChildWithNameInData("filename");
+		DataAtomic filesize = (DataAtomic) dataRecordLink.getFirstChildWithNameInData("filesize");
+		DataAtomic mimeType = (DataAtomic) dataRecordLink.getFirstChildWithNameInData("mimeType");
+
+		assertEquals(streamId.getValue(), "someStreamId");
+		assertEquals(filename.getValue(), "someFilename");
+		assertEquals(filesize.getValue(), "someFilesize");
+		assertEquals(mimeType.getValue(), "someMimeType");
+	}
+
+	private void createResourceLink() {
+		RestDataResourceLink restDataResourceLink = RestDataResourceLink.withNameInData("aLink");
+		RestDataAtomic streamId = RestDataAtomic.withNameInDataAndValue("streamId", "someStreamId");
+		restDataResourceLink.addChild(streamId);
+
+		RestDataAtomic filename = RestDataAtomic.withNameInDataAndValue("filename", "someFilename");
+		restDataResourceLink.addChild(filename);
+		RestDataAtomic filesize = RestDataAtomic.withNameInDataAndValue("filesize", "someFilesize");
+		restDataResourceLink.addChild(filesize);
+		RestDataAtomic mimeType = RestDataAtomic.withNameInDataAndValue("mimeType", "someMimeType");
+		restDataResourceLink.addChild(mimeType);
+		restDataGroup.addChild(restDataResourceLink);
 	}
 
 	@Test
 	public void testToDataWithGroupChild() {
 		restDataGroup.addChild(RestDataGroup.withNameInData("groupId"));
-
 		DataGroup dataGroup = dataGroupRestToSpiderConverter.convert();
 
 		DataGroup groupChild = (DataGroup) dataGroup.getChildren().get(0);
