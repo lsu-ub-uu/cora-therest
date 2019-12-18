@@ -66,8 +66,7 @@ public class JsonToDataConverterFactoryImp implements JsonToDataConverterFactory
 	}
 
 	private boolean isRecordLink(List<String> foundNames) {
-		return foundNames.size() == 2 && foundNames.contains("linkedRecordType")
-				&& foundNames.contains("linkedRecordId");
+		return foundNames.contains("linkedRecordType") && foundNames.contains("linkedRecordId");
 	}
 
 	private List<String> extractChildNames() {

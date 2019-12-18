@@ -107,35 +107,35 @@ public class JsonToDataResourceLinkConverterTest {
 	}
 
 	@Test(expectedExceptions = JsonParseException.class, expectedExceptionsMessageRegExp = ""
-			+ "RecordLinkData must and can only contain children with name streamId and filename and filesize and mimeType")
+			+ "ResourceLinkData must and can only contain children with name streamId and filename and filesize and mimeType")
 	public void testToClassWithNoStreamId() {
 		String json = "{\"children\":[{\"name\":\"filename\",\"value\":\"aFilename\"},{\"name\":\"filesize\",\"value\":\"12345\"},{\"name\":\"mimeType\",\"value\":\"application/png\"}],\"name\":\"someResourceLink\"}";
 		getConverterdLink(json);
 	}
 
 	@Test(expectedExceptions = JsonParseException.class, expectedExceptionsMessageRegExp = ""
-			+ "RecordLinkData must and can only contain children with name streamId and filename and filesize and mimeType")
+			+ "ResourceLinkData must and can only contain children with name streamId and filename and filesize and mimeType")
 	public void testToClassWithNoStreamIdButOtherChild() {
 		String json = "{\"children\":[{\"name\":\"NOTstreamId\",\"value\":\"aStreamId\"},{\"name\":\"filename\",\"value\":\"aFilename\"},{\"name\":\"filesize\",\"value\":\"12345\"},{\"name\":\"mimeType\",\"value\":\"application/png\"}],\"name\":\"someResourceLink\"}";
 		getConverterdLink(json);
 	}
 
 	@Test(expectedExceptions = JsonParseException.class, expectedExceptionsMessageRegExp = ""
-			+ "RecordLinkData must and can only contain children with name streamId and filename and filesize and mimeType")
+			+ "ResourceLinkData must and can only contain children with name streamId and filename and filesize and mimeType")
 	public void testToClassWithNoFilenameButOtherChild() {
 		String json = "{\"children\":[{\"name\":\"streamId\",\"value\":\"aStreamId\"},{\"name\":\"NOTfilename\",\"value\":\"aFilename\"},{\"name\":\"filesize\",\"value\":\"12345\"},{\"name\":\"mimeType\",\"value\":\"application/png\"}],\"name\":\"someResourceLink\"}";
 		getConverterdLink(json);
 	}
 
 	@Test(expectedExceptions = JsonParseException.class, expectedExceptionsMessageRegExp = ""
-			+ "RecordLinkData must and can only contain children with name streamId and filename and filesize and mimeType")
+			+ "ResourceLinkData must and can only contain children with name streamId and filename and filesize and mimeType")
 	public void testToClassWithNoFilesizeButOtherChild() {
 		String json = "{\"children\":[{\"name\":\"streamId\",\"value\":\"aStreamId\"},{\"name\":\"filename\",\"value\":\"aFilename\"},{\"name\":\"NOTfilesize\",\"value\":\"12345\"},{\"name\":\"mimeType\",\"value\":\"application/png\"}],\"name\":\"someResourceLink\"}";
 		getConverterdLink(json);
 	}
 
 	@Test(expectedExceptions = JsonParseException.class, expectedExceptionsMessageRegExp = ""
-			+ "RecordLinkData must and can only contain children with name streamId and filename and filesize and mimeType")
+			+ "ResourceLinkData must and can only contain children with name streamId and filename and filesize and mimeType")
 	public void testToClassWithNoMimeTypeButOtherChild() {
 		String json = "{\"children\":[{\"name\":\"streamId\",\"value\":\"aStreamId\"},{\"name\":\"filename\",\"value\":\"aFilename\"},{\"name\":\"filesize\",\"value\":\"12345\"},{\"name\":\"NOTmimeType\",\"value\":\"application/png\"}],\"name\":\"someResourceLink\"}";
 		getConverterdLink(json);

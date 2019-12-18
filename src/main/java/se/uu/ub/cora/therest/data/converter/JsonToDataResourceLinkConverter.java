@@ -40,10 +40,15 @@ public class JsonToDataResourceLinkConverter extends JsonToDataGroupConverter
 		return resourceLink;
 	}
 
+	@Override
+	protected void createInstanceOfDataElement(String nameInData) {
+		restDataGroup = RestDataResourceLink.withNameInData(nameInData);
+	}
+
 	private void throwErrorIfLinkChildrenAreIncorrect(RestDataGroup recordLink) {
 		if (incorrectNumberOfChildren(recordLink) || incorrectChildren(recordLink)) {
 			throw new JsonParseException(
-					"RecordLinkData must and can only contain children with name "
+					"ResourceLinkData must and can only contain children with name "
 							+ "streamId and filename and filesize and mimeType");
 		}
 	}
@@ -61,11 +66,6 @@ public class JsonToDataResourceLinkConverter extends JsonToDataGroupConverter
 
 	public static JsonToDataResourceLinkConverter forJsonObject(JsonObject jsonObject) {
 		return new JsonToDataResourceLinkConverter(jsonObject);
-	}
-
-	@Override
-	protected void createInstanceOfDataElement(String nameInData) {
-		restDataGroup = RestDataResourceLink.withNameInData(nameInData);
 	}
 
 }

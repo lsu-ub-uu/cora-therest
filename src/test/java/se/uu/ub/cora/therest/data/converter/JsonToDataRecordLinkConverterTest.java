@@ -51,6 +51,26 @@ public class JsonToDataRecordLinkConverterTest {
 	}
 
 	@Test
+	public void testToInstanceWithLinkedRepeatId() {
+		String json = "{\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"recordType\"},{\"name\":\"linkedRecordId\",\"value\":\"place\"},{\"name\":\"linkedRepeatId\",\"value\":\"one\"}],\"name\":\"someLink\"}";
+		RestDataRecordLink dataLink = createRestDataRecordLinkForJsonString(json);
+		assertEquals(dataLink.getNameInData(), "someLink");
+
+		RestDataAtomic linkedRecordType = (RestDataAtomic) dataLink
+				.getFirstChildWithNameInData("linkedRecordType");
+		assertEquals(linkedRecordType.getValue(), "recordType");
+
+		RestDataAtomic linkedRecordId = (RestDataAtomic) dataLink
+				.getFirstChildWithNameInData("linkedRecordId");
+		assertEquals(linkedRecordId.getValue(), "place");
+
+		RestDataAtomic linkedRepeatId = (RestDataAtomic) dataLink
+				.getFirstChildWithNameInData("linkedRepeatId");
+		assertEquals(linkedRepeatId.getValue(), "one");
+
+	}
+
+	@Test
 	public void testToClassWithRepeatId() {
 		String json = "{\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"system\"},{\"name\":\"linkedRecordId\",\"value\":\"testSystem\"}],\"repeatId\":\"3\",\"name\":\"dataDivider\"}";
 		RestDataGroup restDataRecordLink = createRestDataRecordLinkForJsonString(json);
@@ -173,4 +193,51 @@ public class JsonToDataRecordLinkConverterTest {
 		createRestDataRecordLinkForJsonString(json);
 	}
 
+	@Test(expectedExceptions = JsonParseException.class, expectedExceptionsMessageRegExp = ""
+			+ "RecordLinkData must contain children with name linkedRecordType and linkedRecordId "
+			+ "and might contain child with name linkedRepeatId")
+	public void testToClassWithNoLinkedRecordType() {
+		String json = "{\"children\":[{\"name\":\"linkedRecordId\",\"value\":\"place\"}],\"name\":\"someLink\"}";
+		createRestDataRecordLinkForJsonString(json);
+	}
+
+	@Test(expectedExceptions = JsonParseException.class, expectedExceptionsMessageRegExp = ""
+			+ "RecordLinkData must contain children with name linkedRecordType and linkedRecordId "
+			+ "and might contain child with name linkedRepeatId")
+	public void testToClassWithNoLinkedRecordTypeButOtherChild() {
+		String json = "{\"children\":[{\"name\":\"NOTlinkedRecordType\",\"value\":\"recordType\"},{\"name\":\"linkedRecordId\",\"value\":\"place\"}],\"name\":\"someLink\"}";
+		createRestDataRecordLinkForJsonString(json);
+	}
+
+	@Test(expectedExceptions = JsonParseException.class, expectedExceptionsMessageRegExp = ""
+			+ "RecordLinkData must contain children with name linkedRecordType and linkedRecordId "
+			+ "and might contain child with name linkedRepeatId")
+	public void testToClassWithNoLinkedRecordId() {
+		String json = "{\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"recordType\"}],\"name\":\"someLink\"}";
+		createRestDataRecordLinkForJsonString(json);
+	}
+
+	@Test(expectedExceptions = JsonParseException.class, expectedExceptionsMessageRegExp = ""
+			+ "RecordLinkData must contain children with name linkedRecordType and linkedRecordId "
+			+ "and might contain child with name linkedRepeatId")
+	public void testToClassWithNoLinkedRecordIdButOtherChild() {
+		String json = "{\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"recordType\"},{\"name\":\"NOTlinkedRecordId\",\"value\":\"place\"}],\"name\":\"someLink\"}";
+		createRestDataRecordLinkForJsonString(json);
+	}
+
+	@Test(expectedExceptions = JsonParseException.class, expectedExceptionsMessageRegExp = ""
+			+ "RecordLinkData must contain children with name linkedRecordType and linkedRecordId "
+			+ "and might contain child with name linkedRepeatId")
+	public void testToClassWithTooManyChildren() {
+		String json = "{\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"recordType\"},{\"name\":\"linkedRecordId\",\"value\":\"place\"},{\"name\":\"linkedRepeatId\",\"value\":\"one\"},{\"name\":\"someExtra\",\"value\":\"one\"}],\"name\":\"someLink\"}";
+		createRestDataRecordLinkForJsonString(json);
+	}
+
+	@Test(expectedExceptions = JsonParseException.class, expectedExceptionsMessageRegExp = ""
+			+ "RecordLinkData must contain children with name linkedRecordType and linkedRecordId "
+			+ "and might contain child with name linkedRepeatId")
+	public void testToClassWithMaxNumberOfChildrenButNoLinkedRepeatId() {
+		String json = "{\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"recordType\"},{\"name\":\"linkedRecordId\",\"value\":\"place\"},{\"name\":\"someExtra\",\"value\":\"one\"}],\"name\":\"someLink\"}";
+		createRestDataRecordLinkForJsonString(json);
+	}
 }
