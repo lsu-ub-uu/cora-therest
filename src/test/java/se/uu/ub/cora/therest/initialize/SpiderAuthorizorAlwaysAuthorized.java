@@ -19,6 +19,8 @@
 
 package se.uu.ub.cora.therest.initialize;
 
+import java.util.List;
+
 import se.uu.ub.cora.beefeater.authentication.User;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.spider.authorization.SpiderAuthorizator;
@@ -51,6 +53,13 @@ public class SpiderAuthorizorAlwaysAuthorized implements SpiderAuthorizator {
 			String string, DataGroup collectedData) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public List<String> checkAndGetUserAuthorizationsForActionOnRecordTypeAndCollectedData(
+			User user, String action, String recordType, DataGroup collectedData) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
