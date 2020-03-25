@@ -85,7 +85,7 @@ public class DataGroupRestToDataConverterTest {
 
 		DataGroup dataGroup = dataGroupRestToSpiderConverter.convert();
 
-		String attributeValue = dataGroup.getAttributes().get("attributeId");
+		String attributeValue = dataGroup.getAttribute("attributeId").getValue();
 		assertEquals(attributeValue, "attributeValue");
 	}
 

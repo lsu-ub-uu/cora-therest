@@ -19,7 +19,11 @@
 
 package se.uu.ub.cora.therest.data.converter.coradata;
 
+import java.util.Collection;
+import java.util.Map;
+
 import se.uu.ub.cora.data.DataAtomic;
+import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataRecordLink;
 import se.uu.ub.cora.therest.data.RestDataAtomic;
@@ -51,7 +55,11 @@ public final class DataRecordLinkToRestConverter {
 		addLinkedRecordIdToRestDataRecordLink();
 
 		restDataRecordLink.setRepeatId(dataRecordLink.getRepeatId());
-		restDataRecordLink.getAttributes().putAll(dataRecordLink.getAttributes());
+		Collection<DataAttribute> attributes = dataRecordLink.getAttributes();
+		Map<String, String> restAttributes = restDataRecordLink.getAttributes();
+		for (DataAttribute dataAttribute : attributes) {
+			restAttributes.put(dataAttribute.getNameInData(), dataAttribute.getValue());
+		}
 
 		addLinkedRepeatIdIfItExists();
 		addLinkedPathIfItExists();
@@ -60,8 +68,7 @@ public final class DataRecordLinkToRestConverter {
 	}
 
 	private void createDataRestRecordLinkSetNameInData() {
-		restDataRecordLink = RestDataRecordLink
-				.withNameInData(dataRecordLink.getNameInData());
+		restDataRecordLink = RestDataRecordLink.withNameInData(dataRecordLink.getNameInData());
 	}
 
 	private void addLinkedRecordTypeToRestDataRecordLink() {
@@ -101,8 +108,7 @@ public final class DataRecordLinkToRestConverter {
 			DataGroup linkedPath = (DataGroup) dataRecordLink
 					.getFirstChildWithNameInData("linkedPath");
 			DataGroupDataToRestConverter dataGroupToRestConverter = DataGroupDataToRestConverter
-					.fromDataGroupWithDataGroupAndConverterInfo(linkedPath,
-							converterInfo);
+					.fromDataGroupWithDataGroupAndConverterInfo(linkedPath, converterInfo);
 			RestDataGroup restLinkedPath = dataGroupToRestConverter.toRest();
 
 			restDataRecordLink.addChild(restLinkedPath);
@@ -112,8 +118,7 @@ public final class DataRecordLinkToRestConverter {
 	private void createRestLinks() {
 		ConverterInfo linkConverterInfo = createConverterInfoForLink();
 		ActionDataToRestConverter actionToRestConverter = ActionDataToRestConverterImp
-				.fromDataActionsWithConverterInfo(dataRecordLink.getActions(),
-						linkConverterInfo);
+				.fromDataActionsWithConverterInfo(dataRecordLink.getActions(), linkConverterInfo);
 		restDataRecordLink.setActionLinks(actionToRestConverter.toRest());
 	}
 
