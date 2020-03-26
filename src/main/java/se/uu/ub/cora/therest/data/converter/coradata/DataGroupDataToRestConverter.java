@@ -19,7 +19,11 @@
 
 package se.uu.ub.cora.therest.data.converter.coradata;
 
+import java.util.Collection;
+import java.util.Map;
+
 import se.uu.ub.cora.data.DataAtomic;
+import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataRecordLink;
@@ -34,8 +38,7 @@ public class DataGroupDataToRestConverter implements DataToRestConverter {
 	protected DataGroup dataGroup;
 	protected ConverterInfo convertInfo;
 
-	protected DataGroupDataToRestConverter(DataGroup dataGroup,
-			ConverterInfo converterInfo) {
+	protected DataGroupDataToRestConverter(DataGroup dataGroup, ConverterInfo converterInfo) {
 		this.dataGroup = dataGroup;
 		this.convertInfo = converterInfo;
 	}
@@ -48,7 +51,11 @@ public class DataGroupDataToRestConverter implements DataToRestConverter {
 	@Override
 	public RestDataGroup toRest() {
 		restDataGroup = createNewRest();
-		restDataGroup.getAttributes().putAll(dataGroup.getAttributes());
+		Collection<DataAttribute> attributes = dataGroup.getAttributes();
+		Map<String, String> restAttributes = restDataGroup.getAttributes();
+		for (DataAttribute dataAttribute : attributes) {
+			restAttributes.put(dataAttribute.getNameInData(), dataAttribute.getValue());
+		}
 		restDataGroup.setRepeatId(dataGroup.getRepeatId());
 		convertAndSetChildren();
 		return restDataGroup;
@@ -67,20 +74,18 @@ public class DataGroupDataToRestConverter implements DataToRestConverter {
 
 	private RestDataElement convertToElementEquivalentDataClass(DataElement dataElement) {
 		if (dataElement instanceof DataRecordLink) {
-			return DataRecordLinkToRestConverter.fromDataRecordLinkWithConverterInfo(
-					(DataRecordLink) dataElement, convertInfo).toRest();
+			return DataRecordLinkToRestConverter
+					.fromDataRecordLinkWithConverterInfo((DataRecordLink) dataElement, convertInfo)
+					.toRest();
 		}
 		if (dataElement instanceof DataResourceLink) {
-			return DataResourceLinkDataToRestConverter
-					.fromDataResourceLinkWithConverterInfo(
-							(DataResourceLink) dataElement, convertInfo)
-					.toRest();
+			return DataResourceLinkDataToRestConverter.fromDataResourceLinkWithConverterInfo(
+					(DataResourceLink) dataElement, convertInfo).toRest();
 		}
 		if (dataElement instanceof DataGroup) {
 			return DataGroupDataToRestConverter.fromDataGroupWithDataGroupAndConverterInfo(
 					(DataGroup) dataElement, convertInfo).toRest();
 		}
-		return DataAtomicToRestConverter.fromDataAtomic((DataAtomic) dataElement)
-				.toRest();
+		return DataAtomicToRestConverter.fromDataAtomic((DataAtomic) dataElement).toRest();
 	}
 }
