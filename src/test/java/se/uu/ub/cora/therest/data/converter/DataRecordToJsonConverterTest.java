@@ -21,6 +21,7 @@ package se.uu.ub.cora.therest.data.converter;
 
 import static org.testng.Assert.assertEquals;
 
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.data.Action;
@@ -31,11 +32,19 @@ import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.RestDataRecord;
 
 public class DataRecordToJsonConverterTest {
+
+	private RestDataRecord restDataRecord;
+	private RestDataGroup restDataGroup;
+
+	@BeforeMethod
+	public void setUp() {
+		restDataGroup = RestDataGroup.withNameInData("groupNameInData");
+		restDataRecord = RestDataRecord.withRestDataGroup(restDataGroup);
+
+	}
+
 	@Test
 	public void testToJson() {
-		RestDataGroup restDataGroup = RestDataGroup.withNameInData("groupNameInData");
-		RestDataRecord restDataRecord = RestDataRecord.withRestDataGroup(restDataGroup);
-
 		JsonBuilderFactory jsonFactory = new OrgJsonBuilderFactoryAdapter();
 		DataRecordToJsonConverter dataRecordToJsonConverter = DataRecordToJsonConverter
 				.usingJsonFactoryForRestDataRecord(jsonFactory, restDataRecord);
@@ -46,8 +55,6 @@ public class DataRecordToJsonConverterTest {
 
 	@Test
 	public void testToJsonWithKey() {
-		RestDataGroup restDataGroup = RestDataGroup.withNameInData("groupNameInData");
-		RestDataRecord restDataRecord = RestDataRecord.withRestDataGroup(restDataGroup);
 		restDataRecord.addKey("KEY1");
 
 		JsonBuilderFactory jsonFactory = new OrgJsonBuilderFactoryAdapter();
@@ -61,8 +68,6 @@ public class DataRecordToJsonConverterTest {
 
 	@Test
 	public void testToJsonWithKeys() {
-		RestDataGroup restDataGroup = RestDataGroup.withNameInData("groupNameInData");
-		RestDataRecord restDataRecord = RestDataRecord.withRestDataGroup(restDataGroup);
 		restDataRecord.addKey("KEY1");
 		restDataRecord.addKey("KEY2");
 		restDataRecord.addKey("KEY3");
@@ -78,8 +83,6 @@ public class DataRecordToJsonConverterTest {
 
 	@Test
 	public void testToJsonWithActionLinks() {
-		RestDataGroup restDataGroup = RestDataGroup.withNameInData("groupNameInData");
-		RestDataRecord restDataRecord = RestDataRecord.withRestDataGroup(restDataGroup);
 		restDataRecord.addActionLink("read", createReadActionLink());
 
 		JsonBuilderFactory jsonFactory = new OrgJsonBuilderFactoryAdapter();
@@ -102,6 +105,50 @@ public class DataRecordToJsonConverterTest {
 		actionLink.setRequestMethod("GET");
 		actionLink.setURL("http://localhost:8080/therest/rest/record/place/place:0001");
 		return actionLink;
+	}
+
+	@Test
+	public void testToJsonWithReadPermissions() {
+		restDataRecord.addReadPermission("readPermissionOne");
+		restDataRecord.addReadPermission("readPermissionTwo");
+
+		JsonBuilderFactory jsonFactory = new OrgJsonBuilderFactoryAdapter();
+		DataRecordToJsonConverter dataRecordToJsonConverter = DataRecordToJsonConverter
+				.usingJsonFactoryForRestDataRecord(jsonFactory, restDataRecord);
+		String jsonString = dataRecordToJsonConverter.toJson();
+
+		assertEquals(jsonString,
+				"{\"record\":{\"data\":{\"name\":\"groupNameInData\"},\"permissions\":{\"read\":[\"readPermissionOne\",\"readPermissionTwo\"]}}}");
+	}
+
+	@Test
+	public void testToJsonWithWritePermissions() {
+		restDataRecord.addWritePermission("writePermissionOne");
+		restDataRecord.addWritePermission("writePermissionTwo");
+
+		JsonBuilderFactory jsonFactory = new OrgJsonBuilderFactoryAdapter();
+		DataRecordToJsonConverter dataRecordToJsonConverter = DataRecordToJsonConverter
+				.usingJsonFactoryForRestDataRecord(jsonFactory, restDataRecord);
+		String jsonString = dataRecordToJsonConverter.toJson();
+
+		assertEquals(jsonString,
+				"{\"record\":{\"data\":{\"name\":\"groupNameInData\"},\"permissions\":{\"write\":[\"writePermissionOne\",\"writePermissionTwo\"]}}}");
+	}
+
+	@Test
+	public void testToJsonWithReadAndWritePermissions() {
+		restDataRecord.addReadPermission("readPermissionOne");
+		restDataRecord.addReadPermission("readPermissionTwo");
+		restDataRecord.addWritePermission("writePermissionOne");
+		restDataRecord.addWritePermission("writePermissionTwo");
+
+		JsonBuilderFactory jsonFactory = new OrgJsonBuilderFactoryAdapter();
+		DataRecordToJsonConverter dataRecordToJsonConverter = DataRecordToJsonConverter
+				.usingJsonFactoryForRestDataRecord(jsonFactory, restDataRecord);
+		String jsonString = dataRecordToJsonConverter.toJson();
+
+		assertEquals(jsonString,
+				"{\"record\":{\"data\":{\"name\":\"groupNameInData\"},\"permissions\":{\"read\":[\"readPermissionOne\",\"readPermissionTwo\"],\"write\":[\"writePermissionOne\",\"writePermissionTwo\"]}}}");
 	}
 
 }

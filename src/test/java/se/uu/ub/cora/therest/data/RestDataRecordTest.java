@@ -74,4 +74,21 @@ public class RestDataRecordTest {
 		assertEquals(actionLinkOut.getAction(), Action.READ);
 	}
 
+	@Test
+	public void testReadPermissions() {
+		restDataRecord.addReadPermission("readPermissionOne");
+		restDataRecord.addReadPermission("readPermissionTwo");
+		Set<String> readPermissions = restDataRecord.getReadPermissions();
+		assertTrue(readPermissions.contains("readPermissionOne"));
+		assertTrue(readPermissions.contains("readPermissionTwo"));
+	}
+
+	@Test
+	public void testWritePermissions() {
+		restDataRecord.addWritePermission("writePermissionOne");
+		restDataRecord.addWritePermission("writePermissionTwo");
+		Set<String> writePermissions = restDataRecord.getWritePermissions();
+		assertTrue(writePermissions.contains("writePermissionOne"));
+		assertTrue(writePermissions.contains("writePermissionTwo"));
+	}
 }

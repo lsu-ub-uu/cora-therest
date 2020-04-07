@@ -31,6 +31,8 @@ public class DataRecordSpy implements DataRecord {
 
 	public DataGroup dataGroup;
 	public Set<String> keys = new LinkedHashSet<>();
+	public Set<String> readPermissions = new LinkedHashSet<>();
+	public Set<String> writePermissions = new LinkedHashSet<>();
 	public List<Action> actions = new ArrayList<>();
 
 	public DataRecordSpy(DataGroup dataGroup) {
@@ -61,6 +63,27 @@ public class DataRecordSpy implements DataRecord {
 	public void addAction(Action action) {
 		actions.add(action);
 
+	}
+
+	@Override
+	public void addReadPermission(String readPermission) {
+		readPermissions.add(readPermission);
+
+	}
+
+	@Override
+	public Set<String> getReadPermissions() {
+		return readPermissions;
+	}
+
+	@Override
+	public void addWritePermission(String writePermission) {
+		writePermissions.add(writePermission);
+	}
+
+	@Override
+	public Set<String> getWritePermissions() {
+		return writePermissions;
 	}
 
 }

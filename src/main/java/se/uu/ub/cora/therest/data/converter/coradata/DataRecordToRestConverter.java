@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2016, 2019 Uppsala University Library
+ * Copyright 2015, 2016, 2019, 2020 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -64,12 +64,10 @@ public final class DataRecordToRestConverter {
 
 		convertToRestRecord();
 
-		if (hasActions()) {
-			createRestLinks();
-		}
-		if (hasKeys()) {
-			convertKeys();
-		}
+		createRestLinks();
+		convertKeys();
+		convertReadPermissions();
+		convertWritePermissions();
 		return restDataRecord;
 	}
 
@@ -93,10 +91,6 @@ public final class DataRecordToRestConverter {
 		restDataRecord = RestDataRecord.withRestDataGroup(restDataGroup);
 	}
 
-	private boolean hasActions() {
-		return !dataRecord.getActions().isEmpty();
-	}
-
 	private void createRestLinks() {
 		ActionDataToRestConverter actionToRestConverter = converterFactory
 				.factorForActionsUsingConverterInfoAndDataGroup(dataRecord.getActions(),
@@ -105,13 +99,21 @@ public final class DataRecordToRestConverter {
 		restDataRecord.setActionLinks(actionToRestConverter.toRest());
 	}
 
-	private boolean hasKeys() {
-		return !dataRecord.getKeys().isEmpty();
-	}
-
 	private void convertKeys() {
 		for (String string : dataRecord.getKeys()) {
 			restDataRecord.addKey(string);
+		}
+	}
+
+	private void convertReadPermissions() {
+		for (String readPermission : dataRecord.getReadPermissions()) {
+			restDataRecord.addReadPermission(readPermission);
+		}
+	}
+
+	private void convertWritePermissions() {
+		for (String writePermission : dataRecord.getWritePermissions()) {
+			restDataRecord.addWritePermission(writePermission);
 		}
 	}
 }
