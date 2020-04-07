@@ -173,7 +173,7 @@ public class RecordEndpoint {
 
 	private String convertDataRecordToJsonString(DataRecord record) {
 		RestDataRecord restDataRecord = convertDataRecordToRestDataRecord(record);
-		DataRecordToJsonConverter dataToJsonConverter = convertRestDataGroupToJson(restDataRecord);
+		DataRecordToJsonConverter dataToJsonConverter = getRestToJsonConverter(restDataRecord);
 		return dataToJsonConverter.toJson();
 	}
 
@@ -184,7 +184,7 @@ public class RecordEndpoint {
 		return converter.toRest();
 	}
 
-	private DataRecordToJsonConverter convertRestDataGroupToJson(RestDataRecord restDataRecord) {
+	private DataRecordToJsonConverter getRestToJsonConverter(RestDataRecord restDataRecord) {
 		JsonBuilderFactory jsonBuilderFactory = new OrgJsonBuilderFactoryAdapter();
 		return DataRecordToJsonConverter.usingJsonFactoryForRestDataRecord(jsonBuilderFactory,
 				restDataRecord);
