@@ -19,6 +19,7 @@
 package se.uu.ub.cora.therest.data;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -42,16 +43,6 @@ public class DataRecordSpy implements DataRecord {
 	@Override
 	public DataGroup getDataGroup() {
 		return dataGroup;
-	}
-
-	@Override
-	public void addKey(String key) {
-		keys.add(key);
-	}
-
-	@Override
-	public Set<String> getKeys() {
-		return keys;
 	}
 
 	@Override
@@ -84,6 +75,24 @@ public class DataRecordSpy implements DataRecord {
 	@Override
 	public Set<String> getWritePermissions() {
 		return writePermissions;
+	}
+
+	@Override
+	public void setDataGroup(DataGroup dataGroup) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void addReadPermissions(Collection<String> readPermissions) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void addWritePermissions(Collection<String> writePermissions) {
+		// TODO Auto-generated method stub
+
 	}
 
 }

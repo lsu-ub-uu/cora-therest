@@ -65,7 +65,6 @@ public final class DataRecordToRestConverter {
 		convertToRestRecord();
 
 		createRestLinks();
-		convertKeys();
 		convertReadPermissions();
 		convertWritePermissions();
 		return restDataRecord;
@@ -97,12 +96,6 @@ public final class DataRecordToRestConverter {
 						converterInfo, dataGroup);
 
 		restDataRecord.setActionLinks(actionToRestConverter.toRest());
-	}
-
-	private void convertKeys() {
-		for (String string : dataRecord.getKeys()) {
-			restDataRecord.addKey(string);
-		}
 	}
 
 	private void convertReadPermissions() {

@@ -190,18 +190,6 @@ public class DataRecordToRestConverterTest {
 	}
 
 	@Test
-	public void testToRestWithKeys() {
-		dataGroup.addChild(createRecordInfo("place"));
-
-		dataRecord.addKey("KEY1");
-
-		RestDataRecord restDataRecord = dataRecordSpiderToRestConverter.toRest();
-		String key = restDataRecord.getKeys().iterator().next();
-		assertEquals(key, "KEY1");
-
-	}
-
-	@Test
 	public void testToRestWithReadPermissions() {
 		dataGroup.addChild(createRecordInfo("place"));
 
