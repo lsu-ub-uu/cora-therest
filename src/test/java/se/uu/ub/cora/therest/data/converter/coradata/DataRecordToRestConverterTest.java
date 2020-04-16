@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2016, 2019 Uppsala University Library
+ * Copyright 2015, 2016, 2019, 2020 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -190,14 +190,26 @@ public class DataRecordToRestConverterTest {
 	}
 
 	@Test
-	public void testToRestWithKeys() {
+	public void testToRestWithReadPermissions() {
 		dataGroup.addChild(createRecordInfo("place"));
 
-		dataRecord.addKey("KEY1");
+		dataRecord.addReadPermission("readPermissionOne");
 
 		RestDataRecord restDataRecord = dataRecordSpiderToRestConverter.toRest();
-		String key = restDataRecord.getKeys().iterator().next();
-		assertEquals(key, "KEY1");
+		String readPermission = restDataRecord.getReadPermissions().iterator().next();
+		assertEquals(readPermission, "readPermissionOne");
+
+	}
+
+	@Test
+	public void testToRestWithWritePermissions() {
+		dataGroup.addChild(createRecordInfo("place"));
+
+		dataRecord.addWritePermission("writePermissionOne");
+
+		RestDataRecord restDataRecord = dataRecordSpiderToRestConverter.toRest();
+		String writePermission = restDataRecord.getWritePermissions().iterator().next();
+		assertEquals(writePermission, "writePermissionOne");
 
 	}
 }

@@ -21,7 +21,7 @@ package se.uu.ub.cora.therest.record;
 
 import se.uu.ub.cora.bookkeeper.validator.DataValidator;
 import se.uu.ub.cora.bookkeeper.validator.ValidationAnswer;
-import se.uu.ub.cora.data.DataElement;
+import se.uu.ub.cora.data.DataGroup;
 
 /**
  *
@@ -30,8 +30,14 @@ import se.uu.ub.cora.data.DataElement;
  * @version $Revision$, $Date$, $Author$
  */
 public class DataValidatorReturnNullPointer implements DataValidator {
-    @Override
-    public ValidationAnswer validateData(String metadataId, DataElement dataGroup) {
-        throw new NullPointerException();
-    }
+	@Override
+	public ValidationAnswer validateData(String metadataId, DataGroup dataGroup) {
+		throw new NullPointerException();
+	}
+
+	@Override
+	public ValidationAnswer validateListFilter(String recordType, DataGroup filterDataGroup) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

@@ -27,6 +27,8 @@ import java.util.Set;
 public final class RestDataRecord implements RestData {
 	private RestDataGroup restDataGroup;
 	private Set<String> keys = new LinkedHashSet<>();
+	private Set<String> readPermissions = new LinkedHashSet<>();
+	private Set<String> writePermissions = new LinkedHashSet<>();
 	private Map<String, ActionLink> actionLinks = new LinkedHashMap<>();
 
 	public static RestDataRecord withRestDataGroup(RestDataGroup restDataGroup) {
@@ -63,6 +65,23 @@ public final class RestDataRecord implements RestData {
 
 	public void setActionLinks(Map<String, ActionLink> actionLinks) {
 		this.actionLinks = actionLinks;
+	}
+
+	public void addReadPermission(String readPermission) {
+		readPermissions.add(readPermission);
+	}
+
+	public Set<String> getReadPermissions() {
+		return readPermissions;
+	}
+
+	public void addWritePermission(String writePermission) {
+		writePermissions.add(writePermission);
+
+	}
+
+	public Set<String> getWritePermissions() {
+		return writePermissions;
 	}
 
 }

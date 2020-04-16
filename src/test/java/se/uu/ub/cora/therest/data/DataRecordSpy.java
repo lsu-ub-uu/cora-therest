@@ -19,6 +19,7 @@
 package se.uu.ub.cora.therest.data;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -31,6 +32,8 @@ public class DataRecordSpy implements DataRecord {
 
 	public DataGroup dataGroup;
 	public Set<String> keys = new LinkedHashSet<>();
+	public Set<String> readPermissions = new LinkedHashSet<>();
+	public Set<String> writePermissions = new LinkedHashSet<>();
 	public List<Action> actions = new ArrayList<>();
 
 	public DataRecordSpy(DataGroup dataGroup) {
@@ -43,16 +46,6 @@ public class DataRecordSpy implements DataRecord {
 	}
 
 	@Override
-	public void addKey(String key) {
-		keys.add(key);
-	}
-
-	@Override
-	public Set<String> getKeys() {
-		return keys;
-	}
-
-	@Override
 	public List<Action> getActions() {
 		return actions;
 	}
@@ -60,6 +53,45 @@ public class DataRecordSpy implements DataRecord {
 	@Override
 	public void addAction(Action action) {
 		actions.add(action);
+
+	}
+
+	@Override
+	public void addReadPermission(String readPermission) {
+		readPermissions.add(readPermission);
+
+	}
+
+	@Override
+	public Set<String> getReadPermissions() {
+		return readPermissions;
+	}
+
+	@Override
+	public void addWritePermission(String writePermission) {
+		writePermissions.add(writePermission);
+	}
+
+	@Override
+	public Set<String> getWritePermissions() {
+		return writePermissions;
+	}
+
+	@Override
+	public void setDataGroup(DataGroup dataGroup) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void addReadPermissions(Collection<String> readPermissions) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void addWritePermissions(Collection<String> writePermissions) {
+		// TODO Auto-generated method stub
 
 	}
 
