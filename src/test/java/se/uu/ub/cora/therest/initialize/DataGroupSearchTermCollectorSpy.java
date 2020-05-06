@@ -27,4 +27,10 @@ public class DataGroupSearchTermCollectorSpy implements DataGroupTermCollector {
 	public DataGroup collectTerms(String metadataId, DataGroup collectedSearchTerms) {
 		return new DataGroupSpy("recordIndexData");
 	}
+
+	@Override
+	public DataGroup collectTermsWithoutTypeAndId(String metadataGroupId, DataGroup dataGroup) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
