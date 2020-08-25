@@ -172,13 +172,6 @@ public class DataGroupSpy implements DataGroup {
 	}
 
 	@Override
-	public Collection<DataGroup> getAllGroupsWithNameInDataAndAttributes(String childNameInData,
-			DataAttribute... childAttributes) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public boolean hasChildren() {
 		// TODO Auto-generated method stub
 		return false;
@@ -204,6 +197,27 @@ public class DataGroupSpy implements DataGroup {
 
 	@Override
 	public DataAtomic getFirstDataAtomicWithNameInData(String childNameInData) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Collection<DataGroup> getAllGroupsWithNameInDataAndAttributes(String childNameInData,
+			DataAttribute... childAttributes) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean removeAllChildrenWithNameInDataAndAttributes(String childNameInData,
+			DataAttribute... childAttributes) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public List<DataElement> getAllChildrenWithNameInDataAndAttributes(String nameInData,
+			DataAttribute... childAttributes) {
 		// TODO Auto-generated method stub
 		return null;
 	}
