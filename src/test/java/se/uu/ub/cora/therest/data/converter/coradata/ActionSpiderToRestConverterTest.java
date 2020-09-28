@@ -36,8 +36,6 @@ import se.uu.ub.cora.therest.data.DataGroupSpy;
 import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.converter.ConverterInfo;
-import se.uu.ub.cora.therest.data.converter.coradata.ActionDataToRestConverter;
-import se.uu.ub.cora.therest.data.converter.coradata.ActionDataToRestConverterImp;
 
 public class ActionSpiderToRestConverterTest {
 	private ConverterInfo defaultConverterInfo;

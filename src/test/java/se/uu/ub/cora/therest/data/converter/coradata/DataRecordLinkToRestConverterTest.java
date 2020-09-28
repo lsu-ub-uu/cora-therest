@@ -36,7 +36,6 @@ import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.RestDataRecordLink;
 import se.uu.ub.cora.therest.data.converter.ConverterInfo;
-import se.uu.ub.cora.therest.data.converter.coradata.DataRecordLinkToRestConverter;
 
 public class DataRecordLinkToRestConverterTest {
 	private ConverterInfo converterInfo = ConverterInfo.withBaseURLAndRecordURLAndTypeAndId(

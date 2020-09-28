@@ -33,21 +33,23 @@
 	
 	<properties>
 		<json.version>2.1.0</json.version>
-		<spider.version>3.13.0</spider.version>
+		<spider.version>3.15.0</spider.version>
 		<jaxb-api.version>2.3.1</jaxb-api.version>
 		<servlet-api.version>4.0.1</servlet-api.version>
-		<jersey.version>2.31</jersey.version>
-		<gatekeeperclient.version>3.7.0</gatekeeperclient.version>
-		<metacreator.version>3.8.0</metacreator.version>
-		<solrsearch.version>3.3.0</solrsearch.version>
+		<jersey.version>2.32</jersey.version>
+		<bookkeeper.version>4.9.0</bookkeeper.version>
+		<gatekeeperclient.version>3.8.0</gatekeeperclient.version>
+		<beefeater.version>3.2.0</beefeater.version>
+		<metacreator.version>3.9.0</metacreator.version>
+		<solrsearch.version>3.5.0</solrsearch.version>
 		<httphandler.version>2.1.0</httphandler.version>
-		<storage.version>3.6.0</storage.version>
-		<search.version>3.4.0</search.version>
-		<searchstorage.version>3.4.0</searchstorage.version>
+		<storage.version>3.7.0</storage.version>
+		<search.version>3.5.0</search.version>
+		<searchstorage.version>3.5.0</searchstorage.version>
 		<logger.version>2.1.0</logger.version>
 		<coralog4j.version>2.1.0</coralog4j.version>
-		<coradata.version>3.6.0</coradata.version>
-		<basicdata.version>1.10.0</basicdata.version>
+		<coradata.version>3.7.0</coradata.version>
+		<basicdata.version>1.11.0</basicdata.version>
 		
 	</properties>
 	
@@ -70,78 +72,86 @@
 			<groupId>se.uu.ub.cora</groupId>
 			<artifactId>json</artifactId>
 			<version>${json.version}</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>se.uu.ub.cora</groupId>
 			<artifactId>spider</artifactId>
 			<version>${spider.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>se.uu.ub.cora</groupId>
+			<artifactId>bookkeeper</artifactId>
+			<version>${bookkeeper.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>se.uu.ub.cora</groupId>
+			<artifactId>beefeater</artifactId>
+			<version>${beefeater.version}</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>se.uu.ub.cora</groupId>
 			<artifactId>gatekeeperclient</artifactId>
 			<version>${gatekeeperclient.version}</version>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>se.uu.ub.cora</groupId>
 			<artifactId>metacreator</artifactId>
 			<version>${metacreator.version}</version>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>se.uu.ub.cora</groupId>
 			<artifactId>solrsearch</artifactId>
 			<version>${solrsearch.version}</version>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>se.uu.ub.cora</groupId>
 			<artifactId>httphandler</artifactId>
 			<version>${httphandler.version}</version>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 		
 		<dependency>
 			<groupId>se.uu.ub.cora</groupId>
 			<artifactId>logger</artifactId>
 			<version>${logger.version}</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>se.uu.ub.cora</groupId>
 			<artifactId>storage</artifactId>
 			<version>${storage.version}</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>se.uu.ub.cora</groupId>
 			<artifactId>search</artifactId>
 			<version>${search.version}</version>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>se.uu.ub.cora</groupId>
 			<artifactId>searchstorage</artifactId>
 			<version>${searchstorage.version}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>se.uu.ub.cora</groupId>
-			<artifactId>log4j</artifactId>
-			<version>${coralog4j.version}</version>
-			<scope>runtime</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>se.uu.ub.cora</groupId>
 			<artifactId>coradata</artifactId>
 			<version>${coradata.version}</version>
-			<!-- TODO:ändra tillbaka till provided -->
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>se.uu.ub.cora</groupId>
 			<artifactId>basicdata</artifactId>
-			<!-- TODO:ändra tillbaka till provided -->
 			<version>${basicdata.version}</version>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.containers</groupId>
@@ -169,20 +179,6 @@
 			<artifactId>javax.servlet-api</artifactId>
 			<version>${servlet-api.version}</version>
 			<scope>provided</scope>
-		</dependency>
-		<!-- The JAXB APIs are considered to be Java EE APIs, and therefore are 
-			no longer contained on the default class path in Java SE 9. In Java 11 they 
-			are completely removed from the JDK. -->
-		<dependency>
-			<groupId>javax.xml.bind</groupId>
-			<artifactId>jaxb-api</artifactId>
-			<version>${jaxb-api.version}</version>
-			<exclusions>
-		        <exclusion>
-		            <groupId>javax.activation</groupId>
-		            <artifactId>javax.activation-api</artifactId>
-		        </exclusion>
-		    </exclusions>
 		</dependency>
 	</dependencies>
 </project>

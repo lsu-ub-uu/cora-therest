@@ -26,7 +26,6 @@ import org.testng.annotations.Test;
 import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.therest.data.DataAttributeSpy;
 import se.uu.ub.cora.therest.data.RestDataAttribute;
-import se.uu.ub.cora.therest.data.converter.coradata.DataAttributeToRestConverter;
 
 public class DataAttributeToRestConverterTest {
 	@Test

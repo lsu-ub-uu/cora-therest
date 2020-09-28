@@ -28,7 +28,6 @@ import org.testng.annotations.Test;
 import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataAttributeProvider;
 import se.uu.ub.cora.therest.data.RestDataAttribute;
-import se.uu.ub.cora.therest.data.converter.coradata.DataAttributeRestToDataConverter;
 
 public class DataAttributeRestToSpiderConverterTest {
 

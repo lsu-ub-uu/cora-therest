@@ -33,7 +33,6 @@ import se.uu.ub.cora.therest.data.DataRecordSpy;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.RestDataList;
 import se.uu.ub.cora.therest.data.RestDataRecord;
-import se.uu.ub.cora.therest.data.converter.coradata.DataListDataToRestConverter;
 
 public class DataListDataToRestConverterTest {
 	private String baseURL = "http://localhost:8080/therest/rest/record/";

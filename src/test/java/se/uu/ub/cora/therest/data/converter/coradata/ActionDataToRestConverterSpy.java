@@ -5,7 +5,6 @@ import java.util.Map;
 
 import se.uu.ub.cora.data.Action;
 import se.uu.ub.cora.therest.data.ActionLink;
-import se.uu.ub.cora.therest.data.converter.coradata.ActionDataToRestConverter;
 
 public class ActionDataToRestConverterSpy implements ActionDataToRestConverter {
 

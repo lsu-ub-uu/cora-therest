@@ -27,7 +27,6 @@ import org.testng.annotations.Test;
 import se.uu.ub.cora.data.DataAtomic;
 import se.uu.ub.cora.therest.data.DataAtomicSpy;
 import se.uu.ub.cora.therest.data.RestDataAtomic;
-import se.uu.ub.cora.therest.data.converter.coradata.DataAtomicToRestConverter;
 
 public class DataAtomicToRestConverterTest {
 	private DataAtomic dataAtomic;

@@ -32,7 +32,6 @@ import se.uu.ub.cora.therest.data.DataResourceLinkSpy;
 import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataResourceLink;
 import se.uu.ub.cora.therest.data.converter.ConverterInfo;
-import se.uu.ub.cora.therest.data.converter.coradata.DataResourceLinkDataToRestConverter;
 
 public class DataResourceLinkDataToRestConverterTest {
 	private ConverterInfo converterInfo = ConverterInfo.withBaseURLAndRecordURLAndTypeAndId(

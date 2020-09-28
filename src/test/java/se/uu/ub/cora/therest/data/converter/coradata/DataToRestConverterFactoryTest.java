@@ -30,10 +30,6 @@ import se.uu.ub.cora.data.Action;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.therest.data.DataGroupSpy;
 import se.uu.ub.cora.therest.data.converter.ConverterInfo;
-import se.uu.ub.cora.therest.data.converter.coradata.ActionDataToRestConverterImp;
-import se.uu.ub.cora.therest.data.converter.coradata.DataGroupDataToRestConverter;
-import se.uu.ub.cora.therest.data.converter.coradata.DataToRestConverterFactory;
-import se.uu.ub.cora.therest.data.converter.coradata.DataToRestConverterFactoryImp;
 
 public class DataToRestConverterFactoryTest {
 

@@ -20,7 +20,6 @@ package se.uu.ub.cora.therest.data.converter.coradata;
 
 import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataGroup;
-import se.uu.ub.cora.therest.data.converter.coradata.DataToRestConverter;
 
 public class DataToRestConverterSpy implements DataToRestConverter {
 

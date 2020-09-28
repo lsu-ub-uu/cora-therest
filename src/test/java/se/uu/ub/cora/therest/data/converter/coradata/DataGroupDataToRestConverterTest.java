@@ -39,7 +39,6 @@ import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.RestDataRecordLink;
 import se.uu.ub.cora.therest.data.RestDataResourceLink;
 import se.uu.ub.cora.therest.data.converter.ConverterInfo;
-import se.uu.ub.cora.therest.data.converter.coradata.DataGroupDataToRestConverter;
 import se.uu.ub.cora.therest.testdata.DataCreator;
 
 public class DataGroupDataToRestConverterTest {

@@ -24,9 +24,6 @@ import java.util.List;
 import se.uu.ub.cora.data.Action;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.therest.data.converter.ConverterInfo;
-import se.uu.ub.cora.therest.data.converter.coradata.ActionDataToRestConverter;
-import se.uu.ub.cora.therest.data.converter.coradata.DataToRestConverter;
-import se.uu.ub.cora.therest.data.converter.coradata.DataToRestConverterFactory;
 
 public class DataToRestConverterFactorySpy implements DataToRestConverterFactory {
 
