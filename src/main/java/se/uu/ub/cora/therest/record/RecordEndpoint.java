@@ -213,9 +213,6 @@ public class RecordEndpoint {
 		}
 
 		if (error instanceof AuthorizationException) {
-			if (authToken != null) {
-				log.logErrorUsingMessageAndException("FORBIDDEN: " + error.getMessage(), error);
-			}
 			return handleAuthorizationException(authToken);
 		}
 
