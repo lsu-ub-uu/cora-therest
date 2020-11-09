@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2016, 2017, 2018, 2019 Uppsala University Library
+ * Copyright 2015, 2016, 2017, 2018, 2019, 2020 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -25,7 +25,6 @@ import java.util.Map;
 import se.uu.ub.cora.gatekeeperclient.authentication.AuthenticatorImp;
 import se.uu.ub.cora.httphandler.HttpHandlerFactory;
 import se.uu.ub.cora.httphandler.HttpHandlerFactoryImp;
-import se.uu.ub.cora.metacreator.extended.MetacreatorExtendedFunctionalityProvider;
 import se.uu.ub.cora.search.RecordIndexer;
 import se.uu.ub.cora.search.RecordSearch;
 import se.uu.ub.cora.searchstorage.SearchStorage;
@@ -34,7 +33,6 @@ import se.uu.ub.cora.solrindex.SolrRecordIndexer;
 import se.uu.ub.cora.solrsearch.SolrRecordSearch;
 import se.uu.ub.cora.spider.authentication.Authenticator;
 import se.uu.ub.cora.spider.dependency.SpiderDependencyProvider;
-import se.uu.ub.cora.spider.extended.ExtendedFunctionalityProvider;
 
 /**
  * SystemOneDependencyProvider wires up the system for use in "production", as this is in SystemOne
@@ -76,11 +74,6 @@ public class TheRestDependencyProvider extends SpiderDependencyProvider {
 		solrClientProvider = SolrClientProviderImp.usingBaseUrl(solrUrl);
 		solrRecordIndexer = SolrRecordIndexer
 				.createSolrRecordIndexerUsingSolrClientProvider(solrClientProvider);
-	}
-
-	@Override
-	public ExtendedFunctionalityProvider getExtendedFunctionalityProvider() {
-		return new MetacreatorExtendedFunctionalityProvider(this);
 	}
 
 	@Override
