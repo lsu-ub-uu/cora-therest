@@ -30,7 +30,6 @@ import se.uu.ub.cora.spider.authentication.Authenticator;
 import se.uu.ub.cora.spider.authorization.PermissionRuleCalculator;
 import se.uu.ub.cora.spider.authorization.SpiderAuthorizator;
 import se.uu.ub.cora.spider.dependency.SpiderDependencyProvider;
-import se.uu.ub.cora.spider.extended.ExtendedFunctionalityProvider;
 import se.uu.ub.cora.storage.MetadataStorageProvider;
 import se.uu.ub.cora.storage.RecordIdGeneratorProvider;
 import se.uu.ub.cora.storage.RecordStorageProvider;
@@ -62,12 +61,6 @@ public class DependencyProviderSpy extends SpiderDependencyProvider {
 
 	@Override
 	public DataRecordLinkCollector getDataRecordLinkCollector() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public ExtendedFunctionalityProvider getExtendedFunctionalityProvider() {
 		// TODO Auto-generated method stub
 		return null;
 	}
