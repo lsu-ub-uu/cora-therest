@@ -37,6 +37,8 @@ import se.uu.ub.cora.storage.StreamStorageProvider;
 
 public class DependencyProviderSpy extends SpiderDependencyProvider {
 
+	public boolean initializeExtendedFunctionalityHasBeenCalled = false;
+
 	public DependencyProviderSpy(Map<String, String> initInfo) {
 		super(initInfo);
 	}
@@ -119,6 +121,11 @@ public class DependencyProviderSpy extends SpiderDependencyProvider {
 
 	public MetadataStorageProvider getMetadataStorageProvider() {
 		return metadataStorageProvider;
+	}
+
+	@Override
+	public void initializeExtendedFunctionality() {
+		initializeExtendedFunctionalityHasBeenCalled = true;
 	}
 
 }

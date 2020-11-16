@@ -443,4 +443,12 @@ public class TheRestModuleStarterTest {
 				.getStartedDependencyProvider();
 		assertSame(startedDependencyProvider.getMetadataStorageProvider(), metadataStorageProvider);
 	}
+
+	@Test
+	public void testInitializeExtendedFunctionalityHasBeenCalled() throws Exception {
+		startTheRestModuleStarter();
+		DependencyProviderSpy startedDependencyProvider = (DependencyProviderSpy) starter
+				.getStartedDependencyProvider();
+		assertTrue(startedDependencyProvider.initializeExtendedFunctionalityHasBeenCalled);
+	}
 }

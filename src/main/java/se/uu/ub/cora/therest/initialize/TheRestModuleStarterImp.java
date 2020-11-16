@@ -60,6 +60,10 @@ public class TheRestModuleStarterImp implements TheRestModuleStarter {
 		}
 		createAndSetFactoryInSpiderInstanceProvider();
 
+		startProviders();
+	}
+
+	private void startProviders() {
 		RecordStorageProvider recordStorageProvider = getImplementationBasedOnPreferenceLevelThrowErrorIfNone(
 				providers.recordStorageProviderImplementations, "RecordStorageProvider");
 		recordStorageProvider.startUsingInitInfo(initInfo);
@@ -79,6 +83,8 @@ public class TheRestModuleStarterImp implements TheRestModuleStarter {
 				providers.metadataStorageProviderImplementations, "MetadataStorageProvider");
 		metadataStorageProvider.startUsingInitInfo(initInfo);
 		dependencyProvider.setMetadataStorageProvider(metadataStorageProvider);
+
+		dependencyProvider.initializeExtendedFunctionality();
 	}
 
 	private void createInstanceOfDependencyProviderClass()
