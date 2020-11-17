@@ -30,13 +30,14 @@ import se.uu.ub.cora.spider.authentication.Authenticator;
 import se.uu.ub.cora.spider.authorization.PermissionRuleCalculator;
 import se.uu.ub.cora.spider.authorization.SpiderAuthorizator;
 import se.uu.ub.cora.spider.dependency.SpiderDependencyProvider;
-import se.uu.ub.cora.spider.extended.ExtendedFunctionalityProvider;
 import se.uu.ub.cora.storage.MetadataStorageProvider;
 import se.uu.ub.cora.storage.RecordIdGeneratorProvider;
 import se.uu.ub.cora.storage.RecordStorageProvider;
 import se.uu.ub.cora.storage.StreamStorageProvider;
 
 public class DependencyProviderSpy extends SpiderDependencyProvider {
+
+	public boolean initializeExtendedFunctionalityHasBeenCalled = false;
 
 	public DependencyProviderSpy(Map<String, String> initInfo) {
 		super(initInfo);
@@ -62,12 +63,6 @@ public class DependencyProviderSpy extends SpiderDependencyProvider {
 
 	@Override
 	public DataRecordLinkCollector getDataRecordLinkCollector() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public ExtendedFunctionalityProvider getExtendedFunctionalityProvider() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -126,6 +121,11 @@ public class DependencyProviderSpy extends SpiderDependencyProvider {
 
 	public MetadataStorageProvider getMetadataStorageProvider() {
 		return metadataStorageProvider;
+	}
+
+	@Override
+	public void initializeExtendedFunctionality() {
+		initializeExtendedFunctionalityHasBeenCalled = true;
 	}
 
 }

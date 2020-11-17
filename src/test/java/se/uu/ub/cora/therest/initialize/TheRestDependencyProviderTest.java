@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2017, 2018, 2019 Uppsala University Library
+ * Copyright 2015, 2017, 2018, 2019, 2020 Uppsala University Library
  * Copyright 2017 Olov McKie
  *
  * This file is part of Cora.
@@ -34,7 +34,6 @@ import org.testng.annotations.Test;
 
 import se.uu.ub.cora.gatekeeperclient.authentication.AuthenticatorImp;
 import se.uu.ub.cora.logger.LoggerProvider;
-import se.uu.ub.cora.metacreator.extended.MetacreatorExtendedFunctionalityProvider;
 import se.uu.ub.cora.search.RecordIndexer;
 import se.uu.ub.cora.search.RecordSearch;
 import se.uu.ub.cora.searchstorage.SearchStorage;
@@ -59,15 +58,17 @@ public class TheRestDependencyProviderTest {
 	public void setUp() throws Exception {
 		loggerFactorySpy = new LoggerFactorySpy();
 		LoggerProvider.setLoggerFactory(loggerFactorySpy);
-		try {
-			initInfo = new HashMap<>();
-			initInfo.put("gatekeeperURL", "http://localhost:8080/gatekeeper/");
-			initInfo.put("solrURL", "http://localhost:8983/solr/stuff");
-			dependencyProvider = new TheRestDependencyProvider(initInfo);
-			setPluggedInStorageNormallySetByTheRestModuleStarterImp();
-		} catch (Exception e) {
-			// Make the correct tests crash instead of all
-		}
+		// TODO:why try/catch?
+		// try {
+		initInfo = new HashMap<>();
+		initInfo.put("gatekeeperURL", "http://localhost:8080/gatekeeper/");
+		initInfo.put("solrURL", "http://localhost:8983/solr/stuff");
+		dependencyProvider = new TheRestDependencyProvider(initInfo);
+		setPluggedInStorageNormallySetByTheRestModuleStarterImp();
+		// } catch (Exception e) {
+		// System.out.println("crashes");
+		// // Make the correct tests crash instead of all
+		// }
 
 	}
 
@@ -84,10 +85,8 @@ public class TheRestDependencyProviderTest {
 
 	@Test
 	public void testInit() {
-		assertNotNull(dependencyProvider.getExtendedFunctionalityProvider());
+		// assertNotNull(dependencyProvider.getExtendedFunctionalityProvider());
 		assertTrue(dependencyProvider.getAuthenticator() instanceof AuthenticatorImp);
-		assertTrue(dependencyProvider
-				.getExtendedFunctionalityProvider() instanceof MetacreatorExtendedFunctionalityProvider);
 		assertTrue(dependencyProvider.getRecordIndexer() instanceof SolrRecordIndexer);
 	}
 
