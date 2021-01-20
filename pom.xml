@@ -28,7 +28,7 @@
 
 	<artifactId>therest</artifactId>
 	<packaging>jar</packaging>
-	<version>5.1-SNAPSHOT</version>
+	<version>5.2-SNAPSHOT-SNAPSHOT</version>
 	<name>The Rest</name>
 	
 	<properties>
