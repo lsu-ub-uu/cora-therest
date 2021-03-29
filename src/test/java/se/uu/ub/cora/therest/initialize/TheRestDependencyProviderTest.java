@@ -23,6 +23,7 @@ package se.uu.ub.cora.therest.initialize;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotEquals;
 import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertNotSame;
 import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
 
@@ -35,10 +36,12 @@ import org.testng.annotations.Test;
 import se.uu.ub.cora.gatekeeperclient.authentication.AuthenticatorImp;
 import se.uu.ub.cora.logger.LoggerProvider;
 import se.uu.ub.cora.search.RecordIndexer;
+import se.uu.ub.cora.search.RecordIndexerFactory;
 import se.uu.ub.cora.search.RecordSearch;
 import se.uu.ub.cora.searchstorage.SearchStorage;
 import se.uu.ub.cora.solr.SolrClientProviderImp;
 import se.uu.ub.cora.solrindex.SolrRecordIndexer;
+import se.uu.ub.cora.solrindex.SolrRecordIndexerFactory;
 import se.uu.ub.cora.solrsearch.SolrRecordSearch;
 import se.uu.ub.cora.spider.authorization.PermissionRuleCalculator;
 import se.uu.ub.cora.spider.dependency.SpiderInitializationException;
@@ -85,7 +88,6 @@ public class TheRestDependencyProviderTest {
 
 	@Test
 	public void testInit() {
-		// assertNotNull(dependencyProvider.getExtendedFunctionalityProvider());
 		assertTrue(dependencyProvider.getAuthenticator() instanceof AuthenticatorImp);
 		assertTrue(dependencyProvider.getRecordIndexer() instanceof SolrRecordIndexer);
 	}
@@ -137,10 +139,24 @@ public class TheRestDependencyProviderTest {
 	}
 
 	@Test
-	public void testDependencyProviderReturnsOnlyOneInstanceOfRecordndexer() {
+	public void testRecordIndexerFactory() {
+		RecordIndexerFactory recordIndexerFactory = dependencyProvider.getRecordIndexerFactory();
+		assertTrue(recordIndexerFactory instanceof SolrRecordIndexerFactory);
+	}
+
+	@Test
+	public void testDependencyProviderReturnsDifferentIndexers() {
 		RecordIndexer recordIndexer = dependencyProvider.getRecordIndexer();
 		RecordIndexer recordIndexer2 = dependencyProvider.getRecordIndexer();
-		assertEquals(recordIndexer, recordIndexer2);
+		assertNotSame(recordIndexer, recordIndexer2);
+	}
+
+	@Test
+	public void testGetRecordIndexerUsesSolrUrlWhenCreatingSolrClientProvider() {
+		SolrRecordIndexer recordIndexer = (SolrRecordIndexer) dependencyProvider.getRecordIndexer();
+		SolrClientProviderImp solrClientProviderImp = (SolrClientProviderImp) recordIndexer
+				.getSolrClientProvider();
+		assertEquals(solrClientProviderImp.getBaseURL(), "http://localhost:8983/solr/stuff");
 	}
 
 	@Test
@@ -156,14 +172,6 @@ public class TheRestDependencyProviderTest {
 				1);
 		assertEquals(loggerFactorySpy.getFatalLogMessageUsingClassNameAndNo(testedBaseClassName, 0),
 				"InitInfo in TheRestDependencyProvider must contain: solrURL");
-	}
-
-	@Test
-	public void testGetRecordIndexerUsesSolrUrlWhenCreatingSolrClientProvider() {
-		SolrRecordIndexer recordIndexer = (SolrRecordIndexer) dependencyProvider.getRecordIndexer();
-		SolrClientProviderImp solrClientProviderImp = (SolrClientProviderImp) recordIndexer
-				.getSolrClientProvider();
-		assertEquals(solrClientProviderImp.getBaseURL(), "http://localhost:8983/solr/stuff");
 	}
 
 	@Test
