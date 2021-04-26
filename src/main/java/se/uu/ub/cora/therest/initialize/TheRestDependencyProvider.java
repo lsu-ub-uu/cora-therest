@@ -30,7 +30,6 @@ import se.uu.ub.cora.search.RecordIndexerFactory;
 import se.uu.ub.cora.search.RecordSearch;
 import se.uu.ub.cora.searchstorage.SearchStorage;
 import se.uu.ub.cora.solr.SolrClientProviderImp;
-import se.uu.ub.cora.solrindex.SolrRecordIndexer;
 import se.uu.ub.cora.solrindex.SolrRecordIndexerFactory;
 import se.uu.ub.cora.solrsearch.SolrRecordSearch;
 import se.uu.ub.cora.spider.authentication.Authenticator;
@@ -46,7 +45,6 @@ public class TheRestDependencyProvider extends SpiderDependencyProvider {
 
 	private String gatekeeperUrl;
 	private String solrUrl;
-	private SolrRecordIndexer solrRecordIndexer;
 	private SolrClientProviderImp solrClientProvider;
 	private SolrRecordIndexerFactory solrRecordIndexerFactory;
 
