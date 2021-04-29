@@ -46,63 +46,63 @@ public class SpiderInstanceFactorySpy implements SpiderInstanceFactory {
 	public String recordType;
 
 	@Override
-	public RecordReader factorSpiderRecordReader() {
+	public RecordReader factorRecordReader() {
 		spiderRecordReaderSpy = new SpiderRecordReaderSpy();
 		return spiderRecordReaderSpy;
 	}
 
 	@Override
-	public RecordListReader factorSpiderRecordListReader() {
+	public RecordListReader factorRecordListReader() {
 		spiderRecordListReaderSpy = new SpiderRecordListReaderSpy();
 		return spiderRecordListReaderSpy;
 	}
 
 	@Override
-	public RecordCreator factorSpiderRecordCreator(String recordType) {
+	public RecordCreator factorRecordCreator(String recordType) {
 		this.recordType = recordType;
 		spiderCreatorSpy = new SpiderCreatorSpy();
 		return spiderCreatorSpy;
 	}
 
 	@Override
-	public RecordUpdater factorSpiderRecordUpdater(String recordType) {
+	public RecordUpdater factorRecordUpdater(String recordType) {
 		this.recordType = recordType;
 		spiderRecordUpdaterSpy = new SpiderRecordUpdaterSpy();
 		return spiderRecordUpdaterSpy;
 	}
 
 	@Override
-	public RecordDeleter factorSpiderRecordDeleter() {
+	public RecordDeleter factorRecordDeleter() {
 		spiderRecordDeleterSpy = new SpiderRecordDeleterSpy();
 		return spiderRecordDeleterSpy;
 	}
 
 	@Override
-	public Uploader factorSpiderUploader() {
+	public Uploader factorUploader() {
 		spiderUploaderSpy = new SpiderUploaderSpy();
 		return spiderUploaderSpy;
 	}
 
 	@Override
-	public Downloader factorSpiderDownloader() {
+	public Downloader factorDownloader() {
 		spiderDownloaderSpy = new SpiderDownloaderSpy();
 		return spiderDownloaderSpy;
 	}
 
 	@Override
-	public RecordSearcher factorSpiderRecordSearcher() {
+	public RecordSearcher factorRecordSearcher() {
 		spiderRecordSearcherSpy = new SpiderRecordSearcherSpy();
 		return spiderRecordSearcherSpy;
 	}
 
 	@Override
-	public IncomingLinksReader factorSpiderRecordIncomingLinksReader() {
+	public IncomingLinksReader factorIncomingLinksReader() {
 		spiderRecordIncomingLinksReaderSpy = new SpiderRecordIncomingLinksReaderSpy();
 		return spiderRecordIncomingLinksReaderSpy;
 	}
 
 	@Override
-	public RecordValidator factorSpiderRecordValidator() {
+	public RecordValidator factorRecordValidator() {
 		spiderRecordValidatorSpy = new SpiderRecordValidatorSpy();
 		return spiderRecordValidatorSpy;
 	}

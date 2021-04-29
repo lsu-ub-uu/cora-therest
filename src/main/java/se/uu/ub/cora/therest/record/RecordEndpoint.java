@@ -142,7 +142,7 @@ public class RecordEndpoint {
 	private Response tryCreateRecord(String authToken, String type, String jsonRecord)
 			throws URISyntaxException {
 		DataGroup record = convertJsonStringToDataGroup(jsonRecord);
-		DataRecord createdRecord = SpiderInstanceProvider.getSpiderRecordCreator(type)
+		DataRecord createdRecord = SpiderInstanceProvider.getRecordCreator(type)
 				.createAndStoreRecord(authToken, type, record);
 
 		DataGroup createdGroup = createdRecord.getDataGroup();
@@ -274,7 +274,7 @@ public class RecordEndpoint {
 
 	private Response tryReadRecordList(String authToken, String type, String filterAsJson) {
 		DataGroup filter = convertJsonStringToDataGroup(filterAsJson);
-		DataList readRecordList = SpiderInstanceProvider.getSpiderRecordListReader()
+		DataList readRecordList = SpiderInstanceProvider.getRecordListReader()
 				.readRecordList(authToken, type, filter);
 		String json = convertRecordListToJsonString(readRecordList);
 		return Response.status(Response.Status.OK).entity(json).build();
@@ -310,8 +310,8 @@ public class RecordEndpoint {
 	}
 
 	private Response tryReadRecord(String authToken, String type, String id) {
-		DataRecord record = SpiderInstanceProvider.getSpiderRecordReader().readRecord(authToken,
-				type, id);
+		DataRecord record = SpiderInstanceProvider.getRecordReader().readRecord(authToken, type,
+				id);
 		String json = convertDataRecordToJsonString(record);
 		return Response.status(Response.Status.OK).entity(json).build();
 	}
@@ -336,7 +336,7 @@ public class RecordEndpoint {
 	}
 
 	private Response tryReadIncomingRecordLinks(String authToken, String type, String id) {
-		DataList dataList = SpiderInstanceProvider.getSpiderRecordIncomingLinksReader()
+		DataList dataList = SpiderInstanceProvider.getIncomingLinksReader()
 				.readIncomingLinks(authToken, type, id);
 		String json = convertRecordListToJsonString(dataList);
 		return Response.status(Response.Status.OK).entity(json).build();
@@ -361,7 +361,7 @@ public class RecordEndpoint {
 	}
 
 	private Response tryDeleteRecord(String authToken, String type, String id) {
-		SpiderInstanceProvider.getSpiderRecordDeleter().deleteRecord(authToken, type, id);
+		SpiderInstanceProvider.getRecordDeleter().deleteRecord(authToken, type, id);
 		return Response.status(Response.Status.OK).build();
 	}
 
@@ -387,7 +387,7 @@ public class RecordEndpoint {
 
 	private Response tryUpdateRecord(String authToken, String type, String id, String jsonRecord) {
 		DataGroup record = convertJsonStringToDataGroup(jsonRecord);
-		DataRecord updatedRecord = SpiderInstanceProvider.getSpiderRecordUpdater(type)
+		DataRecord updatedRecord = SpiderInstanceProvider.getRecordUpdater(type)
 				.updateRecord(authToken, type, id, record);
 		String json = convertDataRecordToJsonString(updatedRecord);
 		return Response.status(Response.Status.OK).entity(json).build();
@@ -416,8 +416,8 @@ public class RecordEndpoint {
 	}
 
 	private Response tryDownloadFile(String authToken, String type, String id, String streamId) {
-		SpiderInputStream streamOut = SpiderInstanceProvider.getSpiderDownloader()
-				.download(authToken, type, id, streamId);
+		SpiderInputStream streamOut = SpiderInstanceProvider.getDownloader().download(authToken,
+				type, id, streamId);
 		/*
 		 * when we detect and store type of file in spider set it like this return
 		 * Response.ok(streamOut.stream).type("application/octet-stream")
@@ -452,8 +452,8 @@ public class RecordEndpoint {
 
 	private Response tryUploadFile(String authToken, String type, String id,
 			InputStream inputStream, String fileName) {
-		DataRecord updatedRecord = SpiderInstanceProvider.getSpiderUploader().upload(authToken,
-				type, id, inputStream, fileName);
+		DataRecord updatedRecord = SpiderInstanceProvider.getUploader().upload(authToken, type, id,
+				inputStream, fileName);
 		String json = convertDataRecordToJsonString(updatedRecord);
 		return Response.ok(json).build();
 	}
@@ -480,8 +480,8 @@ public class RecordEndpoint {
 	private Response trySearchRecord(String authToken, String searchId, String searchDataAsJson) {
 		DataGroup searchData = convertJsonStringToDataGroup(searchDataAsJson);
 
-		DataList searchRecordList = SpiderInstanceProvider.getSpiderRecordSearcher()
-				.search(authToken, searchId, searchData);
+		DataList searchRecordList = SpiderInstanceProvider.getRecordSearcher().search(authToken,
+				searchId, searchData);
 		String json = convertRecordListToJsonString(searchRecordList);
 		return Response.status(Response.Status.OK).entity(json).build();
 	}
@@ -513,9 +513,8 @@ public class RecordEndpoint {
 		DataGroup validationOrder = getDataGroupFromJsonObjectUsingName(jsonObject, "order");
 		DataGroup recordToValidate = getDataGroupFromJsonObjectUsingName(jsonObject, "record");
 
-		RecordValidator spiderRecordValidator = SpiderInstanceProvider
-				.getSpiderRecordValidator();
-		DataRecord validationResult = spiderRecordValidator.validateRecord(authToken, type,
+		RecordValidator recordValidator = SpiderInstanceProvider.getRecordValidator();
+		DataRecord validationResult = recordValidator.validateRecord(authToken, type,
 				validationOrder, recordToValidate);
 
 		String json = convertDataRecordToJsonString(validationResult);
