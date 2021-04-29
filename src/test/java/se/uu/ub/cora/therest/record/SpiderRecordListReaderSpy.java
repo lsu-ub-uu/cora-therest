@@ -22,11 +22,11 @@ package se.uu.ub.cora.therest.record;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataList;
 import se.uu.ub.cora.spider.authorization.AuthorizationException;
-import se.uu.ub.cora.spider.record.SpiderRecordListReader;
+import se.uu.ub.cora.spider.record.RecordListReader;
 import se.uu.ub.cora.storage.RecordNotFoundException;
 import se.uu.ub.cora.therest.data.DataListSpy;
 
-public class SpiderRecordListReaderSpy implements SpiderRecordListReader {
+public class SpiderRecordListReaderSpy implements RecordListReader {
 
 	public String authToken;
 	public String type;

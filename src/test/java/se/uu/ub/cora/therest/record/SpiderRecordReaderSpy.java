@@ -23,12 +23,12 @@ import se.uu.ub.cora.data.Action;
 import se.uu.ub.cora.data.DataRecord;
 import se.uu.ub.cora.spider.authentication.AuthenticationException;
 import se.uu.ub.cora.spider.authorization.AuthorizationException;
-import se.uu.ub.cora.spider.record.SpiderRecordReader;
+import se.uu.ub.cora.spider.record.RecordReader;
 import se.uu.ub.cora.storage.RecordNotFoundException;
 import se.uu.ub.cora.therest.data.DataRecordSpy;
 import se.uu.ub.cora.therest.testdata.DataCreator;
 
-public class SpiderRecordReaderSpy implements SpiderRecordReader {
+public class SpiderRecordReaderSpy implements RecordReader {
 
 	public String authToken;
 	public String type;

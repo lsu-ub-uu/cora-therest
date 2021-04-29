@@ -5,11 +5,11 @@ import se.uu.ub.cora.data.DataList;
 import se.uu.ub.cora.spider.authentication.AuthenticationException;
 import se.uu.ub.cora.spider.authorization.AuthorizationException;
 import se.uu.ub.cora.spider.record.DataException;
-import se.uu.ub.cora.spider.record.SpiderRecordSearcher;
+import se.uu.ub.cora.spider.record.RecordSearcher;
 import se.uu.ub.cora.storage.RecordNotFoundException;
 import se.uu.ub.cora.therest.data.DataListSpy;
 
-public class SpiderRecordSearcherSpy implements SpiderRecordSearcher {
+public class SpiderRecordSearcherSpy implements RecordSearcher {
 
 	public String authToken;
 	public String searchId;

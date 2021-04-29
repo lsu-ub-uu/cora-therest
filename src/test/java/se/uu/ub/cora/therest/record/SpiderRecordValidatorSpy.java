@@ -3,13 +3,13 @@ package se.uu.ub.cora.therest.record;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataRecord;
 import se.uu.ub.cora.spider.authorization.AuthorizationException;
-import se.uu.ub.cora.spider.record.SpiderRecordValidator;
+import se.uu.ub.cora.spider.record.RecordValidator;
 import se.uu.ub.cora.storage.RecordNotFoundException;
 import se.uu.ub.cora.therest.data.DataAtomicSpy;
 import se.uu.ub.cora.therest.data.DataGroupSpy;
 import se.uu.ub.cora.therest.data.DataRecordSpy;
 
-public class SpiderRecordValidatorSpy implements SpiderRecordValidator {
+public class SpiderRecordValidatorSpy implements RecordValidator {
 
 	public String authToken;
 	public String recordType;

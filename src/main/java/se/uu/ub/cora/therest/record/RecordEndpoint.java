@@ -59,7 +59,7 @@ import se.uu.ub.cora.spider.data.SpiderInputStream;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
 import se.uu.ub.cora.spider.record.DataException;
 import se.uu.ub.cora.spider.record.MisuseException;
-import se.uu.ub.cora.spider.record.SpiderRecordValidator;
+import se.uu.ub.cora.spider.record.RecordValidator;
 import se.uu.ub.cora.storage.RecordConflictException;
 import se.uu.ub.cora.storage.RecordNotFoundException;
 import se.uu.ub.cora.therest.data.RestDataElement;
@@ -513,7 +513,7 @@ public class RecordEndpoint {
 		DataGroup validationOrder = getDataGroupFromJsonObjectUsingName(jsonObject, "order");
 		DataGroup recordToValidate = getDataGroupFromJsonObjectUsingName(jsonObject, "record");
 
-		SpiderRecordValidator spiderRecordValidator = SpiderInstanceProvider
+		RecordValidator spiderRecordValidator = SpiderInstanceProvider
 				.getSpiderRecordValidator();
 		DataRecord validationResult = spiderRecordValidator.validateRecord(authToken, type,
 				validationOrder, recordToValidate);
