@@ -43,6 +43,7 @@ public class SpiderInstanceFactorySpy implements SpiderInstanceFactory {
 	public SpiderRecordIncomingLinksReaderSpy spiderRecordIncomingLinksReaderSpy;
 	public SpiderRecordListReaderSpy spiderRecordListReaderSpy;
 	public SpiderRecordSearcherSpy spiderRecordSearcherSpy;
+	public String recordType;
 
 	@Override
 	public SpiderRecordReader factorSpiderRecordReader() {
@@ -57,13 +58,15 @@ public class SpiderInstanceFactorySpy implements SpiderInstanceFactory {
 	}
 
 	@Override
-	public SpiderRecordCreator factorSpiderRecordCreator() {
+	public SpiderRecordCreator factorSpiderRecordCreator(String recordType) {
+		this.recordType = recordType;
 		spiderCreatorSpy = new SpiderCreatorSpy();
 		return spiderCreatorSpy;
 	}
 
 	@Override
-	public SpiderRecordUpdater factorSpiderRecordUpdater() {
+	public SpiderRecordUpdater factorSpiderRecordUpdater(String recordType) {
+		this.recordType = recordType;
 		spiderRecordUpdaterSpy = new SpiderRecordUpdaterSpy();
 		return spiderRecordUpdaterSpy;
 	}

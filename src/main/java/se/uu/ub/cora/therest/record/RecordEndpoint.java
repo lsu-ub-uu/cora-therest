@@ -142,7 +142,7 @@ public class RecordEndpoint {
 	private Response tryCreateRecord(String authToken, String type, String jsonRecord)
 			throws URISyntaxException {
 		DataGroup record = convertJsonStringToDataGroup(jsonRecord);
-		DataRecord createdRecord = SpiderInstanceProvider.getSpiderRecordCreator()
+		DataRecord createdRecord = SpiderInstanceProvider.getSpiderRecordCreator(type)
 				.createAndStoreRecord(authToken, type, record);
 
 		DataGroup createdGroup = createdRecord.getDataGroup();
@@ -387,7 +387,7 @@ public class RecordEndpoint {
 
 	private Response tryUpdateRecord(String authToken, String type, String id, String jsonRecord) {
 		DataGroup record = convertJsonStringToDataGroup(jsonRecord);
-		DataRecord updatedRecord = SpiderInstanceProvider.getSpiderRecordUpdater()
+		DataRecord updatedRecord = SpiderInstanceProvider.getSpiderRecordUpdater(type)
 				.updateRecord(authToken, type, id, record);
 		String json = convertDataRecordToJsonString(updatedRecord);
 		return Response.status(Response.Status.OK).entity(json).build();
