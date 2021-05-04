@@ -22,12 +22,16 @@ import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataRecord;
 import se.uu.ub.cora.spider.authorization.AuthorizationException;
 import se.uu.ub.cora.spider.record.RecordListIndexer;
+import se.uu.ub.cora.therest.data.DataAtomicSpy;
+import se.uu.ub.cora.therest.data.DataGroupSpy;
+import se.uu.ub.cora.therest.data.DataRecordSpy;
 
 public class IndexBatchJobCreatorSpy implements RecordListIndexer {
 
 	public String authToken;
 	public String type;
 	public DataGroup filter;
+	public DataRecordSpy recordToReturn;
 
 	@Override
 	public DataRecord indexRecordList(String authToken, String type, DataGroup filter) {
@@ -35,7 +39,17 @@ public class IndexBatchJobCreatorSpy implements RecordListIndexer {
 		this.type = type;
 		this.filter = filter;
 		possiblyThrowException(authToken, type);
-		return null;
+		DataGroupSpy indexBatchJob = new DataGroupSpy("indexBatchJob");
+		DataGroupSpy recordInfo = new DataGroupSpy("recordInfo");
+		recordInfo.addChild(new DataAtomicSpy("id", "someId"));
+		DataGroupSpy typeGroup = new DataGroupSpy("type");
+		typeGroup.addChild(new DataAtomicSpy("linkedRecordType", "recordType"));
+		typeGroup.addChild(new DataAtomicSpy("linkedRecordId", "someRecordType"));
+		recordInfo.addChild(typeGroup);
+		indexBatchJob.addChild(recordInfo);
+
+		recordToReturn = new DataRecordSpy(indexBatchJob);
+		return recordToReturn;
 	}
 
 	private void possiblyThrowException(String authToken, String type) {

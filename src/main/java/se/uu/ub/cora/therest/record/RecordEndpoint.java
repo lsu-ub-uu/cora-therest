@@ -562,10 +562,12 @@ public class RecordEndpoint {
 	private Response tryIndexRecordList(String authToken, String type, String filterAsJson) {
 		DataGroup filter = convertJsonStringToDataGroup(filterAsJson);
 		RecordListIndexer indexBatchJobCreator = SpiderInstanceProvider.getRecordListIndexer();
-		indexBatchJobCreator.indexRecordList(authToken, type, filter);
+		DataRecord indexBatchJob = indexBatchJobCreator.indexRecordList(authToken, type, filter);
+		String json = convertDataRecordToJsonString(indexBatchJob);
+
 		// Vad får vi tillbaka av indexRecordList?
 		// Vad vill vi skicka tillbaka? Här är det väl någon form av referens till IndexBatchJob?
-		String json = "";
+		// String json = "some json";
 		return Response.status(Response.Status.OK).entity(json).build();
 	}
 

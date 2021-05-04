@@ -912,4 +912,12 @@ public class RecordEndpointTest {
 		assertResponseStatusIs(Response.Status.UNAUTHORIZED);
 	}
 
+	@Test
+	public void testIndexBatchJobResponse() {
+		response = recordEndpoint.indexRecordList(AUTH_TOKEN, AUTH_TOKEN, PLACE, null);
+		Object entity = response.getEntity();
+		assertEquals(entity,
+				"{\"record\":{\"data\":{\"children\":[{\"children\":[{\"name\":\"id\",\"value\":\"someId\"},{\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"recordType\"},{\"name\":\"linkedRecordId\",\"value\":\"someRecordType\"}],\"name\":\"type\"}],\"name\":\"recordInfo\"}],\"name\":\"indexBatchJob\"}}}");
+	}
+
 }
