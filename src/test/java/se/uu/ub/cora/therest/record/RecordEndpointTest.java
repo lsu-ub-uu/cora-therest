@@ -538,13 +538,13 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testPreferredTokenForUpload() throws IOException {
-		expectTokenForUploadToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, "authToken2", AUTH_TOKEN);
-		expectTokenForUploadToPrefereblyBeHeaderThanQuery(null, AUTH_TOKEN, AUTH_TOKEN);
-		expectTokenForUploadToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, null, AUTH_TOKEN);
-		expectTokenForUploadToPrefereblyBeHeaderThanQuery(null, null, null);
+		expectTokenForUploadToPreferablyBeHeaderThanQuery(AUTH_TOKEN, "authToken2", AUTH_TOKEN);
+		expectTokenForUploadToPreferablyBeHeaderThanQuery(null, AUTH_TOKEN, AUTH_TOKEN);
+		expectTokenForUploadToPreferablyBeHeaderThanQuery(AUTH_TOKEN, null, AUTH_TOKEN);
+		expectTokenForUploadToPreferablyBeHeaderThanQuery(null, null, null);
 	}
 
-	private void expectTokenForUploadToPrefereblyBeHeaderThanQuery(String headerAuthToken,
+	private void expectTokenForUploadToPreferablyBeHeaderThanQuery(String headerAuthToken,
 			String queryAuthToken, String authTokenExpected) {
 
 		FormDataContentDispositionBuilder builder = FormDataContentDisposition
@@ -630,13 +630,13 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testPreferredTokenForDownload() throws IOException {
-		expectTokenForDownloadToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, "authToken2", AUTH_TOKEN);
-		expectTokenForDownloadToPrefereblyBeHeaderThanQuery(null, AUTH_TOKEN, AUTH_TOKEN);
-		expectTokenForDownloadToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, null, AUTH_TOKEN);
-		expectTokenForDownloadToPrefereblyBeHeaderThanQuery(null, null, null);
+		expectTokenForDownloadToPreferablyBeHeaderThanQuery(AUTH_TOKEN, "authToken2", AUTH_TOKEN);
+		expectTokenForDownloadToPreferablyBeHeaderThanQuery(null, AUTH_TOKEN, AUTH_TOKEN);
+		expectTokenForDownloadToPreferablyBeHeaderThanQuery(AUTH_TOKEN, null, AUTH_TOKEN);
+		expectTokenForDownloadToPreferablyBeHeaderThanQuery(null, null, null);
 	}
 
-	private void expectTokenForDownloadToPrefereblyBeHeaderThanQuery(String headerAuthToken,
+	private void expectTokenForDownloadToPreferablyBeHeaderThanQuery(String headerAuthToken,
 			String queryAuthToken, String authTokenExpected) {
 
 		response = recordEndpoint.downloadFile(headerAuthToken, queryAuthToken, "image",
@@ -897,19 +897,19 @@ public class RecordEndpointTest {
 	// assertResponseStatusIs(Response.Status.NOT_FOUND);
 	// }
 	//
-	// @Test
-	// public void testReadRecordListUnauthorized() {
-	// String jsonFilter = "{\"name\":\"filter\",\"children\":[]}";
-	// response = recordEndpoint.readRecordListUsingAuthTokenByType(DUMMY_NON_AUTHORIZED_TOKEN,
-	// PLACE, jsonFilter);
-	// assertResponseStatusIs(Response.Status.FORBIDDEN);
-	// }
-	//
-	// @Test
-	// public void testReadRecordListNoTokenAndUnauthorized() {
-	// String jsonFilter = "{\"name\":\"filter\",\"children\":[]}";
-	// response = recordEndpoint.readRecordListUsingAuthTokenByType(null, PLACE, jsonFilter);
-	// assertResponseStatusIs(Response.Status.UNAUTHORIZED);
-	// }
+	@Test
+	public void testIndexRecordListUnauthorized() {
+		String jsonFilter = "{\"name\":\"filter\",\"children\":[]}";
+		response = recordEndpoint.indexRecordListUsingAuthTokenByType(DUMMY_NON_AUTHORIZED_TOKEN,
+				PLACE, jsonFilter);
+		assertResponseStatusIs(Response.Status.FORBIDDEN);
+	}
+
+	@Test
+	public void testIndexRecordListNoTokenAndUnauthorized() {
+		String jsonFilter = "{\"name\":\"filter\",\"children\":[]}";
+		response = recordEndpoint.indexRecordListUsingAuthTokenByType(null, PLACE, jsonFilter);
+		assertResponseStatusIs(Response.Status.UNAUTHORIZED);
+	}
 
 }

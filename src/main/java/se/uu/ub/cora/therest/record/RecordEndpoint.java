@@ -546,12 +546,27 @@ public class RecordEndpoint {
 		String usedToken = getExistingTokenPreferHeader(headerAuthToken, queryAuthToken);
 		String jsonFilter = createEmptyFilterIfParameterDoesNotExist(filterAsJson);
 
-		DataGroup filter = convertJsonStringToDataGroup(jsonFilter);
+		return indexRecordListUsingAuthTokenByType(usedToken, type, jsonFilter);
+	}
+
+	Response indexRecordListUsingAuthTokenByType(String authToken, String type,
+			String filterAsJson) {
+		try {
+			return tryIndexRecordList(authToken, type, filterAsJson);
+
+		} catch (Exception error) {
+			return handleError(authToken, error);
+		}
+	}
+
+	private Response tryIndexRecordList(String authToken, String type, String filterAsJson) {
+		DataGroup filter = convertJsonStringToDataGroup(filterAsJson);
 		RecordListIndexer indexBatchJobCreator = SpiderInstanceProvider.getRecordListIndexer();
-		indexBatchJobCreator.indexRecordList(usedToken, type, filter);
+		indexBatchJobCreator.indexRecordList(authToken, type, filter);
+		// Vad får vi tillbaka av indexRecordList?
+		// Vad vill vi skicka tillbaka? Här är det väl någon form av referens till IndexBatchJob?
 		String json = "";
 		return Response.status(Response.Status.OK).entity(json).build();
-		// return null;
 	}
 
 }

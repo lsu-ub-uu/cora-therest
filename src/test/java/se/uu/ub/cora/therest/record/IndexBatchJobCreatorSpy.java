@@ -20,6 +20,7 @@ package se.uu.ub.cora.therest.record;
 
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataRecord;
+import se.uu.ub.cora.spider.authorization.AuthorizationException;
 import se.uu.ub.cora.spider.record.RecordListIndexer;
 
 public class IndexBatchJobCreatorSpy implements RecordListIndexer {
@@ -33,7 +34,14 @@ public class IndexBatchJobCreatorSpy implements RecordListIndexer {
 		this.authToken = authToken;
 		this.type = type;
 		this.filter = filter;
+		possiblyThrowException(authToken, type);
 		return null;
+	}
+
+	private void possiblyThrowException(String authToken, String type) {
+		if ("dummyNonAuthorizedToken".equals(authToken) || authToken == null) {
+			throw new AuthorizationException("not authorized");
+		}
 	}
 
 }
