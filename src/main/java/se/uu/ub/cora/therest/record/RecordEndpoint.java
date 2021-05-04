@@ -59,6 +59,7 @@ import se.uu.ub.cora.spider.data.SpiderInputStream;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
 import se.uu.ub.cora.spider.record.DataException;
 import se.uu.ub.cora.spider.record.MisuseException;
+import se.uu.ub.cora.spider.record.RecordListIndexer;
 import se.uu.ub.cora.spider.record.RecordValidator;
 import se.uu.ub.cora.storage.RecordConflictException;
 import se.uu.ub.cora.storage.RecordNotFoundException;
@@ -537,6 +538,20 @@ public class RecordEndpoint {
 		JsonValue validationInfoJson = jsonObject.getValue(name);
 		JsonToDataConverterFactory jsonToDataConverterFactory = new JsonToDataConverterFactoryImp();
 		return jsonToDataConverterFactory.createForJsonObject(validationInfoJson);
+	}
+
+	public Response indexRecordList(@HeaderParam("authToken") String headerAuthToken,
+			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
+			@QueryParam("filter") String filterAsJson) {
+		String usedToken = getExistingTokenPreferHeader(headerAuthToken, queryAuthToken);
+		String jsonFilter = createEmptyFilterIfParameterDoesNotExist(filterAsJson);
+
+		DataGroup filter = convertJsonStringToDataGroup(jsonFilter);
+		RecordListIndexer indexBatchJobCreator = SpiderInstanceProvider.getRecordListIndexer();
+		indexBatchJobCreator.indexRecordList(usedToken, type, filter);
+		String json = "";
+		return Response.status(Response.Status.OK).entity(json).build();
+		// return null;
 	}
 
 }

@@ -21,9 +21,10 @@ package se.uu.ub.cora.therest.record;
 
 import se.uu.ub.cora.spider.dependency.SpiderInstanceFactory;
 import se.uu.ub.cora.spider.record.Downloader;
+import se.uu.ub.cora.spider.record.IncomingLinksReader;
 import se.uu.ub.cora.spider.record.RecordCreator;
 import se.uu.ub.cora.spider.record.RecordDeleter;
-import se.uu.ub.cora.spider.record.IncomingLinksReader;
+import se.uu.ub.cora.spider.record.RecordListIndexer;
 import se.uu.ub.cora.spider.record.RecordListReader;
 import se.uu.ub.cora.spider.record.RecordReader;
 import se.uu.ub.cora.spider.record.RecordSearcher;
@@ -43,6 +44,7 @@ public class SpiderInstanceFactorySpy implements SpiderInstanceFactory {
 	public SpiderRecordIncomingLinksReaderSpy spiderRecordIncomingLinksReaderSpy;
 	public SpiderRecordListReaderSpy spiderRecordListReaderSpy;
 	public SpiderRecordSearcherSpy spiderRecordSearcherSpy;
+	public IndexBatchJobCreatorSpy indexBatchJobCreator;
 	public String recordType;
 
 	@Override
@@ -111,6 +113,12 @@ public class SpiderInstanceFactorySpy implements SpiderInstanceFactory {
 	public String getDependencyProviderClassName() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public RecordListIndexer factorRecordListIndexer() {
+		indexBatchJobCreator = new IndexBatchJobCreatorSpy();
+		return indexBatchJobCreator;
 	}
 
 }

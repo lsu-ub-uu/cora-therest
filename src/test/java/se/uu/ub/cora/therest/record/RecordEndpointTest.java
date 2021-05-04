@@ -841,4 +841,75 @@ public class RecordEndpointTest {
 		assertResponseStatusIs(Response.Status.BAD_REQUEST);
 	}
 
+	@Test
+	public void testPreferredTokenForBatchIndex() throws IOException {
+		expectTokenForBatchIndexToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, "authToken2", AUTH_TOKEN);
+		expectTokenForBatchIndexToPrefereblyBeHeaderThanQuery(null, AUTH_TOKEN, AUTH_TOKEN);
+		expectTokenForBatchIndexToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, null, AUTH_TOKEN);
+		expectTokenForBatchIndexToPrefereblyBeHeaderThanQuery(null, null, null);
+	}
+
+	private void expectTokenForBatchIndexToPrefereblyBeHeaderThanQuery(String headerAuthToken,
+			String queryAuthToken, String authTokenExpected) {
+		String jsonFilter = "{\"name\":\"filter\",\"children\":[]}";
+		response = recordEndpoint.indexRecordList(headerAuthToken, queryAuthToken, PLACE,
+				jsonFilter);
+
+		IndexBatchJobCreatorSpy indexBatchJobSpy = spiderInstanceFactorySpy.indexBatchJobCreator;
+
+		assertEquals(indexBatchJobSpy.authToken, authTokenExpected);
+	}
+
+	@Test
+	public void testBatchIndexWithFilter() {
+		response = recordEndpoint.indexRecordList(AUTH_TOKEN, AUTH_TOKEN, PLACE, jsonFilterData);
+		assertEntityExists();
+		assertResponseStatusIs(Response.Status.OK);
+
+		IndexBatchJobCreatorSpy indexBatchJobCreator = spiderInstanceFactorySpy.indexBatchJobCreator;
+
+		DataGroup filterData = indexBatchJobCreator.filter;
+		assertEquals(filterData.getNameInData(), "filter");
+		DataGroup part = filterData.getFirstGroupWithNameInData("part");
+		assertTrue(part.containsChildWithNameInData("key"));
+		assertTrue(part.containsChildWithNameInData("value"));
+	}
+
+	@Test
+	public void testIndexRecordListWithNullAsFilter() {
+		response = recordEndpoint.indexRecordList(AUTH_TOKEN, AUTH_TOKEN, PLACE, null);
+		assertEntityExists();
+		assertResponseStatusIs(Response.Status.OK);
+
+		IndexBatchJobCreatorSpy indexBatchJobCreator = spiderInstanceFactorySpy.indexBatchJobCreator;
+
+		DataGroup filterData = indexBatchJobCreator.filter;
+		assertEquals(filterData.getNameInData(), "filter");
+		assertFalse(filterData.containsChildWithNameInData("part"));
+	}
+
+	// Vad ska den svara?
+	// @Test
+	// public void testReadRecordListNotFound() {
+	// String jsonFilter = "{\"name\":\"filter\",\"children\":[]}";
+	// response = recordEndpoint.readRecordList(AUTH_TOKEN, AUTH_TOKEN, "place_NOT_FOUND",
+	// jsonFilter);
+	// assertResponseStatusIs(Response.Status.NOT_FOUND);
+	// }
+	//
+	// @Test
+	// public void testReadRecordListUnauthorized() {
+	// String jsonFilter = "{\"name\":\"filter\",\"children\":[]}";
+	// response = recordEndpoint.readRecordListUsingAuthTokenByType(DUMMY_NON_AUTHORIZED_TOKEN,
+	// PLACE, jsonFilter);
+	// assertResponseStatusIs(Response.Status.FORBIDDEN);
+	// }
+	//
+	// @Test
+	// public void testReadRecordListNoTokenAndUnauthorized() {
+	// String jsonFilter = "{\"name\":\"filter\",\"children\":[]}";
+	// response = recordEndpoint.readRecordListUsingAuthTokenByType(null, PLACE, jsonFilter);
+	// assertResponseStatusIs(Response.Status.UNAUTHORIZED);
+	// }
+
 }
