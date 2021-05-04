@@ -18,10 +18,10 @@
  */
 package se.uu.ub.cora.therest.data.converter.coradata;
 
-import se.uu.ub.cora.therest.data.RestDataRecord;
+import se.uu.ub.cora.data.DataRecord;
 
-public interface DataRecordToRestConverter {
+public interface DataRecordToRestConverterFactory {
 
-	RestDataRecord toRest();
+	DataRecordToRestConverter factor(DataRecord dataRecord, String url);
 
 }

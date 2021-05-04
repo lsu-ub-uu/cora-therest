@@ -80,7 +80,7 @@ public final class DataListToJsonConverter {
 
 	private void convertRestRecordToJsonBuilder(JsonArrayBuilder recordsJsonBuilder,
 			RestData restData) {
-		DataRecordToJsonConverter converter = DataRecordToJsonConverter
+		RestRecordToJsonConverterImp converter = RestRecordToJsonConverterImp
 				.usingJsonFactoryForRestDataRecord(jsonBuilderFactory, (RestDataRecord) restData);
 		recordsJsonBuilder.addJsonObjectBuilder(converter.toJsonObjectBuilder());
 	}

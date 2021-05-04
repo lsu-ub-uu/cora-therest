@@ -33,6 +33,7 @@ public class SpiderRecordReaderSpy implements RecordReader {
 	public String authToken;
 	public String type;
 	public String id;
+	public DataRecord dataRecord;
 
 	@Override
 	public DataRecord readRecord(String authToken, String type, String id) {
@@ -41,11 +42,11 @@ public class SpiderRecordReaderSpy implements RecordReader {
 		this.id = id;
 		possiblyThrowExceptionForRead(authToken, id);
 
-		DataRecord dataGroup = new DataRecordSpy(
+		dataRecord = new DataRecordSpy(
 				DataCreator.createRecordWithNameInDataAndIdAndTypeAndLinkedRecordId("nameInData",
 						id, type, "linkedRecordId"));
-		dataGroup.addAction(Action.READ);
-		return dataGroup;
+		dataRecord.addAction(Action.READ);
+		return dataRecord;
 	}
 
 	private void possiblyThrowExceptionForRead(String authToken, String id) {

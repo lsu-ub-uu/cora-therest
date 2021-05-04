@@ -16,12 +16,19 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.therest.data.converter.coradata;
+package se.uu.ub.cora.therest.data.converter;
 
+import se.uu.ub.cora.json.builder.JsonBuilderFactory;
+import se.uu.ub.cora.json.builder.org.OrgJsonBuilderFactoryAdapter;
 import se.uu.ub.cora.therest.data.RestDataRecord;
 
-public interface DataRecordToRestConverter {
+public class RestRecordToJsonConverterFactoryImp implements RestRecordToJsonConverterFactory {
 
-	RestDataRecord toRest();
+	@Override
+	public RestRecordToJsonConverterImp factor(RestDataRecord restDataRecord) {
+		JsonBuilderFactory jsonBuilderFactory = new OrgJsonBuilderFactoryAdapter();
+		return RestRecordToJsonConverterImp.usingJsonFactoryForRestDataRecord(jsonBuilderFactory,
+				restDataRecord);
+	}
 
 }

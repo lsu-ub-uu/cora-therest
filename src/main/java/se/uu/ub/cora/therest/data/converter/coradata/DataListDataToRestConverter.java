@@ -67,7 +67,7 @@ public final class DataListDataToRestConverter {
 
 	private void convertDataRecordToRest(RestDataList restDataList, DataRecord data) {
 		DataToRestConverterFactory converterFactory = new DataToRestConverterFactoryImp();
-		RestDataRecord restRecord = DataRecordToRestConverter
+		RestDataRecord restRecord = DataRecordToRestConverterImp
 				.fromDataRecordWithBaseURLAndConverterFactory(data, baseURL,
 						converterFactory)
 				.toRest();

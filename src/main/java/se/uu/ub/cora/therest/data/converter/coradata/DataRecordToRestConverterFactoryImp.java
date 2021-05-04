@@ -18,10 +18,15 @@
  */
 package se.uu.ub.cora.therest.data.converter.coradata;
 
-import se.uu.ub.cora.therest.data.RestDataRecord;
+import se.uu.ub.cora.data.DataRecord;
 
-public interface DataRecordToRestConverter {
+public class DataRecordToRestConverterFactoryImp implements DataRecordToRestConverterFactory {
 
-	RestDataRecord toRest();
+	@Override
+	public DataRecordToRestConverter factor(DataRecord record, String url) {
+		DataToRestConverterFactory converterFactory = new DataToRestConverterFactoryImp();
+		return DataRecordToRestConverterImp.fromDataRecordWithBaseURLAndConverterFactory(record,
+				url, converterFactory);
+	}
 
 }

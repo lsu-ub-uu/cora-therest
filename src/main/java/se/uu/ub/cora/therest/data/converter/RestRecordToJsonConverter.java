@@ -16,12 +16,8 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.therest.data.converter.coradata;
+package se.uu.ub.cora.therest.data.converter;
 
-import se.uu.ub.cora.therest.data.RestDataRecord;
-
-public interface DataRecordToRestConverter {
-
-	RestDataRecord toRest();
+public interface RestRecordToJsonConverter {
 
 }

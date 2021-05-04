@@ -23,6 +23,7 @@ package se.uu.ub.cora.therest.record;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
@@ -43,8 +44,11 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataRecord;
 import se.uu.ub.cora.logger.LoggerProvider;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
+import se.uu.ub.cora.therest.data.converter.RestRecordToJsonConverterFactoryImp;
+import se.uu.ub.cora.therest.data.converter.coradata.DataRecordToRestConverterFactoryImp;
 import se.uu.ub.cora.therest.log.LoggerFactorySpy;
 
 public class RecordEndpointTest {
@@ -85,6 +89,15 @@ public class RecordEndpointTest {
 
 		request = new TestHttpServletRequest();
 		recordEndpoint = new RecordEndpoint(request);
+	}
+
+	@Test
+	public void testInit() {
+		recordEndpoint = new RecordEndpoint(request);
+		assertTrue(recordEndpoint
+				.getDataRecordToRestConverterFactory() instanceof DataRecordToRestConverterFactoryImp);
+		assertTrue(recordEndpoint
+				.getRestRecordToJsonConverterFactory() instanceof RestRecordToJsonConverterFactoryImp);
 	}
 
 	@Test
@@ -229,6 +242,20 @@ public class RecordEndpointTest {
 		response = recordEndpoint.readRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001);
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.OK);
+	}
+
+	@Test
+	public void testReadRecordUsesToRestConverterFactory() {
+		DataRecordToRestConverterFactorySpy converterFactory = new DataRecordToRestConverterFactorySpy();
+		recordEndpoint.setDataRecordToRestConverterFactory(converterFactory);
+		response = recordEndpoint.readRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001);
+
+		DataRecord recordReturnedFromReader = spiderInstanceFactorySpy.spiderRecordReaderSpy.dataRecord;
+		assertEquals(converterFactory.url, "http://cora.epc.ub.uu.se/systemone/rest/record/");
+		assertSame(converterFactory.dataRecord, recordReturnedFromReader);
+
+		// kolla att det som kommer tillbaka från restconvertern är samma som skickas till
+		// jsonConvertern
 	}
 
 	@Test

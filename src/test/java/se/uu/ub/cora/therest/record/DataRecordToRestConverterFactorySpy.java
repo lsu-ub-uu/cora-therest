@@ -16,12 +16,23 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.therest.data.converter.coradata;
+package se.uu.ub.cora.therest.record;
 
-import se.uu.ub.cora.therest.data.RestDataRecord;
+import se.uu.ub.cora.data.DataRecord;
+import se.uu.ub.cora.therest.data.converter.coradata.DataRecordToRestConverter;
+import se.uu.ub.cora.therest.data.converter.coradata.DataRecordToRestConverterFactory;
 
-public interface DataRecordToRestConverter {
+public class DataRecordToRestConverterFactorySpy implements DataRecordToRestConverterFactory {
 
-	RestDataRecord toRest();
+	public DataRecord dataRecord;
+	public String url;
+
+	@Override
+	public DataRecordToRestConverter factor(DataRecord dataRecord, String url) {
+		this.dataRecord = dataRecord;
+		this.url = url;
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

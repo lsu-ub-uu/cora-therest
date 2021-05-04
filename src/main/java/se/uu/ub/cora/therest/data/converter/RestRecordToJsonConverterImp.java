@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2021 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -28,18 +28,18 @@ import se.uu.ub.cora.json.builder.JsonObjectBuilder;
 import se.uu.ub.cora.therest.data.ActionLink;
 import se.uu.ub.cora.therest.data.RestDataRecord;
 
-public final class DataRecordToJsonConverter {
+public final class RestRecordToJsonConverterImp implements RestRecordToJsonConverter {
 
 	private JsonBuilderFactory jsonBuilderFactory;
 	private RestDataRecord restDataRecord;
 	private JsonObjectBuilder recordJsonObjectBuilder;
 
-	public static DataRecordToJsonConverter usingJsonFactoryForRestDataRecord(
+	public static RestRecordToJsonConverterImp usingJsonFactoryForRestDataRecord(
 			JsonBuilderFactory jsonFactory, RestDataRecord restDataRecord) {
-		return new DataRecordToJsonConverter(jsonFactory, restDataRecord);
+		return new RestRecordToJsonConverterImp(jsonFactory, restDataRecord);
 	}
 
-	private DataRecordToJsonConverter(JsonBuilderFactory jsonFactory,
+	private RestRecordToJsonConverterImp(JsonBuilderFactory jsonFactory,
 			RestDataRecord restDataRecord) {
 		this.jsonBuilderFactory = jsonFactory;
 		this.restDataRecord = restDataRecord;
@@ -109,8 +109,7 @@ public final class DataRecordToJsonConverter {
 	}
 
 	private void convertPermissions() {
-		JsonObjectBuilder permissionsJsonObjectBuilder = jsonBuilderFactory
-				.createObjectBuilder();
+		JsonObjectBuilder permissionsJsonObjectBuilder = jsonBuilderFactory.createObjectBuilder();
 		possiblyAddReadPermissions(permissionsJsonObjectBuilder);
 		possiblyAddWritePermissions(permissionsJsonObjectBuilder);
 		recordJsonObjectBuilder.addKeyJsonObjectBuilder("permissions",
@@ -161,6 +160,16 @@ public final class DataRecordToJsonConverter {
 		JsonObjectBuilder rootWrappingJsonObjectBuilder = jsonBuilderFactory.createObjectBuilder();
 		rootWrappingJsonObjectBuilder.addKeyJsonObjectBuilder("record", recordJsonObjectBuilder);
 		return rootWrappingJsonObjectBuilder;
+	}
+
+	JsonBuilderFactory getJsonBuilderFactory() {
+		// needed for test
+		return jsonBuilderFactory;
+	}
+
+	RestDataRecord getRestDataRecord() {
+		// needed for test
+		return restDataRecord;
 	}
 
 }

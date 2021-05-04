@@ -69,13 +69,17 @@ import se.uu.ub.cora.therest.data.RestDataList;
 import se.uu.ub.cora.therest.data.RestDataRecord;
 import se.uu.ub.cora.therest.data.converter.ConverterException;
 import se.uu.ub.cora.therest.data.converter.DataListToJsonConverter;
-import se.uu.ub.cora.therest.data.converter.DataRecordToJsonConverter;
+import se.uu.ub.cora.therest.data.converter.RestRecordToJsonConverterImp;
 import se.uu.ub.cora.therest.data.converter.JsonToDataConverter;
 import se.uu.ub.cora.therest.data.converter.JsonToDataConverterFactory;
 import se.uu.ub.cora.therest.data.converter.JsonToDataConverterFactoryImp;
+import se.uu.ub.cora.therest.data.converter.RestRecordToJsonConverterFactory;
+import se.uu.ub.cora.therest.data.converter.RestRecordToJsonConverterFactoryImp;
 import se.uu.ub.cora.therest.data.converter.coradata.DataGroupRestToDataConverter;
 import se.uu.ub.cora.therest.data.converter.coradata.DataListDataToRestConverter;
-import se.uu.ub.cora.therest.data.converter.coradata.DataRecordToRestConverter;
+import se.uu.ub.cora.therest.data.converter.coradata.DataRecordToRestConverterFactory;
+import se.uu.ub.cora.therest.data.converter.coradata.DataRecordToRestConverterFactoryImp;
+import se.uu.ub.cora.therest.data.converter.coradata.DataRecordToRestConverterImp;
 import se.uu.ub.cora.therest.data.converter.coradata.DataToRestConverterFactory;
 import se.uu.ub.cora.therest.data.converter.coradata.DataToRestConverterFactoryImp;
 
@@ -85,6 +89,9 @@ public class RecordEndpoint {
 	private String url;
 	HttpServletRequest request;
 	private Logger log = LoggerProvider.getLoggerForClass(RecordEndpoint.class);
+
+	private DataRecordToRestConverterFactory recordToRestConverterFactory = new DataRecordToRestConverterFactoryImp();
+	private RestRecordToJsonConverterFactory restRecordToJsonConverterFactory = new RestRecordToJsonConverterFactoryImp();
 
 	public RecordEndpoint(@Context HttpServletRequest req) {
 		request = req;
@@ -174,20 +181,23 @@ public class RecordEndpoint {
 
 	private String convertDataRecordToJsonString(DataRecord record) {
 		RestDataRecord restDataRecord = convertDataRecordToRestDataRecord(record);
-		DataRecordToJsonConverter dataToJsonConverter = getRestToJsonConverter(restDataRecord);
+		RestRecordToJsonConverterImp dataToJsonConverter = getRestToJsonConverter(restDataRecord);
 		return dataToJsonConverter.toJson();
 	}
 
 	private RestDataRecord convertDataRecordToRestDataRecord(DataRecord record) {
+		// ska ersättas med dataRecordToRestConverterFactory.factor(record, url);
+		recordToRestConverterFactory.factor(record, url);
 		DataToRestConverterFactory converterFactory = new DataToRestConverterFactoryImp();
-		DataRecordToRestConverter converter = DataRecordToRestConverter
+		DataRecordToRestConverterImp converter = DataRecordToRestConverterImp
 				.fromDataRecordWithBaseURLAndConverterFactory(record, url, converterFactory);
 		return converter.toRest();
 	}
 
-	private DataRecordToJsonConverter getRestToJsonConverter(RestDataRecord restDataRecord) {
+	private RestRecordToJsonConverterImp getRestToJsonConverter(RestDataRecord restDataRecord) {
+		// ska ersättas med restRecordToJsonConverterFactory.factor(restDataRecord)
 		JsonBuilderFactory jsonBuilderFactory = new OrgJsonBuilderFactoryAdapter();
-		return DataRecordToJsonConverter.usingJsonFactoryForRestDataRecord(jsonBuilderFactory,
+		return RestRecordToJsonConverterImp.usingJsonFactoryForRestDataRecord(jsonBuilderFactory,
 				restDataRecord);
 	}
 
@@ -540,6 +550,7 @@ public class RecordEndpoint {
 		return jsonToDataConverterFactory.createForJsonObject(validationInfoJson);
 	}
 
+	// TODO:ska ha annotations
 	public Response indexRecordList(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			@QueryParam("filter") String filterAsJson) {
@@ -569,6 +580,18 @@ public class RecordEndpoint {
 		// Vad vill vi skicka tillbaka? Här är det väl någon form av referens till IndexBatchJob?
 		// String json = "some json";
 		return Response.status(Response.Status.OK).entity(json).build();
+	}
+
+	DataRecordToRestConverterFactory getDataRecordToRestConverterFactory() {
+		return recordToRestConverterFactory;
+	}
+
+	void setDataRecordToRestConverterFactory(DataRecordToRestConverterFactory converterFactory) {
+		this.recordToRestConverterFactory = converterFactory;
+	}
+
+	RestRecordToJsonConverterFactory getRestRecordToJsonConverterFactory() {
+		return restRecordToJsonConverterFactory;
 	}
 
 }
