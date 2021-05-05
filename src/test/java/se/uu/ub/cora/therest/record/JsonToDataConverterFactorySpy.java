@@ -18,22 +18,24 @@
  */
 package se.uu.ub.cora.therest.record;
 
-import se.uu.ub.cora.data.DataRecord;
-import se.uu.ub.cora.therest.data.converter.coradata.DataRecordToRestConverter;
-import se.uu.ub.cora.therest.data.converter.coradata.DataRecordToRestConverterFactory;
+import java.util.ArrayList;
+import java.util.List;
 
-public class DataRecordToRestConverterFactorySpy implements DataRecordToRestConverterFactory {
+import se.uu.ub.cora.json.parser.JsonValue;
+import se.uu.ub.cora.therest.data.converter.JsonToDataConverter;
+import se.uu.ub.cora.therest.data.converter.JsonToDataConverterFactory;
 
-	public DataRecord dataRecord;
-	public String url;
-	public DataRecordToRestConverterSpy toRestConverter;
+public class JsonToDataConverterFactorySpy implements JsonToDataConverterFactory {
+
+	public List<JsonValue> jsonValues = new ArrayList<>();
+	public List<JsonToDataConverterSpy> jsonToDataConverterSpies = new ArrayList<>();
 
 	@Override
-	public DataRecordToRestConverter factor(DataRecord dataRecord, String url) {
-		this.dataRecord = dataRecord;
-		this.url = url;
-		toRestConverter = new DataRecordToRestConverterSpy();
-		return toRestConverter;
+	public JsonToDataConverter createForJsonObject(JsonValue jsonValue) {
+		jsonValues.add(jsonValue);
+		JsonToDataConverterSpy jsonToDataConverterSpy = new JsonToDataConverterSpy();
+		jsonToDataConverterSpies.add(jsonToDataConverterSpy);
+		return jsonToDataConverterSpy;
 	}
 
 }

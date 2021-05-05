@@ -46,6 +46,7 @@ public final class RestRecordToJsonConverterImp implements RestRecordToJsonConve
 		recordJsonObjectBuilder = jsonFactory.createObjectBuilder();
 	}
 
+	@Override
 	public String toJson() {
 		return toJsonObjectBuilder().toJsonFormattedString();
 	}

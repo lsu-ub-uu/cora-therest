@@ -18,22 +18,24 @@
  */
 package se.uu.ub.cora.therest.record;
 
-import se.uu.ub.cora.data.DataRecord;
-import se.uu.ub.cora.therest.data.converter.coradata.DataRecordToRestConverter;
-import se.uu.ub.cora.therest.data.converter.coradata.DataRecordToRestConverterFactory;
+import java.util.ArrayList;
+import java.util.List;
 
-public class DataRecordToRestConverterFactorySpy implements DataRecordToRestConverterFactory {
+import se.uu.ub.cora.therest.data.RestDataElement;
+import se.uu.ub.cora.therest.data.converter.RestToDataConverter;
+import se.uu.ub.cora.therest.data.converter.RestToDataConverterFactory;
 
-	public DataRecord dataRecord;
-	public String url;
-	public DataRecordToRestConverterSpy toRestConverter;
+public class RestToDataConverterFactorySpy implements RestToDataConverterFactory {
+
+	public List<RestDataElement> dataElements = new ArrayList<>();
+	public List<RestToDataConverterSpy> factoredConverters = new ArrayList<>();
 
 	@Override
-	public DataRecordToRestConverter factor(DataRecord dataRecord, String url) {
-		this.dataRecord = dataRecord;
-		this.url = url;
-		toRestConverter = new DataRecordToRestConverterSpy();
-		return toRestConverter;
+	public RestToDataConverter factor(RestDataElement dataElement) {
+		dataElements.add(dataElement);
+		RestToDataConverterSpy toDataConverter = new RestToDataConverterSpy();
+		factoredConverters.add(toDataConverter);
+		return toDataConverter;
 	}
 
 }

@@ -22,6 +22,6 @@ import se.uu.ub.cora.therest.data.RestDataRecord;
 
 public interface RestRecordToJsonConverterFactory {
 
-	RestRecordToJsonConverterImp factor(RestDataRecord restDataRecord);
+	RestRecordToJsonConverter factor(RestDataRecord restDataRecord);
 
 }

@@ -20,4 +20,6 @@ package se.uu.ub.cora.therest.data.converter;
 
 public interface RestRecordToJsonConverter {
 
+	String toJson();
+
 }

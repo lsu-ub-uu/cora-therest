@@ -18,22 +18,17 @@
  */
 package se.uu.ub.cora.therest.record;
 
-import se.uu.ub.cora.data.DataRecord;
+import se.uu.ub.cora.therest.data.RestDataRecord;
 import se.uu.ub.cora.therest.data.converter.coradata.DataRecordToRestConverter;
-import se.uu.ub.cora.therest.data.converter.coradata.DataRecordToRestConverterFactory;
 
-public class DataRecordToRestConverterFactorySpy implements DataRecordToRestConverterFactory {
+public class DataRecordToRestConverterSpy implements DataRecordToRestConverter {
 
-	public DataRecord dataRecord;
-	public String url;
-	public DataRecordToRestConverterSpy toRestConverter;
+	public RestDataRecord returnedRestDataRecord;
 
 	@Override
-	public DataRecordToRestConverter factor(DataRecord dataRecord, String url) {
-		this.dataRecord = dataRecord;
-		this.url = url;
-		toRestConverter = new DataRecordToRestConverterSpy();
-		return toRestConverter;
+	public RestDataRecord toRest() {
+		returnedRestDataRecord = RestDataRecord.withRestDataGroup(null);
+		return returnedRestDataRecord;
 	}
 
 }

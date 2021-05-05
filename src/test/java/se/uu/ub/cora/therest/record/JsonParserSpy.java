@@ -18,22 +18,33 @@
  */
 package se.uu.ub.cora.therest.record;
 
-import se.uu.ub.cora.data.DataRecord;
-import se.uu.ub.cora.therest.data.converter.coradata.DataRecordToRestConverter;
-import se.uu.ub.cora.therest.data.converter.coradata.DataRecordToRestConverterFactory;
+import se.uu.ub.cora.json.parser.JsonArray;
+import se.uu.ub.cora.json.parser.JsonObject;
+import se.uu.ub.cora.json.parser.JsonParser;
+import se.uu.ub.cora.json.parser.JsonValue;
 
-public class DataRecordToRestConverterFactorySpy implements DataRecordToRestConverterFactory {
+public class JsonParserSpy implements JsonParser {
 
-	public DataRecord dataRecord;
-	public String url;
-	public DataRecordToRestConverterSpy toRestConverter;
+	public String jsonString;
+	public JsonValueSpy returnedJsonValue;
 
 	@Override
-	public DataRecordToRestConverter factor(DataRecord dataRecord, String url) {
-		this.dataRecord = dataRecord;
-		this.url = url;
-		toRestConverter = new DataRecordToRestConverterSpy();
-		return toRestConverter;
+	public JsonValue parseString(String jsonString) {
+		this.jsonString = jsonString;
+		returnedJsonValue = new JsonValueSpy();
+		return returnedJsonValue;
+	}
+
+	@Override
+	public JsonObject parseStringAsObject(String jsonString) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public JsonArray parseStringAsArray(String jsonString) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

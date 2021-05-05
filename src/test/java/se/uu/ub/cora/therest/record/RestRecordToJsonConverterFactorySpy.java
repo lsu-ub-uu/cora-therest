@@ -18,22 +18,20 @@
  */
 package se.uu.ub.cora.therest.record;
 
-import se.uu.ub.cora.data.DataRecord;
-import se.uu.ub.cora.therest.data.converter.coradata.DataRecordToRestConverter;
-import se.uu.ub.cora.therest.data.converter.coradata.DataRecordToRestConverterFactory;
+import se.uu.ub.cora.therest.data.RestDataRecord;
+import se.uu.ub.cora.therest.data.converter.RestRecordToJsonConverter;
+import se.uu.ub.cora.therest.data.converter.RestRecordToJsonConverterFactory;
 
-public class DataRecordToRestConverterFactorySpy implements DataRecordToRestConverterFactory {
+public class RestRecordToJsonConverterFactorySpy implements RestRecordToJsonConverterFactory {
 
-	public DataRecord dataRecord;
-	public String url;
-	public DataRecordToRestConverterSpy toRestConverter;
+	public RestRecordToJsonConverterSpy restRecordToJsonConverterSpy;
+	public RestDataRecord restDataRecord;
 
 	@Override
-	public DataRecordToRestConverter factor(DataRecord dataRecord, String url) {
-		this.dataRecord = dataRecord;
-		this.url = url;
-		toRestConverter = new DataRecordToRestConverterSpy();
-		return toRestConverter;
+	public RestRecordToJsonConverter factor(RestDataRecord restDataRecord) {
+		this.restDataRecord = restDataRecord;
+		restRecordToJsonConverterSpy = new RestRecordToJsonConverterSpy();
+		return restRecordToJsonConverterSpy;
 	}
 
 }

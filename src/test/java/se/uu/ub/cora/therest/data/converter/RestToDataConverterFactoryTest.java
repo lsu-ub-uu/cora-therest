@@ -16,24 +16,25 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.therest.record;
+package se.uu.ub.cora.therest.data.converter;
 
-import se.uu.ub.cora.data.DataRecord;
-import se.uu.ub.cora.therest.data.converter.coradata.DataRecordToRestConverter;
-import se.uu.ub.cora.therest.data.converter.coradata.DataRecordToRestConverterFactory;
+import static org.testng.Assert.assertSame;
 
-public class DataRecordToRestConverterFactorySpy implements DataRecordToRestConverterFactory {
+import org.testng.annotations.Test;
 
-	public DataRecord dataRecord;
-	public String url;
-	public DataRecordToRestConverterSpy toRestConverter;
+import se.uu.ub.cora.therest.data.RestDataElement;
+import se.uu.ub.cora.therest.data.RestDataGroup;
+import se.uu.ub.cora.therest.data.converter.coradata.DataGroupRestToDataConverter;
 
-	@Override
-	public DataRecordToRestConverter factor(DataRecord dataRecord, String url) {
-		this.dataRecord = dataRecord;
-		this.url = url;
-		toRestConverter = new DataRecordToRestConverterSpy();
-		return toRestConverter;
+public class RestToDataConverterFactoryTest {
+
+	@Test
+	public void testFactor() {
+		RestToDataConverterFactory converterFactory = new RestToDataConverterFactoryImp();
+		RestDataElement dataGroup = RestDataGroup.withNameInData("someDataGroup");
+		DataGroupRestToDataConverter converter = (DataGroupRestToDataConverter) converterFactory
+				.factor(dataGroup);
+		assertSame(converter.getRestDataGroup(), dataGroup);
+
 	}
-
 }
