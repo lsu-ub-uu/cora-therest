@@ -24,12 +24,12 @@ import se.uu.ub.cora.therest.data.converter.JsonToDataConverter;
 
 public class JsonToDataConverterSpy implements JsonToDataConverter {
 
-	public RestDataGroup dataGroupToReturn;
+	public RestDataGroup returnedRestDataGroup;
 
 	@Override
 	public RestDataElement toInstance() {
-		dataGroupToReturn = RestDataGroup.withNameInData("someGroupFromSpy");
-		return dataGroupToReturn;
+		returnedRestDataGroup = RestDataGroup.withNameInData("someGroupFromSpy");
+		return returnedRestDataGroup;
 	}
 
 }

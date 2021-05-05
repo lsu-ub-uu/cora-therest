@@ -22,6 +22,7 @@ package se.uu.ub.cora.therest.record;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataRecord;
 import se.uu.ub.cora.spider.authorization.AuthorizationException;
+import se.uu.ub.cora.spider.record.DataException;
 import se.uu.ub.cora.spider.record.RecordUpdater;
 import se.uu.ub.cora.storage.RecordNotFoundException;
 import se.uu.ub.cora.therest.data.DataRecordSpy;
@@ -33,6 +34,7 @@ public class SpiderRecordUpdaterSpy implements RecordUpdater {
 	public String type;
 	public String id;
 	public DataGroup record;
+	public boolean throwDataException = false;
 
 	@Override
 	public DataRecord updateRecord(String authToken, String type, String id, DataGroup record) {
@@ -47,6 +49,9 @@ public class SpiderRecordUpdaterSpy implements RecordUpdater {
 	}
 
 	private void possiblyThrowException(String authToken, String type, String id) {
+		if (throwDataException) {
+			throw new DataException("some data exception from update");
+		}
 		if ("dummyNonAuthorizedToken".equals(authToken)) {
 			throw new AuthorizationException("not authorized");
 		}

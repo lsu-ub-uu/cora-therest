@@ -46,6 +46,8 @@ public class SpiderInstanceFactorySpy implements SpiderInstanceFactory {
 	public SpiderRecordSearcherSpy spiderRecordSearcherSpy;
 	public IndexBatchJobCreatorSpy indexBatchJobCreator;
 	public String recordType;
+	public boolean throwRecordNotFoundException = false;
+	public boolean throwDataException = false;
 
 	@Override
 	public RecordReader factorRecordReader() {
@@ -70,6 +72,7 @@ public class SpiderInstanceFactorySpy implements SpiderInstanceFactory {
 	public RecordUpdater factorRecordUpdater(String recordType) {
 		this.recordType = recordType;
 		spiderRecordUpdaterSpy = new SpiderRecordUpdaterSpy();
+		spiderRecordUpdaterSpy.throwDataException = throwDataException;
 		return spiderRecordUpdaterSpy;
 	}
 
@@ -106,6 +109,7 @@ public class SpiderInstanceFactorySpy implements SpiderInstanceFactory {
 	@Override
 	public RecordValidator factorRecordValidator() {
 		spiderRecordValidatorSpy = new SpiderRecordValidatorSpy();
+		spiderRecordValidatorSpy.throwRecordNotFoundException = throwRecordNotFoundException;
 		return spiderRecordValidatorSpy;
 	}
 

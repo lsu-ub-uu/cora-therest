@@ -29,11 +29,13 @@ public class RestToDataConverterFactorySpy implements RestToDataConverterFactory
 
 	public List<RestDataElement> dataElements = new ArrayList<>();
 	public List<RestToDataConverterSpy> factoredConverters = new ArrayList<>();
+	public boolean throwError = false;
 
 	@Override
 	public RestToDataConverter factor(RestDataElement dataElement) {
 		dataElements.add(dataElement);
 		RestToDataConverterSpy toDataConverter = new RestToDataConverterSpy();
+		toDataConverter.throwError = throwError;
 		factoredConverters.add(toDataConverter);
 		return toDataConverter;
 	}

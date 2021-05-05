@@ -20,14 +20,19 @@ package se.uu.ub.cora.therest.record;
 
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.therest.data.DataGroupSpy;
+import se.uu.ub.cora.therest.data.converter.ConverterException;
 import se.uu.ub.cora.therest.data.converter.RestToDataConverter;
 
 public class RestToDataConverterSpy implements RestToDataConverter {
 
 	public DataGroupSpy returnedDataGroup;
+	public boolean throwError = false;
 
 	@Override
 	public DataGroup convert() {
+		if (throwError) {
+			throw new ConverterException("Error from converter spy");
+		}
 		returnedDataGroup = new DataGroupSpy("someDataGroupRestToData");
 		return returnedDataGroup;
 	}

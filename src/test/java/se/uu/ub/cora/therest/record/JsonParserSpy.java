@@ -20,6 +20,7 @@ package se.uu.ub.cora.therest.record;
 
 import se.uu.ub.cora.json.parser.JsonArray;
 import se.uu.ub.cora.json.parser.JsonObject;
+import se.uu.ub.cora.json.parser.JsonParseException;
 import se.uu.ub.cora.json.parser.JsonParser;
 import se.uu.ub.cora.json.parser.JsonValue;
 
@@ -27,10 +28,14 @@ public class JsonParserSpy implements JsonParser {
 
 	public String jsonString;
 	public JsonValueSpy returnedJsonValue;
+	public boolean throwError = false;
 
 	@Override
 	public JsonValue parseString(String jsonString) {
 		this.jsonString = jsonString;
+		if (throwError) {
+			throw new JsonParseException("some parse exception from spy");
+		}
 		returnedJsonValue = new JsonValueSpy();
 		return returnedJsonValue;
 	}

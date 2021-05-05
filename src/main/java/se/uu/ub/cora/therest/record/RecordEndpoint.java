@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2016, 2018 Uppsala University Library
+ * Copyright 2015, 2016, 2018, 2021 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -291,7 +291,6 @@ public class RecordEndpoint {
 				.fromDataListWithBaseURL(readRecordList, url);
 		RestDataList restRecordList = listSpiderToRestConverter.toRest();
 
-		// TODO:
 		JsonBuilderFactory jsonBuilderFactory = new OrgJsonBuilderFactoryAdapter();
 		DataListToJsonConverter recordListToJsonConverter = DataListToJsonConverter
 				.usingJsonFactoryForRestDataList(jsonBuilderFactory, restRecordList);
@@ -600,8 +599,6 @@ public class RecordEndpoint {
 	}
 
 	JsonParser getJsonParser() {
-		// TODO: borde den vara en factory eller räcker det med en parser?
-		// har inga klassvariabler
 		return jsonParser;
 	}
 

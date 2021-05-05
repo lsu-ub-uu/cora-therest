@@ -16,6 +16,7 @@ public class SpiderRecordValidatorSpy implements RecordValidator {
 	public DataGroup dataGroup;
 	public DataGroup recordToValidate;
 	public DataGroup validationRecord;
+	public boolean throwRecordNotFoundException = false;
 
 	@Override
 	public DataRecord validateRecord(String authToken, String recordType,
@@ -29,7 +30,8 @@ public class SpiderRecordValidatorSpy implements RecordValidator {
 		if ("dummyNonAuthorizedToken".equals(authToken)) {
 			throw new AuthorizationException("not authorized");
 		}
-		if ("recordType_NON_EXISTING".equals(recordToValidate.getNameInData())) {
+		// if ("recordType_NON_EXISTING".equals(recordToValidate.getNameInData())) {
+		if (throwRecordNotFoundException) {
 			throw new RecordNotFoundException("no record exist with type " + recordType);
 		}
 		DataGroup validationResult = createValidationResult(recordType);
