@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2021 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -19,6 +19,7 @@
 
 package se.uu.ub.cora.therest.data.converter;
 
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
 import org.testng.annotations.BeforeMethod;
@@ -30,16 +31,18 @@ import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataAttribute;
 import se.uu.ub.cora.therest.data.RestDataElement;
 import se.uu.ub.cora.therest.data.RestDataGroup;
+import se.uu.ub.cora.therest.data.RestDataList;
+import se.uu.ub.cora.therest.data.RestDataRecord;
 import se.uu.ub.cora.therest.data.RestDataRecordLink;
 import se.uu.ub.cora.therest.data.RestDataResourceLink;
 
 public class DataToJsonConverterFactoryTest {
-	private DataToJsonConverterFactory dataToJsonConverterFactory;
+	private RestDataToJsonConverterFactory dataToJsonConverterFactory;
 	private JsonBuilderFactory factory;
 
 	@BeforeMethod
 	public void beforeMethod() {
-		dataToJsonConverterFactory = new DataToJsonConverterFactoryImp();
+		dataToJsonConverterFactory = new RestDataToJsonConverterFactoryImp();
 		factory = new OrgJsonBuilderFactoryAdapter();
 	}
 
@@ -106,5 +109,23 @@ public class DataToJsonConverterFactoryTest {
 
 		assertTrue(dataToJsonConverter instanceof DataResourceLinkToJsonConverter);
 
+	}
+
+	@Test
+	public void testFactorDataListToJsonConverter() {
+		RestDataList restDataList = RestDataList.withContainDataOfType("someRecordType");
+		DataListToJsonConverter converter = (DataListToJsonConverter) dataToJsonConverterFactory
+				.createForRestData(restDataList);
+		assertEquals(converter.getRestDataList(), restDataList);
+		assertTrue(converter.getJsonBuilderFactory() instanceof OrgJsonBuilderFactoryAdapter);
+	}
+
+	@Test
+	public void testFactorDataRecordToJsonConverter() {
+		RestDataRecord restDataRecord = RestDataRecord.withRestDataGroup(null);
+		RestRecordToJsonConverter converter = (RestRecordToJsonConverter) dataToJsonConverterFactory
+				.createForRestData(restDataRecord);
+		assertEquals(converter.getRestDataRecord(), restDataRecord);
+		assertTrue(converter.getJsonBuilderFactory() instanceof OrgJsonBuilderFactoryAdapter);
 	}
 }

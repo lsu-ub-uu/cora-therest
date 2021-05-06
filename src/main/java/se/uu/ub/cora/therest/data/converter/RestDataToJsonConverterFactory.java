@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Uppsala University Library
+ * Copyright 2015 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -16,19 +16,18 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package se.uu.ub.cora.therest.data.converter;
 
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
-import se.uu.ub.cora.json.builder.org.OrgJsonBuilderFactoryAdapter;
-import se.uu.ub.cora.therest.data.RestDataRecord;
+import se.uu.ub.cora.therest.data.RestData;
+import se.uu.ub.cora.therest.data.RestDataElement;
 
-public class RestRecordToJsonConverterFactoryImp implements RestRecordToJsonConverterFactory {
+public interface RestDataToJsonConverterFactory {
 
-	@Override
-	public RestRecordToJsonConverterImp factor(RestDataRecord restDataRecord) {
-		JsonBuilderFactory jsonBuilderFactory = new OrgJsonBuilderFactoryAdapter();
-		return RestRecordToJsonConverterImp.usingJsonFactoryForRestDataRecord(jsonBuilderFactory,
-				restDataRecord);
-	}
+	RestDataToJsonConverter createForRestDataElement(JsonBuilderFactory factory,
+			RestDataElement restDataElement);
+
+	RestDataToJsonConverter createForRestData(RestData restData);
 
 }

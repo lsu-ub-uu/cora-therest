@@ -18,20 +18,28 @@
  */
 package se.uu.ub.cora.therest.record;
 
-import se.uu.ub.cora.therest.data.RestDataRecord;
-import se.uu.ub.cora.therest.data.converter.RestRecordToJsonConverter;
-import se.uu.ub.cora.therest.data.converter.RestRecordToJsonConverterFactory;
+import se.uu.ub.cora.json.builder.JsonBuilderFactory;
+import se.uu.ub.cora.therest.data.RestData;
+import se.uu.ub.cora.therest.data.RestDataElement;
+import se.uu.ub.cora.therest.data.converter.RestDataToJsonConverterFactory;
+import se.uu.ub.cora.therest.data.converter.RestDataToJsonConverter;
 
-public class RestRecordToJsonConverterFactorySpy implements RestRecordToJsonConverterFactory {
-
+public class RestRecordToJsonConverterFactorySpy implements RestDataToJsonConverterFactory {
 	public RestRecordToJsonConverterSpy restRecordToJsonConverterSpy;
-	public RestDataRecord restDataRecord;
+	public RestData restData;
 
 	@Override
-	public RestRecordToJsonConverter factor(RestDataRecord restDataRecord) {
-		this.restDataRecord = restDataRecord;
+	public RestDataToJsonConverter createForRestData(RestData restData) {
+		this.restData = restData;
 		restRecordToJsonConverterSpy = new RestRecordToJsonConverterSpy();
 		return restRecordToJsonConverterSpy;
+	}
+
+	@Override
+	public RestDataToJsonConverter createForRestDataElement(JsonBuilderFactory factory,
+			RestDataElement restDataElement) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

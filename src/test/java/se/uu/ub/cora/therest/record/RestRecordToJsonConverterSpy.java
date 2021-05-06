@@ -18,9 +18,10 @@
  */
 package se.uu.ub.cora.therest.record;
 
-import se.uu.ub.cora.therest.data.converter.RestRecordToJsonConverter;
+import se.uu.ub.cora.json.builder.JsonObjectBuilder;
+import se.uu.ub.cora.therest.data.converter.RestDataToJsonConverter;
 
-public class RestRecordToJsonConverterSpy implements RestRecordToJsonConverter {
+public class RestRecordToJsonConverterSpy extends RestDataToJsonConverter {
 
 	public String convertedJson;
 
@@ -28,6 +29,12 @@ public class RestRecordToJsonConverterSpy implements RestRecordToJsonConverter {
 	public String toJson() {
 		convertedJson = "some converted json";
 		return convertedJson;
+	}
+
+	@Override
+	public JsonObjectBuilder toJsonObjectBuilder() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

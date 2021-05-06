@@ -63,17 +63,18 @@ import se.uu.ub.cora.spider.record.RecordListIndexer;
 import se.uu.ub.cora.spider.record.RecordValidator;
 import se.uu.ub.cora.storage.RecordConflictException;
 import se.uu.ub.cora.storage.RecordNotFoundException;
+import se.uu.ub.cora.therest.data.RestData;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.RestDataList;
 import se.uu.ub.cora.therest.data.RestDataRecord;
 import se.uu.ub.cora.therest.data.converter.ConverterException;
 import se.uu.ub.cora.therest.data.converter.DataListToJsonConverter;
+import se.uu.ub.cora.therest.data.converter.RestDataToJsonConverterFactory;
+import se.uu.ub.cora.therest.data.converter.RestDataToJsonConverterFactoryImp;
 import se.uu.ub.cora.therest.data.converter.JsonToDataConverter;
 import se.uu.ub.cora.therest.data.converter.JsonToDataConverterFactory;
 import se.uu.ub.cora.therest.data.converter.JsonToDataConverterFactoryImp;
-import se.uu.ub.cora.therest.data.converter.RestRecordToJsonConverter;
-import se.uu.ub.cora.therest.data.converter.RestRecordToJsonConverterFactory;
-import se.uu.ub.cora.therest.data.converter.RestRecordToJsonConverterFactoryImp;
+import se.uu.ub.cora.therest.data.converter.RestDataToJsonConverter;
 import se.uu.ub.cora.therest.data.converter.RestToDataConverter;
 import se.uu.ub.cora.therest.data.converter.RestToDataConverterFactory;
 import se.uu.ub.cora.therest.data.converter.RestToDataConverterFactoryImp;
@@ -90,7 +91,7 @@ public class RecordEndpoint {
 	private Logger log = LoggerProvider.getLoggerForClass(RecordEndpoint.class);
 
 	private DataToRestConverterFactory dataToRestConverterFactory = new DataToRestConverterFactoryImp();
-	private RestRecordToJsonConverterFactory restRecordToJsonConverterFactory = new RestRecordToJsonConverterFactoryImp();
+	private RestDataToJsonConverterFactory restDataToJsonConverterFactory = new RestDataToJsonConverterFactoryImp();
 	private JsonToDataConverterFactory jsonToDataConverterFactory = new JsonToDataConverterFactoryImp();
 	private JsonParser jsonParser = new OrgJsonParser();
 	private RestToDataConverterFactory restToDataConverterFactory = new RestToDataConverterFactoryImp();
@@ -181,7 +182,7 @@ public class RecordEndpoint {
 
 	private String convertDataRecordToJsonString(DataRecord record) {
 		RestDataRecord restDataRecord = convertDataRecordToRestDataRecord(record);
-		RestRecordToJsonConverter dataToJsonConverter = getRestToJsonConverter(restDataRecord);
+		RestDataToJsonConverter dataToJsonConverter = getRestToJsonConverter(restDataRecord);
 		return dataToJsonConverter.toJson();
 	}
 
@@ -192,8 +193,8 @@ public class RecordEndpoint {
 
 	}
 
-	private RestRecordToJsonConverter getRestToJsonConverter(RestDataRecord restDataRecord) {
-		return restRecordToJsonConverterFactory.factor(restDataRecord);
+	private RestDataToJsonConverter getRestToJsonConverter(RestDataRecord restDataRecord) {
+		return restDataToJsonConverterFactory.createForRestData(restDataRecord);
 	}
 
 	private Response handleError(String authToken, Exception error) {
@@ -289,6 +290,10 @@ public class RecordEndpoint {
 	private String convertRecordListToJsonString(DataList readRecordList) {
 		DataToRestConverter toRestConverter = dataToRestConverterFactory
 				.factorForDataList(readRecordList, url);
+
+		RestData restDataList = toRestConverter.toRest();
+
+		// toJsonConverterFactory.
 
 		DataToRestConverter listSpiderToRestConverter = DataListDataToRestConverter
 				.fromDataListWithBaseURL(readRecordList, url);
@@ -587,13 +592,13 @@ public class RecordEndpoint {
 		this.dataToRestConverterFactory = converterFactory;
 	}
 
-	RestRecordToJsonConverterFactory getRestRecordToJsonConverterFactory() {
-		return restRecordToJsonConverterFactory;
+	RestDataToJsonConverterFactory getRestDataToJsonConverterFactory() {
+		return restDataToJsonConverterFactory;
 	}
 
 	void setRestRecordToJsonConverterFactory(
-			RestRecordToJsonConverterFactory restRecordToJsonConverterFactory) {
-		this.restRecordToJsonConverterFactory = restRecordToJsonConverterFactory;
+			RestDataToJsonConverterFactory restRecordToJsonConverterFactory) {
+		this.restDataToJsonConverterFactory = restRecordToJsonConverterFactory;
 
 	}
 

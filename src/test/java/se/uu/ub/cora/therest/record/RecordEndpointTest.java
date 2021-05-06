@@ -52,8 +52,8 @@ import se.uu.ub.cora.therest.data.DataGroupSpy;
 import se.uu.ub.cora.therest.data.DataListSpy;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.RestDataList;
+import se.uu.ub.cora.therest.data.converter.RestDataToJsonConverterFactoryImp;
 import se.uu.ub.cora.therest.data.converter.JsonToDataConverterFactoryImp;
-import se.uu.ub.cora.therest.data.converter.RestRecordToJsonConverterFactoryImp;
 import se.uu.ub.cora.therest.data.converter.RestToDataConverterFactoryImp;
 import se.uu.ub.cora.therest.data.converter.coradata.DataToRestConverterFactoryImp;
 import se.uu.ub.cora.therest.log.LoggerFactorySpy;
@@ -117,7 +117,7 @@ public class RecordEndpointTest {
 		assertTrue(recordEndpoint
 				.getDataToRestConverterFactory() instanceof DataToRestConverterFactoryImp);
 		assertTrue(recordEndpoint
-				.getRestRecordToJsonConverterFactory() instanceof RestRecordToJsonConverterFactoryImp);
+				.getRestDataToJsonConverterFactory() instanceof RestDataToJsonConverterFactoryImp);
 		assertTrue(recordEndpoint
 				.getJsonToDataConverterFactory() instanceof JsonToDataConverterFactoryImp);
 		assertTrue(recordEndpoint.getJsonParser() instanceof OrgJsonParser);
@@ -202,6 +202,7 @@ public class RecordEndpointTest {
 
 		// kolla att denna skickas till DataListToJsonConverter
 		RestDataList returnedRestDataList = toRestConverterFactory.toRestConverter.returnedRestDataList;
+		// assertSame(toRestConverterFactory.)
 
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.OK);
@@ -302,9 +303,8 @@ public class RecordEndpointTest {
 
 		DataRecordToRestConverterSpy factoredToRestConverter = toRestConverterFactory.toRestConverter;
 
-		assertNotNull(toJsonConverterFactory.restDataRecord);
-		assertSame(toJsonConverterFactory.restDataRecord,
-				factoredToRestConverter.returnedRestDataRecord);
+		assertNotNull(toJsonConverterFactory.restData);
+		assertSame(toJsonConverterFactory.restData, factoredToRestConverter.returnedRestDataRecord);
 		assertEquals(response.getEntity(),
 				toJsonConverterFactory.restRecordToJsonConverterSpy.convertedJson);
 	}

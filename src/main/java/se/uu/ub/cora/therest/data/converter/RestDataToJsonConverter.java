@@ -29,5 +29,5 @@ public abstract class RestDataToJsonConverter {
 		return jsonObjectBuilder.toJsonFormattedString();
 	}
 
-	abstract JsonObjectBuilder toJsonObjectBuilder();
+	public abstract JsonObjectBuilder toJsonObjectBuilder();
 }

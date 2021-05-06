@@ -30,13 +30,13 @@ import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 
 public class DataGroupToJsonConverterTest {
-	private DataToJsonConverterFactory dataToJsonConverterFactory;
+	private RestDataToJsonConverterFactory dataToJsonConverterFactory;
 	private JsonBuilderFactory factory;
 	private RestDataGroup restDataGroup;
 
 	@BeforeMethod
 	public void beforeMethod() {
-		dataToJsonConverterFactory = new DataToJsonConverterFactoryImp();
+		dataToJsonConverterFactory = new RestDataToJsonConverterFactoryImp();
 		factory = new OrgJsonBuilderFactoryAdapter();
 		restDataGroup = RestDataGroup.withNameInData("groupNameInData");
 	}
