@@ -44,6 +44,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataList;
 import se.uu.ub.cora.data.DataRecord;
 import se.uu.ub.cora.json.parser.org.OrgJsonParser;
 import se.uu.ub.cora.logger.LoggerProvider;
@@ -52,8 +53,8 @@ import se.uu.ub.cora.therest.data.DataGroupSpy;
 import se.uu.ub.cora.therest.data.DataListSpy;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.RestDataList;
-import se.uu.ub.cora.therest.data.converter.RestDataToJsonConverterFactoryImp;
 import se.uu.ub.cora.therest.data.converter.JsonToDataConverterFactoryImp;
+import se.uu.ub.cora.therest.data.converter.RestDataToJsonConverterFactoryImp;
 import se.uu.ub.cora.therest.data.converter.RestToDataConverterFactoryImp;
 import se.uu.ub.cora.therest.data.converter.coradata.DataToRestConverterFactoryImp;
 import se.uu.ub.cora.therest.log.LoggerFactorySpy;
@@ -67,7 +68,7 @@ public class RecordEndpointTest {
 	private JsonToDataConverterFactorySpy jsonToDataConverterFactory;
 	private RestToDataConverterFactorySpy restToDataConverterFactory;
 	private DataToRestConverterFactorySpy toRestConverterFactory;
-	private RestRecordToJsonConverterFactorySpy restRecordToJsonConverterFactory;
+	private RestDataToJsonConverterFactorySpy restDataToJsonConverterFactory;
 
 	private String jsonToValidate = "{\"order\":{\"name\":\"validationOrder\",\"children\":[{\"name\":\"recordInfo\",\"children\":[{\"name\":\"dataDivider\",\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"system\"},{\"name\":\"linkedRecordId\",\"value\":\"testSystem\"}]}]},{\"name\":\"recordType\",\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"recordType\"},{\"name\":\"linkedRecordId\",\"value\":\"someRecordType\"}]},{\"name\":\"metadataToValidate\",\"value\":\"existing\"},{\"name\":\"validateLinks\",\"value\":\"false\"}]},\"record\":{\"name\":\"text\",\"children\":[{\"name\":\"recordInfo\",\"children\":[{\"name\":\"id\",\"value\":\"workOrderRecordIdTextVar2Text\"},{\"name\":\"dataDivider\",\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"system\"},{\"name\":\"linkedRecordId\",\"value\":\"cora\"}]}]},{\"name\":\"textPart\",\"children\":[{\"name\":\"text\",\"value\":\"Id på länkad post\"}],\"attributes\":{\"type\":\"default\",\"lang\":\"sv\"}},{\"name\":\"textPart\",\"children\":[{\"name\":\"text\",\"value\":\"Linked record id\"}],\"attributes\":{\"type\":\"alternative\",\"lang\":\"en\"}}]}}";
 	private RecordEndpoint recordEndpoint;
@@ -102,13 +103,13 @@ public class RecordEndpointTest {
 		jsonToDataConverterFactory = new JsonToDataConverterFactorySpy();
 		restToDataConverterFactory = new RestToDataConverterFactorySpy();
 		toRestConverterFactory = new DataToRestConverterFactorySpy();
-		restRecordToJsonConverterFactory = new RestRecordToJsonConverterFactorySpy();
+		restDataToJsonConverterFactory = new RestDataToJsonConverterFactorySpy();
 
 		recordEndpoint.setJsonParser(jsonParser);
 		recordEndpoint.setJsonToDataConverterFactory(jsonToDataConverterFactory);
 		recordEndpoint.setRestToDataConverterFactory(restToDataConverterFactory);
 		recordEndpoint.setDataToRestConverterFactory(toRestConverterFactory);
-		recordEndpoint.setRestRecordToJsonConverterFactory(restRecordToJsonConverterFactory);
+		recordEndpoint.setRestRecordToJsonConverterFactory(restDataToJsonConverterFactory);
 	}
 
 	@Test
@@ -187,8 +188,6 @@ public class RecordEndpointTest {
 		assertEquals(spiderListReaderSpy.authToken, authTokenExpected);
 	}
 
-	// TODO:skriv test för list som använder factories och inte DataListToJsonConverter
-	// .usingJsonFactoryForRestDataList
 	@Test
 	public void testReadRecordListWithFilter() {
 		response = recordEndpoint.readRecordList(AUTH_TOKEN, AUTH_TOKEN, PLACE, jsonFilterData);
@@ -196,15 +195,17 @@ public class RecordEndpointTest {
 		assertFilterIsHandledCorrectlyForReadList();
 
 		SpiderRecordListReaderSpy spiderListReaderSpy = spiderInstanceFactorySpy.spiderRecordListReaderSpy;
-		DataListSpy returnedDataList = spiderListReaderSpy.returnedDataList;
-		assertSame(toRestConverterFactory.recordList, returnedDataList);
+		DataListSpy returnedDataListFromReader = spiderListReaderSpy.returnedDataList;
+
+		assertSame(toRestConverterFactory.recordList, returnedDataListFromReader);
 		assertEquals(toRestConverterFactory.url, "http://cora.epc.ub.uu.se/systemone/rest/record/");
 
-		// kolla att denna skickas till DataListToJsonConverter
 		RestDataList returnedRestDataList = toRestConverterFactory.toRestConverter.returnedRestDataList;
-		// assertSame(toRestConverterFactory.)
+		assertSame(restDataToJsonConverterFactory.restData, returnedRestDataList);
 
-		assertEntityExists();
+		RestRecordToJsonConverterSpy factoredToJsonConverter = restDataToJsonConverterFactory.restRecordToJsonConverterSpy;
+		assertEquals(factoredToJsonConverter.convertedJson, response.getEntity());
+
 		assertResponseStatusIs(Response.Status.OK);
 	}
 
@@ -290,7 +291,7 @@ public class RecordEndpointTest {
 	@Test
 	public void testReadRecordUsesToRestConverterFactory() {
 		DataToRestConverterFactorySpy toRestConverterFactory = new DataToRestConverterFactorySpy();
-		RestRecordToJsonConverterFactorySpy toJsonConverterFactory = new RestRecordToJsonConverterFactorySpy();
+		RestDataToJsonConverterFactorySpy toJsonConverterFactory = new RestDataToJsonConverterFactorySpy();
 
 		recordEndpoint.setDataToRestConverterFactory(toRestConverterFactory);
 		recordEndpoint.setRestRecordToJsonConverterFactory(toJsonConverterFactory);
@@ -806,6 +807,25 @@ public class RecordEndpointTest {
 	}
 
 	@Test
+	public void testSearchRecordUsesFactoriesCorrectly() {
+		response = recordEndpoint.searchRecord(AUTH_TOKEN, AUTH_TOKEN, "aSearchId", defaultJson);
+
+		SpiderRecordSearcherSpy spiderRecordSearcherSpy = spiderInstanceFactorySpy.spiderRecordSearcherSpy;
+		DataList returnedDataListFromReader = spiderRecordSearcherSpy.searchResult;
+
+		assertSame(toRestConverterFactory.recordList, returnedDataListFromReader);
+		assertEquals(toRestConverterFactory.url, "http://cora.epc.ub.uu.se/systemone/rest/record/");
+
+		RestDataList returnedRestDataList = toRestConverterFactory.toRestConverter.returnedRestDataList;
+		assertSame(restDataToJsonConverterFactory.restData, returnedRestDataList);
+
+		RestRecordToJsonConverterSpy factoredToJsonConverter = restDataToJsonConverterFactory.restRecordToJsonConverterSpy;
+		assertEquals(factoredToJsonConverter.convertedJson, response.getEntity());
+
+		assertEquals(jsonParser.jsonString, defaultJson);
+	}
+
+	@Test
 	public void testSearchRecordRightTokenInputsReachSpider() {
 		response = recordEndpoint.searchRecord(AUTH_TOKEN, null, "aSearchId", defaultJson);
 		SpiderRecordSearcherSpy spiderRecordSearcherSpy = spiderInstanceFactorySpy.spiderRecordSearcherSpy;
@@ -832,9 +852,7 @@ public class RecordEndpointTest {
 		response = recordEndpoint.searchRecord(AUTH_TOKEN, AUTH_TOKEN, "aSearchId", defaultJson);
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.OK);
-		String expectedJson = "{\"dataList\":{\"fromNo\":\"0\",\"data\":[],\"totalNo\":\"1\","
-				+ "\"containDataOfType\":\"mix\",\"toNo\":\"1\"}}";
-		assertEquals(response.getEntity(), expectedJson);
+		assertEquals(response.getEntity(), "some converted json");
 	}
 
 	@Test

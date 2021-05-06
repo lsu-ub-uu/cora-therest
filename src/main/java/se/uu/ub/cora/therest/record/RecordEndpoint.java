@@ -43,8 +43,6 @@ import org.glassfish.jersey.media.multipart.FormDataParam;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataList;
 import se.uu.ub.cora.data.DataRecord;
-import se.uu.ub.cora.json.builder.JsonBuilderFactory;
-import se.uu.ub.cora.json.builder.org.OrgJsonBuilderFactoryAdapter;
 import se.uu.ub.cora.json.parser.JsonObject;
 import se.uu.ub.cora.json.parser.JsonParseException;
 import se.uu.ub.cora.json.parser.JsonParser;
@@ -65,20 +63,17 @@ import se.uu.ub.cora.storage.RecordConflictException;
 import se.uu.ub.cora.storage.RecordNotFoundException;
 import se.uu.ub.cora.therest.data.RestData;
 import se.uu.ub.cora.therest.data.RestDataGroup;
-import se.uu.ub.cora.therest.data.RestDataList;
 import se.uu.ub.cora.therest.data.RestDataRecord;
 import se.uu.ub.cora.therest.data.converter.ConverterException;
-import se.uu.ub.cora.therest.data.converter.DataListToJsonConverter;
-import se.uu.ub.cora.therest.data.converter.RestDataToJsonConverterFactory;
-import se.uu.ub.cora.therest.data.converter.RestDataToJsonConverterFactoryImp;
 import se.uu.ub.cora.therest.data.converter.JsonToDataConverter;
 import se.uu.ub.cora.therest.data.converter.JsonToDataConverterFactory;
 import se.uu.ub.cora.therest.data.converter.JsonToDataConverterFactoryImp;
 import se.uu.ub.cora.therest.data.converter.RestDataToJsonConverter;
+import se.uu.ub.cora.therest.data.converter.RestDataToJsonConverterFactory;
+import se.uu.ub.cora.therest.data.converter.RestDataToJsonConverterFactoryImp;
 import se.uu.ub.cora.therest.data.converter.RestToDataConverter;
 import se.uu.ub.cora.therest.data.converter.RestToDataConverterFactory;
 import se.uu.ub.cora.therest.data.converter.RestToDataConverterFactoryImp;
-import se.uu.ub.cora.therest.data.converter.coradata.DataListDataToRestConverter;
 import se.uu.ub.cora.therest.data.converter.coradata.DataToRestConverter;
 import se.uu.ub.cora.therest.data.converter.coradata.DataToRestConverterFactory;
 import se.uu.ub.cora.therest.data.converter.coradata.DataToRestConverterFactoryImp;
@@ -288,20 +283,13 @@ public class RecordEndpoint {
 	}
 
 	private String convertRecordListToJsonString(DataList readRecordList) {
-		DataToRestConverter toRestConverter = dataToRestConverterFactory
+		DataToRestConverter listSpiderToRestConverter = dataToRestConverterFactory
 				.factorForDataList(readRecordList, url);
 
-		RestData restDataList = toRestConverter.toRest();
+		RestData restDataList = listSpiderToRestConverter.toRest();
 
-		// toJsonConverterFactory.
-
-		DataToRestConverter listSpiderToRestConverter = DataListDataToRestConverter
-				.fromDataListWithBaseURL(readRecordList, url);
-		RestDataList restRecordList = (RestDataList) listSpiderToRestConverter.toRest();
-
-		JsonBuilderFactory jsonBuilderFactory = new OrgJsonBuilderFactoryAdapter();
-		DataListToJsonConverter recordListToJsonConverter = DataListToJsonConverter
-				.usingJsonFactoryForRestDataList(jsonBuilderFactory, restRecordList);
+		RestDataToJsonConverter recordListToJsonConverter = restDataToJsonConverterFactory
+				.createForRestData(restDataList);
 		return recordListToJsonConverter.toJson();
 	}
 

@@ -24,7 +24,7 @@ import se.uu.ub.cora.therest.data.RestDataElement;
 import se.uu.ub.cora.therest.data.converter.RestDataToJsonConverterFactory;
 import se.uu.ub.cora.therest.data.converter.RestDataToJsonConverter;
 
-public class RestRecordToJsonConverterFactorySpy implements RestDataToJsonConverterFactory {
+public class RestDataToJsonConverterFactorySpy implements RestDataToJsonConverterFactory {
 	public RestRecordToJsonConverterSpy restRecordToJsonConverterSpy;
 	public RestData restData;
 

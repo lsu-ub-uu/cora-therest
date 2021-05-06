@@ -14,6 +14,7 @@ public class SpiderRecordSearcherSpy implements RecordSearcher {
 	public String authToken;
 	public String searchId;
 	public DataGroup searchData;
+	public DataList searchResult;
 
 	@Override
 	public DataList search(String authToken, String searchId, DataGroup searchData) {
@@ -21,7 +22,7 @@ public class SpiderRecordSearcherSpy implements RecordSearcher {
 		this.searchId = searchId;
 		this.searchData = searchData;
 		possiblyThrowException(authToken, searchId);
-		DataList searchResult = new DataListSpy("mix");
+		searchResult = new DataListSpy("mix");
 		searchResult.setFromNo("0");
 		searchResult.setToNo("1");
 		searchResult.setTotalNo("1");
