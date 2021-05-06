@@ -47,7 +47,7 @@ public class DataToJsonConverterFactoryTest {
 	public void testJsonCreatorFactoryDataGroup() {
 		RestDataElement restDataElement = RestDataGroup.withNameInData("groupNameInData");
 
-		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
+		RestDataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForRestDataElement(factory, restDataElement);
 
 		assertTrue(dataToJsonConverter instanceof DataGroupToJsonConverter);
@@ -58,7 +58,7 @@ public class DataToJsonConverterFactoryTest {
 		RestDataElement restDataElement = RestDataAtomic.withNameInDataAndValue("atomicNameInData",
 				"atomicValue");
 
-		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
+		RestDataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForRestDataElement(factory, restDataElement);
 
 		assertTrue(dataToJsonConverter instanceof DataAtomicToJsonConverter);
@@ -69,7 +69,7 @@ public class DataToJsonConverterFactoryTest {
 		RestDataElement restDataElement = RestDataAttribute
 				.withNameInDataAndValue("attributeNameInData", "attributeValue");
 
-		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
+		RestDataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForRestDataElement(factory, restDataElement);
 
 		assertTrue(dataToJsonConverter instanceof DataAttributeToJsonConverter);
@@ -85,7 +85,7 @@ public class DataToJsonConverterFactoryTest {
 		RestDataAtomic linkedRecordId = RestDataAtomic.withNameInDataAndValue("linkedRecordId",
 				"someRecordId");
 		recordLink.addChild(linkedRecordId);
-		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
+		RestDataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForRestDataElement(factory, recordLink);
 
 		assertTrue(dataToJsonConverter instanceof DataRecordLinkToJsonConverter);
@@ -101,7 +101,7 @@ public class DataToJsonConverterFactoryTest {
 		resourceLink.addChild(RestDataAtomic.withNameInDataAndValue("filename", "adele1.png"));
 		resourceLink.addChild(RestDataAtomic.withNameInDataAndValue("filesize", "1234567"));
 		resourceLink.addChild(RestDataAtomic.withNameInDataAndValue("mimeType", "application/png"));
-		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
+		RestDataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForRestDataElement(factory, resourceLink);
 
 		assertTrue(dataToJsonConverter instanceof DataResourceLinkToJsonConverter);

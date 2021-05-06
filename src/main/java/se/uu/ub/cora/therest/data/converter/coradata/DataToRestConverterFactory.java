@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Uppsala University Library
+ * Copyright 2021 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -18,18 +18,40 @@
  */
 package se.uu.ub.cora.therest.data.converter.coradata;
 
-import java.util.List;
-
-import se.uu.ub.cora.data.Action;
-import se.uu.ub.cora.data.DataGroup;
-import se.uu.ub.cora.therest.data.converter.ConverterInfo;
+import se.uu.ub.cora.data.DataList;
+import se.uu.ub.cora.data.DataRecord;
 
 public interface DataToRestConverterFactory {
 
-	DataToRestConverter factorForDataGroupWithConverterInfo(DataGroup dataGroup,
-			ConverterInfo converterInfo);
+	/**
+	 * Factors a {@link DataToRestConverter} for converting from a {@link DataRecord} to a Rest
+	 * version of the record.
+	 * 
+	 * @param dataRecord,
+	 *            a {@link DataRecord} to convert
+	 * 
+	 * @param url,
+	 *            a String used for converting links
+	 * 
+	 * @return a {@link DataToRestConverter}
+	 */
+	DataToRestConverter factorForDataRecord(DataRecord dataRecord, String url);
 
-	ActionDataToRestConverter factorForActionsUsingConverterInfoAndDataGroup(List<Action> actions,
-			ConverterInfo converterInfo, DataGroup dataGroup);
+	/**
+	 * Factors a {@link DataToRestConverter} for converting from a {@link DataList} to a Rest
+	 * version of the list.
+	 * 
+	 * @param recordList
+	 * @param url
+	 * 
+	 * @param recordList,
+	 *            a {@link DataList} to convert
+	 * 
+	 * @param url,
+	 *            a String used for converting links
+	 * 
+	 * @return a {@link DataToRestConverter}
+	 */
+	DataToRestConverter factorForDataList(DataList recordList, String url);
 
 }

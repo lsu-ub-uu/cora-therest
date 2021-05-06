@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Uppsala University Library
+ * Copyright 2015 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -16,12 +16,18 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.therest.data.converter.coradata;
 
-import se.uu.ub.cora.data.DataRecord;
+package se.uu.ub.cora.therest.data.converter;
 
-public interface DataRecordToRestConverterFactory {
+import se.uu.ub.cora.json.builder.JsonObjectBuilder;
 
-	DataRecordToRestConverter factor(DataRecord dataRecord, String url);
+//TODO: gör om till interface
+public abstract class RestDataToJsonConverter {
 
+	public String toJson() {
+		JsonObjectBuilder jsonObjectBuilder = toJsonObjectBuilder();
+		return jsonObjectBuilder.toJsonFormattedString();
+	}
+
+	abstract JsonObjectBuilder toJsonObjectBuilder();
 }

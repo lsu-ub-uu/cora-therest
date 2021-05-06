@@ -40,22 +40,22 @@ public class DataRecordToRestConverterTest {
 	private String baseURL = "http://localhost:8080/therest/rest/record/";
 	private DataGroup dataGroup;
 	private DataRecord dataRecord;
-	private DataRecordToRestConverterImp dataRecordSpiderToRestConverter;
-	private DataToRestConverterFactorySpy converterFactory;
+	private DataRecordToRestConverter dataRecordSpiderToRestConverter;
+	private DataGroupToRestConverterFactorySpy converterFactory;
 
 	@BeforeMethod
 	public void setUp() {
 		dataGroup = new DataGroupSpy("someNameInData");
 		dataRecord = new DataRecordSpy(dataGroup);
-		converterFactory = new DataToRestConverterFactorySpy();
-		dataRecordSpiderToRestConverter = DataRecordToRestConverterImp
+		converterFactory = new DataGroupToRestConverterFactorySpy();
+		dataRecordSpiderToRestConverter = DataRecordToRestConverter
 				.fromDataRecordWithBaseURLAndConverterFactory(dataRecord, baseURL,
 						converterFactory);
 	}
 
 	@Test
 	public void testInit() {
-		assertTrue(dataRecordSpiderToRestConverter instanceof DataRecordToRestConverter);
+		assertTrue(dataRecordSpiderToRestConverter instanceof DataToRestConverter);
 	}
 
 	@Test

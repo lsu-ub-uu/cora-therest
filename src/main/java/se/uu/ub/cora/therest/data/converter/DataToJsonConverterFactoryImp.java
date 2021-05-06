@@ -30,7 +30,7 @@ import se.uu.ub.cora.therest.data.RestDataResourceLink;
 public class DataToJsonConverterFactoryImp implements DataToJsonConverterFactory {
 
 	@Override
-	public DataToJsonConverter createForRestDataElement(JsonBuilderFactory factory,
+	public RestDataToJsonConverter createForRestDataElement(JsonBuilderFactory factory,
 			RestDataElement restDataElement) {
 
 		if (restDataElement instanceof RestDataGroup) {
@@ -49,6 +49,7 @@ public class DataToJsonConverterFactoryImp implements DataToJsonConverterFactory
 			return DataAtomicToJsonConverter.usingJsonFactoryForRestDataAtomic(factory,
 					(RestDataAtomic) restDataElement);
 		}
+		// TODO:if instance of RestDataList
 		return DataAttributeToJsonConverter.usingJsonFactoryForRestDataAttribute(factory,
 				(RestDataAttribute) restDataElement);
 	}

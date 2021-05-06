@@ -43,7 +43,7 @@ public class DataAttributeToJsonConverterTest {
 	public void testToJson() {
 		RestDataElement restDataElement = RestDataAttribute
 				.withNameInDataAndValue("attributeNameInData", "attributeValue");
-		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
+		RestDataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForRestDataElement(factory, restDataElement);
 		String json = dataToJsonConverter.toJson();
 
@@ -54,7 +54,7 @@ public class DataAttributeToJsonConverterTest {
 	public void testToJsonEmptyValue() {
 		RestDataElement restDataElement = RestDataAttribute
 				.withNameInDataAndValue("attributeNameInData", "");
-		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
+		RestDataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForRestDataElement(factory, restDataElement);
 		String json = dataToJsonConverter.toJson();
 

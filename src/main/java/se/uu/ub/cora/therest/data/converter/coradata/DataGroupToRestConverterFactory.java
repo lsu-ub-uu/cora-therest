@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Uppsala University Library
+ * Copyright 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -16,24 +16,20 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.therest.record;
+package se.uu.ub.cora.therest.data.converter.coradata;
 
-import se.uu.ub.cora.data.DataRecord;
-import se.uu.ub.cora.therest.data.converter.coradata.DataRecordToRestConverter;
-import se.uu.ub.cora.therest.data.converter.coradata.DataRecordToRestConverterFactory;
+import java.util.List;
 
-public class DataRecordToRestConverterFactorySpy implements DataRecordToRestConverterFactory {
+import se.uu.ub.cora.data.Action;
+import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.therest.data.converter.ConverterInfo;
 
-	public DataRecord dataRecord;
-	public String url;
-	public DataRecordToRestConverterSpy toRestConverter;
+public interface DataGroupToRestConverterFactory {
 
-	@Override
-	public DataRecordToRestConverter factor(DataRecord dataRecord, String url) {
-		this.dataRecord = dataRecord;
-		this.url = url;
-		toRestConverter = new DataRecordToRestConverterSpy();
-		return toRestConverter;
-	}
+	DataToRestConverter factorForDataGroupWithConverterInfo(DataGroup dataGroup,
+			ConverterInfo converterInfo);
+
+	ActionDataToRestConverter factorForActionsUsingConverterInfoAndDataGroup(List<Action> actions,
+			ConverterInfo converterInfo, DataGroup dataGroup);
 
 }

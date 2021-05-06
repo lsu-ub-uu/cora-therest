@@ -24,7 +24,7 @@ import se.uu.ub.cora.therest.data.RestDataElement;
 
 public interface DataToJsonConverterFactory {
 
-	DataToJsonConverter createForRestDataElement(JsonBuilderFactory factory,
+	RestDataToJsonConverter createForRestDataElement(JsonBuilderFactory factory,
 			RestDataElement restDataElement);
 
 }

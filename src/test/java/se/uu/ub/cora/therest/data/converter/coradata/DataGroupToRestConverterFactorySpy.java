@@ -25,7 +25,7 @@ import se.uu.ub.cora.data.Action;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.therest.data.converter.ConverterInfo;
 
-public class DataToRestConverterFactorySpy implements DataToRestConverterFactory {
+public class DataGroupToRestConverterFactorySpy implements DataGroupToRestConverterFactory {
 
 	public List<DataGroup> dataGroups = new ArrayList<>();
 	public List<Action> addedActions = new ArrayList<>();

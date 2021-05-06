@@ -31,6 +31,7 @@ public class SpiderRecordListReaderSpy implements RecordListReader {
 	public String authToken;
 	public String type;
 	public DataGroup filter;
+	public DataListSpy returnedDataList;
 
 	@Override
 	public DataList readRecordList(String authToken, String type, DataGroup filter) {
@@ -38,7 +39,8 @@ public class SpiderRecordListReaderSpy implements RecordListReader {
 		this.type = type;
 		this.filter = filter;
 		possiblyThrowException(authToken, type);
-		return new DataListSpy(type);
+		returnedDataList = new DataListSpy(type);
+		return returnedDataList;
 	}
 
 	private void possiblyThrowException(String authToken, String type) {

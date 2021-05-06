@@ -27,7 +27,7 @@ import se.uu.ub.cora.json.builder.JsonObjectBuilder;
 import se.uu.ub.cora.therest.data.RestDataElement;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 
-public class DataGroupToJsonConverter extends DataToJsonConverter {
+public class DataGroupToJsonConverter extends RestDataToJsonConverter {
 
 	protected RestDataGroup restDataGroup;
 	protected JsonObjectBuilder dataGroupJsonObjectBuilder;

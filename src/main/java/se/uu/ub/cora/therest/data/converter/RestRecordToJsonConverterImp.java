@@ -61,7 +61,7 @@ public final class RestRecordToJsonConverterImp implements RestRecordToJsonConve
 
 	private void convertMainRestDataGroup() {
 		DataToJsonConverterFactory dataToJsonConverterFactory = new DataToJsonConverterFactoryImp();
-		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
+		RestDataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForRestDataElement(jsonBuilderFactory, restDataRecord.getRestDataGroup());
 		JsonObjectBuilder jsonDataGroupObjectBuilder = dataToJsonConverter.toJsonObjectBuilder();
 		recordJsonObjectBuilder.addKeyJsonObjectBuilder("data", jsonDataGroupObjectBuilder);

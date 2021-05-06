@@ -26,7 +26,7 @@ import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.JsonObjectBuilder;
 import se.uu.ub.cora.therest.data.ActionLink;
 
-public class ActionLinksToJsonConverter extends DataToJsonConverter {
+public class ActionLinksToJsonConverter extends RestDataToJsonConverter {
 
 	private Map<String, ActionLink> actionLinks;
 	private JsonBuilderFactory jsonBuilderFactory;

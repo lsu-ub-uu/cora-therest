@@ -78,9 +78,9 @@ import se.uu.ub.cora.therest.data.converter.RestToDataConverter;
 import se.uu.ub.cora.therest.data.converter.RestToDataConverterFactory;
 import se.uu.ub.cora.therest.data.converter.RestToDataConverterFactoryImp;
 import se.uu.ub.cora.therest.data.converter.coradata.DataListDataToRestConverter;
-import se.uu.ub.cora.therest.data.converter.coradata.DataRecordToRestConverter;
-import se.uu.ub.cora.therest.data.converter.coradata.DataRecordToRestConverterFactory;
-import se.uu.ub.cora.therest.data.converter.coradata.DataRecordToRestConverterFactoryImp;
+import se.uu.ub.cora.therest.data.converter.coradata.DataToRestConverter;
+import se.uu.ub.cora.therest.data.converter.coradata.DataToRestConverterFactory;
+import se.uu.ub.cora.therest.data.converter.coradata.DataToRestConverterFactoryImp;
 
 @Path("record")
 public class RecordEndpoint {
@@ -89,7 +89,7 @@ public class RecordEndpoint {
 	HttpServletRequest request;
 	private Logger log = LoggerProvider.getLoggerForClass(RecordEndpoint.class);
 
-	private DataRecordToRestConverterFactory recordToRestConverterFactory = new DataRecordToRestConverterFactoryImp();
+	private DataToRestConverterFactory dataToRestConverterFactory = new DataToRestConverterFactoryImp();
 	private RestRecordToJsonConverterFactory restRecordToJsonConverterFactory = new RestRecordToJsonConverterFactoryImp();
 	private JsonToDataConverterFactory jsonToDataConverterFactory = new JsonToDataConverterFactoryImp();
 	private JsonParser jsonParser = new OrgJsonParser();
@@ -186,9 +186,9 @@ public class RecordEndpoint {
 	}
 
 	private RestDataRecord convertDataRecordToRestDataRecord(DataRecord record) {
-		DataRecordToRestConverter toRestConverter = recordToRestConverterFactory.factor(record,
+		DataToRestConverter toRestConverter = dataToRestConverterFactory.factorForDataRecord(record,
 				url);
-		return toRestConverter.toRest();
+		return (RestDataRecord) toRestConverter.toRest();
 
 	}
 
@@ -287,9 +287,12 @@ public class RecordEndpoint {
 	}
 
 	private String convertRecordListToJsonString(DataList readRecordList) {
-		DataListDataToRestConverter listSpiderToRestConverter = DataListDataToRestConverter
+		DataToRestConverter toRestConverter = dataToRestConverterFactory
+				.factorForDataList(readRecordList, url);
+
+		DataToRestConverter listSpiderToRestConverter = DataListDataToRestConverter
 				.fromDataListWithBaseURL(readRecordList, url);
-		RestDataList restRecordList = listSpiderToRestConverter.toRest();
+		RestDataList restRecordList = (RestDataList) listSpiderToRestConverter.toRest();
 
 		JsonBuilderFactory jsonBuilderFactory = new OrgJsonBuilderFactoryAdapter();
 		DataListToJsonConverter recordListToJsonConverter = DataListToJsonConverter
@@ -576,12 +579,12 @@ public class RecordEndpoint {
 		return Response.status(Response.Status.OK).entity(json).build();
 	}
 
-	DataRecordToRestConverterFactory getDataRecordToRestConverterFactory() {
-		return recordToRestConverterFactory;
+	DataToRestConverterFactory getDataToRestConverterFactory() {
+		return dataToRestConverterFactory;
 	}
 
-	void setDataRecordToRestConverterFactory(DataRecordToRestConverterFactory converterFactory) {
-		this.recordToRestConverterFactory = converterFactory;
+	void setDataToRestConverterFactory(DataToRestConverterFactory converterFactory) {
+		this.dataToRestConverterFactory = converterFactory;
 	}
 
 	RestRecordToJsonConverterFactory getRestRecordToJsonConverterFactory() {

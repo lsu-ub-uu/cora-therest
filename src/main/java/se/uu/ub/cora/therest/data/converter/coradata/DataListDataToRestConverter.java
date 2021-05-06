@@ -28,13 +28,12 @@ import se.uu.ub.cora.therest.data.RestDataList;
 import se.uu.ub.cora.therest.data.RestDataRecord;
 import se.uu.ub.cora.therest.data.converter.ConverterInfo;
 
-public final class DataListDataToRestConverter {
+public final class DataListDataToRestConverter implements DataToRestConverter {
 
 	private DataList dataList;
 	private String baseURL;
 
-	public static DataListDataToRestConverter fromDataListWithBaseURL(
-			DataList dataList, String url) {
+	public static DataToRestConverter fromDataListWithBaseURL(DataList dataList, String url) {
 		return new DataListDataToRestConverter(dataList, url);
 	}
 
@@ -43,6 +42,7 @@ public final class DataListDataToRestConverter {
 		this.baseURL = url;
 	}
 
+	@Override
 	public RestDataList toRest() {
 		RestDataList restDataList = RestDataList
 				.withContainDataOfType(dataList.getContainDataOfType());
@@ -66,10 +66,9 @@ public final class DataListDataToRestConverter {
 	}
 
 	private void convertDataRecordToRest(RestDataList restDataList, DataRecord data) {
-		DataToRestConverterFactory converterFactory = new DataToRestConverterFactoryImp();
-		RestDataRecord restRecord = DataRecordToRestConverterImp
-				.fromDataRecordWithBaseURLAndConverterFactory(data, baseURL,
-						converterFactory)
+		DataGroupToRestConverterFactory converterFactory = new DataGroupToRestConverterFactoryImp();
+		RestDataRecord restRecord = DataRecordToRestConverter
+				.fromDataRecordWithBaseURLAndConverterFactory(data, baseURL, converterFactory)
 				.toRest();
 		restDataList.addData(restRecord);
 	}
@@ -80,5 +79,15 @@ public final class DataListDataToRestConverter {
 		RestDataGroup restGroup = DataGroupDataToRestConverter
 				.fromDataGroupWithDataGroupAndConverterInfo(data, converterInfo).toRest();
 		restDataList.addData(restGroup);
+	}
+
+	DataList getDataList() {
+		// needed for test
+		return dataList;
+	}
+
+	public String getBaseUrl() {
+		// needed for test
+		return baseURL;
 	}
 }

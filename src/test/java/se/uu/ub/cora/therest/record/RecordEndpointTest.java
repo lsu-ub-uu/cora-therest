@@ -49,11 +49,13 @@ import se.uu.ub.cora.json.parser.org.OrgJsonParser;
 import se.uu.ub.cora.logger.LoggerProvider;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
 import se.uu.ub.cora.therest.data.DataGroupSpy;
+import se.uu.ub.cora.therest.data.DataListSpy;
 import se.uu.ub.cora.therest.data.RestDataGroup;
+import se.uu.ub.cora.therest.data.RestDataList;
 import se.uu.ub.cora.therest.data.converter.JsonToDataConverterFactoryImp;
 import se.uu.ub.cora.therest.data.converter.RestRecordToJsonConverterFactoryImp;
 import se.uu.ub.cora.therest.data.converter.RestToDataConverterFactoryImp;
-import se.uu.ub.cora.therest.data.converter.coradata.DataRecordToRestConverterFactoryImp;
+import se.uu.ub.cora.therest.data.converter.coradata.DataToRestConverterFactoryImp;
 import se.uu.ub.cora.therest.log.LoggerFactorySpy;
 
 public class RecordEndpointTest {
@@ -64,7 +66,7 @@ public class RecordEndpointTest {
 	private JsonParserSpy jsonParser;
 	private JsonToDataConverterFactorySpy jsonToDataConverterFactory;
 	private RestToDataConverterFactorySpy restToDataConverterFactory;
-	private DataRecordToRestConverterFactorySpy toRestConverterFactory;
+	private DataToRestConverterFactorySpy toRestConverterFactory;
 	private RestRecordToJsonConverterFactorySpy restRecordToJsonConverterFactory;
 
 	private String jsonToValidate = "{\"order\":{\"name\":\"validationOrder\",\"children\":[{\"name\":\"recordInfo\",\"children\":[{\"name\":\"dataDivider\",\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"system\"},{\"name\":\"linkedRecordId\",\"value\":\"testSystem\"}]}]},{\"name\":\"recordType\",\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"recordType\"},{\"name\":\"linkedRecordId\",\"value\":\"someRecordType\"}]},{\"name\":\"metadataToValidate\",\"value\":\"existing\"},{\"name\":\"validateLinks\",\"value\":\"false\"}]},\"record\":{\"name\":\"text\",\"children\":[{\"name\":\"recordInfo\",\"children\":[{\"name\":\"id\",\"value\":\"workOrderRecordIdTextVar2Text\"},{\"name\":\"dataDivider\",\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"system\"},{\"name\":\"linkedRecordId\",\"value\":\"cora\"}]}]},{\"name\":\"textPart\",\"children\":[{\"name\":\"text\",\"value\":\"Id på länkad post\"}],\"attributes\":{\"type\":\"default\",\"lang\":\"sv\"}},{\"name\":\"textPart\",\"children\":[{\"name\":\"text\",\"value\":\"Linked record id\"}],\"attributes\":{\"type\":\"alternative\",\"lang\":\"en\"}}]}}";
@@ -99,13 +101,13 @@ public class RecordEndpointTest {
 		jsonParser = new JsonParserSpy();
 		jsonToDataConverterFactory = new JsonToDataConverterFactorySpy();
 		restToDataConverterFactory = new RestToDataConverterFactorySpy();
-		toRestConverterFactory = new DataRecordToRestConverterFactorySpy();
+		toRestConverterFactory = new DataToRestConverterFactorySpy();
 		restRecordToJsonConverterFactory = new RestRecordToJsonConverterFactorySpy();
 
 		recordEndpoint.setJsonParser(jsonParser);
 		recordEndpoint.setJsonToDataConverterFactory(jsonToDataConverterFactory);
 		recordEndpoint.setRestToDataConverterFactory(restToDataConverterFactory);
-		recordEndpoint.setDataRecordToRestConverterFactory(toRestConverterFactory);
+		recordEndpoint.setDataToRestConverterFactory(toRestConverterFactory);
 		recordEndpoint.setRestRecordToJsonConverterFactory(restRecordToJsonConverterFactory);
 	}
 
@@ -113,7 +115,7 @@ public class RecordEndpointTest {
 	public void testInit() {
 		recordEndpoint = new RecordEndpoint(request);
 		assertTrue(recordEndpoint
-				.getDataRecordToRestConverterFactory() instanceof DataRecordToRestConverterFactoryImp);
+				.getDataToRestConverterFactory() instanceof DataToRestConverterFactoryImp);
 		assertTrue(recordEndpoint
 				.getRestRecordToJsonConverterFactory() instanceof RestRecordToJsonConverterFactoryImp);
 		assertTrue(recordEndpoint
@@ -185,12 +187,30 @@ public class RecordEndpointTest {
 		assertEquals(spiderListReaderSpy.authToken, authTokenExpected);
 	}
 
+	// TODO:skriv test för list som använder factories och inte DataListToJsonConverter
+	// .usingJsonFactoryForRestDataList
 	@Test
 	public void testReadRecordListWithFilter() {
 		response = recordEndpoint.readRecordList(AUTH_TOKEN, AUTH_TOKEN, PLACE, jsonFilterData);
 
+		assertFilterIsHandledCorrectlyForReadList();
+
+		SpiderRecordListReaderSpy spiderListReaderSpy = spiderInstanceFactorySpy.spiderRecordListReaderSpy;
+		DataListSpy returnedDataList = spiderListReaderSpy.returnedDataList;
+		assertSame(toRestConverterFactory.recordList, returnedDataList);
+		assertEquals(toRestConverterFactory.url, "http://cora.epc.ub.uu.se/systemone/rest/record/");
+
+		// kolla att denna skickas till DataListToJsonConverter
+		RestDataList returnedRestDataList = toRestConverterFactory.toRestConverter.returnedRestDataList;
+
+		assertEntityExists();
+		assertResponseStatusIs(Response.Status.OK);
+	}
+
+	private void assertFilterIsHandledCorrectlyForReadList() {
 		assertEquals(jsonParser.jsonString, jsonFilterData);
 		assertSame(jsonToDataConverterFactory.jsonValues.get(0), jsonParser.returnedJsonValue);
+
 		assertSame(restToDataConverterFactory.dataElements.get(0),
 				jsonToDataConverterFactory.jsonToDataConverterSpies.get(0).returnedRestDataGroup);
 
@@ -199,8 +219,6 @@ public class RecordEndpointTest {
 		SpiderRecordListReaderSpy spiderListReaderSpy = spiderInstanceFactorySpy.spiderRecordListReaderSpy;
 		DataGroup filterData = spiderListReaderSpy.filter;
 		assertEquals(filterData, returnedDataGroup);
-		assertEntityExists();
-		assertResponseStatusIs(Response.Status.OK);
 	}
 
 	@Test
@@ -270,10 +288,10 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testReadRecordUsesToRestConverterFactory() {
-		DataRecordToRestConverterFactorySpy toRestConverterFactory = new DataRecordToRestConverterFactorySpy();
+		DataToRestConverterFactorySpy toRestConverterFactory = new DataToRestConverterFactorySpy();
 		RestRecordToJsonConverterFactorySpy toJsonConverterFactory = new RestRecordToJsonConverterFactorySpy();
 
-		recordEndpoint.setDataRecordToRestConverterFactory(toRestConverterFactory);
+		recordEndpoint.setDataToRestConverterFactory(toRestConverterFactory);
 		recordEndpoint.setRestRecordToJsonConverterFactory(toJsonConverterFactory);
 
 		response = recordEndpoint.readRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001);

@@ -18,15 +18,23 @@
  */
 package se.uu.ub.cora.therest.record;
 
+import se.uu.ub.cora.therest.data.RestData;
+import se.uu.ub.cora.therest.data.RestDataList;
 import se.uu.ub.cora.therest.data.RestDataRecord;
-import se.uu.ub.cora.therest.data.converter.coradata.DataRecordToRestConverter;
+import se.uu.ub.cora.therest.data.converter.coradata.DataToRestConverter;
 
-public class DataRecordToRestConverterSpy implements DataRecordToRestConverter {
+public class DataRecordToRestConverterSpy implements DataToRestConverter {
 
 	public RestDataRecord returnedRestDataRecord;
+	public RestDataList returnedRestDataList;
+	public String typeOfData = "record";
 
 	@Override
-	public RestDataRecord toRest() {
+	public RestData toRest() {
+		if ("recordList".equals(typeOfData)) {
+			returnedRestDataList = RestDataList.withContainDataOfType("someRecordType");
+			return returnedRestDataList;
+		}
 		returnedRestDataRecord = RestDataRecord.withRestDataGroup(null);
 		return returnedRestDataRecord;
 	}
