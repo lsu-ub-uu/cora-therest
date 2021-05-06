@@ -70,7 +70,6 @@ public class RecordEndpointTest {
 	private DataToRestConverterFactorySpy toRestConverterFactory;
 	private RestDataToJsonConverterFactorySpy restDataToJsonConverterFactory;
 
-	private String jsonToValidate = "{\"order\":{\"name\":\"validationOrder\",\"children\":[{\"name\":\"recordInfo\",\"children\":[{\"name\":\"dataDivider\",\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"system\"},{\"name\":\"linkedRecordId\",\"value\":\"testSystem\"}]}]},{\"name\":\"recordType\",\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"recordType\"},{\"name\":\"linkedRecordId\",\"value\":\"someRecordType\"}]},{\"name\":\"metadataToValidate\",\"value\":\"existing\"},{\"name\":\"validateLinks\",\"value\":\"false\"}]},\"record\":{\"name\":\"text\",\"children\":[{\"name\":\"recordInfo\",\"children\":[{\"name\":\"id\",\"value\":\"workOrderRecordIdTextVar2Text\"},{\"name\":\"dataDivider\",\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"system\"},{\"name\":\"linkedRecordId\",\"value\":\"cora\"}]}]},{\"name\":\"textPart\",\"children\":[{\"name\":\"text\",\"value\":\"Id på länkad post\"}],\"attributes\":{\"type\":\"default\",\"lang\":\"sv\"}},{\"name\":\"textPart\",\"children\":[{\"name\":\"text\",\"value\":\"Linked record id\"}],\"attributes\":{\"type\":\"alternative\",\"lang\":\"en\"}}]}}";
 	private RecordEndpoint recordEndpoint;
 	private SpiderInstanceFactorySpy spiderInstanceFactorySpy;
 	private Response response;
@@ -79,6 +78,7 @@ public class RecordEndpointTest {
 	private LoggerFactorySpy loggerFactorySpy;
 	private String testedClassName = "RecordEndpoint";
 
+	private String jsonToValidate = "{\"order\":{\"name\":\"validationOrder\",\"children\":[{\"name\":\"recordInfo\",\"children\":[{\"name\":\"dataDivider\",\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"system\"},{\"name\":\"linkedRecordId\",\"value\":\"testSystem\"}]}]},{\"name\":\"recordType\",\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"recordType\"},{\"name\":\"linkedRecordId\",\"value\":\"someRecordType\"}]},{\"name\":\"metadataToValidate\",\"value\":\"existing\"},{\"name\":\"validateLinks\",\"value\":\"false\"}]},\"record\":{\"name\":\"text\",\"children\":[{\"name\":\"recordInfo\",\"children\":[{\"name\":\"id\",\"value\":\"workOrderRecordIdTextVar2Text\"},{\"name\":\"dataDivider\",\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"system\"},{\"name\":\"linkedRecordId\",\"value\":\"cora\"}]}]},{\"name\":\"textPart\",\"children\":[{\"name\":\"text\",\"value\":\"Id på länkad post\"}],\"attributes\":{\"type\":\"default\",\"lang\":\"sv\"}},{\"name\":\"textPart\",\"children\":[{\"name\":\"text\",\"value\":\"Linked record id\"}],\"attributes\":{\"type\":\"alternative\",\"lang\":\"en\"}}]}}";
 	private String defaultJson = "{\"name\":\"someRecordType\",\"children\":[]}";
 	private String jsonFilterData = "{\"name\":\"filter\",\"children\":[{\"name\":\"part\",\"children\":[{\"name\":\"key\",\"value\":\"movieTitle\"},{\"name\":\"value\",\"value\":\"Some title\"}],\"repeatId\":\"0\"}]}";
 
@@ -192,9 +192,9 @@ public class RecordEndpointTest {
 	public void testReadRecordListWithFilter() {
 		response = recordEndpoint.readRecordList(AUTH_TOKEN, AUTH_TOKEN, PLACE, jsonFilterData);
 
-		assertFilterIsHandledCorrectlyForReadList();
-
 		SpiderRecordListReaderSpy spiderListReaderSpy = spiderInstanceFactorySpy.spiderRecordListReaderSpy;
+		assertFilterIsHandledCorrectly(spiderListReaderSpy.filter);
+
 		DataListSpy returnedDataListFromReader = spiderListReaderSpy.returnedDataList;
 
 		assertSame(toRestConverterFactory.recordList, returnedDataListFromReader);
@@ -209,7 +209,7 @@ public class RecordEndpointTest {
 		assertResponseStatusIs(Response.Status.OK);
 	}
 
-	private void assertFilterIsHandledCorrectlyForReadList() {
+	private void assertFilterIsHandledCorrectly(DataGroup filterSentToSpider) {
 		assertEquals(jsonParser.jsonString, jsonFilterData);
 		assertSame(jsonToDataConverterFactory.jsonValues.get(0), jsonParser.returnedJsonValue);
 
@@ -218,9 +218,7 @@ public class RecordEndpointTest {
 
 		DataGroupSpy returnedDataGroup = restToDataConverterFactory.factoredConverters
 				.get(0).returnedDataGroup;
-		SpiderRecordListReaderSpy spiderListReaderSpy = spiderInstanceFactorySpy.spiderRecordListReaderSpy;
-		DataGroup filterData = spiderListReaderSpy.filter;
-		assertEquals(filterData, returnedDataGroup);
+		assertEquals(filterSentToSpider, returnedDataGroup);
 	}
 
 	@Test
@@ -541,11 +539,14 @@ public class RecordEndpointTest {
 
 		RestDataGroup dataGroupReturned = jsonToDataConverterFactory.jsonToDataConverterSpies
 				.get(0).returnedRestDataGroup;
-		// TODO: kolla att dataGroupReturned skickas till DataGroupRestTo(Spider)DataConverter
-		// ytterligare en factory??
+		assertSame(restToDataConverterFactory.dataElements.get(0), dataGroupReturned);
+		RestToDataConverterSpy factoredToDataConverter = restToDataConverterFactory.factoredConverters
+				.get(0);
+		assertSame(spiderInstanceFactorySpy.spiderCreatorSpy.record,
+				factoredToDataConverter.returnedDataGroup);
 
-		// assertResponseStatusIs(Response.Status.CREATED);
-		// assertTrue(response.getLocation().toString().startsWith("record/" + PLACE));
+		assertResponseStatusIs(Response.Status.CREATED);
+		assertTrue(response.getLocation().toString().startsWith("record/" + PLACE));
 	}
 
 	@Test
@@ -591,13 +592,6 @@ public class RecordEndpointTest {
 		response = recordEndpoint.createRecord(AUTH_TOKEN, AUTH_TOKEN, type, defaultJson);
 		assertResponseStatusIs(Response.Status.METHOD_NOT_ALLOWED);
 	}
-
-	// String duplicateTestJson = "{\"name\":\"place\",\"children\":["
-	// + "{\"name\":\"recordInfo\",\"children\":["
-	// + "{\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"system\"},"
-	// + "{\"name\":\"linkedRecordId\",\"value\":\"cora\"}],\"name\":\"dataDivider\"},"
-	// + "{\"name\":\"id\",\"value\":\"aPlace\"}]}"
-	// + ",{\"name\":\"id\",\"value\":\"anythingGoes\"}]}";
 
 	@Test
 	public void testCreateRecordDuplicateUserSuppliedId() {
@@ -938,12 +932,7 @@ public class RecordEndpointTest {
 		assertSame(recordToValidate, returnedRecordToValidate);
 
 		assertResponseStatusIs(Response.Status.OK);
-		// String expectedJson = getExpectedValidationResultJson();
 		assertEquals(response.getEntity(), "some converted json");
-	}
-
-	private String getExpectedValidationResultJson() {
-		return "{\"record\":{\"data\":{\"children\":[{\"name\":\"valid\",\"value\":\"true\"},{\"children\":[{\"name\":\"id\",\"value\":\"someSpyId\"},{\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"recordType\"},{\"name\":\"linkedRecordId\",\"value\":\"validationOrder\"}],\"name\":\"type\"}],\"name\":\"recordInfo\"}],\"name\":\"validationResult\"}}}";
 	}
 
 	@Test
@@ -983,18 +972,17 @@ public class RecordEndpointTest {
 	public void testBatchIndexWithFilter() {
 		response = recordEndpoint.indexRecordList(AUTH_TOKEN, AUTH_TOKEN, PLACE, jsonFilterData);
 
-		// assert filter is converted to RestDataGroup
-		assertEquals(jsonParser.jsonString, jsonFilterData);
-		assertSame(jsonToDataConverterFactory.jsonValues.get(0), jsonParser.returnedJsonValue);
-
 		IndexBatchJobCreatorSpy indexBatchJobCreator = spiderInstanceFactorySpy.indexBatchJobCreator;
+		assertFilterIsHandledCorrectly(indexBatchJobCreator.filter);
+		assertEquals(indexBatchJobCreator.type, PLACE);
 
-		assertSame(restToDataConverterFactory.dataElements.get(0),
-				jsonToDataConverterFactory.jsonToDataConverterSpies.get(0).returnedRestDataGroup);
+		assertSame(toRestConverterFactory.dataRecord, indexBatchJobCreator.recordToReturn);
+		DataRecordToRestConverterSpy factoredConverter = toRestConverterFactory.toRestConverter;
+		assertSame(restDataToJsonConverterFactory.restData,
+				factoredConverter.returnedRestDataRecord);
 
-		DataGroup filterData = indexBatchJobCreator.filter;
-		assertSame(filterData,
-				restToDataConverterFactory.factoredConverters.get(0).returnedDataGroup);
+		assertEquals(response.getEntity(),
+				restDataToJsonConverterFactory.restRecordToJsonConverterSpy.convertedJson);
 
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.OK);
@@ -1006,32 +994,27 @@ public class RecordEndpointTest {
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.OK);
 
-		IndexBatchJobCreatorSpy indexBatchJobCreator = spiderInstanceFactorySpy.indexBatchJobCreator;
-
 		assertEquals(jsonParser.jsonString, "{\"name\":\"filter\",\"children\":[]}");
+
 	}
 
-	// Vad ska den svara?
-	// @Test
-	// public void testReadRecordListNotFound() {
-	// String jsonFilter = "{\"name\":\"filter\",\"children\":[]}";
-	// response = recordEndpoint.readRecordList(AUTH_TOKEN, AUTH_TOKEN, "place_NOT_FOUND",
-	// jsonFilter);
-	// assertResponseStatusIs(Response.Status.NOT_FOUND);
-	// }
-	//
+	@Test
+	public void testIndexRecordListNotFound() {
+		response = recordEndpoint.indexRecordList(AUTH_TOKEN, AUTH_TOKEN, "recordType_NON_EXISTING",
+				jsonFilterData);
+		assertResponseStatusIs(Response.Status.NOT_FOUND);
+	}
+
 	@Test
 	public void testIndexRecordListUnauthorized() {
-		String jsonFilter = "{\"name\":\"filter\",\"children\":[]}";
 		response = recordEndpoint.indexRecordListUsingAuthTokenByType(DUMMY_NON_AUTHORIZED_TOKEN,
-				PLACE, jsonFilter);
+				PLACE, jsonFilterData);
 		assertResponseStatusIs(Response.Status.FORBIDDEN);
 	}
 
 	@Test
 	public void testIndexRecordListNoTokenAndUnauthorized() {
-		String jsonFilter = "{\"name\":\"filter\",\"children\":[]}";
-		response = recordEndpoint.indexRecordListUsingAuthTokenByType(null, PLACE, jsonFilter);
+		response = recordEndpoint.indexRecordListUsingAuthTokenByType(null, PLACE, jsonFilterData);
 		assertResponseStatusIs(Response.Status.UNAUTHORIZED);
 	}
 

@@ -541,6 +541,9 @@ public class RecordEndpoint {
 	}
 
 	// TODO:ska ha annotations
+	@GET
+	@Path("index/{type}")
+	@Produces("application/vnd.uub.record+json")
 	public Response indexRecordList(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			@QueryParam("filter") String filterAsJson) {
@@ -566,9 +569,6 @@ public class RecordEndpoint {
 		DataRecord indexBatchJob = indexBatchJobCreator.indexRecordList(authToken, type, filter);
 		String json = convertDataRecordToJsonString(indexBatchJob);
 
-		// Vad får vi tillbaka av indexRecordList?
-		// Vad vill vi skicka tillbaka? Här är det väl någon form av referens till IndexBatchJob?
-		// String json = "some json";
 		return Response.status(Response.Status.OK).entity(json).build();
 	}
 

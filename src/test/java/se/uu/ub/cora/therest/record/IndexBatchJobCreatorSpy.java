@@ -22,6 +22,7 @@ import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataRecord;
 import se.uu.ub.cora.spider.authorization.AuthorizationException;
 import se.uu.ub.cora.spider.record.RecordListIndexer;
+import se.uu.ub.cora.storage.RecordNotFoundException;
 import se.uu.ub.cora.therest.data.DataAtomicSpy;
 import se.uu.ub.cora.therest.data.DataGroupSpy;
 import se.uu.ub.cora.therest.data.DataRecordSpy;
@@ -55,6 +56,9 @@ public class IndexBatchJobCreatorSpy implements RecordListIndexer {
 	private void possiblyThrowException(String authToken, String type) {
 		if ("dummyNonAuthorizedToken".equals(authToken) || authToken == null) {
 			throw new AuthorizationException("not authorized");
+		}
+		if ("recordType_NON_EXISTING".equals(type)) {
+			throw new RecordNotFoundException("no record exist with type " + type);
 		}
 	}
 
