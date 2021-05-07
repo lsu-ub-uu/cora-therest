@@ -540,7 +540,6 @@ public class RecordEndpoint {
 		return jsonToDataConverterFactory.createForJsonObject(validationInfoJson);
 	}
 
-	// TODO:ska ha annotations
 	@GET
 	@Path("index/{type}")
 	@Produces("application/vnd.uub.record+json")

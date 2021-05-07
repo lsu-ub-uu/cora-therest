@@ -23,12 +23,12 @@ import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.JsonObjectBuilder;
 import se.uu.ub.cora.therest.data.RestDataAttribute;
 
-public final class DataAttributeToJsonConverter extends RestDataToJsonConverter {
+public final class DataAttributeToJsonConverter implements RestDataToJsonConverter {
 	private JsonBuilderFactory factory;
 	private RestDataAttribute restDataAttribute;
 
-	public static RestDataToJsonConverter usingJsonFactoryForRestDataAttribute(JsonBuilderFactory factory,
-			RestDataAttribute dataAttribute) {
+	public static RestDataToJsonConverter usingJsonFactoryForRestDataAttribute(
+			JsonBuilderFactory factory, RestDataAttribute dataAttribute) {
 		return new DataAttributeToJsonConverter(factory, dataAttribute);
 	}
 

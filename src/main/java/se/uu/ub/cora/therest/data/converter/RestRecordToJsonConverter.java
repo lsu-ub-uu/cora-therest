@@ -29,7 +29,7 @@ import se.uu.ub.cora.therest.data.ActionLink;
 import se.uu.ub.cora.therest.data.RestData;
 import se.uu.ub.cora.therest.data.RestDataRecord;
 
-public final class RestRecordToJsonConverter extends RestDataToJsonConverter {
+public final class RestRecordToJsonConverter implements RestDataToJsonConverter {
 
 	private JsonBuilderFactory jsonBuilderFactory;
 	private RestDataRecord restDataRecord;
@@ -44,11 +44,6 @@ public final class RestRecordToJsonConverter extends RestDataToJsonConverter {
 		this.jsonBuilderFactory = jsonFactory;
 		this.restDataRecord = (RestDataRecord) restDataRecord;
 		recordJsonObjectBuilder = jsonFactory.createObjectBuilder();
-	}
-
-	@Override
-	public String toJson() {
-		return toJsonObjectBuilder().toJsonFormattedString();
 	}
 
 	@Override

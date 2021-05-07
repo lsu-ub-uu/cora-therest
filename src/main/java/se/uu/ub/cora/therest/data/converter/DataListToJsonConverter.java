@@ -27,7 +27,7 @@ import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.RestDataList;
 import se.uu.ub.cora.therest.data.RestDataRecord;
 
-public final class DataListToJsonConverter extends RestDataToJsonConverter {
+public final class DataListToJsonConverter implements RestDataToJsonConverter {
 
 	private JsonBuilderFactory jsonBuilderFactory;
 	private RestDataList restRecordList;
@@ -42,11 +42,6 @@ public final class DataListToJsonConverter extends RestDataToJsonConverter {
 		this.jsonBuilderFactory = jsonFactory;
 		this.restRecordList = (RestDataList) restRecordList;
 		recordListJsonObjectBuilder = jsonFactory.createObjectBuilder();
-	}
-
-	@Override
-	public String toJson() {
-		return toJsonObjectBuilder().toJsonFormattedString();
 	}
 
 	@Override
@@ -83,7 +78,7 @@ public final class DataListToJsonConverter extends RestDataToJsonConverter {
 	private void convertRestRecordToJsonBuilder(JsonArrayBuilder recordsJsonBuilder,
 			RestData restData) {
 		RestRecordToJsonConverter converter = RestRecordToJsonConverter
-				.usingJsonFactoryForRestDataRecord(jsonBuilderFactory, (RestDataRecord) restData);
+				.usingJsonFactoryForRestDataRecord(jsonBuilderFactory, restData);
 		recordsJsonBuilder.addJsonObjectBuilder(converter.toJsonObjectBuilder());
 	}
 

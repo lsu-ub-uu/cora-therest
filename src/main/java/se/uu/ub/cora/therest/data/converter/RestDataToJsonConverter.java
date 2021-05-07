@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2021 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -21,13 +21,13 @@ package se.uu.ub.cora.therest.data.converter;
 
 import se.uu.ub.cora.json.builder.JsonObjectBuilder;
 
-//TODO: gör om till interface
-public abstract class RestDataToJsonConverter {
+public interface RestDataToJsonConverter {
 
-	public String toJson() {
+	public default String toJson() {
 		JsonObjectBuilder jsonObjectBuilder = toJsonObjectBuilder();
 		return jsonObjectBuilder.toJsonFormattedString();
 	}
 
-	public abstract JsonObjectBuilder toJsonObjectBuilder();
+	JsonObjectBuilder toJsonObjectBuilder();
+
 }

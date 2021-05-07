@@ -23,13 +23,13 @@ import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.JsonObjectBuilder;
 import se.uu.ub.cora.therest.data.RestDataAtomic;
 
-public final class DataAtomicToJsonConverter extends RestDataToJsonConverter {
+public final class DataAtomicToJsonConverter implements RestDataToJsonConverter {
 
 	private RestDataAtomic restDataAtomic;
 	private JsonBuilderFactory factory;
 
-	public static RestDataToJsonConverter usingJsonFactoryForRestDataAtomic(JsonBuilderFactory factory,
-			RestDataAtomic dataAtomic) {
+	public static RestDataToJsonConverter usingJsonFactoryForRestDataAtomic(
+			JsonBuilderFactory factory, RestDataAtomic dataAtomic) {
 		return new DataAtomicToJsonConverter(factory, dataAtomic);
 	}
 
@@ -57,4 +57,5 @@ public final class DataAtomicToJsonConverter extends RestDataToJsonConverter {
 	private boolean hasNonEmptyRepeatId() {
 		return restDataAtomic.getRepeatId() != null && !"".equals(restDataAtomic.getRepeatId());
 	}
+
 }
