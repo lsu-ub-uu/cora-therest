@@ -540,7 +540,7 @@ public class RecordEndpoint {
 		return jsonToDataConverterFactory.createForJsonObject(validationInfoJson);
 	}
 
-	@GET
+	@POST
 	@Path("index/{type}")
 	@Produces("application/vnd.uub.record+json")
 	public Response indexRecordList(@HeaderParam("authToken") String headerAuthToken,
