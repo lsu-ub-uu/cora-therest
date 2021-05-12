@@ -52,7 +52,7 @@ public class TheRestDependencyProviderTest {
 	private TheRestDependencyProvider dependencyProvider;
 	private Map<String, String> initInfo;
 	private LoggerFactorySpy loggerFactorySpy;
-	private String testedBaseClassName = "SpiderDependencyProvider";
+	private String testedBaseClassName = "DependencyProviderAbstract";
 
 	@BeforeMethod
 	public void setUp() throws Exception {

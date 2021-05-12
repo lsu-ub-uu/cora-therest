@@ -25,6 +25,7 @@ import java.util.Map;
 
 import se.uu.ub.cora.logger.Logger;
 import se.uu.ub.cora.logger.LoggerProvider;
+import se.uu.ub.cora.spider.dependency.DependencyProviderAbstract;
 import se.uu.ub.cora.spider.dependency.SpiderDependencyProvider;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceFactory;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceFactoryImp;
@@ -40,7 +41,7 @@ public class TheRestModuleStarterImp implements TheRestModuleStarter {
 	private Map<String, String> initInfo;
 	private Logger log = LoggerProvider.getLoggerForClass(TheRestModuleStarterImp.class);
 	private Providers providers;
-	private SpiderDependencyProvider dependencyProvider;
+	private DependencyProviderAbstract dependencyProvider;
 
 	@Override
 	public void startUsingInitInfoAndProviders(Map<String, String> initInfo, Providers providers) {
@@ -93,7 +94,7 @@ public class TheRestModuleStarterImp implements TheRestModuleStarter {
 		String dependencyProviderString = initInfo.get("dependencyProviderClassName");
 		Constructor<?> constructor = Class.forName(dependencyProviderString)
 				.getConstructor(Map.class);
-		dependencyProvider = (SpiderDependencyProvider) constructor.newInstance(initInfo);
+		dependencyProvider = (DependencyProviderAbstract) constructor.newInstance(initInfo);
 	}
 
 	private void createAndSetFactoryInSpiderInstanceProvider() {
