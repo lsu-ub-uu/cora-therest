@@ -453,14 +453,6 @@ public class RecordEndpointTest {
 	}
 
 	@Test
-	public void testUpdateRecordPassesValueToinstanceProvider() {
-		response = recordEndpoint.updateRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001,
-				defaultJson);
-
-		assertEquals(spiderInstanceFactorySpy.recordType, PLACE);
-	}
-
-	@Test
 	public void testUpdateRecordUnauthorized() {
 		response = recordEndpoint.updateRecordUsingAuthTokenWithRecord(DUMMY_NON_AUTHORIZED_TOKEN,
 				PLACE, PLACE_0001, defaultJson);
@@ -519,14 +511,6 @@ public class RecordEndpointTest {
 		response = recordEndpoint.createRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultJson);
 		assertResponseStatusIs(Response.Status.CREATED);
 		assertTrue(response.getLocation().toString().startsWith("record/" + PLACE));
-	}
-
-	@Test
-	public void testCreateRecordPassesValueToinstanceProvider() {
-		response = recordEndpoint.createRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultJson);
-		assertResponseStatusIs(Response.Status.CREATED);
-
-		assertEquals(spiderInstanceFactorySpy.recordType, PLACE);
 	}
 
 	@Test
