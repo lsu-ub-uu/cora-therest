@@ -33,7 +33,7 @@
 	
 	<properties>
 		<json.version>2.2.0</json.version>
-		<spider.version>4.8-SNAPSHOT</spider.version>
+		<spider.version>5.0-SNAPSHOT</spider.version>
 		<jaxb-api.version>2.3.1</jaxb-api.version>
 		<servlet-api.version>4.0.1</servlet-api.version>
 		<jersey.version>2.32</jersey.version>
