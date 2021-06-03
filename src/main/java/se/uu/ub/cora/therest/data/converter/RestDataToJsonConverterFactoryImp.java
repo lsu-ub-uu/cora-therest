@@ -27,6 +27,7 @@ import se.uu.ub.cora.therest.data.RestDataAttribute;
 import se.uu.ub.cora.therest.data.RestDataElement;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.RestDataList;
+import se.uu.ub.cora.therest.data.RestDataRecord;
 import se.uu.ub.cora.therest.data.RestDataRecordLink;
 import se.uu.ub.cora.therest.data.RestDataResourceLink;
 
@@ -60,10 +61,10 @@ public class RestDataToJsonConverterFactoryImp implements RestDataToJsonConverte
 	public RestDataToJsonConverter createForRestData(RestData restData) {
 		OrgJsonBuilderFactoryAdapter orgJsonBuilderFactoryAdapter = new OrgJsonBuilderFactoryAdapter();
 		if (restData instanceof RestDataList) {
-			return DataListToJsonConverter
-					.usingJsonFactoryForRestDataList(orgJsonBuilderFactoryAdapter, restData);
+			return DataListToJsonConverter.usingJsonFactoryForRestDataList(
+					orgJsonBuilderFactoryAdapter, (RestDataList) restData);
 		}
-		return RestRecordToJsonConverter
-				.usingJsonFactoryForRestDataRecord(orgJsonBuilderFactoryAdapter, restData);
+		return RestRecordToJsonConverter.usingJsonFactoryForRestDataRecord(
+				orgJsonBuilderFactoryAdapter, (RestDataRecord) restData);
 	}
 }
