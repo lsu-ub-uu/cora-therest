@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2021 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -35,19 +35,21 @@ public class DataRecordToJsonConverterTest {
 
 	private RestDataRecord restDataRecord;
 	private RestDataGroup restDataGroup;
+	private RestDataToJsonConverterFactory dataToJsonConverterFactory;
 
 	@BeforeMethod
 	public void setUp() {
 		restDataGroup = RestDataGroup.withNameInData("groupNameInData");
 		restDataRecord = RestDataRecord.withRestDataGroup(restDataGroup);
-
+		dataToJsonConverterFactory = new RestDataToJsonConverterFactoryImp();
 	}
 
 	@Test
 	public void testToJson() {
 		JsonBuilderFactory jsonFactory = new OrgJsonBuilderFactoryAdapter();
 		RestRecordToJsonConverter dataRecordToJsonConverter = RestRecordToJsonConverter
-				.usingJsonFactoryForRestDataRecord(jsonFactory, restDataRecord);
+				.usingJsonFactoryForRestDataRecord(dataToJsonConverterFactory, jsonFactory,
+						restDataRecord);
 		String jsonString = dataRecordToJsonConverter.toJson();
 
 		assertEquals(jsonString, "{\"record\":{\"data\":{\"name\":\"groupNameInData\"}}}");
@@ -59,7 +61,8 @@ public class DataRecordToJsonConverterTest {
 
 		JsonBuilderFactory jsonFactory = new OrgJsonBuilderFactoryAdapter();
 		RestRecordToJsonConverter dataRecordToJsonConverter = RestRecordToJsonConverter
-				.usingJsonFactoryForRestDataRecord(jsonFactory, restDataRecord);
+				.usingJsonFactoryForRestDataRecord(dataToJsonConverterFactory, jsonFactory,
+						restDataRecord);
 		String jsonString = dataRecordToJsonConverter.toJson();
 
 		assertEquals(jsonString, "{\"record\":{\"data\":{\"name\":\"groupNameInData\"}"
@@ -74,7 +77,8 @@ public class DataRecordToJsonConverterTest {
 
 		JsonBuilderFactory jsonFactory = new OrgJsonBuilderFactoryAdapter();
 		RestRecordToJsonConverter dataRecordToJsonConverter = RestRecordToJsonConverter
-				.usingJsonFactoryForRestDataRecord(jsonFactory, restDataRecord);
+				.usingJsonFactoryForRestDataRecord(dataToJsonConverterFactory, jsonFactory,
+						restDataRecord);
 		String jsonString = dataRecordToJsonConverter.toJson();
 
 		assertEquals(jsonString, "{\"record\":{\"data\":{\"name\":\"groupNameInData\"}"
@@ -87,7 +91,8 @@ public class DataRecordToJsonConverterTest {
 
 		JsonBuilderFactory jsonFactory = new OrgJsonBuilderFactoryAdapter();
 		RestRecordToJsonConverter dataRecordToJsonConverter = RestRecordToJsonConverter
-				.usingJsonFactoryForRestDataRecord(jsonFactory, restDataRecord);
+				.usingJsonFactoryForRestDataRecord(dataToJsonConverterFactory, jsonFactory,
+						restDataRecord);
 		String jsonString = dataRecordToJsonConverter.toJson();
 
 		assertEquals(jsonString,
@@ -114,7 +119,8 @@ public class DataRecordToJsonConverterTest {
 
 		JsonBuilderFactory jsonFactory = new OrgJsonBuilderFactoryAdapter();
 		RestRecordToJsonConverter dataRecordToJsonConverter = RestRecordToJsonConverter
-				.usingJsonFactoryForRestDataRecord(jsonFactory, restDataRecord);
+				.usingJsonFactoryForRestDataRecord(dataToJsonConverterFactory, jsonFactory,
+						restDataRecord);
 		String jsonString = dataRecordToJsonConverter.toJson();
 
 		assertEquals(jsonString,
@@ -128,7 +134,8 @@ public class DataRecordToJsonConverterTest {
 
 		JsonBuilderFactory jsonFactory = new OrgJsonBuilderFactoryAdapter();
 		RestRecordToJsonConverter dataRecordToJsonConverter = RestRecordToJsonConverter
-				.usingJsonFactoryForRestDataRecord(jsonFactory, restDataRecord);
+				.usingJsonFactoryForRestDataRecord(dataToJsonConverterFactory, jsonFactory,
+						restDataRecord);
 		String jsonString = dataRecordToJsonConverter.toJson();
 
 		assertEquals(jsonString,
@@ -144,7 +151,8 @@ public class DataRecordToJsonConverterTest {
 
 		JsonBuilderFactory jsonFactory = new OrgJsonBuilderFactoryAdapter();
 		RestRecordToJsonConverter dataRecordToJsonConverter = RestRecordToJsonConverter
-				.usingJsonFactoryForRestDataRecord(jsonFactory, restDataRecord);
+				.usingJsonFactoryForRestDataRecord(dataToJsonConverterFactory, jsonFactory,
+						restDataRecord);
 		String jsonString = dataRecordToJsonConverter.toJson();
 
 		assertEquals(jsonString,

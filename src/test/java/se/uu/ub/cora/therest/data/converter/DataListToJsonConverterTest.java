@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2021 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -21,6 +21,7 @@ package se.uu.ub.cora.therest.data.converter;
 
 import static org.testng.Assert.assertEquals;
 
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
@@ -30,6 +31,13 @@ import se.uu.ub.cora.therest.data.RestDataList;
 import se.uu.ub.cora.therest.data.RestDataRecord;
 
 public class DataListToJsonConverterTest {
+	private RestDataToJsonConverterFactory dataToJsonConverterFactory;
+
+	@BeforeMethod
+	public void beforeMethod() {
+		dataToJsonConverterFactory = new RestDataToJsonConverterFactoryImp();
+	}
+
 	@Test
 	public void testToJson() {
 		RestDataList restDataList = RestDataList.withContainDataOfType("place");
@@ -41,7 +49,9 @@ public class DataListToJsonConverterTest {
 		restDataList.setToNo("1");
 
 		JsonBuilderFactory jsonFactory = new OrgJsonBuilderFactoryAdapter();
-		DataListToJsonConverter recordListToJsonConverter = DataListToJsonConverter.usingJsonFactoryForRestDataList(jsonFactory, restDataList);
+		DataListToJsonConverter recordListToJsonConverter = DataListToJsonConverter
+				.usingJsonFactoryForRestDataList(dataToJsonConverterFactory, jsonFactory,
+						restDataList);
 		String jsonString = recordListToJsonConverter.toJson();
 		assertEquals(jsonString,
 				"{\"dataList\":{\"fromNo\":\"0\",\""
@@ -59,12 +69,13 @@ public class DataListToJsonConverterTest {
 		restDataList.setToNo("1");
 
 		JsonBuilderFactory jsonFactory = new OrgJsonBuilderFactoryAdapter();
-		DataListToJsonConverter recordListToJsonConverter = DataListToJsonConverter.usingJsonFactoryForRestDataList(jsonFactory, restDataList);
+		DataListToJsonConverter recordListToJsonConverter = DataListToJsonConverter
+				.usingJsonFactoryForRestDataList(dataToJsonConverterFactory, jsonFactory,
+						restDataList);
 		String jsonString = recordListToJsonConverter.toJson();
 		assertEquals(jsonString,
 				"{\"dataList\":{\"fromNo\":\"0\",\"" + "data\":[{\"name\":\"groupId\"}],"
 						+ "\"totalNo\":\"1\",\"containDataOfType\":\"place\",\"toNo\":\"1\"}}");
 	}
-
 
 }

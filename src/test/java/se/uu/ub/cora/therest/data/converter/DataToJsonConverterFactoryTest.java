@@ -116,8 +116,10 @@ public class DataToJsonConverterFactoryTest {
 		RestDataList restDataList = RestDataList.withContainDataOfType("someRecordType");
 		DataListToJsonConverter converter = (DataListToJsonConverter) dataToJsonConverterFactory
 				.createForRestData(restDataList);
+		assertEquals(converter.getDataToJsonConverterFactory(), dataToJsonConverterFactory);
 		assertEquals(converter.getRestDataList(), restDataList);
 		assertTrue(converter.getJsonBuilderFactory() instanceof OrgJsonBuilderFactoryAdapter);
+		// TODO: check addeed dependency
 	}
 
 	@Test
@@ -125,7 +127,9 @@ public class DataToJsonConverterFactoryTest {
 		RestDataRecord restDataRecord = RestDataRecord.withRestDataGroup(null);
 		RestRecordToJsonConverter converter = (RestRecordToJsonConverter) dataToJsonConverterFactory
 				.createForRestData(restDataRecord);
+		assertEquals(converter.getDataToJsonConverterFactory(), dataToJsonConverterFactory);
 		assertEquals(converter.getRestDataRecord(), restDataRecord);
 		assertTrue(converter.getJsonBuilderFactory() instanceof OrgJsonBuilderFactoryAdapter);
+		// TODO: check addeed dependency
 	}
 }
