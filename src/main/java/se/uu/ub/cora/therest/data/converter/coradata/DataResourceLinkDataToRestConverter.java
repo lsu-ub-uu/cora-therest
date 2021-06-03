@@ -35,13 +35,16 @@ public final class DataResourceLinkDataToRestConverter extends DataGroupDataToRe
 	private RestDataResourceLink restDataResourceLink;
 
 	public static DataResourceLinkDataToRestConverter fromDataResourceLinkWithConverterInfo(
+			DataGroupToRestConverterFactory dataGroupToRestConverterFactory,
 			DataResourceLink dataResourceLink, ConverterInfo converterInfo) {
-		return new DataResourceLinkDataToRestConverter(dataResourceLink, converterInfo);
+		return new DataResourceLinkDataToRestConverter(dataGroupToRestConverterFactory,
+				dataResourceLink, converterInfo);
 	}
 
-	private DataResourceLinkDataToRestConverter(DataResourceLink dataResourceLink,
-			ConverterInfo converterInfo) {
-		super(dataResourceLink, converterInfo);
+	private DataResourceLinkDataToRestConverter(
+			DataGroupToRestConverterFactory dataGroupToRestConverterFactory,
+			DataResourceLink dataResourceLink, ConverterInfo converterInfo) {
+		super(dataGroupToRestConverterFactory, dataResourceLink, converterInfo);
 		this.dataResourceLink = dataResourceLink;
 	}
 
