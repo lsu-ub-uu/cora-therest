@@ -74,8 +74,10 @@ public class DataGroupDataToRestConverter implements DataToRestConverter {
 
 	private RestDataElement convertToElementEquivalentDataClass(DataElement dataElement) {
 		if (dataElement instanceof DataRecordLink) {
+			DataGroupToRestConverterFactoryImp dataGroupToRestConverterFactoryImp = new DataGroupToRestConverterFactoryImp();
 			return DataRecordLinkToRestConverter
-					.fromDataRecordLinkWithConverterInfo((DataRecordLink) dataElement, convertInfo)
+					.fromDataRecordLinkWithConverterInfo(dataGroupToRestConverterFactoryImp,
+							(DataRecordLink) dataElement, convertInfo)
 					.toRest();
 		}
 		if (dataElement instanceof DataResourceLink) {

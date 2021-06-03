@@ -60,10 +60,6 @@ public final class RestRecordToJsonConverter implements RestDataToJsonConverter 
 	}
 
 	private void convertMainRestDataGroup() {
-		// TODO: send in in constructor instead of creating new
-		// RestDataToJsonConverterFactory dataToJsonConverterFactory = new
-		// RestDataToJsonConverterFactoryImp();
-		// RestDataToJsonConverterFactory dataToJsonConverterFactory = null;
 		RestDataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForRestDataElement(jsonBuilderFactory, restDataRecord.getRestDataGroup());
 		JsonObjectBuilder jsonDataGroupObjectBuilder = dataToJsonConverter.toJsonObjectBuilder();
