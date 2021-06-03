@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2015, 2021 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -33,12 +33,13 @@ import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.RestDataRecordLink;
 import se.uu.ub.cora.therest.data.RestDataResourceLink;
 import se.uu.ub.cora.therest.data.converter.ConverterException;
+import se.uu.ub.cora.therest.data.converter.RestToDataConverter;
 
-public class DataGroupRestToDataConverter {
+public class DataGroupRestToDataConverter implements RestToDataConverter {
 	protected RestDataGroup restDataGroup;
 	protected DataGroup dataGroup;
 
-	public static DataGroupRestToDataConverter fromRestDataGroup(RestDataGroup restDataGroup) {
+	public static RestToDataConverter fromRestDataGroup(RestDataGroup restDataGroup) {
 		return new DataGroupRestToDataConverter(restDataGroup);
 	}
 
@@ -46,6 +47,7 @@ public class DataGroupRestToDataConverter {
 		this.restDataGroup = restDataGroup;
 	}
 
+	@Override
 	public DataGroup convert() {
 		try {
 			return tryToConvert();
@@ -121,6 +123,11 @@ public class DataGroupRestToDataConverter {
 		DataAtomic dataAtomic = DataAtomicRestToDataConverter
 				.fromRestDataAtomic((RestDataAtomic) restDataElement).convert();
 		dataGroup.addChild(dataAtomic);
+	}
+
+	public RestDataGroup getRestDataGroup() {
+		// needed for test
+		return restDataGroup;
 	}
 
 }

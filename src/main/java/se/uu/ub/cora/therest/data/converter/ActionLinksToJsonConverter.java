@@ -26,7 +26,7 @@ import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.JsonObjectBuilder;
 import se.uu.ub.cora.therest.data.ActionLink;
 
-public class ActionLinksToJsonConverter extends DataToJsonConverter {
+public class ActionLinksToJsonConverter implements RestDataToJsonConverter {
 
 	private Map<String, ActionLink> actionLinks;
 	private JsonBuilderFactory jsonBuilderFactory;
@@ -62,11 +62,14 @@ public class ActionLinksToJsonConverter extends DataToJsonConverter {
 		}
 	}
 
-	private void possiblyAddBodyToBuilder(ActionLink actionLink, JsonObjectBuilder internalLinkBuilder) {
-		if(actionLinkHasBody(actionLink)) {
-            DataGroupToJsonConverter dataGroupToJsonConverter = DataGroupToJsonConverter.usingJsonFactoryForRestDataGroup(jsonBuilderFactory, actionLink.getBody());
-            internalLinkBuilder.addKeyJsonObjectBuilder("body", dataGroupToJsonConverter.toJsonObjectBuilder());
-        }
+	private void possiblyAddBodyToBuilder(ActionLink actionLink,
+			JsonObjectBuilder internalLinkBuilder) {
+		if (actionLinkHasBody(actionLink)) {
+			DataGroupToJsonConverter dataGroupToJsonConverter = DataGroupToJsonConverter
+					.usingJsonFactoryForRestDataGroup(jsonBuilderFactory, actionLink.getBody());
+			internalLinkBuilder.addKeyJsonObjectBuilder("body",
+					dataGroupToJsonConverter.toJsonObjectBuilder());
+		}
 	}
 
 	private boolean actionLinkHasBody(ActionLink actionLink) {

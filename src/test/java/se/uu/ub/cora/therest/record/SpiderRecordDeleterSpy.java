@@ -21,10 +21,10 @@ package se.uu.ub.cora.therest.record;
 
 import se.uu.ub.cora.spider.authorization.AuthorizationException;
 import se.uu.ub.cora.spider.record.MisuseException;
-import se.uu.ub.cora.spider.record.SpiderRecordDeleter;
+import se.uu.ub.cora.spider.record.RecordDeleter;
 import se.uu.ub.cora.storage.RecordNotFoundException;
 
-public class SpiderRecordDeleterSpy implements SpiderRecordDeleter {
+public class SpiderRecordDeleterSpy implements RecordDeleter {
 
 	public String authToken;
 	public String type;

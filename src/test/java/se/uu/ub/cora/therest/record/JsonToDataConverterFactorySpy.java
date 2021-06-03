@@ -16,23 +16,26 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.therest.data.converter.coradata;
+package se.uu.ub.cora.therest.record;
 
-import se.uu.ub.cora.data.DataList;
-import se.uu.ub.cora.data.DataRecord;
+import java.util.ArrayList;
+import java.util.List;
 
-public class DataToRestConverterFactoryImp implements DataToRestConverterFactory {
+import se.uu.ub.cora.json.parser.JsonValue;
+import se.uu.ub.cora.therest.data.converter.JsonToDataConverter;
+import se.uu.ub.cora.therest.data.converter.JsonToDataConverterFactory;
+
+public class JsonToDataConverterFactorySpy implements JsonToDataConverterFactory {
+
+	public List<JsonValue> jsonValues = new ArrayList<>();
+	public List<JsonToDataConverterSpy> jsonToDataConverterSpies = new ArrayList<>();
 
 	@Override
-	public DataToRestConverter factorForDataRecord(DataRecord record, String url) {
-		DataGroupToRestConverterFactory converterFactory = new DataGroupToRestConverterFactoryImp();
-		return DataRecordToRestConverter.fromDataRecordWithBaseURLAndConverterFactory(record, url,
-				converterFactory);
-	}
-
-	@Override
-	public DataToRestConverter factorForDataList(DataList recordList, String url) {
-		return DataListDataToRestConverter.fromDataListWithBaseURL(recordList, url);
+	public JsonToDataConverter createForJsonObject(JsonValue jsonValue) {
+		jsonValues.add(jsonValue);
+		JsonToDataConverterSpy jsonToDataConverterSpy = new JsonToDataConverterSpy();
+		jsonToDataConverterSpies.add(jsonToDataConverterSpy);
+		return jsonToDataConverterSpy;
 	}
 
 }
