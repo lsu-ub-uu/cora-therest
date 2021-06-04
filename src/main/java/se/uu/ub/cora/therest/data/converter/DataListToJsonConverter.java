@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2021 Uppsala University Library
+ * Copyright 2015 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -32,17 +32,13 @@ public final class DataListToJsonConverter implements RestDataToJsonConverter {
 	private JsonBuilderFactory jsonBuilderFactory;
 	private RestDataList restRecordList;
 	private JsonObjectBuilder recordListJsonObjectBuilder;
-	private RestDataToJsonConverterFactory dataToJsonConverterFactory;
 
 	public static DataListToJsonConverter usingJsonFactoryForRestDataList(
-			RestDataToJsonConverterFactory dataToJsonConverterFactory,
 			JsonBuilderFactory jsonFactory, RestDataList restRecordList) {
-		return new DataListToJsonConverter(dataToJsonConverterFactory, jsonFactory, restRecordList);
+		return new DataListToJsonConverter(jsonFactory, restRecordList);
 	}
 
-	private DataListToJsonConverter(RestDataToJsonConverterFactory dataToJsonConverterFactory,
-			JsonBuilderFactory jsonFactory, RestDataList restRecordList) {
-		this.dataToJsonConverterFactory = dataToJsonConverterFactory;
+	private DataListToJsonConverter(JsonBuilderFactory jsonFactory, RestDataList restRecordList) {
 		this.jsonBuilderFactory = jsonFactory;
 		this.restRecordList = restRecordList;
 		recordListJsonObjectBuilder = jsonFactory.createObjectBuilder();
@@ -82,8 +78,7 @@ public final class DataListToJsonConverter implements RestDataToJsonConverter {
 	private void convertRestRecordToJsonBuilder(JsonArrayBuilder recordsJsonBuilder,
 			RestDataRecord restData) {
 		RestRecordToJsonConverter converter = RestRecordToJsonConverter
-				.usingJsonFactoryForRestDataRecord(dataToJsonConverterFactory, jsonBuilderFactory,
-						restData);
+				.usingJsonFactoryForRestDataRecord(jsonBuilderFactory, restData);
 		recordsJsonBuilder.addJsonObjectBuilder(converter.toJsonObjectBuilder());
 	}
 
@@ -92,11 +87,6 @@ public final class DataListToJsonConverter implements RestDataToJsonConverter {
 		DataGroupToJsonConverter converter = DataGroupToJsonConverter
 				.usingJsonFactoryForRestDataGroup(jsonBuilderFactory, (RestDataGroup) restData);
 		recordsJsonBuilder.addJsonObjectBuilder(converter.toJsonObjectBuilder());
-	}
-
-	RestDataToJsonConverterFactory getDataToJsonConverterFactory() {
-		// needed for test
-		return dataToJsonConverterFactory;
 	}
 
 	RestDataList getRestDataList() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2021 Uppsala University Library
+ * Copyright 2015 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -61,10 +61,10 @@ public class RestDataToJsonConverterFactoryImp implements RestDataToJsonConverte
 	public RestDataToJsonConverter createForRestData(RestData restData) {
 		OrgJsonBuilderFactoryAdapter orgJsonBuilderFactoryAdapter = new OrgJsonBuilderFactoryAdapter();
 		if (restData instanceof RestDataList) {
-			return DataListToJsonConverter.usingJsonFactoryForRestDataList(this,
+			return DataListToJsonConverter.usingJsonFactoryForRestDataList(
 					orgJsonBuilderFactoryAdapter, (RestDataList) restData);
 		}
-		return RestRecordToJsonConverter.usingJsonFactoryForRestDataRecord(this,
+		return RestRecordToJsonConverter.usingJsonFactoryForRestDataRecord(
 				orgJsonBuilderFactoryAdapter, (RestDataRecord) restData);
 	}
 }

@@ -33,18 +33,14 @@ public final class RestRecordToJsonConverter implements RestDataToJsonConverter 
 	private JsonBuilderFactory jsonBuilderFactory;
 	private RestDataRecord restDataRecord;
 	private JsonObjectBuilder recordJsonObjectBuilder;
-	private RestDataToJsonConverterFactory dataToJsonConverterFactory;
 
 	public static RestRecordToJsonConverter usingJsonFactoryForRestDataRecord(
-			RestDataToJsonConverterFactory dataToJsonConverterFactory,
 			JsonBuilderFactory jsonFactory, RestDataRecord restDataRecord) {
-		return new RestRecordToJsonConverter(dataToJsonConverterFactory, jsonFactory,
-				restDataRecord);
+		return new RestRecordToJsonConverter(jsonFactory, restDataRecord);
 	}
 
-	private RestRecordToJsonConverter(RestDataToJsonConverterFactory dataToJsonConverterFactory,
-			JsonBuilderFactory jsonFactory, RestDataRecord restDataRecord) {
-		this.dataToJsonConverterFactory = dataToJsonConverterFactory;
+	private RestRecordToJsonConverter(JsonBuilderFactory jsonFactory,
+			RestDataRecord restDataRecord) {
 		this.jsonBuilderFactory = jsonFactory;
 		this.restDataRecord = restDataRecord;
 		recordJsonObjectBuilder = jsonFactory.createObjectBuilder();
@@ -60,10 +56,7 @@ public final class RestRecordToJsonConverter implements RestDataToJsonConverter 
 	}
 
 	private void convertMainRestDataGroup() {
-		// TODO: send in in constructor instead of creating new
-		// RestDataToJsonConverterFactory dataToJsonConverterFactory = new
-		// RestDataToJsonConverterFactoryImp();
-		// RestDataToJsonConverterFactory dataToJsonConverterFactory = null;
+		RestDataToJsonConverterFactory dataToJsonConverterFactory = new RestDataToJsonConverterFactoryImp();
 		RestDataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForRestDataElement(jsonBuilderFactory, restDataRecord.getRestDataGroup());
 		JsonObjectBuilder jsonDataGroupObjectBuilder = dataToJsonConverter.toJsonObjectBuilder();
@@ -164,11 +157,6 @@ public final class RestRecordToJsonConverter implements RestDataToJsonConverter 
 		JsonObjectBuilder rootWrappingJsonObjectBuilder = jsonBuilderFactory.createObjectBuilder();
 		rootWrappingJsonObjectBuilder.addKeyJsonObjectBuilder("record", recordJsonObjectBuilder);
 		return rootWrappingJsonObjectBuilder;
-	}
-
-	RestDataToJsonConverterFactory getDataToJsonConverterFactory() {
-		// needed for test
-		return dataToJsonConverterFactory;
 	}
 
 	JsonBuilderFactory getJsonBuilderFactory() {
