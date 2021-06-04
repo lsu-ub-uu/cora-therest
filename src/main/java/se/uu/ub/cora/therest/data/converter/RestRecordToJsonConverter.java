@@ -26,6 +26,7 @@ import se.uu.ub.cora.json.builder.JsonArrayBuilder;
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.JsonObjectBuilder;
 import se.uu.ub.cora.therest.data.ActionLink;
+import se.uu.ub.cora.therest.data.RestData;
 import se.uu.ub.cora.therest.data.RestDataRecord;
 
 public final class RestRecordToJsonConverter implements RestDataToJsonConverter {
@@ -35,14 +36,13 @@ public final class RestRecordToJsonConverter implements RestDataToJsonConverter 
 	private JsonObjectBuilder recordJsonObjectBuilder;
 
 	public static RestRecordToJsonConverter usingJsonFactoryForRestDataRecord(
-			JsonBuilderFactory jsonFactory, RestDataRecord restDataRecord) {
+			JsonBuilderFactory jsonFactory, RestData restDataRecord) {
 		return new RestRecordToJsonConverter(jsonFactory, restDataRecord);
 	}
 
-	private RestRecordToJsonConverter(JsonBuilderFactory jsonFactory,
-			RestDataRecord restDataRecord) {
+	private RestRecordToJsonConverter(JsonBuilderFactory jsonFactory, RestData restDataRecord) {
 		this.jsonBuilderFactory = jsonFactory;
-		this.restDataRecord = restDataRecord;
+		this.restDataRecord = (RestDataRecord) restDataRecord;
 		recordJsonObjectBuilder = jsonFactory.createObjectBuilder();
 	}
 

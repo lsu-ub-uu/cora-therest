@@ -34,13 +34,13 @@ public final class DataListToJsonConverter implements RestDataToJsonConverter {
 	private JsonObjectBuilder recordListJsonObjectBuilder;
 
 	public static DataListToJsonConverter usingJsonFactoryForRestDataList(
-			JsonBuilderFactory jsonFactory, RestDataList restRecordList) {
+			JsonBuilderFactory jsonFactory, RestData restRecordList) {
 		return new DataListToJsonConverter(jsonFactory, restRecordList);
 	}
 
-	private DataListToJsonConverter(JsonBuilderFactory jsonFactory, RestDataList restRecordList) {
+	private DataListToJsonConverter(JsonBuilderFactory jsonFactory, RestData restRecordList) {
 		this.jsonBuilderFactory = jsonFactory;
-		this.restRecordList = restRecordList;
+		this.restRecordList = (RestDataList) restRecordList;
 		recordListJsonObjectBuilder = jsonFactory.createObjectBuilder();
 	}
 
@@ -69,14 +69,14 @@ public final class DataListToJsonConverter implements RestDataToJsonConverter {
 
 	private void convertRestToJsonBuilder(JsonArrayBuilder recordsJsonBuilder, RestData restData) {
 		if (restData instanceof RestDataRecord) {
-			convertRestRecordToJsonBuilder(recordsJsonBuilder, (RestDataRecord) restData);
+			convertRestRecordToJsonBuilder(recordsJsonBuilder, restData);
 		} else {
 			convertRestGroupToJsonBuilder(recordsJsonBuilder, restData);
 		}
 	}
 
 	private void convertRestRecordToJsonBuilder(JsonArrayBuilder recordsJsonBuilder,
-			RestDataRecord restData) {
+			RestData restData) {
 		RestRecordToJsonConverter converter = RestRecordToJsonConverter
 				.usingJsonFactoryForRestDataRecord(jsonBuilderFactory, restData);
 		recordsJsonBuilder.addJsonObjectBuilder(converter.toJsonObjectBuilder());
