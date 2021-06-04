@@ -36,21 +36,16 @@ public final class DataRecordLinkToRestConverter {
 	private DataRecordLink dataRecordLink;
 	private ConverterInfo converterInfo;
 	private RestDataRecordLink restDataRecordLink;
-	private DataGroupToRestConverterFactory dataGroupToRestConverterFactory;
 
-	private DataRecordLinkToRestConverter(
-			DataGroupToRestConverterFactory dataGroupToRestConverterFactory,
-			DataRecordLink dataRecordLink, ConverterInfo converterInfo) {
-		this.dataGroupToRestConverterFactory = dataGroupToRestConverterFactory;
+	private DataRecordLinkToRestConverter(DataRecordLink dataRecordLink,
+			ConverterInfo converterInfo) {
 		this.dataRecordLink = dataRecordLink;
 		this.converterInfo = converterInfo;
 	}
 
 	public static DataRecordLinkToRestConverter fromDataRecordLinkWithConverterInfo(
-			DataGroupToRestConverterFactory dataGroupToRestConverterFactory,
 			DataRecordLink dataRecordLink, ConverterInfo converterInfo) {
-		return new DataRecordLinkToRestConverter(dataGroupToRestConverterFactory, dataRecordLink,
-				converterInfo);
+		return new DataRecordLinkToRestConverter(dataRecordLink, converterInfo);
 	}
 
 	public RestDataRecordLink toRest() {
@@ -112,10 +107,9 @@ public final class DataRecordLinkToRestConverter {
 		if (dataRecordLink.containsChildWithNameInData("linkedPath")) {
 			DataGroup linkedPath = (DataGroup) dataRecordLink
 					.getFirstChildWithNameInData("linkedPath");
-			DataToRestConverter dataGroupToRestConverter = dataGroupToRestConverterFactory
-					.factorForDataGroupWithConverterInfo(linkedPath, converterInfo);
-
-			RestDataGroup restLinkedPath = (RestDataGroup) dataGroupToRestConverter.toRest();
+			DataGroupDataToRestConverter dataGroupToRestConverter = DataGroupDataToRestConverter
+					.fromDataGroupWithDataGroupAndConverterInfo(linkedPath, converterInfo);
+			RestDataGroup restLinkedPath = dataGroupToRestConverter.toRest();
 
 			restDataRecordLink.addChild(restLinkedPath);
 		}

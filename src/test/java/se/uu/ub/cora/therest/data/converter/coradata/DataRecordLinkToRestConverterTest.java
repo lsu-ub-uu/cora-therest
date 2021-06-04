@@ -45,7 +45,6 @@ public class DataRecordLinkToRestConverterTest {
 
 	private DataRecordLink dataRecordLink;
 	private DataRecordLinkToRestConverter dataRecordLinkSpiderToRestConverter;
-	private DataGroupToRestConverterFactoryImp dataGroupToRestConverterFactoryImp;
 
 	@BeforeMethod
 	public void setUp() {
@@ -57,11 +56,8 @@ public class DataRecordLinkToRestConverterTest {
 		DataAtomic linkedRecordId = new DataAtomicSpy("linkedRecordId", "linkedRecordId");
 		dataRecordLink.addChild(linkedRecordId);
 
-		dataGroupToRestConverterFactoryImp = new DataGroupToRestConverterFactoryImp();
-
 		dataRecordLinkSpiderToRestConverter = DataRecordLinkToRestConverter
-				.fromDataRecordLinkWithConverterInfo(dataGroupToRestConverterFactoryImp,
-						dataRecordLink, converterInfo);
+				.fromDataRecordLinkWithConverterInfo(dataRecordLink, converterInfo);
 
 	}
 
@@ -131,8 +127,7 @@ public class DataRecordLinkToRestConverterTest {
 	@Test
 	public void testToRestWithAction() {
 		dataRecordLinkSpiderToRestConverter = DataRecordLinkToRestConverter
-				.fromDataRecordLinkWithConverterInfo(dataGroupToRestConverterFactoryImp,
-						dataRecordLink, converterInfo);
+				.fromDataRecordLinkWithConverterInfo(dataRecordLink, converterInfo);
 
 		dataRecordLink.addAction(Action.READ);
 		RestDataRecordLink restDataRecordLink = dataRecordLinkSpiderToRestConverter.toRest();
