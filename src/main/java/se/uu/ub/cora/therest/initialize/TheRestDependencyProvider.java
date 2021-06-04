@@ -32,12 +32,15 @@ import se.uu.ub.cora.solr.SolrClientProviderImp;
 import se.uu.ub.cora.solrindex.SolrRecordIndexer;
 import se.uu.ub.cora.solrsearch.SolrRecordSearch;
 import se.uu.ub.cora.spider.authentication.Authenticator;
-import se.uu.ub.cora.spider.dependency.DependencyProviderAbstract;
+import se.uu.ub.cora.spider.dependency.SpiderDependencyProvider;
 
 /**
- * TheRestDependencyProvider wires up the system for use in production as used from the Rest.
+ * SystemOneDependencyProvider wires up the system for use in "production", as this is in SystemOne
+ * production currently means using all in memory storage (stored on disk), so do NOT use this class
+ * in production as it is written today. :)
+ *
  */
-public class TheRestDependencyProvider extends DependencyProviderAbstract {
+public class TheRestDependencyProvider extends SpiderDependencyProvider {
 
 	private String gatekeeperUrl;
 	private String solrUrl;

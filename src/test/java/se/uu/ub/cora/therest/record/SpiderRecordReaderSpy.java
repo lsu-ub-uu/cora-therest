@@ -23,17 +23,16 @@ import se.uu.ub.cora.data.Action;
 import se.uu.ub.cora.data.DataRecord;
 import se.uu.ub.cora.spider.authentication.AuthenticationException;
 import se.uu.ub.cora.spider.authorization.AuthorizationException;
-import se.uu.ub.cora.spider.record.RecordReader;
+import se.uu.ub.cora.spider.record.SpiderRecordReader;
 import se.uu.ub.cora.storage.RecordNotFoundException;
 import se.uu.ub.cora.therest.data.DataRecordSpy;
 import se.uu.ub.cora.therest.testdata.DataCreator;
 
-public class SpiderRecordReaderSpy implements RecordReader {
+public class SpiderRecordReaderSpy implements SpiderRecordReader {
 
 	public String authToken;
 	public String type;
 	public String id;
-	public DataRecord dataRecord;
 
 	@Override
 	public DataRecord readRecord(String authToken, String type, String id) {
@@ -42,11 +41,11 @@ public class SpiderRecordReaderSpy implements RecordReader {
 		this.id = id;
 		possiblyThrowExceptionForRead(authToken, id);
 
-		dataRecord = new DataRecordSpy(
+		DataRecord dataGroup = new DataRecordSpy(
 				DataCreator.createRecordWithNameInDataAndIdAndTypeAndLinkedRecordId("nameInData",
 						id, type, "linkedRecordId"));
-		dataRecord.addAction(Action.READ);
-		return dataRecord;
+		dataGroup.addAction(Action.READ);
+		return dataGroup;
 	}
 
 	private void possiblyThrowExceptionForRead(String authToken, String id) {

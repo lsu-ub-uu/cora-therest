@@ -5,16 +5,15 @@ import se.uu.ub.cora.data.DataList;
 import se.uu.ub.cora.spider.authentication.AuthenticationException;
 import se.uu.ub.cora.spider.authorization.AuthorizationException;
 import se.uu.ub.cora.spider.record.DataException;
-import se.uu.ub.cora.spider.record.RecordSearcher;
+import se.uu.ub.cora.spider.record.SpiderRecordSearcher;
 import se.uu.ub.cora.storage.RecordNotFoundException;
 import se.uu.ub.cora.therest.data.DataListSpy;
 
-public class SpiderRecordSearcherSpy implements RecordSearcher {
+public class SpiderRecordSearcherSpy implements SpiderRecordSearcher {
 
 	public String authToken;
 	public String searchId;
 	public DataGroup searchData;
-	public DataList searchResult;
 
 	@Override
 	public DataList search(String authToken, String searchId, DataGroup searchData) {
@@ -22,7 +21,7 @@ public class SpiderRecordSearcherSpy implements RecordSearcher {
 		this.searchId = searchId;
 		this.searchData = searchData;
 		possiblyThrowException(authToken, searchId);
-		searchResult = new DataListSpy("mix");
+		DataList searchResult = new DataListSpy("mix");
 		searchResult.setFromNo("0");
 		searchResult.setToNo("1");
 		searchResult.setTotalNo("1");

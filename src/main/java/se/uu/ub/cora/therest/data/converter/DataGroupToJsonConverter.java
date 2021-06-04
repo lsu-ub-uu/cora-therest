@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2021 Uppsala University Library
+ * Copyright 2015 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -27,17 +27,16 @@ import se.uu.ub.cora.json.builder.JsonObjectBuilder;
 import se.uu.ub.cora.therest.data.RestDataElement;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 
-public class DataGroupToJsonConverter implements RestDataToJsonConverter {
+public class DataGroupToJsonConverter extends DataToJsonConverter {
 
 	protected RestDataGroup restDataGroup;
 	protected JsonObjectBuilder dataGroupJsonObjectBuilder;
 	protected JsonBuilderFactory jsonBuilderFactory;
 
-	protected DataGroupToJsonConverter(JsonBuilderFactory jsonBuilderFactory,
-			RestDataGroup restDataGroup) {
-		this.jsonBuilderFactory = jsonBuilderFactory;
+	protected DataGroupToJsonConverter(JsonBuilderFactory factory, RestDataGroup restDataGroup) {
+		this.jsonBuilderFactory = factory;
 		this.restDataGroup = restDataGroup;
-		dataGroupJsonObjectBuilder = jsonBuilderFactory.createObjectBuilder();
+		dataGroupJsonObjectBuilder = factory.createObjectBuilder();
 	}
 
 	public static DataGroupToJsonConverter usingJsonFactoryForRestDataGroup(
@@ -48,8 +47,12 @@ public class DataGroupToJsonConverter implements RestDataToJsonConverter {
 	@Override
 	public JsonObjectBuilder toJsonObjectBuilder() {
 		possiblyAddRepeatId();
-		possiblyAddAttributes();
-		possiblyAddChildren();
+		if (hasAttributes()) {
+			addAttributesToGroup();
+		}
+		if (hasChildren()) {
+			addChildrenToGroup();
+		}
 		dataGroupJsonObjectBuilder.addKeyString("name", restDataGroup.getNameInData());
 		return dataGroupJsonObjectBuilder;
 	}
@@ -64,12 +67,6 @@ public class DataGroupToJsonConverter implements RestDataToJsonConverter {
 		return restDataGroup.getRepeatId() != null && !"".equals(restDataGroup.getRepeatId());
 	}
 
-	private void possiblyAddAttributes() {
-		if (hasAttributes()) {
-			addAttributesToGroup();
-		}
-	}
-
 	private boolean hasAttributes() {
 		return !restDataGroup.getAttributes().isEmpty();
 	}
@@ -82,25 +79,17 @@ public class DataGroupToJsonConverter implements RestDataToJsonConverter {
 		dataGroupJsonObjectBuilder.addKeyJsonObjectBuilder("attributes", attributes);
 	}
 
-	private void possiblyAddChildren() {
-		if (hasChildren()) {
-			addChildrenToGroup();
-		}
-	}
-
 	private boolean hasChildren() {
 		return !restDataGroup.getChildren().isEmpty();
 	}
 
 	private void addChildrenToGroup() {
-		RestDataToJsonConverterFactory dataToJsonConverterFactory = new RestDataToJsonConverterFactoryImp();
+		DataToJsonConverterFactory dataToJsonConverterFactory = new DataToJsonConverterFactoryImp();
 		JsonArrayBuilder childrenArray = jsonBuilderFactory.createArrayBuilder();
-
 		for (RestDataElement restDataElement : restDataGroup.getChildren()) {
-			RestDataToJsonConverter restToJsonConverter = dataToJsonConverterFactory
-					.createForRestDataElement(jsonBuilderFactory, restDataElement);
-
-			childrenArray.addJsonObjectBuilder(restToJsonConverter.toJsonObjectBuilder());
+			childrenArray.addJsonObjectBuilder(dataToJsonConverterFactory
+					.createForRestDataElement(jsonBuilderFactory, restDataElement)
+					.toJsonObjectBuilder());
 		}
 		dataGroupJsonObjectBuilder.addKeyJsonArrayBuilder("children", childrenArray);
 	}

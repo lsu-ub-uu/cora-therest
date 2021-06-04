@@ -22,7 +22,7 @@ package se.uu.ub.cora.therest.data;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class RestDataList implements RestData {
+public final class RestDataList {
 
 	private String containDataOfType;
 	private List<RestData> dataList = new ArrayList<>();

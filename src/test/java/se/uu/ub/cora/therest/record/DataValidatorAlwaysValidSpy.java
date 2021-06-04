@@ -38,10 +38,4 @@ public class DataValidatorAlwaysValidSpy implements DataValidator {
 		return null;
 	}
 
-	@Override
-	public ValidationAnswer validateIndexSettings(String recordType, DataGroup indexSettings) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }

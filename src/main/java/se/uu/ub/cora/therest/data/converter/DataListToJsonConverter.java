@@ -27,25 +27,28 @@ import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.RestDataList;
 import se.uu.ub.cora.therest.data.RestDataRecord;
 
-public final class DataListToJsonConverter implements RestDataToJsonConverter {
+public final class DataListToJsonConverter {
+
+	public static DataListToJsonConverter usingJsonFactoryForRestDataList(
+			JsonBuilderFactory jsonFactory, RestDataList restRecordList) {
+		return new DataListToJsonConverter(jsonFactory, restRecordList);
+	}
 
 	private JsonBuilderFactory jsonBuilderFactory;
 	private RestDataList restRecordList;
 	private JsonObjectBuilder recordListJsonObjectBuilder;
 
-	public static DataListToJsonConverter usingJsonFactoryForRestDataList(
-			JsonBuilderFactory jsonFactory, RestData restRecordList) {
-		return new DataListToJsonConverter(jsonFactory, restRecordList);
-	}
-
-	private DataListToJsonConverter(JsonBuilderFactory jsonFactory, RestData restRecordList) {
+	private DataListToJsonConverter(JsonBuilderFactory jsonFactory, RestDataList restRecordList) {
 		this.jsonBuilderFactory = jsonFactory;
-		this.restRecordList = (RestDataList) restRecordList;
+		this.restRecordList = restRecordList;
 		recordListJsonObjectBuilder = jsonFactory.createObjectBuilder();
 	}
 
-	@Override
-	public JsonObjectBuilder toJsonObjectBuilder() {
+	public String toJson() {
+		return toJsonObjectBuilder().toJsonFormattedString();
+	}
+
+	JsonObjectBuilder toJsonObjectBuilder() {
 
 		recordListJsonObjectBuilder.addKeyString("totalNo", restRecordList.getTotalNo());
 		recordListJsonObjectBuilder.addKeyString("fromNo", restRecordList.getFromNo());
@@ -77,8 +80,8 @@ public final class DataListToJsonConverter implements RestDataToJsonConverter {
 
 	private void convertRestRecordToJsonBuilder(JsonArrayBuilder recordsJsonBuilder,
 			RestData restData) {
-		RestRecordToJsonConverter converter = RestRecordToJsonConverter
-				.usingJsonFactoryForRestDataRecord(jsonBuilderFactory, restData);
+		DataRecordToJsonConverter converter = DataRecordToJsonConverter
+				.usingJsonFactoryForRestDataRecord(jsonBuilderFactory, (RestDataRecord) restData);
 		recordsJsonBuilder.addJsonObjectBuilder(converter.toJsonObjectBuilder());
 	}
 
@@ -87,16 +90,6 @@ public final class DataListToJsonConverter implements RestDataToJsonConverter {
 		DataGroupToJsonConverter converter = DataGroupToJsonConverter
 				.usingJsonFactoryForRestDataGroup(jsonBuilderFactory, (RestDataGroup) restData);
 		recordsJsonBuilder.addJsonObjectBuilder(converter.toJsonObjectBuilder());
-	}
-
-	RestDataList getRestDataList() {
-		// needed for test
-		return restRecordList;
-	}
-
-	JsonBuilderFactory getJsonBuilderFactory() {
-		// needed for test
-		return jsonBuilderFactory;
 	}
 
 }

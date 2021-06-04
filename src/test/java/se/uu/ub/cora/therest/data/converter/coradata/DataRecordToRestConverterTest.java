@@ -41,21 +41,16 @@ public class DataRecordToRestConverterTest {
 	private DataGroup dataGroup;
 	private DataRecord dataRecord;
 	private DataRecordToRestConverter dataRecordSpiderToRestConverter;
-	private DataGroupToRestConverterFactorySpy converterFactory;
+	private DataToRestConverterFactorySpy converterFactory;
 
 	@BeforeMethod
 	public void setUp() {
 		dataGroup = new DataGroupSpy("someNameInData");
 		dataRecord = new DataRecordSpy(dataGroup);
-		converterFactory = new DataGroupToRestConverterFactorySpy();
+		converterFactory = new DataToRestConverterFactorySpy();
 		dataRecordSpiderToRestConverter = DataRecordToRestConverter
 				.fromDataRecordWithBaseURLAndConverterFactory(dataRecord, baseURL,
 						converterFactory);
-	}
-
-	@Test
-	public void testInit() {
-		assertTrue(dataRecordSpiderToRestConverter instanceof DataToRestConverter);
 	}
 
 	@Test

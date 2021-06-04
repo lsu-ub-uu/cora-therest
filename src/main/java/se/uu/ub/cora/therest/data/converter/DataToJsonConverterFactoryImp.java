@@ -20,20 +20,17 @@
 package se.uu.ub.cora.therest.data.converter;
 
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
-import se.uu.ub.cora.json.builder.org.OrgJsonBuilderFactoryAdapter;
-import se.uu.ub.cora.therest.data.RestData;
 import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataAttribute;
 import se.uu.ub.cora.therest.data.RestDataElement;
 import se.uu.ub.cora.therest.data.RestDataGroup;
-import se.uu.ub.cora.therest.data.RestDataList;
 import se.uu.ub.cora.therest.data.RestDataRecordLink;
 import se.uu.ub.cora.therest.data.RestDataResourceLink;
 
-public class RestDataToJsonConverterFactoryImp implements RestDataToJsonConverterFactory {
+public class DataToJsonConverterFactoryImp implements DataToJsonConverterFactory {
 
 	@Override
-	public RestDataToJsonConverter createForRestDataElement(JsonBuilderFactory factory,
+	public DataToJsonConverter createForRestDataElement(JsonBuilderFactory factory,
 			RestDataElement restDataElement) {
 
 		if (restDataElement instanceof RestDataGroup) {
@@ -54,16 +51,5 @@ public class RestDataToJsonConverterFactoryImp implements RestDataToJsonConverte
 		}
 		return DataAttributeToJsonConverter.usingJsonFactoryForRestDataAttribute(factory,
 				(RestDataAttribute) restDataElement);
-	}
-
-	@Override
-	public RestDataToJsonConverter createForRestData(RestData restData) {
-		OrgJsonBuilderFactoryAdapter orgJsonBuilderFactoryAdapter = new OrgJsonBuilderFactoryAdapter();
-		if (restData instanceof RestDataList) {
-			return DataListToJsonConverter
-					.usingJsonFactoryForRestDataList(orgJsonBuilderFactoryAdapter, restData);
-		}
-		return RestRecordToJsonConverter
-				.usingJsonFactoryForRestDataRecord(orgJsonBuilderFactoryAdapter, restData);
 	}
 }

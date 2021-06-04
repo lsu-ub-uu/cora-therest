@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Uppsala University Library
+ * Copyright 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -18,21 +18,26 @@
  */
 package se.uu.ub.cora.therest.data.converter.coradata;
 
-import se.uu.ub.cora.data.DataList;
-import se.uu.ub.cora.data.DataRecord;
+import java.util.List;
+
+import se.uu.ub.cora.data.Action;
+import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.therest.data.converter.ConverterInfo;
 
 public class DataToRestConverterFactoryImp implements DataToRestConverterFactory {
 
 	@Override
-	public DataToRestConverter factorForDataRecord(DataRecord record, String url) {
-		DataGroupToRestConverterFactory converterFactory = new DataGroupToRestConverterFactoryImp();
-		return DataRecordToRestConverter.fromDataRecordWithBaseURLAndConverterFactory(record, url,
-				converterFactory);
+	public DataToRestConverter factorForDataGroupWithConverterInfo(DataGroup dataGroup,
+			ConverterInfo converterInfo) {
+		return DataGroupDataToRestConverter
+				.fromDataGroupWithDataGroupAndConverterInfo(dataGroup, converterInfo);
 	}
 
 	@Override
-	public DataToRestConverter factorForDataList(DataList recordList, String url) {
-		return DataListDataToRestConverter.fromDataListWithBaseURL(recordList, url);
+	public ActionDataToRestConverter factorForActionsUsingConverterInfoAndDataGroup(
+			List<Action> actions, ConverterInfo converterInfo, DataGroup dataGroup) {
+		return ActionDataToRestConverterImp.fromDataActionsWithConverterInfoAndDataGroup(
+				actions, converterInfo, dataGroup);
 	}
 
 }

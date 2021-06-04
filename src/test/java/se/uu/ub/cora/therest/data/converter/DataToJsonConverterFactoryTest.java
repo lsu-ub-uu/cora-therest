@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2021 Uppsala University Library
+ * Copyright 2015 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -19,7 +19,6 @@
 
 package se.uu.ub.cora.therest.data.converter;
 
-import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
 import org.testng.annotations.BeforeMethod;
@@ -31,18 +30,16 @@ import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataAttribute;
 import se.uu.ub.cora.therest.data.RestDataElement;
 import se.uu.ub.cora.therest.data.RestDataGroup;
-import se.uu.ub.cora.therest.data.RestDataList;
-import se.uu.ub.cora.therest.data.RestDataRecord;
 import se.uu.ub.cora.therest.data.RestDataRecordLink;
 import se.uu.ub.cora.therest.data.RestDataResourceLink;
 
 public class DataToJsonConverterFactoryTest {
-	private RestDataToJsonConverterFactory dataToJsonConverterFactory;
+	private DataToJsonConverterFactory dataToJsonConverterFactory;
 	private JsonBuilderFactory factory;
 
 	@BeforeMethod
 	public void beforeMethod() {
-		dataToJsonConverterFactory = new RestDataToJsonConverterFactoryImp();
+		dataToJsonConverterFactory = new DataToJsonConverterFactoryImp();
 		factory = new OrgJsonBuilderFactoryAdapter();
 	}
 
@@ -50,7 +47,7 @@ public class DataToJsonConverterFactoryTest {
 	public void testJsonCreatorFactoryDataGroup() {
 		RestDataElement restDataElement = RestDataGroup.withNameInData("groupNameInData");
 
-		RestDataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
+		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForRestDataElement(factory, restDataElement);
 
 		assertTrue(dataToJsonConverter instanceof DataGroupToJsonConverter);
@@ -61,7 +58,7 @@ public class DataToJsonConverterFactoryTest {
 		RestDataElement restDataElement = RestDataAtomic.withNameInDataAndValue("atomicNameInData",
 				"atomicValue");
 
-		RestDataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
+		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForRestDataElement(factory, restDataElement);
 
 		assertTrue(dataToJsonConverter instanceof DataAtomicToJsonConverter);
@@ -72,7 +69,7 @@ public class DataToJsonConverterFactoryTest {
 		RestDataElement restDataElement = RestDataAttribute
 				.withNameInDataAndValue("attributeNameInData", "attributeValue");
 
-		RestDataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
+		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForRestDataElement(factory, restDataElement);
 
 		assertTrue(dataToJsonConverter instanceof DataAttributeToJsonConverter);
@@ -88,7 +85,7 @@ public class DataToJsonConverterFactoryTest {
 		RestDataAtomic linkedRecordId = RestDataAtomic.withNameInDataAndValue("linkedRecordId",
 				"someRecordId");
 		recordLink.addChild(linkedRecordId);
-		RestDataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
+		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForRestDataElement(factory, recordLink);
 
 		assertTrue(dataToJsonConverter instanceof DataRecordLinkToJsonConverter);
@@ -104,28 +101,10 @@ public class DataToJsonConverterFactoryTest {
 		resourceLink.addChild(RestDataAtomic.withNameInDataAndValue("filename", "adele1.png"));
 		resourceLink.addChild(RestDataAtomic.withNameInDataAndValue("filesize", "1234567"));
 		resourceLink.addChild(RestDataAtomic.withNameInDataAndValue("mimeType", "application/png"));
-		RestDataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
+		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForRestDataElement(factory, resourceLink);
 
 		assertTrue(dataToJsonConverter instanceof DataResourceLinkToJsonConverter);
 
-	}
-
-	@Test
-	public void testFactorDataListToJsonConverter() {
-		RestDataList restDataList = RestDataList.withContainDataOfType("someRecordType");
-		DataListToJsonConverter converter = (DataListToJsonConverter) dataToJsonConverterFactory
-				.createForRestData(restDataList);
-		assertEquals(converter.getRestDataList(), restDataList);
-		assertTrue(converter.getJsonBuilderFactory() instanceof OrgJsonBuilderFactoryAdapter);
-	}
-
-	@Test
-	public void testFactorDataRecordToJsonConverter() {
-		RestDataRecord restDataRecord = RestDataRecord.withRestDataGroup(null);
-		RestRecordToJsonConverter converter = (RestRecordToJsonConverter) dataToJsonConverterFactory
-				.createForRestData(restDataRecord);
-		assertEquals(converter.getRestDataRecord(), restDataRecord);
-		assertTrue(converter.getJsonBuilderFactory() instanceof OrgJsonBuilderFactoryAdapter);
 	}
 }

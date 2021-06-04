@@ -37,7 +37,7 @@ import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.converter.ConverterInfo;
 
-public class ActionDataToRestConverterTest {
+public class ActionSpiderToRestConverterTest {
 	private ConverterInfo defaultConverterInfo;
 
 	private List<Action> actions;
@@ -179,24 +179,6 @@ public class ActionDataToRestConverterTest {
 		assertEquals(actionLink.getURL(), "http://localhost:8080/therest/rest/record/text/");
 		assertEquals(actionLink.getRequestMethod(), "GET");
 		assertEquals(actionLink.getAccept(), "application/vnd.uub.recordList+json");
-		assertEquals(actionLink.getContentType(), null);
-	}
-
-	@Test
-	public void testToRestWithActionLinkBATCHINDEX() {
-		Action action = Action.BATCH_INDEX;
-		actions.add(action);
-		ConverterInfo converterInfo = createConverterInfoWithTypeAndId("recordType", "text");
-
-		ActionDataToRestConverter actionSpiderToRestConverter = ActionDataToRestConverterImp
-				.fromDataActionsWithConverterInfo(actions, converterInfo);
-		Map<String, ActionLink> actionLinks = actionSpiderToRestConverter.toRest();
-
-		ActionLink actionLink = actionLinks.get("batch_index");
-		assertEquals(actionLink.getAction(), Action.BATCH_INDEX);
-		assertEquals(actionLink.getURL(), "http://localhost:8080/therest/rest/record/index/text/");
-		assertEquals(actionLink.getRequestMethod(), "POST");
-		assertEquals(actionLink.getAccept(), "application/vnd.uub.record+json");
 		assertEquals(actionLink.getContentType(), null);
 	}
 

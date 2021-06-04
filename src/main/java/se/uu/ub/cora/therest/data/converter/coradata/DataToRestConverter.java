@@ -18,10 +18,10 @@
  */
 package se.uu.ub.cora.therest.data.converter.coradata;
 
-import se.uu.ub.cora.therest.data.RestData;
+import se.uu.ub.cora.therest.data.RestDataGroup;
 
 public interface DataToRestConverter {
 
-	RestData toRest();
+	RestDataGroup toRest();
 
 }

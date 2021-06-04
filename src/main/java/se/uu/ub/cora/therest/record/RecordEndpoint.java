@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2016, 2018, 2021 Uppsala University Library
+ * Copyright 2015, 2016, 2018 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -43,6 +43,8 @@ import org.glassfish.jersey.media.multipart.FormDataParam;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataList;
 import se.uu.ub.cora.data.DataRecord;
+import se.uu.ub.cora.json.builder.JsonBuilderFactory;
+import se.uu.ub.cora.json.builder.org.OrgJsonBuilderFactoryAdapter;
 import se.uu.ub.cora.json.parser.JsonObject;
 import se.uu.ub.cora.json.parser.JsonParseException;
 import se.uu.ub.cora.json.parser.JsonParser;
@@ -57,24 +59,22 @@ import se.uu.ub.cora.spider.data.SpiderInputStream;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
 import se.uu.ub.cora.spider.record.DataException;
 import se.uu.ub.cora.spider.record.MisuseException;
-import se.uu.ub.cora.spider.record.RecordListIndexer;
-import se.uu.ub.cora.spider.record.RecordValidator;
+import se.uu.ub.cora.spider.record.SpiderRecordValidator;
 import se.uu.ub.cora.storage.RecordConflictException;
 import se.uu.ub.cora.storage.RecordNotFoundException;
-import se.uu.ub.cora.therest.data.RestData;
+import se.uu.ub.cora.therest.data.RestDataElement;
 import se.uu.ub.cora.therest.data.RestDataGroup;
+import se.uu.ub.cora.therest.data.RestDataList;
 import se.uu.ub.cora.therest.data.RestDataRecord;
 import se.uu.ub.cora.therest.data.converter.ConverterException;
+import se.uu.ub.cora.therest.data.converter.DataListToJsonConverter;
+import se.uu.ub.cora.therest.data.converter.DataRecordToJsonConverter;
 import se.uu.ub.cora.therest.data.converter.JsonToDataConverter;
 import se.uu.ub.cora.therest.data.converter.JsonToDataConverterFactory;
 import se.uu.ub.cora.therest.data.converter.JsonToDataConverterFactoryImp;
-import se.uu.ub.cora.therest.data.converter.RestDataToJsonConverter;
-import se.uu.ub.cora.therest.data.converter.RestDataToJsonConverterFactory;
-import se.uu.ub.cora.therest.data.converter.RestDataToJsonConverterFactoryImp;
-import se.uu.ub.cora.therest.data.converter.RestToDataConverter;
-import se.uu.ub.cora.therest.data.converter.RestToDataConverterFactory;
-import se.uu.ub.cora.therest.data.converter.RestToDataConverterFactoryImp;
-import se.uu.ub.cora.therest.data.converter.coradata.DataToRestConverter;
+import se.uu.ub.cora.therest.data.converter.coradata.DataGroupRestToDataConverter;
+import se.uu.ub.cora.therest.data.converter.coradata.DataListDataToRestConverter;
+import se.uu.ub.cora.therest.data.converter.coradata.DataRecordToRestConverter;
 import se.uu.ub.cora.therest.data.converter.coradata.DataToRestConverterFactory;
 import se.uu.ub.cora.therest.data.converter.coradata.DataToRestConverterFactoryImp;
 
@@ -84,12 +84,6 @@ public class RecordEndpoint {
 	private String url;
 	HttpServletRequest request;
 	private Logger log = LoggerProvider.getLoggerForClass(RecordEndpoint.class);
-
-	private DataToRestConverterFactory dataToRestConverterFactory = new DataToRestConverterFactoryImp();
-	private RestDataToJsonConverterFactory restDataToJsonConverterFactory = new RestDataToJsonConverterFactoryImp();
-	private JsonToDataConverterFactory jsonToDataConverterFactory = new JsonToDataConverterFactoryImp();
-	private JsonParser jsonParser = new OrgJsonParser();
-	private RestToDataConverterFactory restToDataConverterFactory = new RestToDataConverterFactoryImp();
 
 	public RecordEndpoint(@Context HttpServletRequest req) {
 		request = req;
@@ -148,7 +142,7 @@ public class RecordEndpoint {
 	private Response tryCreateRecord(String authToken, String type, String jsonRecord)
 			throws URISyntaxException {
 		DataGroup record = convertJsonStringToDataGroup(jsonRecord);
-		DataRecord createdRecord = SpiderInstanceProvider.getRecordCreator()
+		DataRecord createdRecord = SpiderInstanceProvider.getSpiderRecordCreator()
 				.createAndStoreRecord(authToken, type, record);
 
 		DataGroup createdGroup = createdRecord.getDataGroup();
@@ -164,32 +158,36 @@ public class RecordEndpoint {
 
 	private DataGroup convertJsonStringToDataGroup(String jsonRecord) {
 		RestDataGroup restDataGroup = convertJsonStringToRestDataGroup(jsonRecord);
-		RestToDataConverter converter = restToDataConverterFactory.factor(restDataGroup);
-		return converter.convert();
+		return DataGroupRestToDataConverter.fromRestDataGroup(restDataGroup).convert();
 	}
 
 	private RestDataGroup convertJsonStringToRestDataGroup(String jsonRecord) {
+		JsonParser jsonParser = new OrgJsonParser();
 		JsonValue jsonValue = jsonParser.parseString(jsonRecord);
+		JsonToDataConverterFactory jsonToDataConverterFactory = new JsonToDataConverterFactoryImp();
 		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
 				.createForJsonObject(jsonValue);
-		return (RestDataGroup) jsonToDataConverter.toInstance();
+		RestDataElement restDataElement = jsonToDataConverter.toInstance();
+		return (RestDataGroup) restDataElement;
 	}
 
 	private String convertDataRecordToJsonString(DataRecord record) {
 		RestDataRecord restDataRecord = convertDataRecordToRestDataRecord(record);
-		RestDataToJsonConverter dataToJsonConverter = getRestToJsonConverter(restDataRecord);
+		DataRecordToJsonConverter dataToJsonConverter = getRestToJsonConverter(restDataRecord);
 		return dataToJsonConverter.toJson();
 	}
 
 	private RestDataRecord convertDataRecordToRestDataRecord(DataRecord record) {
-		DataToRestConverter toRestConverter = dataToRestConverterFactory.factorForDataRecord(record,
-				url);
-		return (RestDataRecord) toRestConverter.toRest();
-
+		DataToRestConverterFactory converterFactory = new DataToRestConverterFactoryImp();
+		DataRecordToRestConverter converter = DataRecordToRestConverter
+				.fromDataRecordWithBaseURLAndConverterFactory(record, url, converterFactory);
+		return converter.toRest();
 	}
 
-	private RestDataToJsonConverter getRestToJsonConverter(RestDataRecord restDataRecord) {
-		return restDataToJsonConverterFactory.createForRestData(restDataRecord);
+	private DataRecordToJsonConverter getRestToJsonConverter(RestDataRecord restDataRecord) {
+		JsonBuilderFactory jsonBuilderFactory = new OrgJsonBuilderFactoryAdapter();
+		return DataRecordToJsonConverter.usingJsonFactoryForRestDataRecord(jsonBuilderFactory,
+				restDataRecord);
 	}
 
 	private Response handleError(String authToken, Exception error) {
@@ -276,20 +274,20 @@ public class RecordEndpoint {
 
 	private Response tryReadRecordList(String authToken, String type, String filterAsJson) {
 		DataGroup filter = convertJsonStringToDataGroup(filterAsJson);
-		DataList readRecordList = SpiderInstanceProvider.getRecordListReader()
+		DataList readRecordList = SpiderInstanceProvider.getSpiderRecordListReader()
 				.readRecordList(authToken, type, filter);
 		String json = convertRecordListToJsonString(readRecordList);
 		return Response.status(Response.Status.OK).entity(json).build();
 	}
 
 	private String convertRecordListToJsonString(DataList readRecordList) {
-		DataToRestConverter listSpiderToRestConverter = dataToRestConverterFactory
-				.factorForDataList(readRecordList, url);
+		DataListDataToRestConverter listSpiderToRestConverter = DataListDataToRestConverter
+				.fromDataListWithBaseURL(readRecordList, url);
+		RestDataList restRecordList = listSpiderToRestConverter.toRest();
 
-		RestData restDataList = listSpiderToRestConverter.toRest();
-
-		RestDataToJsonConverter recordListToJsonConverter = restDataToJsonConverterFactory
-				.createForRestData(restDataList);
+		JsonBuilderFactory jsonBuilderFactory = new OrgJsonBuilderFactoryAdapter();
+		DataListToJsonConverter recordListToJsonConverter = DataListToJsonConverter
+				.usingJsonFactoryForRestDataList(jsonBuilderFactory, restRecordList);
 		return recordListToJsonConverter.toJson();
 	}
 
@@ -312,8 +310,8 @@ public class RecordEndpoint {
 	}
 
 	private Response tryReadRecord(String authToken, String type, String id) {
-		DataRecord record = SpiderInstanceProvider.getRecordReader().readRecord(authToken, type,
-				id);
+		DataRecord record = SpiderInstanceProvider.getSpiderRecordReader().readRecord(authToken,
+				type, id);
 		String json = convertDataRecordToJsonString(record);
 		return Response.status(Response.Status.OK).entity(json).build();
 	}
@@ -338,7 +336,7 @@ public class RecordEndpoint {
 	}
 
 	private Response tryReadIncomingRecordLinks(String authToken, String type, String id) {
-		DataList dataList = SpiderInstanceProvider.getIncomingLinksReader()
+		DataList dataList = SpiderInstanceProvider.getSpiderRecordIncomingLinksReader()
 				.readIncomingLinks(authToken, type, id);
 		String json = convertRecordListToJsonString(dataList);
 		return Response.status(Response.Status.OK).entity(json).build();
@@ -363,7 +361,7 @@ public class RecordEndpoint {
 	}
 
 	private Response tryDeleteRecord(String authToken, String type, String id) {
-		SpiderInstanceProvider.getRecordDeleter().deleteRecord(authToken, type, id);
+		SpiderInstanceProvider.getSpiderRecordDeleter().deleteRecord(authToken, type, id);
 		return Response.status(Response.Status.OK).build();
 	}
 
@@ -389,7 +387,7 @@ public class RecordEndpoint {
 
 	private Response tryUpdateRecord(String authToken, String type, String id, String jsonRecord) {
 		DataGroup record = convertJsonStringToDataGroup(jsonRecord);
-		DataRecord updatedRecord = SpiderInstanceProvider.getRecordUpdater()
+		DataRecord updatedRecord = SpiderInstanceProvider.getSpiderRecordUpdater()
 				.updateRecord(authToken, type, id, record);
 		String json = convertDataRecordToJsonString(updatedRecord);
 		return Response.status(Response.Status.OK).entity(json).build();
@@ -418,8 +416,8 @@ public class RecordEndpoint {
 	}
 
 	private Response tryDownloadFile(String authToken, String type, String id, String streamId) {
-		SpiderInputStream streamOut = SpiderInstanceProvider.getDownloader().download(authToken,
-				type, id, streamId);
+		SpiderInputStream streamOut = SpiderInstanceProvider.getSpiderDownloader()
+				.download(authToken, type, id, streamId);
 		/*
 		 * when we detect and store type of file in spider set it like this return
 		 * Response.ok(streamOut.stream).type("application/octet-stream")
@@ -454,8 +452,8 @@ public class RecordEndpoint {
 
 	private Response tryUploadFile(String authToken, String type, String id,
 			InputStream inputStream, String fileName) {
-		DataRecord updatedRecord = SpiderInstanceProvider.getUploader().upload(authToken, type, id,
-				inputStream, fileName);
+		DataRecord updatedRecord = SpiderInstanceProvider.getSpiderUploader().upload(authToken,
+				type, id, inputStream, fileName);
 		String json = convertDataRecordToJsonString(updatedRecord);
 		return Response.ok(json).build();
 	}
@@ -482,8 +480,8 @@ public class RecordEndpoint {
 	private Response trySearchRecord(String authToken, String searchId, String searchDataAsJson) {
 		DataGroup searchData = convertJsonStringToDataGroup(searchDataAsJson);
 
-		DataList searchRecordList = SpiderInstanceProvider.getRecordSearcher().search(authToken,
-				searchId, searchData);
+		DataList searchRecordList = SpiderInstanceProvider.getSpiderRecordSearcher()
+				.search(authToken, searchId, searchData);
 		String json = convertRecordListToJsonString(searchRecordList);
 		return Response.status(Response.Status.OK).entity(json).build();
 	}
@@ -515,8 +513,9 @@ public class RecordEndpoint {
 		DataGroup validationOrder = getDataGroupFromJsonObjectUsingName(jsonObject, "order");
 		DataGroup recordToValidate = getDataGroupFromJsonObjectUsingName(jsonObject, "record");
 
-		RecordValidator recordValidator = SpiderInstanceProvider.getRecordValidator();
-		DataRecord validationResult = recordValidator.validateRecord(authToken, type,
+		SpiderRecordValidator spiderRecordValidator = SpiderInstanceProvider
+				.getSpiderRecordValidator();
+		DataRecord validationResult = spiderRecordValidator.validateRecord(authToken, type,
 				validationOrder, recordToValidate);
 
 		String json = convertDataRecordToJsonString(validationResult);
@@ -524,6 +523,7 @@ public class RecordEndpoint {
 	}
 
 	private JsonObject getJsonObjectFromJsonRecordString(String jsonRecord) {
+		JsonParser jsonParser = new OrgJsonParser();
 		JsonValue jsonValue = jsonParser.parseString(jsonRecord);
 		return (JsonObject) jsonValue;
 	}
@@ -531,89 +531,13 @@ public class RecordEndpoint {
 	private DataGroup getDataGroupFromJsonObjectUsingName(JsonObject jsonObject, String name) {
 		JsonToDataConverter jsonToDataConverter = createConverter(jsonObject, name);
 		RestDataGroup restDataGroup = (RestDataGroup) jsonToDataConverter.toInstance();
-		RestToDataConverter converter = restToDataConverterFactory.factor(restDataGroup);
-		return converter.convert();
+		return DataGroupRestToDataConverter.fromRestDataGroup(restDataGroup).convert();
 	}
 
 	private JsonToDataConverter createConverter(JsonObject jsonObject, String name) {
 		JsonValue validationInfoJson = jsonObject.getValue(name);
+		JsonToDataConverterFactory jsonToDataConverterFactory = new JsonToDataConverterFactoryImp();
 		return jsonToDataConverterFactory.createForJsonObject(validationInfoJson);
-	}
-
-	@POST
-	@Path("index/{type}")
-	@Produces("application/vnd.uub.record+json")
-	public Response indexRecordList(@HeaderParam("authToken") String headerAuthToken,
-			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
-			@QueryParam("filter") String filterAsJson) {
-		String usedToken = getExistingTokenPreferHeader(headerAuthToken, queryAuthToken);
-		String jsonFilter = createEmptyFilterIfParameterDoesNotExist(filterAsJson);
-
-		return indexRecordListUsingAuthTokenByType(usedToken, type, jsonFilter);
-	}
-
-	Response indexRecordListUsingAuthTokenByType(String authToken, String type,
-			String filterAsJson) {
-		try {
-			return tryIndexRecordList(authToken, type, filterAsJson);
-
-		} catch (Exception error) {
-			return handleError(authToken, error);
-		}
-	}
-
-	private Response tryIndexRecordList(String authToken, String type, String filterAsJson) {
-		DataGroup filter = convertJsonStringToDataGroup(filterAsJson);
-		RecordListIndexer indexBatchJobCreator = SpiderInstanceProvider.getRecordListIndexer();
-		DataRecord indexBatchJob = indexBatchJobCreator.indexRecordList(authToken, type, filter);
-		String json = convertDataRecordToJsonString(indexBatchJob);
-
-		return Response.status(Response.Status.OK).entity(json).build();
-	}
-
-	DataToRestConverterFactory getDataToRestConverterFactory() {
-		return dataToRestConverterFactory;
-	}
-
-	void setDataToRestConverterFactory(DataToRestConverterFactory converterFactory) {
-		this.dataToRestConverterFactory = converterFactory;
-	}
-
-	RestDataToJsonConverterFactory getRestDataToJsonConverterFactory() {
-		return restDataToJsonConverterFactory;
-	}
-
-	void setRestRecordToJsonConverterFactory(
-			RestDataToJsonConverterFactory restRecordToJsonConverterFactory) {
-		this.restDataToJsonConverterFactory = restRecordToJsonConverterFactory;
-
-	}
-
-	JsonToDataConverterFactory getJsonToDataConverterFactory() {
-		return jsonToDataConverterFactory;
-	}
-
-	JsonParser getJsonParser() {
-		return jsonParser;
-	}
-
-	void setJsonToDataConverterFactory(JsonToDataConverterFactory jsonToDataConverterFactory) {
-		this.jsonToDataConverterFactory = jsonToDataConverterFactory;
-
-	}
-
-	void setJsonParser(JsonParser jsonParser) {
-		this.jsonParser = jsonParser;
-
-	}
-
-	RestToDataConverterFactory getRestToDataConverterFactory() {
-		return restToDataConverterFactory;
-	}
-
-	void setRestToDataConverterFactory(RestToDataConverterFactory restToDataConverterFactory) {
-		this.restToDataConverterFactory = restToDataConverterFactory;
-
 	}
 
 }

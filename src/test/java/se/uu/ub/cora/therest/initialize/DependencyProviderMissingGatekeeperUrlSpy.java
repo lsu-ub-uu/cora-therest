@@ -29,9 +29,9 @@ import se.uu.ub.cora.search.RecordSearch;
 import se.uu.ub.cora.spider.authentication.Authenticator;
 import se.uu.ub.cora.spider.authorization.PermissionRuleCalculator;
 import se.uu.ub.cora.spider.authorization.SpiderAuthorizator;
-import se.uu.ub.cora.spider.dependency.DependencyProviderAbstract;
+import se.uu.ub.cora.spider.dependency.SpiderDependencyProvider;
 
-public class DependencyProviderMissingGatekeeperUrlSpy extends DependencyProviderAbstract {
+public class DependencyProviderMissingGatekeeperUrlSpy extends SpiderDependencyProvider {
 
 	public DependencyProviderMissingGatekeeperUrlSpy(Map<String, String> initInfo) {
 		super(initInfo);

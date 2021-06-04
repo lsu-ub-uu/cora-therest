@@ -52,17 +52,24 @@ public class TheRestDependencyProviderTest {
 	private TheRestDependencyProvider dependencyProvider;
 	private Map<String, String> initInfo;
 	private LoggerFactorySpy loggerFactorySpy;
-	private String testedBaseClassName = "DependencyProviderAbstract";
+	private String testedBaseClassName = "SpiderDependencyProvider";
 
 	@BeforeMethod
 	public void setUp() throws Exception {
 		loggerFactorySpy = new LoggerFactorySpy();
 		LoggerProvider.setLoggerFactory(loggerFactorySpy);
+		// TODO:why try/catch?
+		// try {
 		initInfo = new HashMap<>();
 		initInfo.put("gatekeeperURL", "http://localhost:8080/gatekeeper/");
 		initInfo.put("solrURL", "http://localhost:8983/solr/stuff");
 		dependencyProvider = new TheRestDependencyProvider(initInfo);
 		setPluggedInStorageNormallySetByTheRestModuleStarterImp();
+		// } catch (Exception e) {
+		// System.out.println("crashes");
+		// // Make the correct tests crash instead of all
+		// }
+
 	}
 
 	private void setPluggedInStorageNormallySetByTheRestModuleStarterImp() {

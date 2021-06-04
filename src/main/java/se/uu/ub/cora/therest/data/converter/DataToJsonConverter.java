@@ -19,15 +19,14 @@
 
 package se.uu.ub.cora.therest.data.converter;
 
-import se.uu.ub.cora.json.builder.JsonBuilderFactory;
-import se.uu.ub.cora.therest.data.RestData;
-import se.uu.ub.cora.therest.data.RestDataElement;
+import se.uu.ub.cora.json.builder.JsonObjectBuilder;
 
-public interface RestDataToJsonConverterFactory {
+public abstract class DataToJsonConverter {
 
-	RestDataToJsonConverter createForRestDataElement(JsonBuilderFactory factory,
-			RestDataElement restDataElement);
+	public String toJson(){
+		JsonObjectBuilder jsonObjectBuilder = toJsonObjectBuilder();
+		return jsonObjectBuilder.toJsonFormattedString();
+	}
 
-	RestDataToJsonConverter createForRestData(RestData restData);
-
+	abstract JsonObjectBuilder toJsonObjectBuilder();
 }

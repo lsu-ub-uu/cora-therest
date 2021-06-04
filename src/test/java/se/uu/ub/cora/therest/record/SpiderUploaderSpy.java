@@ -25,12 +25,12 @@ import se.uu.ub.cora.data.DataRecord;
 import se.uu.ub.cora.spider.authorization.AuthorizationException;
 import se.uu.ub.cora.spider.data.DataMissingException;
 import se.uu.ub.cora.spider.record.MisuseException;
-import se.uu.ub.cora.spider.record.Uploader;
+import se.uu.ub.cora.spider.record.SpiderUploader;
 import se.uu.ub.cora.storage.RecordNotFoundException;
 import se.uu.ub.cora.therest.data.DataRecordSpy;
 import se.uu.ub.cora.therest.testdata.DataCreator;
 
-public class SpiderUploaderSpy implements Uploader {
+public class SpiderUploaderSpy implements SpiderUploader {
 
 	public String authToken;
 	public String type;

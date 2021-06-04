@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2021 Uppsala University Library
+ * Copyright 2015 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -26,28 +26,31 @@ import se.uu.ub.cora.json.builder.JsonArrayBuilder;
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
 import se.uu.ub.cora.json.builder.JsonObjectBuilder;
 import se.uu.ub.cora.therest.data.ActionLink;
-import se.uu.ub.cora.therest.data.RestData;
 import se.uu.ub.cora.therest.data.RestDataRecord;
 
-public final class RestRecordToJsonConverter implements RestDataToJsonConverter {
+public final class DataRecordToJsonConverter {
 
 	private JsonBuilderFactory jsonBuilderFactory;
 	private RestDataRecord restDataRecord;
 	private JsonObjectBuilder recordJsonObjectBuilder;
 
-	public static RestRecordToJsonConverter usingJsonFactoryForRestDataRecord(
-			JsonBuilderFactory jsonFactory, RestData restDataRecord) {
-		return new RestRecordToJsonConverter(jsonFactory, restDataRecord);
+	public static DataRecordToJsonConverter usingJsonFactoryForRestDataRecord(
+			JsonBuilderFactory jsonFactory, RestDataRecord restDataRecord) {
+		return new DataRecordToJsonConverter(jsonFactory, restDataRecord);
 	}
 
-	private RestRecordToJsonConverter(JsonBuilderFactory jsonFactory, RestData restDataRecord) {
+	private DataRecordToJsonConverter(JsonBuilderFactory jsonFactory,
+			RestDataRecord restDataRecord) {
 		this.jsonBuilderFactory = jsonFactory;
-		this.restDataRecord = (RestDataRecord) restDataRecord;
+		this.restDataRecord = restDataRecord;
 		recordJsonObjectBuilder = jsonFactory.createObjectBuilder();
 	}
 
-	@Override
-	public JsonObjectBuilder toJsonObjectBuilder() {
+	public String toJson() {
+		return toJsonObjectBuilder().toJsonFormattedString();
+	}
+
+	JsonObjectBuilder toJsonObjectBuilder() {
 		convertMainRestDataGroup();
 		convertActionLinks();
 		convertKeys();
@@ -56,8 +59,8 @@ public final class RestRecordToJsonConverter implements RestDataToJsonConverter 
 	}
 
 	private void convertMainRestDataGroup() {
-		RestDataToJsonConverterFactory dataToJsonConverterFactory = new RestDataToJsonConverterFactoryImp();
-		RestDataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
+		DataToJsonConverterFactory dataToJsonConverterFactory = new DataToJsonConverterFactoryImp();
+		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForRestDataElement(jsonBuilderFactory, restDataRecord.getRestDataGroup());
 		JsonObjectBuilder jsonDataGroupObjectBuilder = dataToJsonConverter.toJsonObjectBuilder();
 		recordJsonObjectBuilder.addKeyJsonObjectBuilder("data", jsonDataGroupObjectBuilder);
@@ -106,7 +109,8 @@ public final class RestRecordToJsonConverter implements RestDataToJsonConverter 
 	}
 
 	private void convertPermissions() {
-		JsonObjectBuilder permissionsJsonObjectBuilder = jsonBuilderFactory.createObjectBuilder();
+		JsonObjectBuilder permissionsJsonObjectBuilder = jsonBuilderFactory
+				.createObjectBuilder();
 		possiblyAddReadPermissions(permissionsJsonObjectBuilder);
 		possiblyAddWritePermissions(permissionsJsonObjectBuilder);
 		recordJsonObjectBuilder.addKeyJsonObjectBuilder("permissions",
@@ -157,16 +161,6 @@ public final class RestRecordToJsonConverter implements RestDataToJsonConverter 
 		JsonObjectBuilder rootWrappingJsonObjectBuilder = jsonBuilderFactory.createObjectBuilder();
 		rootWrappingJsonObjectBuilder.addKeyJsonObjectBuilder("record", recordJsonObjectBuilder);
 		return rootWrappingJsonObjectBuilder;
-	}
-
-	JsonBuilderFactory getJsonBuilderFactory() {
-		// needed for test
-		return jsonBuilderFactory;
-	}
-
-	RestDataRecord getRestDataRecord() {
-		// needed for test
-		return restDataRecord;
 	}
 
 }
