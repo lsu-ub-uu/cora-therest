@@ -29,16 +29,15 @@ public class DataGroupToRestConverterFactoryImp implements DataGroupToRestConver
 	@Override
 	public DataToRestConverter factorForDataGroupWithConverterInfo(DataGroup dataGroup,
 			ConverterInfo converterInfo) {
-		DataGroupToRestConverterFactoryImp dataGroupToRestConverterFactoryImp = new DataGroupToRestConverterFactoryImp();
-		return DataGroupDataToRestConverter.fromDataGroupWithDataGroupAndConverterInfo(
-				dataGroupToRestConverterFactoryImp, dataGroup, converterInfo);
+		return DataGroupDataToRestConverter
+				.fromDataGroupWithDataGroupAndConverterInfo(dataGroup, converterInfo);
 	}
 
 	@Override
 	public ActionDataToRestConverter factorForActionsUsingConverterInfoAndDataGroup(
 			List<Action> actions, ConverterInfo converterInfo, DataGroup dataGroup) {
-		return ActionDataToRestConverterImp.fromDataActionsWithConverterInfoAndDataGroup(actions,
-				converterInfo, dataGroup);
+		return ActionDataToRestConverterImp.fromDataActionsWithConverterInfoAndDataGroup(
+				actions, converterInfo, dataGroup);
 	}
 
 }

@@ -37,21 +37,15 @@ public class DataGroupDataToRestConverter implements DataToRestConverter {
 	private RestDataGroup restDataGroup;
 	protected DataGroup dataGroup;
 	protected ConverterInfo convertInfo;
-	private DataGroupToRestConverterFactory dataGroupToRestConverterFactory;
 
-	protected DataGroupDataToRestConverter(
-			DataGroupToRestConverterFactory dataGroupToRestConverterFactory, DataGroup dataGroup,
-			ConverterInfo converterInfo) {
-		this.dataGroupToRestConverterFactory = dataGroupToRestConverterFactory;
+	protected DataGroupDataToRestConverter(DataGroup dataGroup, ConverterInfo converterInfo) {
 		this.dataGroup = dataGroup;
 		this.convertInfo = converterInfo;
 	}
 
 	public static DataGroupDataToRestConverter fromDataGroupWithDataGroupAndConverterInfo(
-			DataGroupToRestConverterFactory dataGroupToRestConverterFactory, DataGroup dataGroup,
-			ConverterInfo converterInfo) {
-		return new DataGroupDataToRestConverter(dataGroupToRestConverterFactory, dataGroup,
-				converterInfo);
+			DataGroup dataGroup, ConverterInfo converterInfo) {
+		return new DataGroupDataToRestConverter(dataGroup, converterInfo);
 	}
 
 	@Override
@@ -80,20 +74,19 @@ public class DataGroupDataToRestConverter implements DataToRestConverter {
 
 	private RestDataElement convertToElementEquivalentDataClass(DataElement dataElement) {
 		if (dataElement instanceof DataRecordLink) {
+			DataGroupToRestConverterFactoryImp dataGroupToRestConverterFactoryImp = new DataGroupToRestConverterFactoryImp();
 			return DataRecordLinkToRestConverter
-					.fromDataRecordLinkWithConverterInfo(dataGroupToRestConverterFactory,
+					.fromDataRecordLinkWithConverterInfo(dataGroupToRestConverterFactoryImp,
 							(DataRecordLink) dataElement, convertInfo)
 					.toRest();
 		}
 		if (dataElement instanceof DataResourceLink) {
-			return DataResourceLinkDataToRestConverter
-					.fromDataResourceLinkWithConverterInfo(dataGroupToRestConverterFactory,
-							(DataResourceLink) dataElement, convertInfo)
-					.toRest();
+			return DataResourceLinkDataToRestConverter.fromDataResourceLinkWithConverterInfo(
+					(DataResourceLink) dataElement, convertInfo).toRest();
 		}
 		if (dataElement instanceof DataGroup) {
 			return DataGroupDataToRestConverter.fromDataGroupWithDataGroupAndConverterInfo(
-					dataGroupToRestConverterFactory, (DataGroup) dataElement, convertInfo).toRest();
+					(DataGroup) dataElement, convertInfo).toRest();
 		}
 		return DataAtomicToRestConverter.fromDataAtomic((DataAtomic) dataElement).toRest();
 	}

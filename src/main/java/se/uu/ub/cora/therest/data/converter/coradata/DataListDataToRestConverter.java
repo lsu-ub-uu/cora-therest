@@ -76,11 +76,8 @@ public final class DataListDataToRestConverter implements DataToRestConverter {
 	private void convertDataGroupToRest(RestDataList restDataList, DataGroup data) {
 		ConverterInfo converterInfo = ConverterInfo.withBaseURLAndRecordURLAndTypeAndId(baseURL, "",
 				"", "");
-		DataGroupToRestConverterFactoryImp dataGroupToRestConverterFactoryImp = new DataGroupToRestConverterFactoryImp();
 		RestDataGroup restGroup = DataGroupDataToRestConverter
-				.fromDataGroupWithDataGroupAndConverterInfo(dataGroupToRestConverterFactoryImp,
-						data, converterInfo)
-				.toRest();
+				.fromDataGroupWithDataGroupAndConverterInfo(data, converterInfo).toRest();
 		restDataList.addData(restGroup);
 	}
 

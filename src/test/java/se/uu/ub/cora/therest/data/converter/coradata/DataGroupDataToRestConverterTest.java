@@ -49,15 +49,12 @@ public class DataGroupDataToRestConverterTest {
 
 	private DataGroup dataGroup;
 	private DataGroupDataToRestConverter dataGroupSpiderToRestConverter;
-	private DataGroupToRestConverterFactoryImp dataGroupToRestConverterFactoryImp;
 
 	@BeforeMethod
 	public void beforeMethod() {
-		dataGroupToRestConverterFactoryImp = new DataGroupToRestConverterFactoryImp();
 		dataGroup = new DataGroupSpy("nameInData");
 		dataGroupSpiderToRestConverter = DataGroupDataToRestConverter
-				.fromDataGroupWithDataGroupAndConverterInfo(dataGroupToRestConverterFactoryImp,
-						dataGroup, converterInfo);
+				.fromDataGroupWithDataGroupAndConverterInfo(dataGroup, converterInfo);
 	}
 
 	@Test

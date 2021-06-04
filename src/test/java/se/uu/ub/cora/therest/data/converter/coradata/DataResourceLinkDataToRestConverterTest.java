@@ -39,19 +39,16 @@ public class DataResourceLinkDataToRestConverterTest {
 			"http://localhost:8080/therest/rest/record/image/someImageId", "image", "someImageId");
 	private DataResourceLink dataResourceLink;
 	private DataResourceLinkDataToRestConverter dataResourceLinkSpiderToRestConverter;
-	private DataGroupToRestConverterFactoryImp dataGroupToRestConverterFactoryImp;
 
 	@BeforeMethod
 	public void setUp() {
-		dataGroupToRestConverterFactoryImp = new DataGroupToRestConverterFactoryImp();
 		dataResourceLink = new DataResourceLinkSpy("master");
 
 		dataResourceLink.addChild(new DataAtomicSpy("streamId", "aStreamId"));
 		dataResourceLink.addChild(new DataAtomicSpy("mimeType", "application/png"));
 
 		dataResourceLinkSpiderToRestConverter = DataResourceLinkDataToRestConverter
-				.fromDataResourceLinkWithConverterInfo(dataGroupToRestConverterFactoryImp,
-						dataResourceLink, converterInfo);
+				.fromDataResourceLinkWithConverterInfo(dataResourceLink, converterInfo);
 
 	}
 
