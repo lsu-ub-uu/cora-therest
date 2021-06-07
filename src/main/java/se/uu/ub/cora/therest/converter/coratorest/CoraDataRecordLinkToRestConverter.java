@@ -106,6 +106,7 @@ public final class CoraDataRecordLinkToRestConverter {
 		if (dataRecordLink.containsChildWithNameInData("linkedPath")) {
 			DataGroup linkedPath = (DataGroup) dataRecordLink
 					.getFirstChildWithNameInData("linkedPath");
+			// uses data group converter
 			CoraDataGroupToRestConverter dataGroupToRestConverter = CoraDataGroupToRestConverter
 					.fromDataGroupWithDataGroupAndConverterInfo(linkedPath, converterInfo);
 			RestDataGroup restLinkedPath = dataGroupToRestConverter.toRest();

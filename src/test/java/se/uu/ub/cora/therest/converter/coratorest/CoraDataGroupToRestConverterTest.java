@@ -48,25 +48,26 @@ public class CoraDataGroupToRestConverterTest {
 			"someRecordType", "someRecordId");
 
 	private DataGroup dataGroup;
-	private CoraDataGroupToRestConverter dataGroupSpiderToRestConverter;
+	private CoraDataGroupToRestConverter dataGroupToRestConverter;
+	private CoraToRestConverter coraToRestConverter = new CoraToRestConverterSpy();
 
 	@BeforeMethod
 	public void beforeMethod() {
 		dataGroup = new DataGroupSpy("nameInData");
-		dataGroupSpiderToRestConverter = CoraDataGroupToRestConverter
+		dataGroupToRestConverter = CoraDataGroupToRestConverter
 				.fromDataGroupWithDataGroupAndConverterInfo(dataGroup, converterInfo);
 	}
 
 	@Test
 	public void testToRest() {
-		RestDataGroup restDataGroup = dataGroupSpiderToRestConverter.toRest();
+		RestDataGroup restDataGroup = dataGroupToRestConverter.toRest();
 		assertEquals(restDataGroup.getNameInData(), "nameInData");
 	}
 
 	@Test
 	public void testToRestWithRepeatId() {
 		dataGroup.setRepeatId("2");
-		RestDataGroup restDataGroup = dataGroupSpiderToRestConverter.toRest();
+		RestDataGroup restDataGroup = dataGroupToRestConverter.toRest();
 		assertEquals(restDataGroup.getNameInData(), "nameInData");
 		assertEquals(restDataGroup.getRepeatId(), "2");
 	}
@@ -74,7 +75,7 @@ public class CoraDataGroupToRestConverterTest {
 	@Test
 	public void testToRestWithAttributes() {
 		dataGroup.addAttributeByIdWithValue("attributeNameInData", "attributeValue");
-		RestDataGroup restDataGroup = dataGroupSpiderToRestConverter.toRest();
+		RestDataGroup restDataGroup = dataGroupToRestConverter.toRest();
 		String attributeId = restDataGroup.getAttributes().keySet().iterator().next();
 		String attributeValue = restDataGroup.getAttributes().get(attributeId);
 		assertEquals(attributeValue, "attributeValue");
@@ -83,7 +84,7 @@ public class CoraDataGroupToRestConverterTest {
 	@Test
 	public void testToRestWithAtomicChild() {
 		dataGroup.addChild(new DataAtomicSpy("childNameInData", "atomicValue"));
-		RestDataGroup restDataGroup = dataGroupSpiderToRestConverter.toRest();
+		RestDataGroup restDataGroup = dataGroupToRestConverter.toRest();
 		RestDataAtomic restDataAtomic = (RestDataAtomic) restDataGroup.getChildren().iterator()
 				.next();
 		assertEquals(restDataAtomic.getNameInData(), "childNameInData");
@@ -102,7 +103,7 @@ public class CoraDataGroupToRestConverterTest {
 
 		dataGroup.addChild(dataRecordLink);
 
-		RestDataGroup restDataGroup = dataGroupSpiderToRestConverter.toRest();
+		RestDataGroup restDataGroup = dataGroupToRestConverter.toRest();
 		RestDataRecordLink restDataRecordLink = (RestDataRecordLink) restDataGroup.getChildren()
 				.iterator().next();
 		assertEquals(restDataRecordLink.getNameInData(), "childNameInData");
@@ -119,7 +120,7 @@ public class CoraDataGroupToRestConverterTest {
 	@Test
 	public void testToRestWithResourceLinkChild() {
 		dataGroup.addChild(DataCreator.createResourceLinkMaster());
-		RestDataGroup restDataGroup = dataGroupSpiderToRestConverter.toRest();
+		RestDataGroup restDataGroup = dataGroupToRestConverter.toRest();
 		RestDataElement restMaster = restDataGroup.getFirstChildWithNameInData("master");
 		assertTrue((RestDataResourceLink) restMaster instanceof RestDataResourceLink);
 	}
@@ -127,7 +128,7 @@ public class CoraDataGroupToRestConverterTest {
 	@Test
 	public void testToRestWithGroupChild() {
 		dataGroup.addChild(new DataGroupSpy("childNameInData"));
-		RestDataGroup restDataGroup = dataGroupSpiderToRestConverter.toRest();
+		RestDataGroup restDataGroup = dataGroupToRestConverter.toRest();
 		RestDataGroup restDataGroupChild = (RestDataGroup) restDataGroup.getChildren().iterator()
 				.next();
 		assertEquals(restDataGroupChild.getNameInData(), "childNameInData");
@@ -139,7 +140,7 @@ public class CoraDataGroupToRestConverterTest {
 		DataGroup dataGroup2 = new DataGroupSpy("childNameInData");
 		dataGroup2.addChild(new DataGroupSpy("grandChildNameInData"));
 		dataGroup.addChild(dataGroup2);
-		RestDataGroup restDataGroup = dataGroupSpiderToRestConverter.toRest();
+		RestDataGroup restDataGroup = dataGroupToRestConverter.toRest();
 		Iterator<RestDataElement> iterator = restDataGroup.getChildren().iterator();
 		Assert.assertTrue(iterator.hasNext(), "dataGroupRest should have at least one child");
 

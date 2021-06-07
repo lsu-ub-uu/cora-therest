@@ -30,18 +30,18 @@ import se.uu.ub.cora.therest.data.RestDataAtomic;
 
 public class CoraDataAtomicToRestConverterTest {
 	private DataAtomic dataAtomic;
-	private CoraDataAtomicToRestConverter atomicSpiderToRestConverter;
+	private CoraDataAtomicToRestConverter dataAtomicToRestConverter;
 
 	@BeforeMethod
 	public void setUp() {
 		dataAtomic = new DataAtomicSpy("nameInData", "value");
-		atomicSpiderToRestConverter = CoraDataAtomicToRestConverter.fromDataAtomic(dataAtomic);
+		dataAtomicToRestConverter = CoraDataAtomicToRestConverter.fromDataAtomic(dataAtomic);
 
 	}
 
 	@Test
 	public void testToRest() {
-		RestDataAtomic restDataAtomic = atomicSpiderToRestConverter.toRest();
+		RestDataAtomic restDataAtomic = dataAtomicToRestConverter.toRest();
 		assertEquals(restDataAtomic.getNameInData(), "nameInData");
 		assertEquals(restDataAtomic.getValue(), "value");
 	}
@@ -49,7 +49,7 @@ public class CoraDataAtomicToRestConverterTest {
 	@Test
 	public void testToRestWithRepeatId() {
 		dataAtomic.setRepeatId("e4");
-		RestDataAtomic restDataAtomic = atomicSpiderToRestConverter.toRest();
+		RestDataAtomic restDataAtomic = dataAtomicToRestConverter.toRest();
 		assertEquals(restDataAtomic.getNameInData(), "nameInData");
 		assertEquals(restDataAtomic.getValue(), "value");
 		assertEquals(restDataAtomic.getRepeatId(), "e4");

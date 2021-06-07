@@ -31,9 +31,11 @@ public class CoraDataAttributeToRestConverterTest {
 	@Test
 	public void testToRest() {
 		DataAttribute dataAttribute = new DataAttributeSpy("nameInData", "value");
-		CoraDataAttributeToRestConverter atomicSpiderToRestConverter = CoraDataAttributeToRestConverter
+
+		CoraDataAttributeToRestConverter dataAttributeToRestConverter = CoraDataAttributeToRestConverter
 				.fromDataAttribute(dataAttribute);
-		RestDataAttribute restDataAttribute = atomicSpiderToRestConverter.toRest();
+		RestDataAttribute restDataAttribute = dataAttributeToRestConverter.toRest();
+
 		assertEquals(restDataAttribute.getNameInData(), "nameInData");
 		assertEquals(restDataAttribute.getValue(), "value");
 	}

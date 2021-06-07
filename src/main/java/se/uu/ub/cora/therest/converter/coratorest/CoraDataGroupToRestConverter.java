@@ -73,11 +73,12 @@ public class CoraDataGroupToRestConverter implements CoraToRestConverter {
 
 	private RestDataElement convertToElementEquivalentDataClass(DataElement dataElement) {
 		if (dataElement instanceof DataRecordLink) {
-			return CoraDataRecordLinkToRestConverter
-					.fromDataRecordLinkWithConverterInfo((DataRecordLink) dataElement, convertInfo)
-					.toRest();
+			CoraDataRecordLinkToRestConverter fromDataRecordLinkWithConverterInfo = CoraDataRecordLinkToRestConverter
+					.fromDataRecordLinkWithConverterInfo((DataRecordLink) dataElement, convertInfo);
+			return fromDataRecordLinkWithConverterInfo.toRest();
 		}
 		if (dataElement instanceof DataResourceLink) {
+			// extend group converter
 			return CoraDataResourceLinkToRestConverter.fromDataResourceLinkWithConverterInfo(
 					(DataResourceLink) dataElement, convertInfo).toRest();
 		}
