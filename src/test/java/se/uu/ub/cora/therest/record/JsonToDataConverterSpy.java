@@ -18,9 +18,9 @@
  */
 package se.uu.ub.cora.therest.record;
 
+import se.uu.ub.cora.therest.converter.jsontorest.JsonToDataConverter;
 import se.uu.ub.cora.therest.data.RestDataElement;
 import se.uu.ub.cora.therest.data.RestDataGroup;
-import se.uu.ub.cora.therest.data.converter.JsonToDataConverter;
 
 public class JsonToDataConverterSpy implements JsonToDataConverter {
 

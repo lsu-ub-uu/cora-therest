@@ -23,9 +23,9 @@ import se.uu.ub.cora.data.DataRecord;
 import se.uu.ub.cora.spider.authorization.AuthorizationException;
 import se.uu.ub.cora.spider.record.RecordListIndexer;
 import se.uu.ub.cora.storage.RecordNotFoundException;
-import se.uu.ub.cora.therest.data.DataAtomicSpy;
-import se.uu.ub.cora.therest.data.DataGroupSpy;
-import se.uu.ub.cora.therest.data.DataRecordSpy;
+import se.uu.ub.cora.therest.coradata.DataAtomicSpy;
+import se.uu.ub.cora.therest.coradata.DataGroupSpy;
+import se.uu.ub.cora.therest.coradata.DataRecordSpy;
 
 public class IndexBatchJobCreatorSpy implements RecordListIndexer {
 

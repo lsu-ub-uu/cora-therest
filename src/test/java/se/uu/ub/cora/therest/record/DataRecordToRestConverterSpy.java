@@ -18,12 +18,12 @@
  */
 package se.uu.ub.cora.therest.record;
 
+import se.uu.ub.cora.therest.converter.coratorest.CoraToRestConverter;
 import se.uu.ub.cora.therest.data.RestData;
 import se.uu.ub.cora.therest.data.RestDataList;
 import se.uu.ub.cora.therest.data.RestDataRecord;
-import se.uu.ub.cora.therest.data.converter.coradata.DataToRestConverter;
 
-public class DataRecordToRestConverterSpy implements DataToRestConverter {
+public class DataRecordToRestConverterSpy implements CoraToRestConverter {
 
 	public RestDataRecord returnedRestDataRecord;
 	public RestDataList returnedRestDataList;

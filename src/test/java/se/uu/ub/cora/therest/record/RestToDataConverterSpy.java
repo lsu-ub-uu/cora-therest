@@ -19,9 +19,9 @@
 package se.uu.ub.cora.therest.record;
 
 import se.uu.ub.cora.data.DataGroup;
-import se.uu.ub.cora.therest.data.DataGroupSpy;
-import se.uu.ub.cora.therest.data.converter.ConverterException;
-import se.uu.ub.cora.therest.data.converter.RestToDataConverter;
+import se.uu.ub.cora.therest.converter.ConverterException;
+import se.uu.ub.cora.therest.converter.resttocora.RestToDataConverter;
+import se.uu.ub.cora.therest.coradata.DataGroupSpy;
 
 public class RestToDataConverterSpy implements RestToDataConverter {
 

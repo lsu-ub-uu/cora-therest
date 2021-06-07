@@ -61,22 +61,22 @@ import se.uu.ub.cora.spider.record.RecordListIndexer;
 import se.uu.ub.cora.spider.record.RecordValidator;
 import se.uu.ub.cora.storage.RecordConflictException;
 import se.uu.ub.cora.storage.RecordNotFoundException;
+import se.uu.ub.cora.therest.converter.ConverterException;
+import se.uu.ub.cora.therest.converter.coratorest.CoraToRestConverter;
+import se.uu.ub.cora.therest.converter.coratorest.CoraToRestConverterFactory;
+import se.uu.ub.cora.therest.converter.coratorest.CoraToRestConverterFactoryImp;
+import se.uu.ub.cora.therest.converter.jsontorest.JsonToDataConverter;
+import se.uu.ub.cora.therest.converter.jsontorest.JsonToDataConverterFactory;
+import se.uu.ub.cora.therest.converter.jsontorest.JsonToDataConverterFactoryImp;
+import se.uu.ub.cora.therest.converter.resttocora.RestToDataConverter;
+import se.uu.ub.cora.therest.converter.resttocora.RestToDataConverterFactory;
+import se.uu.ub.cora.therest.converter.resttocora.RestToDataConverterFactoryImp;
+import se.uu.ub.cora.therest.converter.resttojson.RestDataToJsonConverter;
+import se.uu.ub.cora.therest.converter.resttojson.RestDataToJsonConverterFactory;
+import se.uu.ub.cora.therest.converter.resttojson.RestDataToJsonConverterFactoryImp;
 import se.uu.ub.cora.therest.data.RestData;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.RestDataRecord;
-import se.uu.ub.cora.therest.data.converter.ConverterException;
-import se.uu.ub.cora.therest.data.converter.JsonToDataConverter;
-import se.uu.ub.cora.therest.data.converter.JsonToDataConverterFactory;
-import se.uu.ub.cora.therest.data.converter.JsonToDataConverterFactoryImp;
-import se.uu.ub.cora.therest.data.converter.RestDataToJsonConverter;
-import se.uu.ub.cora.therest.data.converter.RestDataToJsonConverterFactory;
-import se.uu.ub.cora.therest.data.converter.RestDataToJsonConverterFactoryImp;
-import se.uu.ub.cora.therest.data.converter.RestToDataConverter;
-import se.uu.ub.cora.therest.data.converter.RestToDataConverterFactory;
-import se.uu.ub.cora.therest.data.converter.RestToDataConverterFactoryImp;
-import se.uu.ub.cora.therest.data.converter.coradata.DataToRestConverter;
-import se.uu.ub.cora.therest.data.converter.coradata.DataToRestConverterFactory;
-import se.uu.ub.cora.therest.data.converter.coradata.DataToRestConverterFactoryImp;
 
 @Path("record")
 public class RecordEndpoint {
@@ -85,7 +85,7 @@ public class RecordEndpoint {
 	HttpServletRequest request;
 	private Logger log = LoggerProvider.getLoggerForClass(RecordEndpoint.class);
 
-	private DataToRestConverterFactory dataToRestConverterFactory = new DataToRestConverterFactoryImp();
+	private CoraToRestConverterFactory dataToRestConverterFactory = new CoraToRestConverterFactoryImp();
 	private RestDataToJsonConverterFactory restDataToJsonConverterFactory = new RestDataToJsonConverterFactoryImp();
 	private JsonToDataConverterFactory jsonToDataConverterFactory = new JsonToDataConverterFactoryImp();
 	private JsonParser jsonParser = new OrgJsonParser();
@@ -182,7 +182,7 @@ public class RecordEndpoint {
 	}
 
 	private RestDataRecord convertDataRecordToRestDataRecord(DataRecord record) {
-		DataToRestConverter toRestConverter = dataToRestConverterFactory.factorForDataRecord(record,
+		CoraToRestConverter toRestConverter = dataToRestConverterFactory.factorForDataRecord(record,
 				url);
 		return (RestDataRecord) toRestConverter.toRest();
 
@@ -283,7 +283,7 @@ public class RecordEndpoint {
 	}
 
 	private String convertRecordListToJsonString(DataList readRecordList) {
-		DataToRestConverter listSpiderToRestConverter = dataToRestConverterFactory
+		CoraToRestConverter listSpiderToRestConverter = dataToRestConverterFactory
 				.factorForDataList(readRecordList, url);
 
 		RestData restDataList = listSpiderToRestConverter.toRest();
@@ -571,11 +571,11 @@ public class RecordEndpoint {
 		return Response.status(Response.Status.OK).entity(json).build();
 	}
 
-	DataToRestConverterFactory getDataToRestConverterFactory() {
+	CoraToRestConverterFactory getDataToRestConverterFactory() {
 		return dataToRestConverterFactory;
 	}
 
-	void setDataToRestConverterFactory(DataToRestConverterFactory converterFactory) {
+	void setDataToRestConverterFactory(CoraToRestConverterFactory converterFactory) {
 		this.dataToRestConverterFactory = converterFactory;
 	}
 

@@ -20,10 +20,10 @@ package se.uu.ub.cora.therest.record;
 
 import se.uu.ub.cora.data.DataList;
 import se.uu.ub.cora.data.DataRecord;
-import se.uu.ub.cora.therest.data.converter.coradata.DataToRestConverter;
-import se.uu.ub.cora.therest.data.converter.coradata.DataToRestConverterFactory;
+import se.uu.ub.cora.therest.converter.coratorest.CoraToRestConverter;
+import se.uu.ub.cora.therest.converter.coratorest.CoraToRestConverterFactory;
 
-public class DataToRestConverterFactorySpy implements DataToRestConverterFactory {
+public class DataToRestConverterFactorySpy implements CoraToRestConverterFactory {
 
 	public DataRecord dataRecord;
 	public String url;
@@ -31,7 +31,7 @@ public class DataToRestConverterFactorySpy implements DataToRestConverterFactory
 	public DataList recordList;
 
 	@Override
-	public DataToRestConverter factorForDataRecord(DataRecord dataRecord, String url) {
+	public CoraToRestConverter factorForDataRecord(DataRecord dataRecord, String url) {
 		this.dataRecord = dataRecord;
 		this.url = url;
 		toRestConverter = new DataRecordToRestConverterSpy();
@@ -39,7 +39,7 @@ public class DataToRestConverterFactorySpy implements DataToRestConverterFactory
 	}
 
 	@Override
-	public DataToRestConverter factorForDataList(DataList recordList, String url) {
+	public CoraToRestConverter factorForDataList(DataList recordList, String url) {
 		this.recordList = recordList;
 		this.url = url;
 		toRestConverter = new DataRecordToRestConverterSpy();

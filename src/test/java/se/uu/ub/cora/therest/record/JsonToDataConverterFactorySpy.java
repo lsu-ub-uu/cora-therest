@@ -22,8 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import se.uu.ub.cora.json.parser.JsonValue;
-import se.uu.ub.cora.therest.data.converter.JsonToDataConverter;
-import se.uu.ub.cora.therest.data.converter.JsonToDataConverterFactory;
+import se.uu.ub.cora.therest.converter.jsontorest.JsonToDataConverter;
+import se.uu.ub.cora.therest.converter.jsontorest.JsonToDataConverterFactory;
 
 public class JsonToDataConverterFactorySpy implements JsonToDataConverterFactory {
 

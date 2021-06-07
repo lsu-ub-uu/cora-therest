@@ -19,10 +19,10 @@
 package se.uu.ub.cora.therest.record;
 
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
+import se.uu.ub.cora.therest.converter.resttojson.RestDataToJsonConverter;
+import se.uu.ub.cora.therest.converter.resttojson.RestDataToJsonConverterFactory;
 import se.uu.ub.cora.therest.data.RestData;
 import se.uu.ub.cora.therest.data.RestDataElement;
-import se.uu.ub.cora.therest.data.converter.RestDataToJsonConverterFactory;
-import se.uu.ub.cora.therest.data.converter.RestDataToJsonConverter;
 
 public class RestDataToJsonConverterFactorySpy implements RestDataToJsonConverterFactory {
 	public RestRecordToJsonConverterSpy restRecordToJsonConverterSpy;

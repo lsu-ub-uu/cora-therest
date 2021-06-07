@@ -21,7 +21,7 @@ package se.uu.ub.cora.therest.record;
 
 import se.uu.ub.cora.bookkeeper.linkcollector.DataRecordLinkCollector;
 import se.uu.ub.cora.data.DataGroup;
-import se.uu.ub.cora.therest.data.DataGroupSpy;
+import se.uu.ub.cora.therest.coradata.DataGroupSpy;
 
 public class DataRecordLinkCollectorSpy implements DataRecordLinkCollector {
 

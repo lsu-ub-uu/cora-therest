@@ -21,9 +21,9 @@ package se.uu.ub.cora.therest.record;
 import java.util.ArrayList;
 import java.util.List;
 
+import se.uu.ub.cora.therest.converter.resttocora.RestToDataConverter;
+import se.uu.ub.cora.therest.converter.resttocora.RestToDataConverterFactory;
 import se.uu.ub.cora.therest.data.RestDataElement;
-import se.uu.ub.cora.therest.data.converter.RestToDataConverter;
-import se.uu.ub.cora.therest.data.converter.RestToDataConverterFactory;
 
 public class RestToDataConverterFactorySpy implements RestToDataConverterFactory {
 
