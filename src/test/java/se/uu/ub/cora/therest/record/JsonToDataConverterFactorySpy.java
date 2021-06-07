@@ -22,16 +22,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import se.uu.ub.cora.json.parser.JsonValue;
-import se.uu.ub.cora.therest.converter.jsontorest.JsonToDataConverter;
-import se.uu.ub.cora.therest.converter.jsontorest.JsonToDataConverterFactory;
+import se.uu.ub.cora.therest.converter.jsontorest.JsonToRestConverter;
+import se.uu.ub.cora.therest.converter.jsontorest.JsonToRestConverterFactory;
 
-public class JsonToDataConverterFactorySpy implements JsonToDataConverterFactory {
+public class JsonToDataConverterFactorySpy implements JsonToRestConverterFactory {
 
 	public List<JsonValue> jsonValues = new ArrayList<>();
 	public List<JsonToDataConverterSpy> jsonToDataConverterSpies = new ArrayList<>();
 
 	@Override
-	public JsonToDataConverter createForJsonObject(JsonValue jsonValue) {
+	public JsonToRestConverter createForJsonObject(JsonValue jsonValue) {
 		jsonValues.add(jsonValue);
 		JsonToDataConverterSpy jsonToDataConverterSpy = new JsonToDataConverterSpy();
 		jsonToDataConverterSpies.add(jsonToDataConverterSpy);

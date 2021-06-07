@@ -16,20 +16,12 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.therest.record;
+package se.uu.ub.cora.therest.converter.resttocora;
 
-import se.uu.ub.cora.therest.converter.jsontorest.JsonToRestConverter;
-import se.uu.ub.cora.therest.data.RestDataElement;
-import se.uu.ub.cora.therest.data.RestDataGroup;
+import se.uu.ub.cora.data.DataGroup;
 
-public class JsonToDataConverterSpy implements JsonToRestConverter {
+public interface RestToCoraConverter {
 
-	public RestDataGroup returnedRestDataGroup;
-
-	@Override
-	public RestDataElement toInstance() {
-		returnedRestDataGroup = RestDataGroup.withNameInData("someGroupFromSpy");
-		return returnedRestDataGroup;
-	}
+	DataGroup convert();
 
 }

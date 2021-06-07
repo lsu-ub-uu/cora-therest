@@ -16,20 +16,24 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.therest.record;
+package se.uu.ub.cora.therest.converter.resttocora;
 
-import se.uu.ub.cora.therest.converter.jsontorest.JsonToRestConverter;
+import static org.testng.Assert.assertSame;
+
+import org.testng.annotations.Test;
+
 import se.uu.ub.cora.therest.data.RestDataElement;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 
-public class JsonToDataConverterSpy implements JsonToRestConverter {
+public class RestToCoraConverterFactoryTest {
 
-	public RestDataGroup returnedRestDataGroup;
+	@Test
+	public void testFactor() {
+		RestToCoraConverterFactory converterFactory = new RestToCoraConverterFactoryImp();
+		RestDataElement dataGroup = RestDataGroup.withNameInData("someDataGroup");
+		RestDataGroupToCoraConverter converter = (RestDataGroupToCoraConverter) converterFactory
+				.factor(dataGroup);
+		assertSame(converter.getRestDataGroup(), dataGroup);
 
-	@Override
-	public RestDataElement toInstance() {
-		returnedRestDataGroup = RestDataGroup.withNameInData("someGroupFromSpy");
-		return returnedRestDataGroup;
 	}
-
 }

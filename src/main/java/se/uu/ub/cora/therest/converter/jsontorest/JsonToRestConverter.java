@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Uppsala University Library
+ * Copyright 2015 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -16,20 +16,13 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.therest.record;
 
-import se.uu.ub.cora.therest.converter.jsontorest.JsonToRestConverter;
+package se.uu.ub.cora.therest.converter.jsontorest;
+
 import se.uu.ub.cora.therest.data.RestDataElement;
-import se.uu.ub.cora.therest.data.RestDataGroup;
 
-public class JsonToDataConverterSpy implements JsonToRestConverter {
+public interface JsonToRestConverter {
 
-	public RestDataGroup returnedRestDataGroup;
-
-	@Override
-	public RestDataElement toInstance() {
-		returnedRestDataGroup = RestDataGroup.withNameInData("someGroupFromSpy");
-		return returnedRestDataGroup;
-	}
+	RestDataElement toInstance();
 
 }

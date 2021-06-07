@@ -65,15 +65,15 @@ import se.uu.ub.cora.therest.converter.ConverterException;
 import se.uu.ub.cora.therest.converter.coratorest.CoraToRestConverter;
 import se.uu.ub.cora.therest.converter.coratorest.CoraToRestConverterFactory;
 import se.uu.ub.cora.therest.converter.coratorest.CoraToRestConverterFactoryImp;
-import se.uu.ub.cora.therest.converter.jsontorest.JsonToDataConverter;
-import se.uu.ub.cora.therest.converter.jsontorest.JsonToDataConverterFactory;
-import se.uu.ub.cora.therest.converter.jsontorest.JsonToDataConverterFactoryImp;
-import se.uu.ub.cora.therest.converter.resttocora.RestToDataConverter;
-import se.uu.ub.cora.therest.converter.resttocora.RestToDataConverterFactory;
-import se.uu.ub.cora.therest.converter.resttocora.RestToDataConverterFactoryImp;
-import se.uu.ub.cora.therest.converter.resttojson.RestDataToJsonConverter;
-import se.uu.ub.cora.therest.converter.resttojson.RestDataToJsonConverterFactory;
-import se.uu.ub.cora.therest.converter.resttojson.RestDataToJsonConverterFactoryImp;
+import se.uu.ub.cora.therest.converter.jsontorest.JsonToRestConverter;
+import se.uu.ub.cora.therest.converter.jsontorest.JsonToRestConverterFactory;
+import se.uu.ub.cora.therest.converter.jsontorest.JsonToRestConverterFactoryImp;
+import se.uu.ub.cora.therest.converter.resttocora.RestToCoraConverter;
+import se.uu.ub.cora.therest.converter.resttocora.RestToCoraConverterFactory;
+import se.uu.ub.cora.therest.converter.resttocora.RestToCoraConverterFactoryImp;
+import se.uu.ub.cora.therest.converter.resttojson.RestToJsonConverter;
+import se.uu.ub.cora.therest.converter.resttojson.RestToJsonConverterFactory;
+import se.uu.ub.cora.therest.converter.resttojson.RestToJsonConverterFactoryImp;
 import se.uu.ub.cora.therest.data.RestData;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.RestDataRecord;
@@ -86,10 +86,10 @@ public class RecordEndpoint {
 	private Logger log = LoggerProvider.getLoggerForClass(RecordEndpoint.class);
 
 	private CoraToRestConverterFactory dataToRestConverterFactory = new CoraToRestConverterFactoryImp();
-	private RestDataToJsonConverterFactory restDataToJsonConverterFactory = new RestDataToJsonConverterFactoryImp();
-	private JsonToDataConverterFactory jsonToDataConverterFactory = new JsonToDataConverterFactoryImp();
+	private RestToJsonConverterFactory restDataToJsonConverterFactory = new RestToJsonConverterFactoryImp();
+	private JsonToRestConverterFactory jsonToDataConverterFactory = new JsonToRestConverterFactoryImp();
 	private JsonParser jsonParser = new OrgJsonParser();
-	private RestToDataConverterFactory restToDataConverterFactory = new RestToDataConverterFactoryImp();
+	private RestToCoraConverterFactory restToDataConverterFactory = new RestToCoraConverterFactoryImp();
 
 	public RecordEndpoint(@Context HttpServletRequest req) {
 		request = req;
@@ -164,20 +164,20 @@ public class RecordEndpoint {
 
 	private DataGroup convertJsonStringToDataGroup(String jsonRecord) {
 		RestDataGroup restDataGroup = convertJsonStringToRestDataGroup(jsonRecord);
-		RestToDataConverter converter = restToDataConverterFactory.factor(restDataGroup);
+		RestToCoraConverter converter = restToDataConverterFactory.factor(restDataGroup);
 		return converter.convert();
 	}
 
 	private RestDataGroup convertJsonStringToRestDataGroup(String jsonRecord) {
 		JsonValue jsonValue = jsonParser.parseString(jsonRecord);
-		JsonToDataConverter jsonToDataConverter = jsonToDataConverterFactory
+		JsonToRestConverter jsonToDataConverter = jsonToDataConverterFactory
 				.createForJsonObject(jsonValue);
 		return (RestDataGroup) jsonToDataConverter.toInstance();
 	}
 
 	private String convertDataRecordToJsonString(DataRecord record) {
 		RestDataRecord restDataRecord = convertDataRecordToRestDataRecord(record);
-		RestDataToJsonConverter dataToJsonConverter = getRestToJsonConverter(restDataRecord);
+		RestToJsonConverter dataToJsonConverter = getRestToJsonConverter(restDataRecord);
 		return dataToJsonConverter.toJson();
 	}
 
@@ -188,7 +188,7 @@ public class RecordEndpoint {
 
 	}
 
-	private RestDataToJsonConverter getRestToJsonConverter(RestDataRecord restDataRecord) {
+	private RestToJsonConverter getRestToJsonConverter(RestDataRecord restDataRecord) {
 		return restDataToJsonConverterFactory.createForRestData(restDataRecord);
 	}
 
@@ -288,7 +288,7 @@ public class RecordEndpoint {
 
 		RestData restDataList = listSpiderToRestConverter.toRest();
 
-		RestDataToJsonConverter recordListToJsonConverter = restDataToJsonConverterFactory
+		RestToJsonConverter recordListToJsonConverter = restDataToJsonConverterFactory
 				.createForRestData(restDataList);
 		return recordListToJsonConverter.toJson();
 	}
@@ -529,13 +529,13 @@ public class RecordEndpoint {
 	}
 
 	private DataGroup getDataGroupFromJsonObjectUsingName(JsonObject jsonObject, String name) {
-		JsonToDataConverter jsonToDataConverter = createConverter(jsonObject, name);
+		JsonToRestConverter jsonToDataConverter = createConverter(jsonObject, name);
 		RestDataGroup restDataGroup = (RestDataGroup) jsonToDataConverter.toInstance();
-		RestToDataConverter converter = restToDataConverterFactory.factor(restDataGroup);
+		RestToCoraConverter converter = restToDataConverterFactory.factor(restDataGroup);
 		return converter.convert();
 	}
 
-	private JsonToDataConverter createConverter(JsonObject jsonObject, String name) {
+	private JsonToRestConverter createConverter(JsonObject jsonObject, String name) {
 		JsonValue validationInfoJson = jsonObject.getValue(name);
 		return jsonToDataConverterFactory.createForJsonObject(validationInfoJson);
 	}
@@ -579,17 +579,17 @@ public class RecordEndpoint {
 		this.dataToRestConverterFactory = converterFactory;
 	}
 
-	RestDataToJsonConverterFactory getRestDataToJsonConverterFactory() {
+	RestToJsonConverterFactory getRestDataToJsonConverterFactory() {
 		return restDataToJsonConverterFactory;
 	}
 
 	void setRestRecordToJsonConverterFactory(
-			RestDataToJsonConverterFactory restRecordToJsonConverterFactory) {
+			RestToJsonConverterFactory restRecordToJsonConverterFactory) {
 		this.restDataToJsonConverterFactory = restRecordToJsonConverterFactory;
 
 	}
 
-	JsonToDataConverterFactory getJsonToDataConverterFactory() {
+	JsonToRestConverterFactory getJsonToDataConverterFactory() {
 		return jsonToDataConverterFactory;
 	}
 
@@ -597,7 +597,7 @@ public class RecordEndpoint {
 		return jsonParser;
 	}
 
-	void setJsonToDataConverterFactory(JsonToDataConverterFactory jsonToDataConverterFactory) {
+	void setJsonToDataConverterFactory(JsonToRestConverterFactory jsonToDataConverterFactory) {
 		this.jsonToDataConverterFactory = jsonToDataConverterFactory;
 
 	}
@@ -607,11 +607,11 @@ public class RecordEndpoint {
 
 	}
 
-	RestToDataConverterFactory getRestToDataConverterFactory() {
+	RestToCoraConverterFactory getRestToDataConverterFactory() {
 		return restToDataConverterFactory;
 	}
 
-	void setRestToDataConverterFactory(RestToDataConverterFactory restToDataConverterFactory) {
+	void setRestToDataConverterFactory(RestToCoraConverterFactory restToDataConverterFactory) {
 		this.restToDataConverterFactory = restToDataConverterFactory;
 
 	}

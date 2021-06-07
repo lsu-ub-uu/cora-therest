@@ -50,9 +50,9 @@ import se.uu.ub.cora.json.parser.org.OrgJsonParser;
 import se.uu.ub.cora.logger.LoggerProvider;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
 import se.uu.ub.cora.therest.converter.coratorest.CoraToRestConverterFactoryImp;
-import se.uu.ub.cora.therest.converter.jsontorest.JsonToDataConverterFactoryImp;
-import se.uu.ub.cora.therest.converter.resttocora.RestToDataConverterFactoryImp;
-import se.uu.ub.cora.therest.converter.resttojson.RestDataToJsonConverterFactoryImp;
+import se.uu.ub.cora.therest.converter.jsontorest.JsonToRestConverterFactoryImp;
+import se.uu.ub.cora.therest.converter.resttocora.RestToCoraConverterFactoryImp;
+import se.uu.ub.cora.therest.converter.resttojson.RestToJsonConverterFactoryImp;
 import se.uu.ub.cora.therest.coradata.DataGroupSpy;
 import se.uu.ub.cora.therest.coradata.DataListSpy;
 import se.uu.ub.cora.therest.data.RestDataGroup;
@@ -118,12 +118,12 @@ public class RecordEndpointTest {
 		assertTrue(recordEndpoint
 				.getDataToRestConverterFactory() instanceof CoraToRestConverterFactoryImp);
 		assertTrue(recordEndpoint
-				.getRestDataToJsonConverterFactory() instanceof RestDataToJsonConverterFactoryImp);
+				.getRestDataToJsonConverterFactory() instanceof RestToJsonConverterFactoryImp);
 		assertTrue(recordEndpoint
-				.getJsonToDataConverterFactory() instanceof JsonToDataConverterFactoryImp);
+				.getJsonToDataConverterFactory() instanceof JsonToRestConverterFactoryImp);
 		assertTrue(recordEndpoint.getJsonParser() instanceof OrgJsonParser);
 		assertTrue(recordEndpoint
-				.getRestToDataConverterFactory() instanceof RestToDataConverterFactoryImp);
+				.getRestToDataConverterFactory() instanceof RestToCoraConverterFactoryImp);
 
 	}
 

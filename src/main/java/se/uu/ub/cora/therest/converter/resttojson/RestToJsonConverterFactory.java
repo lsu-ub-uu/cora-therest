@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Uppsala University Library
+ * Copyright 2015 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -16,30 +16,18 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.therest.record;
+
+package se.uu.ub.cora.therest.converter.resttojson;
 
 import se.uu.ub.cora.json.builder.JsonBuilderFactory;
-import se.uu.ub.cora.therest.converter.resttojson.RestToJsonConverter;
-import se.uu.ub.cora.therest.converter.resttojson.RestToJsonConverterFactory;
 import se.uu.ub.cora.therest.data.RestData;
 import se.uu.ub.cora.therest.data.RestDataElement;
 
-public class RestDataToJsonConverterFactorySpy implements RestToJsonConverterFactory {
-	public RestRecordToJsonConverterSpy restRecordToJsonConverterSpy;
-	public RestData restData;
+public interface RestToJsonConverterFactory {
 
-	@Override
-	public RestToJsonConverter createForRestData(RestData restData) {
-		this.restData = restData;
-		restRecordToJsonConverterSpy = new RestRecordToJsonConverterSpy();
-		return restRecordToJsonConverterSpy;
-	}
+	RestToJsonConverter createForRestDataElement(JsonBuilderFactory factory,
+			RestDataElement restDataElement);
 
-	@Override
-	public RestToJsonConverter createForRestDataElement(JsonBuilderFactory factory,
-			RestDataElement restDataElement) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	RestToJsonConverter createForRestData(RestData restData);
 
 }

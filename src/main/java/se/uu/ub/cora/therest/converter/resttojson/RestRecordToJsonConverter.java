@@ -29,7 +29,7 @@ import se.uu.ub.cora.therest.data.ActionLink;
 import se.uu.ub.cora.therest.data.RestData;
 import se.uu.ub.cora.therest.data.RestDataRecord;
 
-public final class RestRecordToJsonConverter implements RestDataToJsonConverter {
+public final class RestRecordToJsonConverter implements RestToJsonConverter {
 
 	private JsonBuilderFactory jsonBuilderFactory;
 	private RestDataRecord restDataRecord;
@@ -56,8 +56,8 @@ public final class RestRecordToJsonConverter implements RestDataToJsonConverter 
 	}
 
 	private void convertMainRestDataGroup() {
-		RestDataToJsonConverterFactory dataToJsonConverterFactory = new RestDataToJsonConverterFactoryImp();
-		RestDataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
+		RestToJsonConverterFactory dataToJsonConverterFactory = new RestToJsonConverterFactoryImp();
+		RestToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForRestDataElement(jsonBuilderFactory, restDataRecord.getRestDataGroup());
 		JsonObjectBuilder jsonDataGroupObjectBuilder = dataToJsonConverter.toJsonObjectBuilder();
 		recordJsonObjectBuilder.addKeyJsonObjectBuilder("data", jsonDataGroupObjectBuilder);
@@ -75,7 +75,7 @@ public final class RestRecordToJsonConverter implements RestDataToJsonConverter 
 
 	private void addActionLinksToRecord() {
 		Map<String, ActionLink> actionLinks = restDataRecord.getActionLinks();
-		ActionLinksToJsonConverter actionLinkConverter = new ActionLinksToJsonConverter(
+		RestDataActionLinkToJsonConverter actionLinkConverter = new RestDataActionLinkToJsonConverter(
 				jsonBuilderFactory, actionLinks);
 		JsonObjectBuilder actionLinksObject = actionLinkConverter.toJsonObjectBuilder();
 		recordJsonObjectBuilder.addKeyJsonObjectBuilder("actionLinks", actionLinksObject);

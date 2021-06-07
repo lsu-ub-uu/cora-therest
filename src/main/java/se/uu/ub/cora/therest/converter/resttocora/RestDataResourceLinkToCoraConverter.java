@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Uppsala University Library
+ * Copyright 2019 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -16,20 +16,26 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.therest.record;
+package se.uu.ub.cora.therest.converter.resttocora;
 
-import se.uu.ub.cora.therest.converter.jsontorest.JsonToRestConverter;
-import se.uu.ub.cora.therest.data.RestDataElement;
+import se.uu.ub.cora.data.DataResourceLinkProvider;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 
-public class JsonToDataConverterSpy implements JsonToRestConverter {
+public class RestDataResourceLinkToCoraConverter extends RestDataGroupToCoraConverter {
 
-	public RestDataGroup returnedRestDataGroup;
+	public static RestDataResourceLinkToCoraConverter fromRestDataGroup(
+			RestDataGroup restDataGroup) {
+		return new RestDataResourceLinkToCoraConverter(restDataGroup);
+	}
+
+	protected RestDataResourceLinkToCoraConverter(RestDataGroup restDataGroup) {
+		super(restDataGroup);
+	}
 
 	@Override
-	public RestDataElement toInstance() {
-		returnedRestDataGroup = RestDataGroup.withNameInData("someGroupFromSpy");
-		return returnedRestDataGroup;
+	protected void createInstanceOfDataElement() {
+		dataGroup = DataResourceLinkProvider
+				.getDataResourceLinkUsingNameInData(restDataGroup.getNameInData());
 	}
 
 }
