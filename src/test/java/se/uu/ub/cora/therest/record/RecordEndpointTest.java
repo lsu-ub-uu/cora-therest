@@ -32,7 +32,6 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.core.Response;
@@ -46,16 +45,15 @@ import org.testng.annotations.Test;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataList;
 import se.uu.ub.cora.data.DataRecord;
+import se.uu.ub.cora.data.converter.JsonToDataConverterProvider;
+import se.uu.ub.cora.json.parser.JsonValue;
 import se.uu.ub.cora.json.parser.org.OrgJsonParser;
 import se.uu.ub.cora.logger.LoggerProvider;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
 import se.uu.ub.cora.therest.converter.coratorest.CoraToRestConverterFactoryImp;
-import se.uu.ub.cora.therest.converter.jsontorest.JsonToRestConverterFactoryImp;
-import se.uu.ub.cora.therest.converter.resttocora.RestToCoraConverterFactoryImp;
 import se.uu.ub.cora.therest.converter.resttojson.RestToJsonConverterFactoryImp;
 import se.uu.ub.cora.therest.coradata.DataGroupSpy;
 import se.uu.ub.cora.therest.coradata.DataListSpy;
-import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.RestDataList;
 import se.uu.ub.cora.therest.log.LoggerFactorySpy;
 
@@ -65,10 +63,12 @@ public class RecordEndpointTest {
 	private static final String PLACE = "place";
 	private static final String AUTH_TOKEN = "authToken";
 	private JsonParserSpy jsonParser;
-	private JsonToDataConverterFactorySpy jsonToDataConverterFactory;
-	private RestToDataConverterFactorySpy restToDataConverterFactory;
-	private DataToRestConverterFactorySpy toRestConverterFactory;
-	private RestDataToJsonConverterFactorySpy restDataToJsonConverterFactory;
+	private JsonToRestConverterFactorySpy jsonToRestConverterFactory;
+	private RestToCoraConverterFactorySpy restToCoraConverterFactory;
+	private CoraToRestConverterFactorySpy coraToRestConverterFactory;
+	private RestToJsonConverterFactorySpy restToJsonConverterFactory;
+
+	JsonToDataConverterFactorySpy jsonToDataConverterFactorySpy = new JsonToDataConverterFactorySpy();
 
 	private RecordEndpoint recordEndpoint;
 	private SpiderInstanceFactorySpy spiderInstanceFactorySpy;
@@ -84,6 +84,8 @@ public class RecordEndpointTest {
 
 	@BeforeMethod
 	public void beforeMethod() {
+		jsonToDataConverterFactorySpy = new JsonToDataConverterFactorySpy();
+		JsonToDataConverterProvider.setJsonToDataConverterFactory(jsonToDataConverterFactorySpy);
 		loggerFactorySpy = new LoggerFactorySpy();
 		LoggerProvider.setLoggerFactory(loggerFactorySpy);
 		initInfo.put("theRestPublicPathToSystem", "/systemone/rest/");
@@ -100,16 +102,14 @@ public class RecordEndpointTest {
 
 	private void setUpSpiesInRecordEndpoint() {
 		jsonParser = new JsonParserSpy();
-		jsonToDataConverterFactory = new JsonToDataConverterFactorySpy();
-		restToDataConverterFactory = new RestToDataConverterFactorySpy();
-		toRestConverterFactory = new DataToRestConverterFactorySpy();
-		restDataToJsonConverterFactory = new RestDataToJsonConverterFactorySpy();
+		jsonToRestConverterFactory = new JsonToRestConverterFactorySpy();
+		restToCoraConverterFactory = new RestToCoraConverterFactorySpy();
+		coraToRestConverterFactory = new CoraToRestConverterFactorySpy();
+		restToJsonConverterFactory = new RestToJsonConverterFactorySpy();
 
 		recordEndpoint.setJsonParser(jsonParser);
-		recordEndpoint.setJsonToDataConverterFactory(jsonToDataConverterFactory);
-		recordEndpoint.setRestToDataConverterFactory(restToDataConverterFactory);
-		recordEndpoint.setDataToRestConverterFactory(toRestConverterFactory);
-		recordEndpoint.setRestRecordToJsonConverterFactory(restDataToJsonConverterFactory);
+		recordEndpoint.setDataToRestConverterFactory(coraToRestConverterFactory);
+		recordEndpoint.setRestRecordToJsonConverterFactory(restToJsonConverterFactory);
 	}
 
 	@Test
@@ -119,12 +119,7 @@ public class RecordEndpointTest {
 				.getDataToRestConverterFactory() instanceof CoraToRestConverterFactoryImp);
 		assertTrue(recordEndpoint
 				.getRestDataToJsonConverterFactory() instanceof RestToJsonConverterFactoryImp);
-		assertTrue(recordEndpoint
-				.getJsonToDataConverterFactory() instanceof JsonToRestConverterFactoryImp);
 		assertTrue(recordEndpoint.getJsonParser() instanceof OrgJsonParser);
-		assertTrue(recordEndpoint
-				.getRestToDataConverterFactory() instanceof RestToCoraConverterFactoryImp);
-
 	}
 
 	@Test
@@ -193,17 +188,20 @@ public class RecordEndpointTest {
 		response = recordEndpoint.readRecordList(AUTH_TOKEN, AUTH_TOKEN, PLACE, jsonFilterData);
 
 		SpiderRecordListReaderSpy spiderListReaderSpy = spiderInstanceFactorySpy.spiderRecordListReaderSpy;
-		assertFilterIsHandledCorrectly(spiderListReaderSpy.filter);
+
+		DataGroup filterSentOnToSpider = spiderInstanceFactorySpy.spiderRecordListReaderSpy.filter;
+		assertJsonStringConvertedToDataUsesCoraData(jsonFilterData, filterSentOnToSpider);
 
 		DataListSpy returnedDataListFromReader = spiderListReaderSpy.returnedDataList;
 
-		assertSame(toRestConverterFactory.recordList, returnedDataListFromReader);
-		assertEquals(toRestConverterFactory.url, "http://cora.epc.ub.uu.se/systemone/rest/record/");
+		assertSame(coraToRestConverterFactory.recordList, returnedDataListFromReader);
+		assertEquals(coraToRestConverterFactory.url,
+				"http://cora.epc.ub.uu.se/systemone/rest/record/");
 
-		RestDataList returnedRestDataList = toRestConverterFactory.toRestConverter.returnedRestDataList;
-		assertSame(restDataToJsonConverterFactory.restData, returnedRestDataList);
+		RestDataList returnedRestDataList = coraToRestConverterFactory.toRestConverter.returnedRestDataList;
+		assertSame(restToJsonConverterFactory.restData, returnedRestDataList);
 
-		RestRecordToJsonConverterSpy factoredToJsonConverter = restDataToJsonConverterFactory.restRecordToJsonConverterSpy;
+		RestRecordToJsonConverterSpy factoredToJsonConverter = restToJsonConverterFactory.restRecordToJsonConverterSpy;
 		assertEquals(factoredToJsonConverter.convertedJson, response.getEntity());
 
 		assertResponseStatusIs(Response.Status.OK);
@@ -211,12 +209,12 @@ public class RecordEndpointTest {
 
 	private void assertFilterIsHandledCorrectly(DataGroup filterSentToSpider) {
 		assertEquals(jsonParser.jsonString, jsonFilterData);
-		assertSame(jsonToDataConverterFactory.jsonValues.get(0), jsonParser.returnedJsonValue);
+		assertSame(jsonToRestConverterFactory.jsonValues.get(0), jsonParser.returnedJsonValue);
 
-		assertSame(restToDataConverterFactory.dataElements.get(0),
-				jsonToDataConverterFactory.jsonToDataConverterSpies.get(0).returnedRestDataGroup);
+		assertSame(restToCoraConverterFactory.dataElements.get(0),
+				jsonToRestConverterFactory.jsonToDataConverterSpies.get(0).returnedRestDataGroup);
 
-		DataGroupSpy returnedDataGroup = restToDataConverterFactory.factoredConverters
+		DataGroupSpy returnedDataGroup = restToCoraConverterFactory.factoredConverters
 				.get(0).returnedDataGroup;
 		assertEquals(filterSentToSpider, returnedDataGroup);
 	}
@@ -288,8 +286,8 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testReadRecordUsesToRestConverterFactory() {
-		DataToRestConverterFactorySpy toRestConverterFactory = new DataToRestConverterFactorySpy();
-		RestDataToJsonConverterFactorySpy toJsonConverterFactory = new RestDataToJsonConverterFactorySpy();
+		CoraToRestConverterFactorySpy toRestConverterFactory = new CoraToRestConverterFactorySpy();
+		RestToJsonConverterFactorySpy toJsonConverterFactory = new RestToJsonConverterFactorySpy();
 
 		recordEndpoint.setDataToRestConverterFactory(toRestConverterFactory);
 		recordEndpoint.setRestRecordToJsonConverterFactory(toJsonConverterFactory);
@@ -453,6 +451,24 @@ public class RecordEndpointTest {
 	}
 
 	@Test
+	public void testUpdateRecordUsesFactories() {
+		response = recordEndpoint.updateRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001,
+				defaultJson);
+
+		DataGroup recordSentOnToSpider = spiderInstanceFactorySpy.spiderRecordUpdaterSpy.record;
+		assertJsonStringConvertedToDataUsesCoraData(defaultJson, recordSentOnToSpider);
+	}
+
+	private void assertJsonStringConvertedToDataUsesCoraData(String jsonSentToEndPoint,
+			DataGroup recordSentOnToSpider) {
+		assertSame(jsonParser.jsonString, jsonSentToEndPoint);
+		assertSame(jsonToDataConverterFactorySpy.jsonValue, jsonParser.returnedJsonValue);
+		JsonToDataConverterSpy jsonToDataConverterSpy = jsonToDataConverterFactorySpy.jsonToDataConverterSpy;
+		DataGroup returnedDataPart = jsonToDataConverterSpy.dataPartToReturn;
+		assertSame(recordSentOnToSpider, returnedDataPart);
+	}
+
+	@Test
 	public void testUpdateRecordUnauthorized() {
 		response = recordEndpoint.updateRecordUsingAuthTokenWithRecord(DUMMY_NON_AUTHORIZED_TOKEN,
 				PLACE, PLACE_0001, defaultJson);
@@ -515,19 +531,10 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testCreateRecordUsesFactories() {
-
 		response = recordEndpoint.createRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultJson);
 
-		assertEquals(jsonParser.jsonString, defaultJson);
-		assertSame(jsonToDataConverterFactory.jsonValues.get(0), jsonParser.returnedJsonValue);
-
-		RestDataGroup dataGroupReturned = jsonToDataConverterFactory.jsonToDataConverterSpies
-				.get(0).returnedRestDataGroup;
-		assertSame(restToDataConverterFactory.dataElements.get(0), dataGroupReturned);
-		RestToDataConverterSpy factoredToDataConverter = restToDataConverterFactory.factoredConverters
-				.get(0);
-		assertSame(spiderInstanceFactorySpy.spiderCreatorSpy.record,
-				factoredToDataConverter.returnedDataGroup);
+		DataGroup recordSentOnToSpider = spiderInstanceFactorySpy.spiderCreatorSpy.record;
+		assertJsonStringConvertedToDataUsesCoraData(defaultJson, recordSentOnToSpider);
 
 		assertResponseStatusIs(Response.Status.CREATED);
 		assertTrue(response.getLocation().toString().startsWith("record/" + PLACE));
@@ -564,7 +571,7 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testCreateRecordConversionException() {
-		restToDataConverterFactory.throwError = true;
+		jsonToDataConverterFactorySpy.throwError = true;
 		response = recordEndpoint.createRecordUsingAuthTokenWithRecord("someToken78678567", PLACE,
 				defaultJson);
 		assertResponseStatusIs(Response.Status.BAD_REQUEST);
@@ -773,15 +780,12 @@ public class RecordEndpointTest {
 	public void testSearchRecordInputsReachSpider() {
 		response = recordEndpoint.searchRecord(AUTH_TOKEN, AUTH_TOKEN, "aSearchId", defaultJson);
 
-		assertEquals(jsonParser.jsonString, defaultJson);
-
 		SpiderRecordSearcherSpy spiderRecordSearcherSpy = spiderInstanceFactorySpy.spiderRecordSearcherSpy;
 		assertEquals(spiderRecordSearcherSpy.authToken, AUTH_TOKEN);
 		assertEquals(spiderRecordSearcherSpy.searchId, "aSearchId");
-		DataGroup searchData = spiderRecordSearcherSpy.searchData;
-		DataGroupSpy convertedDataGroup = restToDataConverterFactory.factoredConverters
-				.get(0).returnedDataGroup;
-		assertSame(searchData, convertedDataGroup);
+
+		DataGroup searchSentOnToSpider = spiderInstanceFactorySpy.spiderRecordSearcherSpy.searchData;
+		assertJsonStringConvertedToDataUsesCoraData(defaultJson, searchSentOnToSpider);
 	}
 
 	@Test
@@ -789,18 +793,22 @@ public class RecordEndpointTest {
 		response = recordEndpoint.searchRecord(AUTH_TOKEN, AUTH_TOKEN, "aSearchId", defaultJson);
 
 		SpiderRecordSearcherSpy spiderRecordSearcherSpy = spiderInstanceFactorySpy.spiderRecordSearcherSpy;
+
+		DataGroup searchSentOnToSpider = spiderInstanceFactorySpy.spiderRecordSearcherSpy.searchData;
+		assertJsonStringConvertedToDataUsesCoraData(defaultJson, searchSentOnToSpider);
+
 		DataList returnedDataListFromReader = spiderRecordSearcherSpy.searchResult;
 
-		assertSame(toRestConverterFactory.recordList, returnedDataListFromReader);
-		assertEquals(toRestConverterFactory.url, "http://cora.epc.ub.uu.se/systemone/rest/record/");
+		assertSame(coraToRestConverterFactory.recordList, returnedDataListFromReader);
+		assertEquals(coraToRestConverterFactory.url,
+				"http://cora.epc.ub.uu.se/systemone/rest/record/");
 
-		RestDataList returnedRestDataList = toRestConverterFactory.toRestConverter.returnedRestDataList;
-		assertSame(restDataToJsonConverterFactory.restData, returnedRestDataList);
+		RestDataList returnedRestDataList = coraToRestConverterFactory.toRestConverter.returnedRestDataList;
+		assertSame(restToJsonConverterFactory.restData, returnedRestDataList);
 
-		RestRecordToJsonConverterSpy factoredToJsonConverter = restDataToJsonConverterFactory.restRecordToJsonConverterSpy;
+		RestRecordToJsonConverterSpy factoredToJsonConverter = restToJsonConverterFactory.restRecordToJsonConverterSpy;
 		assertEquals(factoredToJsonConverter.convertedJson, response.getEntity());
 
-		assertEquals(jsonParser.jsonString, defaultJson);
 	}
 
 	@Test
@@ -882,38 +890,33 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testValidateRecord() {
-
 		response = recordEndpoint.validateRecord(AUTH_TOKEN, AUTH_TOKEN, "workOrder", defaultJson);
 
 		assertEquals(jsonParser.jsonString, defaultJson);
 
-		// parts picked out from validationJson sent in
+		// parts requested from validationJson sent in
 		JsonValueSpy topJsonObject = jsonParser.returnedJsonValue;
 		assertEquals(topJsonObject.keys.get(0), "order");
 		assertEquals(topJsonObject.keys.get(1), "record");
 
-		assertSame(jsonToDataConverterFactory.jsonValues.get(0),
-				topJsonObject.returnedJsonValues.get(0));
-		assertSame(jsonToDataConverterFactory.jsonValues.get(1),
-				topJsonObject.returnedJsonValues.get(1));
+		DataGroup validationOrderSentOnToSpider = spiderInstanceFactorySpy.spiderRecordValidatorSpy.validationOrder;
+		DataGroup recordToValidateSentOnToSpider = spiderInstanceFactorySpy.spiderRecordValidatorSpy.recordToValidate;
 
-		List<JsonToDataConverterSpy> jsonToDataConverters = jsonToDataConverterFactory.jsonToDataConverterSpies;
-		assertSame(jsonToDataConverters.get(0).returnedRestDataGroup,
-				restToDataConverterFactory.dataElements.get(0));
-		assertSame(jsonToDataConverters.get(1).returnedRestDataGroup,
-				restToDataConverterFactory.dataElements.get(1));
+		JsonValue orderDataFromParser = jsonParser.returnedJsonValue.returnedJsonValues.get(0);
+		JsonValue firstSentToConverterFactory = jsonToDataConverterFactorySpy.jsonValues.get(0);
+		assertSame(firstSentToConverterFactory, orderDataFromParser);
 
-		SpiderRecordValidatorSpy spiderRecordValidatorSpy = spiderInstanceFactorySpy.spiderRecordValidatorSpy;
-		DataGroup validationRecord = spiderRecordValidatorSpy.validationRecord;
-		DataGroup recordToValidate = spiderRecordValidatorSpy.recordToValidate;
+		JsonValue recordDataFromParser = jsonParser.returnedJsonValue.returnedJsonValues.get(1);
+		JsonValue secondSentToConverterFactory = jsonToDataConverterFactorySpy.jsonValues.get(1);
+		assertSame(secondSentToConverterFactory, recordDataFromParser);
 
-		DataGroupSpy returnedValidationOrder = restToDataConverterFactory.factoredConverters
-				.get(0).returnedDataGroup;
-		assertSame(validationRecord, returnedValidationOrder);
+		var converterSpyForOrder = jsonToDataConverterFactorySpy.jsonToDataConverterSpies.get(0);
+		DataGroup orderReturnedDataPart = converterSpyForOrder.dataPartToReturn;
+		assertSame(validationOrderSentOnToSpider, orderReturnedDataPart);
 
-		DataGroupSpy returnedRecordToValidate = restToDataConverterFactory.factoredConverters
-				.get(1).returnedDataGroup;
-		assertSame(recordToValidate, returnedRecordToValidate);
+		var converterSpyForRecord = jsonToDataConverterFactorySpy.jsonToDataConverterSpies.get(1);
+		DataGroup recordReturnedDataPart = converterSpyForRecord.dataPartToReturn;
+		assertSame(recordToValidateSentOnToSpider, recordReturnedDataPart);
 
 		assertResponseStatusIs(Response.Status.OK);
 		assertEquals(response.getEntity(), "some converted json");
@@ -957,16 +960,21 @@ public class RecordEndpointTest {
 		response = recordEndpoint.indexRecordList(AUTH_TOKEN, AUTH_TOKEN, PLACE, jsonFilterData);
 
 		IndexBatchJobCreatorSpy indexBatchJobCreator = spiderInstanceFactorySpy.indexBatchJobCreator;
-		assertFilterIsHandledCorrectly(indexBatchJobCreator.filter);
+		// assertFilterIsHandledCorrectly(indexBatchJobCreator.filter);
+
+		DataGroup filterSentOnToSpider = spiderInstanceFactorySpy.indexBatchJobCreator.filter;
+		assertJsonStringConvertedToDataUsesCoraData(jsonFilterData, filterSentOnToSpider);
+
 		assertEquals(indexBatchJobCreator.type, PLACE);
 
-		assertSame(toRestConverterFactory.dataRecord, indexBatchJobCreator.recordToReturn);
-		DataRecordToRestConverterSpy factoredConverter = toRestConverterFactory.toRestConverter;
-		assertSame(restDataToJsonConverterFactory.restData,
-				factoredConverter.returnedRestDataRecord);
+		// assertSame(coraToRestConverterFactory.dataRecord, indexBatchJobCreator.recordToReturn);
+		// DataRecordToRestConverterSpy factoredConverter =
+		// coraToRestConverterFactory.toRestConverter;
+		// assertSame(restToJsonConverterFactory.restData,
+		// factoredConverter.returnedRestDataRecord);
 
 		assertEquals(response.getEntity(),
-				restDataToJsonConverterFactory.restRecordToJsonConverterSpy.convertedJson);
+				restToJsonConverterFactory.restRecordToJsonConverterSpy.convertedJson);
 
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.OK);

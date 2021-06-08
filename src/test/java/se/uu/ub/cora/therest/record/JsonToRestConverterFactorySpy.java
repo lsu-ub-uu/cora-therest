@@ -21,23 +21,21 @@ package se.uu.ub.cora.therest.record;
 import java.util.ArrayList;
 import java.util.List;
 
-import se.uu.ub.cora.therest.converter.resttocora.RestToCoraConverter;
-import se.uu.ub.cora.therest.converter.resttocora.RestToCoraConverterFactory;
-import se.uu.ub.cora.therest.data.RestDataElement;
+import se.uu.ub.cora.json.parser.JsonValue;
+import se.uu.ub.cora.therest.converter.jsontorest.JsonToRestConverter;
+import se.uu.ub.cora.therest.converter.jsontorest.JsonToRestConverterFactory;
 
-public class RestToDataConverterFactorySpy implements RestToCoraConverterFactory {
+public class JsonToRestConverterFactorySpy implements JsonToRestConverterFactory {
 
-	public List<RestDataElement> dataElements = new ArrayList<>();
-	public List<RestToDataConverterSpy> factoredConverters = new ArrayList<>();
-	public boolean throwError = false;
+	public List<JsonValue> jsonValues = new ArrayList<>();
+	public List<JsonToRestConverterSpy> jsonToDataConverterSpies = new ArrayList<>();
 
 	@Override
-	public RestToCoraConverter factor(RestDataElement dataElement) {
-		dataElements.add(dataElement);
-		RestToDataConverterSpy toDataConverter = new RestToDataConverterSpy();
-		toDataConverter.throwError = throwError;
-		factoredConverters.add(toDataConverter);
-		return toDataConverter;
+	public JsonToRestConverter createForJsonObject(JsonValue jsonValue) {
+		jsonValues.add(jsonValue);
+		JsonToRestConverterSpy jsonToDataConverterSpy = new JsonToRestConverterSpy();
+		jsonToDataConverterSpies.add(jsonToDataConverterSpy);
+		return jsonToDataConverterSpy;
 	}
 
 }

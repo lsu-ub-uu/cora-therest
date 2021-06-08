@@ -23,7 +23,7 @@ import se.uu.ub.cora.data.DataRecord;
 import se.uu.ub.cora.therest.converter.coratorest.CoraToRestConverter;
 import se.uu.ub.cora.therest.converter.coratorest.CoraToRestConverterFactory;
 
-public class DataToRestConverterFactorySpy implements CoraToRestConverterFactory {
+public class CoraToRestConverterFactorySpy implements CoraToRestConverterFactory {
 
 	public DataRecord dataRecord;
 	public String url;

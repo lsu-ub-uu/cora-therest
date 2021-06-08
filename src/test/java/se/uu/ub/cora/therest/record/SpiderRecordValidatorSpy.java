@@ -15,7 +15,7 @@ public class SpiderRecordValidatorSpy implements RecordValidator {
 	public String recordType;
 	public DataGroup dataGroup;
 	public DataGroup recordToValidate;
-	public DataGroup validationRecord;
+	public DataGroup validationOrder;
 	public boolean throwRecordNotFoundException = false;
 
 	@Override
@@ -23,7 +23,7 @@ public class SpiderRecordValidatorSpy implements RecordValidator {
 			DataGroup validationRecord, DataGroup recordToValidate) {
 		this.authToken = authToken;
 		this.recordType = recordType;
-		this.validationRecord = validationRecord;
+		this.validationOrder = validationRecord;
 		this.dataGroup = validationRecord;
 		this.recordToValidate = recordToValidate;
 
