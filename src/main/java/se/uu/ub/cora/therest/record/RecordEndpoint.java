@@ -547,13 +547,22 @@ public class RecordEndpoint {
 		}
 	}
 
-	private Response tryIndexRecordList(String authToken, String type, String filterAsJson) {
+	private Response tryIndexRecordList(String authToken, String type, String filterAsJson)
+			throws URISyntaxException {
 		DataGroup filter = convertJsonStringToDataGroup(filterAsJson);
 		RecordListIndexer indexBatchJobCreator = SpiderInstanceProvider.getRecordListIndexer();
 		DataRecord indexBatchJob = indexBatchJobCreator.indexRecordList(authToken, type, filter);
+
+		DataGroup createdGroup = indexBatchJob.getDataGroup();
+		DataGroup recordInfo = createdGroup.getFirstGroupWithNameInData("recordInfo");
+		String createdId = recordInfo.getFirstAtomicValueWithNameInData("id");
+
 		String json = convertDataRecordToJsonString(indexBatchJob);
 
-		return Response.status(Response.Status.CREATED).entity(json).build();
+		String urlDelimiter = "/";
+		URI uri = new URI("record/indexBatchJob" + urlDelimiter + createdId);
+		return Response.created(uri).entity(json).build();
+
 	}
 
 	CoraToRestConverterFactory getDataToRestConverterFactory() {

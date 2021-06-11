@@ -57,6 +57,7 @@ import se.uu.ub.cora.therest.data.RestDataList;
 import se.uu.ub.cora.therest.log.LoggerFactorySpy;
 
 public class RecordEndpointTest {
+	private static final String INDEX_BATCH_JOB = "indexBatchJob";
 	private static final String DUMMY_NON_AUTHORIZED_TOKEN = "dummyNonAuthorizedToken";
 	private static final String PLACE_0001 = "place:0001";
 	private static final String PLACE = "place";
@@ -954,6 +955,7 @@ public class RecordEndpointTest {
 
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.CREATED);
+		assertTrue(response.getLocation().toString().startsWith("record/" + INDEX_BATCH_JOB));
 	}
 
 	@Test
@@ -961,6 +963,7 @@ public class RecordEndpointTest {
 		response = recordEndpoint.indexRecordList(AUTH_TOKEN, AUTH_TOKEN, PLACE, null);
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.CREATED);
+		assertTrue(response.getLocation().toString().startsWith("record/" + INDEX_BATCH_JOB));
 
 		assertEquals(jsonParser.jsonString, "{\"name\":\"filter\",\"children\":[]}");
 
@@ -971,6 +974,7 @@ public class RecordEndpointTest {
 		response = recordEndpoint.indexRecordList(AUTH_TOKEN, AUTH_TOKEN, PLACE, "");
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.CREATED);
+		assertTrue(response.getLocation().toString().startsWith("record/" + INDEX_BATCH_JOB));
 
 		assertEquals(jsonParser.jsonString, "{\"name\":\"filter\",\"children\":[]}");
 
