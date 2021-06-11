@@ -248,7 +248,7 @@ public class RecordEndpoint {
 
 	private String createEmptyFilterIfParameterDoesNotExist(String filterAsJson) {
 		String filter = filterAsJson;
-		if (filterAsJson == null) {
+		if (filterAsJson == null || filterAsJson.isEmpty()) {
 			filter = "{\"name\":\"filter\",\"children\":[]}";
 		}
 		return filter;
@@ -530,7 +530,7 @@ public class RecordEndpoint {
 	@Produces("application/vnd.uub.record+json")
 	public Response indexRecordList(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
-			@QueryParam("filter") String filterAsJson) {
+			String filterAsJson) {
 		String usedToken = getExistingTokenPreferHeader(headerAuthToken, queryAuthToken);
 		String jsonFilter = createEmptyFilterIfParameterDoesNotExist(filterAsJson);
 
@@ -553,7 +553,7 @@ public class RecordEndpoint {
 		DataRecord indexBatchJob = indexBatchJobCreator.indexRecordList(authToken, type, filter);
 		String json = convertDataRecordToJsonString(indexBatchJob);
 
-		return Response.status(Response.Status.OK).entity(json).build();
+		return Response.status(Response.Status.CREATED).entity(json).build();
 	}
 
 	CoraToRestConverterFactory getDataToRestConverterFactory() {

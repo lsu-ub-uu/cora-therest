@@ -953,14 +953,24 @@ public class RecordEndpointTest {
 				restToJsonConverterFactory.restRecordToJsonConverterSpy.convertedJson);
 
 		assertEntityExists();
-		assertResponseStatusIs(Response.Status.OK);
+		assertResponseStatusIs(Response.Status.CREATED);
 	}
 
 	@Test
 	public void testIndexRecordListWithNullAsFilter() {
 		response = recordEndpoint.indexRecordList(AUTH_TOKEN, AUTH_TOKEN, PLACE, null);
 		assertEntityExists();
-		assertResponseStatusIs(Response.Status.OK);
+		assertResponseStatusIs(Response.Status.CREATED);
+
+		assertEquals(jsonParser.jsonString, "{\"name\":\"filter\",\"children\":[]}");
+
+	}
+
+	@Test
+	public void testIndexRecordListWithEmptyFilter() {
+		response = recordEndpoint.indexRecordList(AUTH_TOKEN, AUTH_TOKEN, PLACE, "");
+		assertEntityExists();
+		assertResponseStatusIs(Response.Status.CREATED);
 
 		assertEquals(jsonParser.jsonString, "{\"name\":\"filter\",\"children\":[]}");
 
