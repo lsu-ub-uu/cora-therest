@@ -5,9 +5,9 @@ import se.uu.ub.cora.data.DataRecord;
 import se.uu.ub.cora.spider.authorization.AuthorizationException;
 import se.uu.ub.cora.spider.record.RecordValidator;
 import se.uu.ub.cora.storage.RecordNotFoundException;
-import se.uu.ub.cora.therest.data.DataAtomicSpy;
-import se.uu.ub.cora.therest.data.DataGroupSpy;
-import se.uu.ub.cora.therest.data.DataRecordSpy;
+import se.uu.ub.cora.therest.coradata.DataAtomicSpy;
+import se.uu.ub.cora.therest.coradata.DataGroupSpy;
+import se.uu.ub.cora.therest.coradata.DataRecordSpy;
 
 public class SpiderRecordValidatorSpy implements RecordValidator {
 
@@ -15,7 +15,7 @@ public class SpiderRecordValidatorSpy implements RecordValidator {
 	public String recordType;
 	public DataGroup dataGroup;
 	public DataGroup recordToValidate;
-	public DataGroup validationRecord;
+	public DataGroup validationOrder;
 	public boolean throwRecordNotFoundException = false;
 
 	@Override
@@ -23,7 +23,7 @@ public class SpiderRecordValidatorSpy implements RecordValidator {
 			DataGroup validationRecord, DataGroup recordToValidate) {
 		this.authToken = authToken;
 		this.recordType = recordType;
-		this.validationRecord = validationRecord;
+		this.validationOrder = validationRecord;
 		this.dataGroup = validationRecord;
 		this.recordToValidate = recordToValidate;
 

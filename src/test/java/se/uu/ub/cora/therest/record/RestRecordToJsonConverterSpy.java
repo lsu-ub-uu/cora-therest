@@ -19,9 +19,9 @@
 package se.uu.ub.cora.therest.record;
 
 import se.uu.ub.cora.json.builder.JsonObjectBuilder;
-import se.uu.ub.cora.therest.data.converter.RestDataToJsonConverter;
+import se.uu.ub.cora.therest.converter.resttojson.RestToJsonConverter;
 
-public class RestRecordToJsonConverterSpy implements RestDataToJsonConverter {
+public class RestRecordToJsonConverterSpy implements RestToJsonConverter {
 
 	public String convertedJson;
 

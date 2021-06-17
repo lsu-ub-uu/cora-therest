@@ -7,7 +7,7 @@ import se.uu.ub.cora.spider.authorization.AuthorizationException;
 import se.uu.ub.cora.spider.record.DataException;
 import se.uu.ub.cora.spider.record.RecordSearcher;
 import se.uu.ub.cora.storage.RecordNotFoundException;
-import se.uu.ub.cora.therest.data.DataListSpy;
+import se.uu.ub.cora.therest.coradata.DataListSpy;
 
 public class SpiderRecordSearcherSpy implements RecordSearcher {
 
