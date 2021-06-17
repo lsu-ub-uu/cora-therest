@@ -46,7 +46,7 @@ public class DataRecordToJsonConverterTest {
 	@Test
 	public void testToJson() {
 		JsonBuilderFactory jsonFactory = new OrgJsonBuilderFactoryAdapter();
-		DataRecordToJsonConverter dataRecordToJsonConverter = DataRecordToJsonConverter
+		RestRecordToJsonConverter dataRecordToJsonConverter = RestRecordToJsonConverter
 				.usingJsonFactoryForRestDataRecord(jsonFactory, restDataRecord);
 		String jsonString = dataRecordToJsonConverter.toJson();
 
@@ -58,7 +58,7 @@ public class DataRecordToJsonConverterTest {
 		restDataRecord.addKey("KEY1");
 
 		JsonBuilderFactory jsonFactory = new OrgJsonBuilderFactoryAdapter();
-		DataRecordToJsonConverter dataRecordToJsonConverter = DataRecordToJsonConverter
+		RestRecordToJsonConverter dataRecordToJsonConverter = RestRecordToJsonConverter
 				.usingJsonFactoryForRestDataRecord(jsonFactory, restDataRecord);
 		String jsonString = dataRecordToJsonConverter.toJson();
 
@@ -73,7 +73,7 @@ public class DataRecordToJsonConverterTest {
 		restDataRecord.addKey("KEY3");
 
 		JsonBuilderFactory jsonFactory = new OrgJsonBuilderFactoryAdapter();
-		DataRecordToJsonConverter dataRecordToJsonConverter = DataRecordToJsonConverter
+		RestRecordToJsonConverter dataRecordToJsonConverter = RestRecordToJsonConverter
 				.usingJsonFactoryForRestDataRecord(jsonFactory, restDataRecord);
 		String jsonString = dataRecordToJsonConverter.toJson();
 
@@ -86,7 +86,7 @@ public class DataRecordToJsonConverterTest {
 		restDataRecord.addActionLink("read", createReadActionLink());
 
 		JsonBuilderFactory jsonFactory = new OrgJsonBuilderFactoryAdapter();
-		DataRecordToJsonConverter dataRecordToJsonConverter = DataRecordToJsonConverter
+		RestRecordToJsonConverter dataRecordToJsonConverter = RestRecordToJsonConverter
 				.usingJsonFactoryForRestDataRecord(jsonFactory, restDataRecord);
 		String jsonString = dataRecordToJsonConverter.toJson();
 
@@ -113,7 +113,7 @@ public class DataRecordToJsonConverterTest {
 		restDataRecord.addReadPermission("readPermissionTwo");
 
 		JsonBuilderFactory jsonFactory = new OrgJsonBuilderFactoryAdapter();
-		DataRecordToJsonConverter dataRecordToJsonConverter = DataRecordToJsonConverter
+		RestRecordToJsonConverter dataRecordToJsonConverter = RestRecordToJsonConverter
 				.usingJsonFactoryForRestDataRecord(jsonFactory, restDataRecord);
 		String jsonString = dataRecordToJsonConverter.toJson();
 
@@ -127,7 +127,7 @@ public class DataRecordToJsonConverterTest {
 		restDataRecord.addWritePermission("writePermissionTwo");
 
 		JsonBuilderFactory jsonFactory = new OrgJsonBuilderFactoryAdapter();
-		DataRecordToJsonConverter dataRecordToJsonConverter = DataRecordToJsonConverter
+		RestRecordToJsonConverter dataRecordToJsonConverter = RestRecordToJsonConverter
 				.usingJsonFactoryForRestDataRecord(jsonFactory, restDataRecord);
 		String jsonString = dataRecordToJsonConverter.toJson();
 
@@ -143,7 +143,7 @@ public class DataRecordToJsonConverterTest {
 		restDataRecord.addWritePermission("writePermissionTwo");
 
 		JsonBuilderFactory jsonFactory = new OrgJsonBuilderFactoryAdapter();
-		DataRecordToJsonConverter dataRecordToJsonConverter = DataRecordToJsonConverter
+		RestRecordToJsonConverter dataRecordToJsonConverter = RestRecordToJsonConverter
 				.usingJsonFactoryForRestDataRecord(jsonFactory, restDataRecord);
 		String jsonString = dataRecordToJsonConverter.toJson();
 

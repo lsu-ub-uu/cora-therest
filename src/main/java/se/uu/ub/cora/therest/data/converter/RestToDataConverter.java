@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Uppsala University Library
+ * Copyright 2021 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -16,12 +16,12 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.therest.data.converter.coradata;
+package se.uu.ub.cora.therest.data.converter;
 
-import se.uu.ub.cora.therest.data.RestData;
+import se.uu.ub.cora.data.DataGroup;
 
-public interface DataToRestConverter {
+public interface RestToDataConverter {
 
-	RestData toRest();
+	DataGroup convert();
 
 }

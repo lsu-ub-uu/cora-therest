@@ -28,7 +28,7 @@ import se.uu.ub.cora.therest.data.RestDataAtomic;
 
 public class DataAtomicToJsonConverterTest {
 	private RestDataAtomic restDataAtomic;
-	private DataToJsonConverter converter;
+	private RestDataToJsonConverter converter;
 
 	@BeforeMethod
 	public void beforeMethod() {

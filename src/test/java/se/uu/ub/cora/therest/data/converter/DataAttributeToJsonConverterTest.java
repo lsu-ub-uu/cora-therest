@@ -29,12 +29,12 @@ import se.uu.ub.cora.therest.data.RestDataAttribute;
 import se.uu.ub.cora.therest.data.RestDataElement;
 
 public class DataAttributeToJsonConverterTest {
-	private DataToJsonConverterFactory dataToJsonConverterFactory;
+	private RestDataToJsonConverterFactory dataToJsonConverterFactory;
 	private JsonBuilderFactory factory;
 
 	@BeforeMethod
 	public void beforeMethod() {
-		dataToJsonConverterFactory = new DataToJsonConverterFactoryImp();
+		dataToJsonConverterFactory = new RestDataToJsonConverterFactoryImp();
 		factory = new OrgJsonBuilderFactoryAdapter();
 
 	}
@@ -43,7 +43,7 @@ public class DataAttributeToJsonConverterTest {
 	public void testToJson() {
 		RestDataElement restDataElement = RestDataAttribute
 				.withNameInDataAndValue("attributeNameInData", "attributeValue");
-		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
+		RestDataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForRestDataElement(factory, restDataElement);
 		String json = dataToJsonConverter.toJson();
 
@@ -54,7 +54,7 @@ public class DataAttributeToJsonConverterTest {
 	public void testToJsonEmptyValue() {
 		RestDataElement restDataElement = RestDataAttribute
 				.withNameInDataAndValue("attributeNameInData", "");
-		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
+		RestDataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForRestDataElement(factory, restDataElement);
 		String json = dataToJsonConverter.toJson();
 

@@ -23,12 +23,6 @@ import se.uu.ub.cora.bookkeeper.validator.DataValidator;
 import se.uu.ub.cora.bookkeeper.validator.ValidationAnswer;
 import se.uu.ub.cora.data.DataGroup;
 
-/**
- *
- *
- * @author <a href="mailto:madeleine.kennback@ub.uu.se">Madeleine Kennbäck</a>
- * @version $Revision$, $Date$, $Author$
- */
 public class DataValidatorReturnNullPointer implements DataValidator {
 	@Override
 	public ValidationAnswer validateData(String metadataId, DataGroup dataGroup) {
@@ -37,6 +31,12 @@ public class DataValidatorReturnNullPointer implements DataValidator {
 
 	@Override
 	public ValidationAnswer validateListFilter(String recordType, DataGroup filterDataGroup) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ValidationAnswer validateIndexSettings(String recordType, DataGroup indexSettings) {
 		// TODO Auto-generated method stub
 		return null;
 	}

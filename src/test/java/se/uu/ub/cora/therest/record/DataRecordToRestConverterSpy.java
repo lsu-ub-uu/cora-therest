@@ -16,23 +16,27 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.therest.data.converter.coradata;
+package se.uu.ub.cora.therest.record;
 
-import se.uu.ub.cora.data.DataList;
-import se.uu.ub.cora.data.DataRecord;
+import se.uu.ub.cora.therest.data.RestData;
+import se.uu.ub.cora.therest.data.RestDataList;
+import se.uu.ub.cora.therest.data.RestDataRecord;
+import se.uu.ub.cora.therest.data.converter.coradata.DataToRestConverter;
 
-public class DataToRestConverterFactoryImp implements DataToRestConverterFactory {
+public class DataRecordToRestConverterSpy implements DataToRestConverter {
+
+	public RestDataRecord returnedRestDataRecord;
+	public RestDataList returnedRestDataList;
+	public String typeOfData = "record";
 
 	@Override
-	public DataToRestConverter factorForDataRecord(DataRecord record, String url) {
-		DataGroupToRestConverterFactory converterFactory = new DataGroupToRestConverterFactoryImp();
-		return DataRecordToRestConverter.fromDataRecordWithBaseURLAndConverterFactory(record, url,
-				converterFactory);
-	}
-
-	@Override
-	public DataToRestConverter factorForDataList(DataList recordList, String url) {
-		return DataListDataToRestConverter.fromDataListWithBaseURL(recordList, url);
+	public RestData toRest() {
+		if ("recordList".equals(typeOfData)) {
+			returnedRestDataList = RestDataList.withContainDataOfType("someRecordType");
+			return returnedRestDataList;
+		}
+		returnedRestDataRecord = RestDataRecord.withRestDataGroup(null);
+		return returnedRestDataRecord;
 	}
 
 }

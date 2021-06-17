@@ -30,20 +30,20 @@ import se.uu.ub.cora.therest.data.RestDataAtomic;
 import se.uu.ub.cora.therest.data.RestDataGroup;
 
 public class DataGroupToJsonConverterTest {
-	private DataToJsonConverterFactory dataToJsonConverterFactory;
+	private RestDataToJsonConverterFactory dataToJsonConverterFactory;
 	private JsonBuilderFactory factory;
 	private RestDataGroup restDataGroup;
 
 	@BeforeMethod
 	public void beforeMethod() {
-		dataToJsonConverterFactory = new DataToJsonConverterFactoryImp();
+		dataToJsonConverterFactory = new RestDataToJsonConverterFactoryImp();
 		factory = new OrgJsonBuilderFactoryAdapter();
 		restDataGroup = RestDataGroup.withNameInData("groupNameInData");
 	}
 
 	@Test
 	public void testToJson() {
-		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
+		RestDataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForRestDataElement(factory, restDataGroup);
 		String json = dataToJsonConverter.toJson();
 
@@ -53,7 +53,7 @@ public class DataGroupToJsonConverterTest {
 	@Test
 	public void testToJsonWithRepeatId() {
 		restDataGroup.setRepeatId("4");
-		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
+		RestDataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForRestDataElement(factory, restDataGroup);
 		String json = dataToJsonConverter.toJson();
 
@@ -63,7 +63,7 @@ public class DataGroupToJsonConverterTest {
 	@Test
 	public void testToJsonWithEmptyRepeatId() {
 		restDataGroup.setRepeatId("");
-		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
+		RestDataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForRestDataElement(factory, restDataGroup);
 		String json = dataToJsonConverter.toJson();
 
@@ -74,7 +74,7 @@ public class DataGroupToJsonConverterTest {
 	public void testToJsonGroupWithAttribute() {
 		restDataGroup.addAttributeByIdWithValue("attributeNameInData", "attributeValue");
 
-		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
+		RestDataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForRestDataElement(factory, restDataGroup);
 		String json = dataToJsonConverter.toJson();
 
@@ -87,7 +87,7 @@ public class DataGroupToJsonConverterTest {
 		restDataGroup.addAttributeByIdWithValue("attributeNameInData", "attributeValue");
 		restDataGroup.addAttributeByIdWithValue("attributeNameInData2", "attributeValue2");
 
-		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
+		RestDataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForRestDataElement(factory, restDataGroup);
 		String json = dataToJsonConverter.toJson();
 
@@ -102,7 +102,7 @@ public class DataGroupToJsonConverterTest {
 		restDataGroup
 				.addChild(RestDataAtomic.withNameInDataAndValue("atomicNameInData", "atomicValue"));
 
-		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
+		RestDataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForRestDataElement(factory, restDataGroup);
 		String json = dataToJsonConverter.toJson();
 
@@ -121,7 +121,7 @@ public class DataGroupToJsonConverterTest {
 		restDataGroup2.addChild(
 				RestDataAtomic.withNameInDataAndValue("atomicNameInData2", "atomicValue2"));
 
-		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
+		RestDataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForRestDataElement(factory, restDataGroup);
 		String json = dataToJsonConverter.toJson();
 
@@ -160,7 +160,7 @@ public class DataGroupToJsonConverterTest {
 		dataGroup2.addChild(
 				RestDataAtomic.withNameInDataAndValue("atomicNameInData2", "atomicValue2"));
 
-		DataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
+		RestDataToJsonConverter dataToJsonConverter = dataToJsonConverterFactory
 				.createForRestDataElement(factory, restDataGroup);
 		String json = dataToJsonConverter.toJson();
 		String expectedJson = "{\"children\":[{\"children\":[{\"name\":\"id\",\"value\":\"place:0001\"},"

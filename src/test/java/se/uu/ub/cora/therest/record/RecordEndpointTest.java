@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2016, 2018 Uppsala University Library
+ * Copyright 2015, 2016, 2018, 2021 Uppsala University Library
  * Copyright 2016 Olov McKie
  *
  * This file is part of Cora.
@@ -21,8 +21,8 @@
 package se.uu.ub.cora.therest.record;
 
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
@@ -32,6 +32,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.core.Response;
@@ -43,8 +44,19 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataList;
+import se.uu.ub.cora.data.DataRecord;
+import se.uu.ub.cora.json.parser.org.OrgJsonParser;
 import se.uu.ub.cora.logger.LoggerProvider;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
+import se.uu.ub.cora.therest.data.DataGroupSpy;
+import se.uu.ub.cora.therest.data.DataListSpy;
+import se.uu.ub.cora.therest.data.RestDataGroup;
+import se.uu.ub.cora.therest.data.RestDataList;
+import se.uu.ub.cora.therest.data.converter.JsonToDataConverterFactoryImp;
+import se.uu.ub.cora.therest.data.converter.RestDataToJsonConverterFactoryImp;
+import se.uu.ub.cora.therest.data.converter.RestToDataConverterFactoryImp;
+import se.uu.ub.cora.therest.data.converter.coradata.DataToRestConverterFactoryImp;
 import se.uu.ub.cora.therest.log.LoggerFactorySpy;
 
 public class RecordEndpointTest {
@@ -52,49 +64,67 @@ public class RecordEndpointTest {
 	private static final String PLACE_0001 = "place:0001";
 	private static final String PLACE = "place";
 	private static final String AUTH_TOKEN = "authToken";
-	private String jsonToCreateFrom = "{\"name\":\"authority\",\"children\":[{\"name\":\"recordInfo\",\"children\":[{\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"system\"},{\"name\":\"linkedRecordId\",\"value\":\"cora\"}],\"name\":\"dataDivider\"}]},{\"name\":\"datePeriod\",\"attributes\":{\"eventType\":\"existence\"},\"children\":[{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"start\"},\"children\":[{\"name\":\"year\",\"value\":\"1976\"},{\"name\":\"month\",\"value\":\"07\"},{\"name\":\"day\",\"value\":\"22\"}]},{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"end\"},\"children\":[{\"name\":\"year\",\"value\":\"2076\"},{\"name\":\"month\",\"value\":\"12\"},{\"name\":\"day\",\"value\":\"31\"}]},{\"name\":\"description\",\"value\":\"76 - 76\"}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"authorized\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"name\",\"value\":\"Olov\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"name\",\"value\":\"McKie\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"number\"},\"children\":[{\"name\":\"name\",\"value\":\"II\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"addition\"},\"children\":[{\"name\":\"name\",\"value\":\"Ett tillägg\"}]},{\"name\":\"datePeriod\",\"attributes\":{\"eventType\":\"valid\"},\"children\":[{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"start\"},\"children\":[{\"name\":\"year\",\"value\":\"2008\"},{\"name\":\"month\",\"value\":\"06\"},{\"name\":\"day\",\"value\":\"28\"}]},{\"name\":\"description\",\"value\":\"Namn som gift\"}]}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"alternative\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"name\",\"value\":\"Olle\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"name\",\"value\":\"Nilsson\"}]}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"alternative\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"name\",\"value\":\"Olle2\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"name\",\"value\":\"Nilsson2\"}]}]},{\"name\":\"other\",\"value\":\"some other stuff\"},{\"name\":\"other\",\"value\":\"second other stuff\"},{\"name\":\"other\",\"value\":\"third other stuff\"},{\"name\":\"othercol\",\"value\":\"yes\"}],\"attributes\":{\"type\":\"place\"}}";
-	// private String jsonToCreateFromConversionException =
-	// "{\"name\":\"authority\",\"children\":[{\"type\":\"NOT_CORRECT\"},{\"name\":\"recordInfo\",\"children\":[{\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"system\"},{\"name\":\"linkedRecordId\",\"value\":\"cora\"}],\"name\":\"dataDivider\"}]},{\"name\":\"datePeriod\",\"attributes\":{\"eventType\":\"existence\"},\"children\":[{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"start\"},\"children\":[{\"name\":\"year\",\"value\":\"1976\"},{\"name\":\"month\",\"value\":\"07\"},{\"name\":\"day\",\"value\":\"22\"}]},{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"end\"},\"children\":[{\"name\":\"year\",\"value\":\"2076\"},{\"name\":\"month\",\"value\":\"12\"},{\"name\":\"day\",\"value\":\"31\"}]},{\"name\":\"description\",\"value\":\"76
-	// -
-	// 76\"}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"authorized\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"name\",\"value\":\"Olov\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"name\",\"value\":\"McKie\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"number\"},\"children\":[{\"name\":\"name\",\"value\":\"II\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"addition\"},\"children\":[{\"name\":\"name\",\"value\":\"Ett
-	// tillägg\"}]},{\"name\":\"datePeriod\",\"attributes\":{\"eventType\":\"valid\"},\"children\":[{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"start\"},\"children\":[{\"name\":\"year\",\"value\":\"2008\"},{\"name\":\"month\",\"value\":\"06\"},{\"name\":\"day\",\"value\":\"28\"}]},{\"name\":\"description\",\"value\":\"Namn
-	// som
-	// gift\"}]}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"alternative\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"name\",\"value\":\"Olle\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"name\",\"value\":\"Nilsson\"}]}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"alternative\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"name\",\"value\":\"Olle2\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"name\",\"value\":\"Nilsson2\"}]}]},{\"name\":\"other\",\"value\":\"some
-	// other stuff\"},{\"name\":\"other\",\"value\":\"second other
-	// stuff\"},{\"name\":\"other\",\"value\":\"third other
-	// stuff\"},{\"name\":\"othercol\",\"value\":\"yes\"}],\"attributes\":{\"type\":\"place\"}}";
+	private JsonParserSpy jsonParser;
+	private JsonToDataConverterFactorySpy jsonToDataConverterFactory;
+	private RestToDataConverterFactorySpy restToDataConverterFactory;
+	private DataToRestConverterFactorySpy toRestConverterFactory;
+	private RestDataToJsonConverterFactorySpy restDataToJsonConverterFactory;
 
-	private String jsonToCreateFromConversionException = "{\"name\":\"authority\",\"children\":[{\"name\":\"NOT_CORRECT\"},{\"name\":\"recordInfo\",\"children\":[{\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"system\"},{\"name\":\"linkedRecordId\",\"value\":\"cora\"}],\"name\":\"dataDivider\"}]},{\"name\":\"datePeriod\",\"attributes\":{\"eventType\":\"existence\"},\"children\":[{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"start\"},\"children\":[{\"name\":\"year\",\"value\":\"1976\"},{\"name\":\"month\",\"value\":\"07\"},{\"name\":\"day\",\"value\":\"22\"}]},{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"end\"},\"children\":[{\"name\":\"year\",\"value\":\"2076\"},{\"name\":\"month\",\"value\":\"12\"},{\"name\":\"day\",\"value\":\"31\"}]},{\"name\":\"description\",\"value\":\"76 - 76\"}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"authorized\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"name\",\"value\":\"Olov\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"name\",\"value\":\"McKie\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"number\"},\"children\":[{\"name\":\"name\",\"value\":\"II\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"addition\"},\"children\":[{\"name\":\"name\",\"value\":\"Ett tillägg\"}]},{\"name\":\"datePeriod\",\"attributes\":{\"eventType\":\"valid\"},\"children\":[{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"start\"},\"children\":[{\"name\":\"year\",\"value\":\"2008\"},{\"name\":\"month\",\"value\":\"06\"},{\"name\":\"day\",\"value\":\"28\"}]},{\"name\":\"description\",\"value\":\"Namn som gift\"}]}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"alternative\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"name\",\"value\":\"Olle\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"name\",\"value\":\"Nilsson\"}]}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"alternative\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"name\",\"value\":\"Olle2\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"name\",\"value\":\"Nilsson2\"}]}]},{\"name\":\"other\",\"value\":\"some other stuff\"},{\"name\":\"other\",\"value\":\"second other stuff\"},{\"name\":\"other\",\"value\":\"third other stuff\"},{\"name\":\"othercol\",\"value\":\"yes\"}],\"attributes\":{\"type\":\"place\"}}";
-	private String jsonToCreateFromAttributeAsChild = "{\"name\":\"authority\",\"children\":[{\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"system\"},{\"name\":\"linkedRecordId\",\"value\":\"cora\"}],\"name\":\"dataDivider\"}]},{\"name\":\"datePeriod\",\"attributes\":{\"eventType\":\"existence\"},\"children\":[{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"start\"},\"children\":[{\"year\":\"1976\"},{\"name\":\"month\",\"value\":\"07\"},{\"name\":\"day\",\"value\":\"22\"}]},{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"end\"},\"children\":[{\"name\":\"year\",\"value\":\"2076\"},{\"name\":\"month\",\"value\":\"12\"},{\"name\":\"day\",\"value\":\"31\"}]},{\"name\":\"description\",\"value\":\"76 - 76\"}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"authorized\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"name\",\"value\":\"Olov\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"name\",\"value\":\"McKie\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"number\"},\"children\":[{\"name\":\"name\",\"value\":\"II\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"addition\"},\"children\":[{\"name\":\"name\",\"value\":\"Ett tillägg\"}]},{\"name\":\"datePeriod\",\"attributes\":{\"eventType\":\"valid\"},\"children\":[{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"start\"},\"children\":[{\"name\":\"year\",\"value\":\"2008\"},{\"name\":\"month\",\"value\":\"06\"},{\"name\":\"day\",\"value\":\"28\"}]},{\"name\":\"description\",\"value\":\"Namn som gift\"}]}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"alternative\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"name\",\"value\":\"Olle\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"name\",\"value\":\"Nilsson\"}]}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"alternative\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"name\",\"value\":\"Olle2\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"name\",\"value\":\"Nilsson2\"}]}]},{\"name\":\"other\",\"value\":\"some other stuff\"},{\"name\":\"other\",\"value\":\"second other stuff\"},{\"name\":\"other\",\"value\":\"third other stuff\"},{\"name\":\"othercol\",\"value\":\"yes\"}],\"attributes\":{\"type\":\"place\"}}";
-	private String jsonToUpdateWith = "{\"name\":\"authority\",\"children\":[{\"name\":\"recordInfo\",\"children\":[{\"name\":\"id\",\"value\":\"place:0001\"},{\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"recordType\"},{\"name\":\"linkedRecordId\",\"value\":\"place\"}],\"name\":\"type\"},{\"name\":\"createdBy\",\"value\":\"userId\"},{\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"system\"},{\"name\":\"linkedRecordId\",\"value\":\"cora\"}],\"name\":\"dataDivider\"}]},{\"name\":\"datePeriod\",\"attributes\":{\"eventType\":\"existence\"},\"children\":[{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"start\"},\"children\":[{\"name\":\"year\",\"value\":\"1976\"},{\"name\":\"month\",\"value\":\"07\"},{\"name\":\"day\",\"value\":\"22\"}]},{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"end\"},\"children\":[{\"name\":\"year\",\"value\":\"2076\"},{\"name\":\"month\",\"value\":\"12\"},{\"name\":\"day\",\"value\":\"31\"}]},{\"name\":\"description\",\"value\":\"76 - 76\"}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"authorized\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"name\",\"value\":\"Olov\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"name\",\"value\":\"McKie\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"number\"},\"children\":[{\"name\":\"name\",\"value\":\"II\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"addition\"},\"children\":[{\"name\":\"name\",\"value\":\"Ett tillägg\"}]},{\"name\":\"datePeriod\",\"attributes\":{\"eventType\":\"valid\"},\"children\":[{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"start\"},\"children\":[{\"name\":\"year\",\"value\":\"2008\"},{\"name\":\"month\",\"value\":\"06\"},{\"name\":\"day\",\"value\":\"28\"}]},{\"name\":\"description\",\"value\":\"Namn som gift\"}]}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"alternative\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"name\",\"value\":\"Olle\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"name\",\"value\":\"Nilsson\"}]}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"alternative\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"name\",\"value\":\"Olle2\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"name\",\"value\":\"Nilsson2\"}]}]},{\"name\":\"other\",\"value\":\"some other stuff\"},{\"name\":\"other\",\"value\":\"second other stuff\"},{\"name\":\"other\",\"value\":\"third other stuff\"},{\"name\":\"othercol\",\"value\":\"yes\"}],\"attributes\":{\"type\":\"place\"}}";
-	private String jsonToUpdateWithAttributeAsChild = "{\"name\":\"authority\",\"children\":[{\"name\":\"recordInfo\",\"children\":[{\"id\":\"place:0001\"},{\"name\":\"type\",\"value\":\"place\"},{\"name\":\"createdBy\",\"value\":\"userId\"}]},{\"name\":\"datePeriod\",\"attributes\":{\"eventType\":\"existence\"},\"children\":[{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"start\"},\"children\":[{\"name\":\"year\",\"value\":\"1976\"},{\"name\":\"month\",\"value\":\"07\"},{\"name\":\"day\",\"value\":\"22\"}]},{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"end\"},\"children\":[{\"name\":\"year\",\"value\":\"2076\"},{\"name\":\"month\",\"value\":\"12\"},{\"name\":\"day\",\"value\":\"31\"}]},{\"name\":\"description\",\"value\":\"76 - 76\"}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"authorized\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"name\",\"value\":\"Olov\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"name\",\"value\":\"McKie\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"number\"},\"children\":[{\"name\":\"name\",\"value\":\"II\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"addition\"},\"children\":[{\"name\":\"name\",\"value\":\"Ett tillägg\"}]},{\"name\":\"datePeriod\",\"attributes\":{\"eventType\":\"valid\"},\"children\":[{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"start\"},\"children\":[{\"name\":\"year\",\"value\":\"2008\"},{\"name\":\"month\",\"value\":\"06\"},{\"name\":\"day\",\"value\":\"28\"}]},{\"name\":\"description\",\"value\":\"Namn som gift\"}]}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"alternative\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"name\",\"value\":\"Olle\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"name\",\"value\":\"Nilsson\"}]}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"alternative\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"name\",\"value\":\"Olle2\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"name\",\"value\":\"Nilsson2\"}]}]},{\"name\":\"other\",\"value\":\"some other stuff\"},{\"name\":\"other\",\"value\":\"second other stuff\"},{\"name\":\"other\",\"value\":\"third other stuff\"},{\"name\":\"othercol\",\"value\":\"yes\"}],\"attributes\":{\"type\":\"place\"}}";
-	private String jsonToUpdateWithNotFound = "{\"name\":\"authority\",\"children\":[{\"name\":\"recordInfo\",\"children\":[{\"name\":\"id\",\"value\":\"place:0001_NOT_FOUND\"},{\"name\":\"type\",\"value\":\"place\"},{\"name\":\"createdBy\",\"value\":\"userId\"}]},{\"name\":\"datePeriod\",\"attributes\":{\"eventType\":\"existence\"},\"children\":[{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"start\"},\"children\":[{\"name\":\"year\",\"value\":\"1976\"},{\"name\":\"month\",\"value\":\"07\"},{\"name\":\"day\",\"value\":\"22\"}]},{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"end\"},\"children\":[{\"name\":\"year\",\"value\":\"2076\"},{\"name\":\"month\",\"value\":\"12\"},{\"name\":\"day\",\"value\":\"31\"}]},{\"name\":\"description\",\"value\":\"76 - 76\"}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"authorized\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"name\",\"value\":\"Olov\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"name\",\"value\":\"McKie\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"number\"},\"children\":[{\"name\":\"name\",\"value\":\"II\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"addition\"},\"children\":[{\"name\":\"name\",\"value\":\"Ett tillägg\"}]},{\"name\":\"datePeriod\",\"attributes\":{\"eventType\":\"valid\"},\"children\":[{\"name\":\"date\",\"attributes\":{\"datePointEventType\":\"start\"},\"children\":[{\"name\":\"year\",\"value\":\"2008\"},{\"name\":\"month\",\"value\":\"06\"},{\"name\":\"day\",\"value\":\"28\"}]},{\"name\":\"description\",\"value\":\"Namn som gift\"}]}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"alternative\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"name\",\"value\":\"Olle\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"name\",\"value\":\"Nilsson\"}]}]},{\"name\":\"name\",\"attributes\":{\"type\":\"person\",\"nameform\":\"alternative\"},\"children\":[{\"name\":\"namepart\",\"attributes\":{\"type\":\"givenname\"},\"children\":[{\"name\":\"name\",\"value\":\"Olle2\"}]},{\"name\":\"namepart\",\"attributes\":{\"type\":\"familyname\"},\"children\":[{\"name\":\"name\",\"value\":\"Nilsson2\"}]}]},{\"name\":\"other\",\"value\":\"some other stuff\"},{\"name\":\"other\",\"value\":\"second other stuff\"},{\"name\":\"other\",\"value\":\"third other stuff\"},{\"name\":\"othercol\",\"value\":\"yes\"}],\"attributes\":{\"type\":\"place\"}}";
-	private String jsonWithBadContent = "{\"groupNameInData\":{\"children\":[{\"atomicNameInData\":\"atomicValue\""
-			+ ",\"atomicNameInData2\":\"atomicValue2\"}]}}";
-	private String jsonSearchData = "{\"name\":\"search\",\"children\":[{\"name\":\"include\",\""
-			+ "children\":[{\"name\":\"includePart\",\"children\":[{\"name\":\"text\",\"value\":\"\"}]}]}]}";
-	private String jsonFilterData = "{\"name\":\"filter\",\"children\":[{\"name\":\"part\",\"children\":[{\"name\":\"key\",\"value\":\"movieTitle\"},{\"name\":\"value\",\"value\":\"Some title\"}],\"repeatId\":\"0\"}]}";
-	private String jsonToValidate = "{\"order\":{\"name\":\"validationOrder\",\"children\":[{\"name\":\"recordInfo\",\"children\":[{\"name\":\"dataDivider\",\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"system\"},{\"name\":\"linkedRecordId\",\"value\":\"testSystem\"}]}]},{\"name\":\"recordType\",\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"recordType\"},{\"name\":\"linkedRecordId\",\"value\":\"someRecordType\"}]},{\"name\":\"metadataToValidate\",\"value\":\"existing\"},{\"name\":\"validateLinks\",\"value\":\"false\"}]},\"record\":{\"name\":\"text\",\"children\":[{\"name\":\"recordInfo\",\"children\":[{\"name\":\"id\",\"value\":\"workOrderRecordIdTextVar2Text\"},{\"name\":\"dataDivider\",\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"system\"},{\"name\":\"linkedRecordId\",\"value\":\"cora\"}]}]},{\"name\":\"textPart\",\"children\":[{\"name\":\"text\",\"value\":\"Id på länkad post\"}],\"attributes\":{\"type\":\"default\",\"lang\":\"sv\"}},{\"name\":\"textPart\",\"children\":[{\"name\":\"text\",\"value\":\"Linked record id\"}],\"attributes\":{\"type\":\"alternative\",\"lang\":\"en\"}}]}}";
-	private String jsonToValidateNonExistingRecordType = "{\"order\":{\"name\":\"validationOrder\",\"children\":[{\"name\":\"recordInfo\",\"children\":[{\"name\":\"dataDivider\",\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"system\"},{\"name\":\"linkedRecordId\",\"value\":\"testSystem\"}]}]},{\"name\":\"recordType\",\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"recordType\"},{\"name\":\"linkedRecordId\",\"value\":\"someRecordType\"}]},{\"name\":\"metadataToValidate\",\"value\":\"existing\"},{\"name\":\"validateLinks\",\"value\":\"false\"}]},\"record\":{\"name\":\"recordType_NON_EXISTING\",\"children\":[{\"name\":\"recordInfo\",\"children\":[{\"name\":\"id\",\"value\":\"recordType_NON_EXISTING\"},{\"name\":\"dataDivider\",\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"system\"},{\"name\":\"linkedRecordId\",\"value\":\"cora\"}]}]},{\"name\":\"textPart\",\"children\":[{\"name\":\"text\",\"value\":\"Id på länkad post\"}],\"attributes\":{\"type\":\"default\",\"lang\":\"sv\"}},{\"name\":\"textPart\",\"children\":[{\"name\":\"text\",\"value\":\"Linked record id\"}],\"attributes\":{\"type\":\"alternative\",\"lang\":\"en\"}}]}}";
 	private RecordEndpoint recordEndpoint;
-	private SpiderInstanceFactorySpy factorySpy;
+	private SpiderInstanceFactorySpy spiderInstanceFactorySpy;
 	private Response response;
 	private TestHttpServletRequest request;
 	private Map<String, String> initInfo = new HashMap<>();
 	private LoggerFactorySpy loggerFactorySpy;
 	private String testedClassName = "RecordEndpoint";
 
+	private String jsonToValidate = "{\"order\":{\"name\":\"validationOrder\",\"children\":[{\"name\":\"recordInfo\",\"children\":[{\"name\":\"dataDivider\",\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"system\"},{\"name\":\"linkedRecordId\",\"value\":\"testSystem\"}]}]},{\"name\":\"recordType\",\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"recordType\"},{\"name\":\"linkedRecordId\",\"value\":\"someRecordType\"}]},{\"name\":\"metadataToValidate\",\"value\":\"existing\"},{\"name\":\"validateLinks\",\"value\":\"false\"}]},\"record\":{\"name\":\"text\",\"children\":[{\"name\":\"recordInfo\",\"children\":[{\"name\":\"id\",\"value\":\"workOrderRecordIdTextVar2Text\"},{\"name\":\"dataDivider\",\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"system\"},{\"name\":\"linkedRecordId\",\"value\":\"cora\"}]}]},{\"name\":\"textPart\",\"children\":[{\"name\":\"text\",\"value\":\"Id på länkad post\"}],\"attributes\":{\"type\":\"default\",\"lang\":\"sv\"}},{\"name\":\"textPart\",\"children\":[{\"name\":\"text\",\"value\":\"Linked record id\"}],\"attributes\":{\"type\":\"alternative\",\"lang\":\"en\"}}]}}";
+	private String defaultJson = "{\"name\":\"someRecordType\",\"children\":[]}";
+	private String jsonFilterData = "{\"name\":\"filter\",\"children\":[{\"name\":\"part\",\"children\":[{\"name\":\"key\",\"value\":\"movieTitle\"},{\"name\":\"value\",\"value\":\"Some title\"}],\"repeatId\":\"0\"}]}";
+
 	@BeforeMethod
 	public void beforeMethod() {
 		loggerFactorySpy = new LoggerFactorySpy();
 		LoggerProvider.setLoggerFactory(loggerFactorySpy);
 		initInfo.put("theRestPublicPathToSystem", "/systemone/rest/");
-		factorySpy = new SpiderInstanceFactorySpy();
-		SpiderInstanceProvider.setSpiderInstanceFactory(factorySpy);
+		spiderInstanceFactorySpy = new SpiderInstanceFactorySpy();
+		SpiderInstanceProvider.setSpiderInstanceFactory(spiderInstanceFactorySpy);
 		SpiderInstanceProvider.setInitInfo(initInfo);
 
 		request = new TestHttpServletRequest();
 		recordEndpoint = new RecordEndpoint(request);
+
+		setUpSpiesInRecordEndpoint();
+
+	}
+
+	private void setUpSpiesInRecordEndpoint() {
+		jsonParser = new JsonParserSpy();
+		jsonToDataConverterFactory = new JsonToDataConverterFactorySpy();
+		restToDataConverterFactory = new RestToDataConverterFactorySpy();
+		toRestConverterFactory = new DataToRestConverterFactorySpy();
+		restDataToJsonConverterFactory = new RestDataToJsonConverterFactorySpy();
+
+		recordEndpoint.setJsonParser(jsonParser);
+		recordEndpoint.setJsonToDataConverterFactory(jsonToDataConverterFactory);
+		recordEndpoint.setRestToDataConverterFactory(restToDataConverterFactory);
+		recordEndpoint.setDataToRestConverterFactory(toRestConverterFactory);
+		recordEndpoint.setRestRecordToJsonConverterFactory(restDataToJsonConverterFactory);
+	}
+
+	@Test
+	public void testInit() {
+		recordEndpoint = new RecordEndpoint(request);
+		assertTrue(recordEndpoint
+				.getDataToRestConverterFactory() instanceof DataToRestConverterFactoryImp);
+		assertTrue(recordEndpoint
+				.getRestDataToJsonConverterFactory() instanceof RestDataToJsonConverterFactoryImp);
+		assertTrue(recordEndpoint
+				.getJsonToDataConverterFactory() instanceof JsonToDataConverterFactoryImp);
+		assertTrue(recordEndpoint.getJsonParser() instanceof OrgJsonParser);
+		assertTrue(recordEndpoint
+				.getRestToDataConverterFactory() instanceof RestToDataConverterFactoryImp);
+
 	}
 
 	@Test
@@ -154,23 +184,41 @@ public class RecordEndpointTest {
 		response = recordEndpoint.readRecordList(headerAuthToken, queryAuthToken, PLACE,
 				jsonFilter);
 
-		SpiderRecordListReaderSpy spiderListReaderSpy = factorySpy.spiderRecordListReaderSpy;
+		SpiderRecordListReaderSpy spiderListReaderSpy = spiderInstanceFactorySpy.spiderRecordListReaderSpy;
 		assertEquals(spiderListReaderSpy.authToken, authTokenExpected);
 	}
 
 	@Test
 	public void testReadRecordListWithFilter() {
 		response = recordEndpoint.readRecordList(AUTH_TOKEN, AUTH_TOKEN, PLACE, jsonFilterData);
-		assertEntityExists();
+
+		SpiderRecordListReaderSpy spiderListReaderSpy = spiderInstanceFactorySpy.spiderRecordListReaderSpy;
+		assertFilterIsHandledCorrectly(spiderListReaderSpy.filter);
+
+		DataListSpy returnedDataListFromReader = spiderListReaderSpy.returnedDataList;
+
+		assertSame(toRestConverterFactory.recordList, returnedDataListFromReader);
+		assertEquals(toRestConverterFactory.url, "http://cora.epc.ub.uu.se/systemone/rest/record/");
+
+		RestDataList returnedRestDataList = toRestConverterFactory.toRestConverter.returnedRestDataList;
+		assertSame(restDataToJsonConverterFactory.restData, returnedRestDataList);
+
+		RestRecordToJsonConverterSpy factoredToJsonConverter = restDataToJsonConverterFactory.restRecordToJsonConverterSpy;
+		assertEquals(factoredToJsonConverter.convertedJson, response.getEntity());
+
 		assertResponseStatusIs(Response.Status.OK);
+	}
 
-		SpiderRecordListReaderSpy spiderListReaderSpy = factorySpy.spiderRecordListReaderSpy;
+	private void assertFilterIsHandledCorrectly(DataGroup filterSentToSpider) {
+		assertEquals(jsonParser.jsonString, jsonFilterData);
+		assertSame(jsonToDataConverterFactory.jsonValues.get(0), jsonParser.returnedJsonValue);
 
-		DataGroup filterData = spiderListReaderSpy.filter;
-		assertEquals(filterData.getNameInData(), "filter");
-		DataGroup part = filterData.getFirstGroupWithNameInData("part");
-		assertTrue(part.containsChildWithNameInData("key"));
-		assertTrue(part.containsChildWithNameInData("value"));
+		assertSame(restToDataConverterFactory.dataElements.get(0),
+				jsonToDataConverterFactory.jsonToDataConverterSpies.get(0).returnedRestDataGroup);
+
+		DataGroupSpy returnedDataGroup = restToDataConverterFactory.factoredConverters
+				.get(0).returnedDataGroup;
+		assertEquals(filterSentToSpider, returnedDataGroup);
 	}
 
 	@Test
@@ -179,11 +227,8 @@ public class RecordEndpointTest {
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.OK);
 
-		SpiderRecordListReaderSpy spiderListReaderSpy = factorySpy.spiderRecordListReaderSpy;
+		assertEquals(jsonParser.jsonString, "{\"name\":\"filter\",\"children\":[]}");
 
-		DataGroup filterData = spiderListReaderSpy.filter;
-		assertEquals(filterData.getNameInData(), "filter");
-		assertFalse(filterData.containsChildWithNameInData("part"));
 	}
 
 	private void assertEntityExists() {
@@ -230,7 +275,7 @@ public class RecordEndpointTest {
 
 		response = recordEndpoint.readRecord(headerAuthToken, queryAuthToken, PLACE, PLACE_0001);
 
-		SpiderRecordReaderSpy spiderReaderSpy = factorySpy.spiderRecordReaderSpy;
+		SpiderRecordReaderSpy spiderReaderSpy = spiderInstanceFactorySpy.spiderRecordReaderSpy;
 		assertEquals(spiderReaderSpy.authToken, authTokenExpected);
 	}
 
@@ -239,6 +284,28 @@ public class RecordEndpointTest {
 		response = recordEndpoint.readRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001);
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.OK);
+	}
+
+	@Test
+	public void testReadRecordUsesToRestConverterFactory() {
+		DataToRestConverterFactorySpy toRestConverterFactory = new DataToRestConverterFactorySpy();
+		RestDataToJsonConverterFactorySpy toJsonConverterFactory = new RestDataToJsonConverterFactorySpy();
+
+		recordEndpoint.setDataToRestConverterFactory(toRestConverterFactory);
+		recordEndpoint.setRestRecordToJsonConverterFactory(toJsonConverterFactory);
+
+		response = recordEndpoint.readRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001);
+
+		DataRecord recordReturnedFromReader = spiderInstanceFactorySpy.spiderRecordReaderSpy.dataRecord;
+		assertEquals(toRestConverterFactory.url, "http://cora.epc.ub.uu.se/systemone/rest/record/");
+		assertSame(toRestConverterFactory.dataRecord, recordReturnedFromReader);
+
+		DataRecordToRestConverterSpy factoredToRestConverter = toRestConverterFactory.toRestConverter;
+
+		assertNotNull(toJsonConverterFactory.restData);
+		assertSame(toJsonConverterFactory.restData, factoredToRestConverter.returnedRestDataRecord);
+		assertEquals(response.getEntity(),
+				toJsonConverterFactory.restRecordToJsonConverterSpy.convertedJson);
 	}
 
 	@Test
@@ -282,7 +349,7 @@ public class RecordEndpointTest {
 		response = recordEndpoint.readIncomingRecordLinks(headerAuthToken, queryAuthToken, PLACE,
 				PLACE_0001);
 
-		SpiderRecordIncomingLinksReaderSpy spiderIncomingLinksReaderSpy = factorySpy.spiderRecordIncomingLinksReaderSpy;
+		SpiderRecordIncomingLinksReaderSpy spiderIncomingLinksReaderSpy = spiderInstanceFactorySpy.spiderRecordIncomingLinksReaderSpy;
 		assertEquals(spiderIncomingLinksReaderSpy.authToken, authTokenExpected);
 	}
 
@@ -330,7 +397,7 @@ public class RecordEndpointTest {
 		response = recordEndpoint.deleteRecord(headerAuthToken, queryAuthToken, PLACE,
 				"place:0002");
 
-		SpiderRecordDeleterSpy spiderDeleterSpy = factorySpy.spiderRecordDeleterSpy;
+		SpiderRecordDeleterSpy spiderDeleterSpy = spiderInstanceFactorySpy.spiderRecordDeleterSpy;
 		assertEquals(spiderDeleterSpy.authToken, authTokenExpected);
 	}
 
@@ -372,51 +439,53 @@ public class RecordEndpointTest {
 			String queryAuthToken, String authTokenExpected) {
 
 		response = recordEndpoint.updateRecord(headerAuthToken, queryAuthToken, PLACE, PLACE_0001,
-				jsonToUpdateWith);
+				defaultJson);
 
-		SpiderRecordUpdaterSpy spiderUpdaterSpy = factorySpy.spiderRecordUpdaterSpy;
+		SpiderRecordUpdaterSpy spiderUpdaterSpy = spiderInstanceFactorySpy.spiderRecordUpdaterSpy;
 		assertEquals(spiderUpdaterSpy.authToken, authTokenExpected);
 	}
 
 	@Test
 	public void testUpdateRecord() {
 		response = recordEndpoint.updateRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001,
-				jsonToUpdateWith);
+				defaultJson);
 		assertResponseStatusIs(Response.Status.OK);
 	}
 
 	@Test
 	public void testUpdateRecordUnauthorized() {
 		response = recordEndpoint.updateRecordUsingAuthTokenWithRecord(DUMMY_NON_AUTHORIZED_TOKEN,
-				PLACE, PLACE_0001, jsonToUpdateWith);
+				PLACE, PLACE_0001, defaultJson);
 		assertResponseStatusIs(Response.Status.FORBIDDEN);
 	}
 
 	@Test
 	public void testUpdateRecordNotFound() {
 		response = recordEndpoint.updateRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE,
-				PLACE_0001 + "_NOT_FOUND", jsonToUpdateWithNotFound);
+				PLACE_0001 + "_NOT_FOUND", defaultJson);
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
 	}
 
 	@Test
 	public void testUpdateRecordTypeNotFound() {
 		response = recordEndpoint.updateRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE + "_NOT_FOUND",
-				PLACE_0001, jsonToUpdateWithNotFound);
+				PLACE_0001, defaultJson);
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
 	}
 
 	@Test
 	public void testUpdateRecordBadContentInJson() {
+		jsonParser.throwError = true;
 		response = recordEndpoint.updateRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001,
-				jsonWithBadContent);
+				defaultJson);
 		assertResponseStatusIs(Response.Status.BAD_REQUEST);
 	}
 
 	@Test
 	public void testUpdateRecordWrongDataTypeInJson() {
+		spiderInstanceFactorySpy.throwDataException = true;
 		response = recordEndpoint.updateRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001,
-				jsonToUpdateWithAttributeAsChild);
+				defaultJson);
 		assertResponseStatusIs(Response.Status.BAD_REQUEST);
 	}
 
@@ -431,16 +500,35 @@ public class RecordEndpointTest {
 	private void expectTokenForCreateToPreferablyBeHeaderThanQuery(String headerAuthToken,
 			String queryAuthToken, String authTokenExpected) {
 
-		response = recordEndpoint.createRecord(headerAuthToken, queryAuthToken, PLACE,
-				jsonToCreateFrom);
+		response = recordEndpoint.createRecord(headerAuthToken, queryAuthToken, PLACE, defaultJson);
 
-		SpiderCreatorSpy spiderCreatorSpy = factorySpy.spiderCreatorSpy;
+		SpiderCreatorSpy spiderCreatorSpy = spiderInstanceFactorySpy.spiderCreatorSpy;
 		assertEquals(spiderCreatorSpy.authToken, authTokenExpected);
 	}
 
 	@Test
 	public void testCreateRecord() {
-		response = recordEndpoint.createRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, jsonToCreateFrom);
+		response = recordEndpoint.createRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultJson);
+		assertResponseStatusIs(Response.Status.CREATED);
+		assertTrue(response.getLocation().toString().startsWith("record/" + PLACE));
+	}
+
+	@Test
+	public void testCreateRecordUsesFactories() {
+
+		response = recordEndpoint.createRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultJson);
+
+		assertEquals(jsonParser.jsonString, defaultJson);
+		assertSame(jsonToDataConverterFactory.jsonValues.get(0), jsonParser.returnedJsonValue);
+
+		RestDataGroup dataGroupReturned = jsonToDataConverterFactory.jsonToDataConverterSpies
+				.get(0).returnedRestDataGroup;
+		assertSame(restToDataConverterFactory.dataElements.get(0), dataGroupReturned);
+		RestToDataConverterSpy factoredToDataConverter = restToDataConverterFactory.factoredConverters
+				.get(0);
+		assertSame(spiderInstanceFactorySpy.spiderCreatorSpy.record,
+				factoredToDataConverter.returnedDataGroup);
+
 		assertResponseStatusIs(Response.Status.CREATED);
 		assertTrue(response.getLocation().toString().startsWith("record/" + PLACE));
 	}
@@ -448,20 +536,14 @@ public class RecordEndpointTest {
 	@Test
 	public void testCreateRecordBadCreatedLocation() {
 		String type = "place&& &&\\\\";
-		response = recordEndpoint.createRecord(AUTH_TOKEN, AUTH_TOKEN, type, jsonToCreateFrom);
-		assertResponseStatusIs(Response.Status.BAD_REQUEST);
-	}
-
-	@Test
-	public void testCreateRecordBadContentInJson() {
-		response = recordEndpoint.createRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, jsonWithBadContent);
+		response = recordEndpoint.createRecord(AUTH_TOKEN, AUTH_TOKEN, type, defaultJson);
 		assertResponseStatusIs(Response.Status.BAD_REQUEST);
 	}
 
 	@Test
 	public void testCreateRecordUnauthorized() {
 		response = recordEndpoint.createRecordUsingAuthTokenWithRecord(DUMMY_NON_AUTHORIZED_TOKEN,
-				PLACE, jsonToCreateFrom);
+				PLACE, defaultJson);
 		assertResponseStatusIs(Response.Status.FORBIDDEN);
 	}
 
@@ -469,49 +551,36 @@ public class RecordEndpointTest {
 	public void testCreateNonExistingRecordType() {
 		String type = "recordType_NON_EXISTING";
 		response = recordEndpoint.createRecordUsingAuthTokenWithRecord(AUTH_TOKEN, type,
-				jsonToCreateFrom);
+				defaultJson);
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
 	}
 
 	@Test
 	public void testCreateRecordNotValid() {
 		response = recordEndpoint.createRecord(AUTH_TOKEN, AUTH_TOKEN, "place_NON_VALID",
-				jsonToCreateFrom);
+				defaultJson);
 		assertResponseStatusIs(Response.Status.BAD_REQUEST);
 	}
 
 	@Test
 	public void testCreateRecordConversionException() {
+		restToDataConverterFactory.throwError = true;
 		response = recordEndpoint.createRecordUsingAuthTokenWithRecord("someToken78678567", PLACE,
-				jsonToCreateFromConversionException);
-		assertResponseStatusIs(Response.Status.BAD_REQUEST);
-	}
-
-	@Test
-	public void testCreateRecordAttributeAsChild() {
-		response = recordEndpoint.createRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE,
-				jsonToCreateFromAttributeAsChild);
+				defaultJson);
 		assertResponseStatusIs(Response.Status.BAD_REQUEST);
 	}
 
 	@Test
 	public void testCreateRecordAbstractRecordType() {
 		String type = "abstract";
-		response = recordEndpoint.createRecord(AUTH_TOKEN, AUTH_TOKEN, type, jsonToCreateFrom);
+		response = recordEndpoint.createRecord(AUTH_TOKEN, AUTH_TOKEN, type, defaultJson);
 		assertResponseStatusIs(Response.Status.METHOD_NOT_ALLOWED);
 	}
-
-	String duplicateTestJson = "{\"name\":\"place\",\"children\":["
-			+ "{\"name\":\"recordInfo\",\"children\":["
-			+ "{\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"system\"},"
-			+ "{\"name\":\"linkedRecordId\",\"value\":\"cora\"}],\"name\":\"dataDivider\"},"
-			+ "{\"name\":\"id\",\"value\":\"aPlace\"}]}"
-			+ ",{\"name\":\"id\",\"value\":\"anythingGoes\"}]}";
 
 	@Test
 	public void testCreateRecordDuplicateUserSuppliedId() {
 		response = recordEndpoint.createRecord(AUTH_TOKEN, AUTH_TOKEN, "place_duplicate",
-				duplicateTestJson);
+				defaultJson);
 		assertResponseStatusIs(Response.Status.CONFLICT);
 
 	}
@@ -520,7 +589,7 @@ public class RecordEndpointTest {
 	public void testCreateRecordUnexpectedError() {
 		assertEquals(loggerFactorySpy.getNoOfErrorExceptionsUsingClassName(testedClassName), 0);
 		response = recordEndpoint.createRecord(AUTH_TOKEN, AUTH_TOKEN, "place_unexpected_error",
-				jsonToCreateFrom);
+				defaultJson);
 		assertResponseStatusIs(Response.Status.INTERNAL_SERVER_ERROR);
 		assertEquals(loggerFactorySpy.getNoOfErrorExceptionsUsingClassName(testedClassName), 1);
 		assertEquals(loggerFactorySpy.getErrorLogMessageUsingClassNameAndNo(testedClassName, 0),
@@ -532,13 +601,13 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testPreferredTokenForUpload() throws IOException {
-		expectTokenForUploadToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, "authToken2", AUTH_TOKEN);
-		expectTokenForUploadToPrefereblyBeHeaderThanQuery(null, AUTH_TOKEN, AUTH_TOKEN);
-		expectTokenForUploadToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, null, AUTH_TOKEN);
-		expectTokenForUploadToPrefereblyBeHeaderThanQuery(null, null, null);
+		expectTokenForUploadToPreferablyBeHeaderThanQuery(AUTH_TOKEN, "authToken2", AUTH_TOKEN);
+		expectTokenForUploadToPreferablyBeHeaderThanQuery(null, AUTH_TOKEN, AUTH_TOKEN);
+		expectTokenForUploadToPreferablyBeHeaderThanQuery(AUTH_TOKEN, null, AUTH_TOKEN);
+		expectTokenForUploadToPreferablyBeHeaderThanQuery(null, null, null);
 	}
 
-	private void expectTokenForUploadToPrefereblyBeHeaderThanQuery(String headerAuthToken,
+	private void expectTokenForUploadToPreferablyBeHeaderThanQuery(String headerAuthToken,
 			String queryAuthToken, String authTokenExpected) {
 
 		FormDataContentDispositionBuilder builder = FormDataContentDisposition
@@ -550,7 +619,7 @@ public class RecordEndpointTest {
 		response = recordEndpoint.uploadFile(headerAuthToken, queryAuthToken, "image",
 				"image:123456789", stream, formDataContentDisposition);
 
-		SpiderUploaderSpy spiderUploaderSpy = factorySpy.spiderUploaderSpy;
+		SpiderUploaderSpy spiderUploaderSpy = spiderInstanceFactorySpy.spiderUploaderSpy;
 		assertEquals(spiderUploaderSpy.authToken, authTokenExpected);
 	}
 
@@ -624,19 +693,19 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testPreferredTokenForDownload() throws IOException {
-		expectTokenForDownloadToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, "authToken2", AUTH_TOKEN);
-		expectTokenForDownloadToPrefereblyBeHeaderThanQuery(null, AUTH_TOKEN, AUTH_TOKEN);
-		expectTokenForDownloadToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, null, AUTH_TOKEN);
-		expectTokenForDownloadToPrefereblyBeHeaderThanQuery(null, null, null);
+		expectTokenForDownloadToPreferablyBeHeaderThanQuery(AUTH_TOKEN, "authToken2", AUTH_TOKEN);
+		expectTokenForDownloadToPreferablyBeHeaderThanQuery(null, AUTH_TOKEN, AUTH_TOKEN);
+		expectTokenForDownloadToPreferablyBeHeaderThanQuery(AUTH_TOKEN, null, AUTH_TOKEN);
+		expectTokenForDownloadToPreferablyBeHeaderThanQuery(null, null, null);
 	}
 
-	private void expectTokenForDownloadToPrefereblyBeHeaderThanQuery(String headerAuthToken,
+	private void expectTokenForDownloadToPreferablyBeHeaderThanQuery(String headerAuthToken,
 			String queryAuthToken, String authTokenExpected) {
 
 		response = recordEndpoint.downloadFile(headerAuthToken, queryAuthToken, "image",
 				"image:123456789", "master");
 
-		SpiderDownloaderSpy spiderDownloaderSpy = factorySpy.spiderDownloaderSpy;
+		SpiderDownloaderSpy spiderDownloaderSpy = spiderInstanceFactorySpy.spiderDownloaderSpy;
 		assertEquals(spiderDownloaderSpy.authToken, authTokenExpected);
 	}
 
@@ -702,74 +771,93 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testSearchRecordInputsReachSpider() {
-		response = recordEndpoint.searchRecord(AUTH_TOKEN, AUTH_TOKEN, "aSearchId", jsonSearchData);
-		SpiderRecordSearcherSpy spiderRecordSearcherSpy = factorySpy.spiderRecordSearcherSpy;
+		response = recordEndpoint.searchRecord(AUTH_TOKEN, AUTH_TOKEN, "aSearchId", defaultJson);
+
+		assertEquals(jsonParser.jsonString, defaultJson);
+
+		SpiderRecordSearcherSpy spiderRecordSearcherSpy = spiderInstanceFactorySpy.spiderRecordSearcherSpy;
 		assertEquals(spiderRecordSearcherSpy.authToken, AUTH_TOKEN);
 		assertEquals(spiderRecordSearcherSpy.searchId, "aSearchId");
 		DataGroup searchData = spiderRecordSearcherSpy.searchData;
-		assertEquals(searchData.getNameInData(), "search");
-		DataGroup include = (DataGroup) searchData.getFirstChildWithNameInData("include");
-		DataGroup includePart = (DataGroup) include.getFirstChildWithNameInData("includePart");
-		assertTrue(includePart.containsChildWithNameInData("text"));
+		DataGroupSpy convertedDataGroup = restToDataConverterFactory.factoredConverters
+				.get(0).returnedDataGroup;
+		assertSame(searchData, convertedDataGroup);
+	}
+
+	@Test
+	public void testSearchRecordUsesFactoriesCorrectly() {
+		response = recordEndpoint.searchRecord(AUTH_TOKEN, AUTH_TOKEN, "aSearchId", defaultJson);
+
+		SpiderRecordSearcherSpy spiderRecordSearcherSpy = spiderInstanceFactorySpy.spiderRecordSearcherSpy;
+		DataList returnedDataListFromReader = spiderRecordSearcherSpy.searchResult;
+
+		assertSame(toRestConverterFactory.recordList, returnedDataListFromReader);
+		assertEquals(toRestConverterFactory.url, "http://cora.epc.ub.uu.se/systemone/rest/record/");
+
+		RestDataList returnedRestDataList = toRestConverterFactory.toRestConverter.returnedRestDataList;
+		assertSame(restDataToJsonConverterFactory.restData, returnedRestDataList);
+
+		RestRecordToJsonConverterSpy factoredToJsonConverter = restDataToJsonConverterFactory.restRecordToJsonConverterSpy;
+		assertEquals(factoredToJsonConverter.convertedJson, response.getEntity());
+
+		assertEquals(jsonParser.jsonString, defaultJson);
 	}
 
 	@Test
 	public void testSearchRecordRightTokenInputsReachSpider() {
-		response = recordEndpoint.searchRecord(AUTH_TOKEN, null, "aSearchId", jsonSearchData);
-		SpiderRecordSearcherSpy spiderRecordSearcherSpy = factorySpy.spiderRecordSearcherSpy;
+		response = recordEndpoint.searchRecord(AUTH_TOKEN, null, "aSearchId", defaultJson);
+		SpiderRecordSearcherSpy spiderRecordSearcherSpy = spiderInstanceFactorySpy.spiderRecordSearcherSpy;
 		assertEquals(spiderRecordSearcherSpy.authToken, AUTH_TOKEN);
 	}
 
 	@Test
 	public void testSearchRecordRightTokenInputsReachSpider2() {
-		response = recordEndpoint.searchRecord(null, AUTH_TOKEN, "aSearchId", jsonSearchData);
-		SpiderRecordSearcherSpy spiderRecordSearcherSpy = factorySpy.spiderRecordSearcherSpy;
+		response = recordEndpoint.searchRecord(null, AUTH_TOKEN, "aSearchId", defaultJson);
+		SpiderRecordSearcherSpy spiderRecordSearcherSpy = spiderInstanceFactorySpy.spiderRecordSearcherSpy;
 		assertEquals(spiderRecordSearcherSpy.authToken, AUTH_TOKEN);
 	}
 
 	@Test
 	public void testSearchRecordRightTokenInputsReachSpider3() {
 		response = recordEndpoint.searchRecord(AUTH_TOKEN, "otherAuthToken", "aSearchId",
-				jsonSearchData);
-		SpiderRecordSearcherSpy spiderRecordSearcherSpy = factorySpy.spiderRecordSearcherSpy;
+				defaultJson);
+		SpiderRecordSearcherSpy spiderRecordSearcherSpy = spiderInstanceFactorySpy.spiderRecordSearcherSpy;
 		assertEquals(spiderRecordSearcherSpy.authToken, AUTH_TOKEN);
 	}
 
 	@Test
 	public void testSearchRecord() {
-		response = recordEndpoint.searchRecord(AUTH_TOKEN, AUTH_TOKEN, "aSearchId", jsonSearchData);
+		response = recordEndpoint.searchRecord(AUTH_TOKEN, AUTH_TOKEN, "aSearchId", defaultJson);
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.OK);
-		String expectedJson = "{\"dataList\":{\"fromNo\":\"0\",\"data\":[],\"totalNo\":\"1\","
-				+ "\"containDataOfType\":\"mix\",\"toNo\":\"1\"}}";
-		assertEquals(response.getEntity(), expectedJson);
+		assertEquals(response.getEntity(), "some converted json");
 	}
 
 	@Test
 	public void testSearchRecordSearchIdNotFound() {
 		response = recordEndpoint.searchRecord(AUTH_TOKEN, AUTH_TOKEN, "aSearchId_NOT_FOUND",
-				jsonSearchData);
+				defaultJson);
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
 	}
 
 	@Test
 	public void testSearchRecordInvalidSearchData() {
 		response = recordEndpoint.searchRecord(AUTH_TOKEN, AUTH_TOKEN, "aSearchId_INVALID_DATA",
-				jsonSearchData);
+				defaultJson);
 		assertResponseStatusIs(Response.Status.BAD_REQUEST);
 	}
 
 	@Test
 	public void testSearchRecordUnauthorized() {
 		response = recordEndpoint.searchRecord(DUMMY_NON_AUTHORIZED_TOKEN,
-				DUMMY_NON_AUTHORIZED_TOKEN, "aSearchId", jsonSearchData);
+				DUMMY_NON_AUTHORIZED_TOKEN, "aSearchId", defaultJson);
 		assertResponseStatusIs(Response.Status.FORBIDDEN);
 	}
 
 	@Test
 	public void testSearchRecordUnauthenticated() {
 		response = recordEndpoint.searchRecord("nonExistingToken", "nonExistingToken", "aSearchId",
-				jsonSearchData);
+				defaultJson);
 		assertResponseStatusIs(Response.Status.UNAUTHORIZED);
 	}
 
@@ -787,31 +875,48 @@ public class RecordEndpointTest {
 		response = recordEndpoint.validateRecord(headerAuthToken, queryAuthToken, PLACE,
 				jsonToValidate);
 
-		SpiderRecordValidatorSpy spiderRecordValidatorSpy = factorySpy.spiderRecordValidatorSpy;
+		SpiderRecordValidatorSpy spiderRecordValidatorSpy = spiderInstanceFactorySpy.spiderRecordValidatorSpy;
 
 		assertEquals(spiderRecordValidatorSpy.authToken, authTokenExpected);
 	}
 
 	@Test
 	public void testValidateRecord() {
-		response = recordEndpoint.validateRecord(AUTH_TOKEN, AUTH_TOKEN, "workOrder",
-				jsonToValidate);
 
-		SpiderRecordValidatorSpy spiderRecordValidatorSpy = factorySpy.spiderRecordValidatorSpy;
+		response = recordEndpoint.validateRecord(AUTH_TOKEN, AUTH_TOKEN, "workOrder", defaultJson);
+
+		assertEquals(jsonParser.jsonString, defaultJson);
+
+		// parts picked out from validationJson sent in
+		JsonValueSpy topJsonObject = jsonParser.returnedJsonValue;
+		assertEquals(topJsonObject.keys.get(0), "order");
+		assertEquals(topJsonObject.keys.get(1), "record");
+
+		assertSame(jsonToDataConverterFactory.jsonValues.get(0),
+				topJsonObject.returnedJsonValues.get(0));
+		assertSame(jsonToDataConverterFactory.jsonValues.get(1),
+				topJsonObject.returnedJsonValues.get(1));
+
+		List<JsonToDataConverterSpy> jsonToDataConverters = jsonToDataConverterFactory.jsonToDataConverterSpies;
+		assertSame(jsonToDataConverters.get(0).returnedRestDataGroup,
+				restToDataConverterFactory.dataElements.get(0));
+		assertSame(jsonToDataConverters.get(1).returnedRestDataGroup,
+				restToDataConverterFactory.dataElements.get(1));
+
+		SpiderRecordValidatorSpy spiderRecordValidatorSpy = spiderInstanceFactorySpy.spiderRecordValidatorSpy;
 		DataGroup validationRecord = spiderRecordValidatorSpy.validationRecord;
-		assertEquals(validationRecord.getNameInData(), "validationOrder");
-
 		DataGroup recordToValidate = spiderRecordValidatorSpy.recordToValidate;
-		assertEquals(recordToValidate.getNameInData(), "text");
-		assertEquals(spiderRecordValidatorSpy.recordType, "validationOrder");
+
+		DataGroupSpy returnedValidationOrder = restToDataConverterFactory.factoredConverters
+				.get(0).returnedDataGroup;
+		assertSame(validationRecord, returnedValidationOrder);
+
+		DataGroupSpy returnedRecordToValidate = restToDataConverterFactory.factoredConverters
+				.get(1).returnedDataGroup;
+		assertSame(recordToValidate, returnedRecordToValidate);
 
 		assertResponseStatusIs(Response.Status.OK);
-		String expectedJson = getExpectedValidationResultJson();
-		assertEquals(response.getEntity(), expectedJson);
-	}
-
-	private String getExpectedValidationResultJson() {
-		return "{\"record\":{\"data\":{\"children\":[{\"name\":\"valid\",\"value\":\"true\"},{\"children\":[{\"name\":\"id\",\"value\":\"someSpyId\"},{\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"recordType\"},{\"name\":\"linkedRecordId\",\"value\":\"validationOrder\"}],\"name\":\"type\"}],\"name\":\"recordInfo\"}],\"name\":\"validationResult\"}}}";
+		assertEquals(response.getEntity(), "some converted json");
 	}
 
 	@Test
@@ -823,16 +928,85 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testValidateRecordTypeNotFound() {
-		response = recordEndpoint.validateRecord(AUTH_TOKEN, AUTH_TOKEN, "workOrder",
-				jsonToValidateNonExistingRecordType);
+		spiderInstanceFactorySpy.throwRecordNotFoundException = true;
+		response = recordEndpoint.validateRecord(AUTH_TOKEN, AUTH_TOKEN, "workOrder", defaultJson);
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
 	}
 
 	@Test
-	public void testValidateRecordBadContentInJson() {
-		response = recordEndpoint.validateRecord(AUTH_TOKEN, AUTH_TOKEN, "workOrder",
-				jsonWithBadContent);
-		assertResponseStatusIs(Response.Status.BAD_REQUEST);
+	public void testPreferredTokenForBatchIndex() throws IOException {
+		expectTokenForBatchIndexToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, "authToken2", AUTH_TOKEN);
+		expectTokenForBatchIndexToPrefereblyBeHeaderThanQuery(null, AUTH_TOKEN, AUTH_TOKEN);
+		expectTokenForBatchIndexToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, null, AUTH_TOKEN);
+		expectTokenForBatchIndexToPrefereblyBeHeaderThanQuery(null, null, null);
+	}
+
+	private void expectTokenForBatchIndexToPrefereblyBeHeaderThanQuery(String headerAuthToken,
+			String queryAuthToken, String authTokenExpected) {
+		String jsonFilter = "{\"name\":\"filter\",\"children\":[]}";
+		response = recordEndpoint.indexRecordList(headerAuthToken, queryAuthToken, PLACE,
+				jsonFilter);
+
+		IndexBatchJobCreatorSpy indexBatchJobSpy = spiderInstanceFactorySpy.indexBatchJobCreator;
+
+		assertEquals(indexBatchJobSpy.authToken, authTokenExpected);
+	}
+
+	@Test
+	public void testBatchIndexWithFilter() {
+		response = recordEndpoint.indexRecordList(AUTH_TOKEN, AUTH_TOKEN, PLACE, jsonFilterData);
+
+		IndexBatchJobCreatorSpy indexBatchJobCreator = spiderInstanceFactorySpy.indexBatchJobCreator;
+		assertFilterIsHandledCorrectly(indexBatchJobCreator.filter);
+		assertEquals(indexBatchJobCreator.type, PLACE);
+
+		assertSame(toRestConverterFactory.dataRecord, indexBatchJobCreator.recordToReturn);
+		DataRecordToRestConverterSpy factoredConverter = toRestConverterFactory.toRestConverter;
+		assertSame(restDataToJsonConverterFactory.restData,
+				factoredConverter.returnedRestDataRecord);
+
+		assertEquals(response.getEntity(),
+				restDataToJsonConverterFactory.restRecordToJsonConverterSpy.convertedJson);
+
+		assertEntityExists();
+		assertResponseStatusIs(Response.Status.OK);
+	}
+
+	@Test
+	public void testIndexRecordListWithNullAsFilter() {
+		response = recordEndpoint.indexRecordList(AUTH_TOKEN, AUTH_TOKEN, PLACE, null);
+		assertEntityExists();
+		assertResponseStatusIs(Response.Status.OK);
+
+		assertEquals(jsonParser.jsonString, "{\"name\":\"filter\",\"children\":[]}");
+
+	}
+
+	@Test
+	public void testIndexRecordListNotFound() {
+		response = recordEndpoint.indexRecordList(AUTH_TOKEN, AUTH_TOKEN, "recordType_NON_EXISTING",
+				jsonFilterData);
+		assertResponseStatusIs(Response.Status.NOT_FOUND);
+	}
+
+	@Test
+	public void testIndexRecordListUnauthorized() {
+		response = recordEndpoint.indexRecordListUsingAuthTokenByType(DUMMY_NON_AUTHORIZED_TOKEN,
+				PLACE, jsonFilterData);
+		assertResponseStatusIs(Response.Status.FORBIDDEN);
+	}
+
+	@Test
+	public void testIndexRecordListNoTokenAndUnauthorized() {
+		response = recordEndpoint.indexRecordListUsingAuthTokenByType(null, PLACE, jsonFilterData);
+		assertResponseStatusIs(Response.Status.UNAUTHORIZED);
+	}
+
+	@Test
+	public void testIndexBatchJobResponse() {
+		response = recordEndpoint.indexRecordList(AUTH_TOKEN, AUTH_TOKEN, PLACE, null);
+		Object entity = response.getEntity();
+		assertEquals(entity, "some converted json");
 	}
 
 }

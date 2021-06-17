@@ -18,10 +18,18 @@
  */
 package se.uu.ub.cora.therest.data.converter.coradata;
 
-import se.uu.ub.cora.therest.data.RestData;
+import java.util.List;
 
-public interface DataToRestConverter {
+import se.uu.ub.cora.data.Action;
+import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.therest.data.converter.ConverterInfo;
 
-	RestData toRest();
+public interface DataGroupToRestConverterFactory {
+
+	DataToRestConverter factorForDataGroupWithConverterInfo(DataGroup dataGroup,
+			ConverterInfo converterInfo);
+
+	ActionDataToRestConverter factorForActionsUsingConverterInfoAndDataGroup(List<Action> actions,
+			ConverterInfo converterInfo, DataGroup dataGroup);
 
 }

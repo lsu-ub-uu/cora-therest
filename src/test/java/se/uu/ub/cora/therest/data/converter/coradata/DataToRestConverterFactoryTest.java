@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Uppsala University Library
+ * Copyright 2021 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -20,49 +20,50 @@ package se.uu.ub.cora.therest.data.converter.coradata;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertSame;
+import static org.testng.Assert.assertTrue;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.data.Action;
-import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataList;
+import se.uu.ub.cora.data.DataRecord;
 import se.uu.ub.cora.therest.data.DataGroupSpy;
-import se.uu.ub.cora.therest.data.converter.ConverterInfo;
+import se.uu.ub.cora.therest.data.DataListSpy;
+import se.uu.ub.cora.therest.data.DataRecordSpy;
 
 public class DataToRestConverterFactoryTest {
 
-	@Test
-	public void testFactorForDataGroup() {
-		DataGroup dataGroup = new DataGroupSpy("someDataGroup");
-		ConverterInfo converterInfo = ConverterInfo.withBaseURLAndRecordURLAndTypeAndId(
-				"someBaseUrl", "someRecordUrl", "someRecordType", "someRecordId");
-		DataToRestConverterFactory factory = new DataToRestConverterFactoryImp();
-		DataGroupDataToRestConverter converter = (DataGroupDataToRestConverter) factory
-				.factorForDataGroupWithConverterInfo(dataGroup, converterInfo);
+	private DataToRestConverterFactory factory;
+	private String url;
 
-		assertEquals(converter.convertInfo.baseURL, "someBaseUrl");
-		assertSame(converter.dataGroup, dataGroup);
+	@BeforeMethod
+	public void setUp() {
+		factory = new DataToRestConverterFactoryImp();
+		url = "someUrl";
 	}
 
 	@Test
-	public void testFactorForActions() {
-		List<Action> actions = new ArrayList<>();
-		Action action = Action.READ;
-		actions.add(action);
+	public void testFactorForDataRecord() {
+		DataRecord dataRecord = new DataRecordSpy(new DataGroupSpy("someNameInData"));
 
-		DataGroup dataGroup = new DataGroupSpy("someDataGroup");
-		ConverterInfo converterInfo = ConverterInfo.withBaseURLAndRecordURLAndTypeAndId(
-				"someBaseUrl", "someRecordUrl", "someRecordType", "someRecordId");
-		DataToRestConverterFactory factory = new DataToRestConverterFactoryImp();
-		ActionDataToRestConverterImp converter = (ActionDataToRestConverterImp) factory
-				.factorForActionsUsingConverterInfoAndDataGroup(actions, converterInfo,
-						dataGroup);
+		DataRecordToRestConverter converter = (DataRecordToRestConverter) factory
+				.factorForDataRecord(dataRecord, url);
 
-		assertSame(converter.getDataGroup(), dataGroup);
-		assertSame(converter.getConverterInfo(), converterInfo);
-		assertSame(converter.getActions(), actions);
+		assertTrue(converter.getConverterFactory() instanceof DataGroupToRestConverterFactoryImp);
+		assertSame(converter.getDataRecord(), dataRecord);
+		assertEquals(converter.getBaseUrl(), url);
+
+	}
+
+	@Test
+	public void testFactorForDataList() {
+		DataList recordList = new DataListSpy("someRecordType");
+
+		DataListDataToRestConverter converter = (DataListDataToRestConverter) factory
+				.factorForDataList(recordList, url);
+
+		assertSame(converter.getDataList(), recordList);
+		assertEquals(converter.getBaseUrl(), url);
 	}
 
 }

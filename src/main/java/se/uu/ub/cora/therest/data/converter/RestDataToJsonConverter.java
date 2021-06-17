@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Uppsala University Library
+ * Copyright 2015, 2021 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -16,12 +16,18 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.therest.data.converter.coradata;
 
-import se.uu.ub.cora.therest.data.RestData;
+package se.uu.ub.cora.therest.data.converter;
 
-public interface DataToRestConverter {
+import se.uu.ub.cora.json.builder.JsonObjectBuilder;
 
-	RestData toRest();
+public interface RestDataToJsonConverter {
+
+	public default String toJson() {
+		JsonObjectBuilder jsonObjectBuilder = toJsonObjectBuilder();
+		return jsonObjectBuilder.toJsonFormattedString();
+	}
+
+	JsonObjectBuilder toJsonObjectBuilder();
 
 }

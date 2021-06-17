@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Uppsala University Library
+ * Copyright 2021 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -16,49 +16,48 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.uu.ub.cora.therest.record;
 
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataRecord;
 import se.uu.ub.cora.spider.authorization.AuthorizationException;
-import se.uu.ub.cora.spider.record.DataException;
-import se.uu.ub.cora.spider.record.RecordUpdater;
+import se.uu.ub.cora.spider.record.RecordListIndexer;
 import se.uu.ub.cora.storage.RecordNotFoundException;
+import se.uu.ub.cora.therest.data.DataAtomicSpy;
+import se.uu.ub.cora.therest.data.DataGroupSpy;
 import se.uu.ub.cora.therest.data.DataRecordSpy;
-import se.uu.ub.cora.therest.testdata.DataCreator;
 
-public class SpiderRecordUpdaterSpy implements RecordUpdater {
+public class IndexBatchJobCreatorSpy implements RecordListIndexer {
 
 	public String authToken;
 	public String type;
-	public String id;
-	public DataGroup record;
-	public boolean throwDataException = false;
+	public DataGroup filter;
+	public DataRecordSpy recordToReturn;
 
 	@Override
-	public DataRecord updateRecord(String authToken, String type, String id, DataGroup record) {
+	public DataRecord indexRecordList(String authToken, String type, DataGroup filter) {
 		this.authToken = authToken;
 		this.type = type;
-		this.id = id;
-		this.record = record;
-		possiblyThrowException(authToken, type, id);
-		return new DataRecordSpy(
-				DataCreator.createRecordWithNameInDataAndIdAndTypeAndLinkedRecordId("nameInData",
-						id, type, "linkedRecordId"));
+		this.filter = filter;
+		possiblyThrowException(authToken, type);
+		DataGroupSpy indexBatchJob = new DataGroupSpy("indexBatchJob");
+		DataGroupSpy recordInfo = new DataGroupSpy("recordInfo");
+		recordInfo.addChild(new DataAtomicSpy("id", "someId"));
+		DataGroupSpy typeGroup = new DataGroupSpy("type");
+		typeGroup.addChild(new DataAtomicSpy("linkedRecordType", "recordType"));
+		typeGroup.addChild(new DataAtomicSpy("linkedRecordId", "someRecordType"));
+		recordInfo.addChild(typeGroup);
+		indexBatchJob.addChild(recordInfo);
+
+		recordToReturn = new DataRecordSpy(indexBatchJob);
+		return recordToReturn;
 	}
 
-	private void possiblyThrowException(String authToken, String type, String id) {
-		if (throwDataException) {
-			throw new DataException("some data exception from update");
-		}
-		if ("dummyNonAuthorizedToken".equals(authToken)) {
+	private void possiblyThrowException(String authToken, String type) {
+		if ("dummyNonAuthorizedToken".equals(authToken) || authToken == null) {
 			throw new AuthorizationException("not authorized");
 		}
-		if ("place:0001_NOT_FOUND".equals(id)) {
-			throw new RecordNotFoundException("no record exist with id " + id);
-		}
-		if ("place_NOT_FOUND".equals(type)) {
+		if ("recordType_NON_EXISTING".equals(type)) {
 			throw new RecordNotFoundException("no record exist with type " + type);
 		}
 	}

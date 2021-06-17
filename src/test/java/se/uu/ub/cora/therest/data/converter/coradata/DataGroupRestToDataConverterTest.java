@@ -40,10 +40,11 @@ import se.uu.ub.cora.therest.data.RestDataGroup;
 import se.uu.ub.cora.therest.data.RestDataRecordLink;
 import se.uu.ub.cora.therest.data.RestDataResourceLink;
 import se.uu.ub.cora.therest.data.converter.ConverterException;
+import se.uu.ub.cora.therest.data.converter.RestToDataConverter;
 
 public class DataGroupRestToDataConverterTest {
 	private RestDataGroup restDataGroup;
-	private DataGroupRestToDataConverter dataGroupRestToSpiderConverter;
+	private RestToDataConverter dataGroupRestToSpiderConverter;
 	private DataGroupFactory dataGroupFactory;
 	private DataRecordLinkFactory dataRecordLinkFactory;
 	private DataResourceLinkFactory dataResourceLinkFactory;

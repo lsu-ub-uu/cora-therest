@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Uppsala University Library
+ * Copyright 2021 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -16,32 +16,38 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.uu.ub.cora.therest.record;
 
-import se.uu.ub.cora.bookkeeper.validator.DataValidator;
-import se.uu.ub.cora.bookkeeper.validator.ValidationAnswer;
-import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.json.parser.JsonArray;
+import se.uu.ub.cora.json.parser.JsonObject;
+import se.uu.ub.cora.json.parser.JsonParseException;
+import se.uu.ub.cora.json.parser.JsonParser;
+import se.uu.ub.cora.json.parser.JsonValue;
 
-public class DataValidatorAlwaysInvalidSpy implements DataValidator {
-	public boolean validateDataWasCalled = false;
+public class JsonParserSpy implements JsonParser {
+
+	public String jsonString;
+	public JsonValueSpy returnedJsonValue;
+	public boolean throwError = false;
 
 	@Override
-	public ValidationAnswer validateData(String metadataId, DataGroup dataGroup) {
-		validateDataWasCalled = true;
-		ValidationAnswer validationAnswer = new ValidationAnswer();
-		validationAnswer.addErrorMessage("Data always invalid");
-		return validationAnswer;
+	public JsonValue parseString(String jsonString) {
+		this.jsonString = jsonString;
+		if (throwError) {
+			throw new JsonParseException("some parse exception from spy");
+		}
+		returnedJsonValue = new JsonValueSpy();
+		return returnedJsonValue;
 	}
 
 	@Override
-	public ValidationAnswer validateListFilter(String recordType, DataGroup filterDataGroup) {
+	public JsonObject parseStringAsObject(String jsonString) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public ValidationAnswer validateIndexSettings(String recordType, DataGroup indexSettings) {
+	public JsonArray parseStringAsArray(String jsonString) {
 		// TODO Auto-generated method stub
 		return null;
 	}

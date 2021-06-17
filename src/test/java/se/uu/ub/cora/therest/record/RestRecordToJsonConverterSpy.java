@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Uppsala University Library
+ * Copyright 2021 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -16,12 +16,25 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.therest.data.converter.coradata;
+package se.uu.ub.cora.therest.record;
 
-import se.uu.ub.cora.therest.data.RestData;
+import se.uu.ub.cora.json.builder.JsonObjectBuilder;
+import se.uu.ub.cora.therest.data.converter.RestDataToJsonConverter;
 
-public interface DataToRestConverter {
+public class RestRecordToJsonConverterSpy implements RestDataToJsonConverter {
 
-	RestData toRest();
+	public String convertedJson;
+
+	@Override
+	public String toJson() {
+		convertedJson = "some converted json";
+		return convertedJson;
+	}
+
+	@Override
+	public JsonObjectBuilder toJsonObjectBuilder() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

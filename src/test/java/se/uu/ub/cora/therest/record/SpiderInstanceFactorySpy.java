@@ -20,16 +20,17 @@
 package se.uu.ub.cora.therest.record;
 
 import se.uu.ub.cora.spider.dependency.SpiderInstanceFactory;
-import se.uu.ub.cora.spider.record.SpiderDownloader;
-import se.uu.ub.cora.spider.record.SpiderRecordCreator;
-import se.uu.ub.cora.spider.record.SpiderRecordDeleter;
-import se.uu.ub.cora.spider.record.SpiderRecordIncomingLinksReader;
-import se.uu.ub.cora.spider.record.SpiderRecordListReader;
-import se.uu.ub.cora.spider.record.SpiderRecordReader;
-import se.uu.ub.cora.spider.record.SpiderRecordSearcher;
-import se.uu.ub.cora.spider.record.SpiderRecordUpdater;
-import se.uu.ub.cora.spider.record.SpiderRecordValidator;
-import se.uu.ub.cora.spider.record.SpiderUploader;
+import se.uu.ub.cora.spider.record.Downloader;
+import se.uu.ub.cora.spider.record.IncomingLinksReader;
+import se.uu.ub.cora.spider.record.RecordCreator;
+import se.uu.ub.cora.spider.record.RecordDeleter;
+import se.uu.ub.cora.spider.record.RecordListIndexer;
+import se.uu.ub.cora.spider.record.RecordListReader;
+import se.uu.ub.cora.spider.record.RecordReader;
+import se.uu.ub.cora.spider.record.RecordSearcher;
+import se.uu.ub.cora.spider.record.RecordUpdater;
+import se.uu.ub.cora.spider.record.RecordValidator;
+import se.uu.ub.cora.spider.record.Uploader;
 
 public class SpiderInstanceFactorySpy implements SpiderInstanceFactory {
 
@@ -43,64 +44,70 @@ public class SpiderInstanceFactorySpy implements SpiderInstanceFactory {
 	public SpiderRecordIncomingLinksReaderSpy spiderRecordIncomingLinksReaderSpy;
 	public SpiderRecordListReaderSpy spiderRecordListReaderSpy;
 	public SpiderRecordSearcherSpy spiderRecordSearcherSpy;
+	public IndexBatchJobCreatorSpy indexBatchJobCreator;
+	public String recordType;
+	public boolean throwRecordNotFoundException = false;
+	public boolean throwDataException = false;
 
 	@Override
-	public SpiderRecordReader factorSpiderRecordReader() {
+	public RecordReader factorRecordReader() {
 		spiderRecordReaderSpy = new SpiderRecordReaderSpy();
 		return spiderRecordReaderSpy;
 	}
 
 	@Override
-	public SpiderRecordListReader factorSpiderRecordListReader() {
+	public RecordListReader factorRecordListReader() {
 		spiderRecordListReaderSpy = new SpiderRecordListReaderSpy();
 		return spiderRecordListReaderSpy;
 	}
 
 	@Override
-	public SpiderRecordCreator factorSpiderRecordCreator() {
+	public RecordCreator factorRecordCreator() {
 		spiderCreatorSpy = new SpiderCreatorSpy();
 		return spiderCreatorSpy;
 	}
 
 	@Override
-	public SpiderRecordUpdater factorSpiderRecordUpdater() {
+	public RecordUpdater factorRecordUpdater() {
 		spiderRecordUpdaterSpy = new SpiderRecordUpdaterSpy();
+		spiderRecordUpdaterSpy.throwDataException = throwDataException;
 		return spiderRecordUpdaterSpy;
 	}
 
 	@Override
-	public SpiderRecordDeleter factorSpiderRecordDeleter() {
+	public RecordDeleter factorRecordDeleter() {
 		spiderRecordDeleterSpy = new SpiderRecordDeleterSpy();
 		return spiderRecordDeleterSpy;
 	}
 
 	@Override
-	public SpiderUploader factorSpiderUploader() {
+	public Uploader factorUploader() {
 		spiderUploaderSpy = new SpiderUploaderSpy();
 		return spiderUploaderSpy;
 	}
 
 	@Override
-	public SpiderDownloader factorSpiderDownloader() {
+	public Downloader factorDownloader() {
 		spiderDownloaderSpy = new SpiderDownloaderSpy();
 		return spiderDownloaderSpy;
 	}
 
 	@Override
-	public SpiderRecordSearcher factorSpiderRecordSearcher() {
+	public RecordSearcher factorRecordSearcher() {
 		spiderRecordSearcherSpy = new SpiderRecordSearcherSpy();
 		return spiderRecordSearcherSpy;
 	}
 
 	@Override
-	public SpiderRecordIncomingLinksReader factorSpiderRecordIncomingLinksReader() {
+	public IncomingLinksReader factorIncomingLinksReader() {
 		spiderRecordIncomingLinksReaderSpy = new SpiderRecordIncomingLinksReaderSpy();
 		return spiderRecordIncomingLinksReaderSpy;
 	}
 
 	@Override
-	public SpiderRecordValidator factorSpiderRecordValidator() {
+	public RecordValidator factorRecordValidator() {
 		spiderRecordValidatorSpy = new SpiderRecordValidatorSpy();
+		spiderRecordValidatorSpy.throwRecordNotFoundException = throwRecordNotFoundException;
 		return spiderRecordValidatorSpy;
 	}
 
@@ -108,6 +115,12 @@ public class SpiderInstanceFactorySpy implements SpiderInstanceFactory {
 	public String getDependencyProviderClassName() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public RecordListIndexer factorRecordListIndexer() {
+		indexBatchJobCreator = new IndexBatchJobCreatorSpy();
+		return indexBatchJobCreator;
 	}
 
 }

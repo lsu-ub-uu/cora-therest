@@ -16,23 +16,35 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.therest.data.converter.coradata;
+package se.uu.ub.cora.therest.record;
 
 import se.uu.ub.cora.data.DataList;
 import se.uu.ub.cora.data.DataRecord;
+import se.uu.ub.cora.therest.data.converter.coradata.DataToRestConverter;
+import se.uu.ub.cora.therest.data.converter.coradata.DataToRestConverterFactory;
 
-public class DataToRestConverterFactoryImp implements DataToRestConverterFactory {
+public class DataToRestConverterFactorySpy implements DataToRestConverterFactory {
+
+	public DataRecord dataRecord;
+	public String url;
+	public DataRecordToRestConverterSpy toRestConverter;
+	public DataList recordList;
 
 	@Override
-	public DataToRestConverter factorForDataRecord(DataRecord record, String url) {
-		DataGroupToRestConverterFactory converterFactory = new DataGroupToRestConverterFactoryImp();
-		return DataRecordToRestConverter.fromDataRecordWithBaseURLAndConverterFactory(record, url,
-				converterFactory);
+	public DataToRestConverter factorForDataRecord(DataRecord dataRecord, String url) {
+		this.dataRecord = dataRecord;
+		this.url = url;
+		toRestConverter = new DataRecordToRestConverterSpy();
+		return toRestConverter;
 	}
 
 	@Override
 	public DataToRestConverter factorForDataList(DataList recordList, String url) {
-		return DataListDataToRestConverter.fromDataListWithBaseURL(recordList, url);
+		this.recordList = recordList;
+		this.url = url;
+		toRestConverter = new DataRecordToRestConverterSpy();
+		toRestConverter.typeOfData = "recordList";
+		return toRestConverter;
 	}
 
 }

@@ -48,10 +48,10 @@ public class DataListDataToRestConverterTest {
 		dataList.setFromNo("1");
 		dataList.setToNo("1");
 
-		DataListDataToRestConverter converter = DataListDataToRestConverter
+		DataToRestConverter converter = DataListDataToRestConverter
 				.fromDataListWithBaseURL(dataList, baseURL);
 
-		RestDataList recordList = converter.toRest();
+		RestDataList recordList = (RestDataList) converter.toRest();
 
 		assertEquals(recordList.getFromNo(), "1");
 		assertEquals(recordList.getToNo(), "1");
@@ -84,10 +84,10 @@ public class DataListDataToRestConverterTest {
 		dataList.setFromNo("1");
 		dataList.setToNo("1");
 
-		DataListDataToRestConverter converter = DataListDataToRestConverter
+		DataToRestConverter converter = DataListDataToRestConverter
 				.fromDataListWithBaseURL(dataList, baseURL);
 
-		RestDataList recordList = converter.toRest();
+		RestDataList recordList = (RestDataList) converter.toRest();
 
 		assertEquals(recordList.getFromNo(), "1");
 		assertEquals(recordList.getToNo(), "1");

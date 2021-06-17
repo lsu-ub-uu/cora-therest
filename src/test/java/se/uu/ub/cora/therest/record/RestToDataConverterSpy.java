@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Uppsala University Library
+ * Copyright 2021 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -16,12 +16,25 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.therest.data.converter.coradata;
+package se.uu.ub.cora.therest.record;
 
-import se.uu.ub.cora.therest.data.RestData;
+import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.therest.data.DataGroupSpy;
+import se.uu.ub.cora.therest.data.converter.ConverterException;
+import se.uu.ub.cora.therest.data.converter.RestToDataConverter;
 
-public interface DataToRestConverter {
+public class RestToDataConverterSpy implements RestToDataConverter {
 
-	RestData toRest();
+	public DataGroupSpy returnedDataGroup;
+	public boolean throwError = false;
+
+	@Override
+	public DataGroup convert() {
+		if (throwError) {
+			throw new ConverterException("Error from converter spy");
+		}
+		returnedDataGroup = new DataGroupSpy("someDataGroupRestToData");
+		return returnedDataGroup;
+	}
 
 }

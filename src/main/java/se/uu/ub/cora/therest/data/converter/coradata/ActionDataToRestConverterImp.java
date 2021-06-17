@@ -53,8 +53,8 @@ public final class ActionDataToRestConverterImp implements ActionDataToRestConve
 		this.dataGroup = dataGroup;
 	}
 
-	public static ActionDataToRestConverter fromDataActionsWithConverterInfo(
-			List<Action> actions, ConverterInfo converterInfo) {
+	public static ActionDataToRestConverter fromDataActionsWithConverterInfo(List<Action> actions,
+			ConverterInfo converterInfo) {
 		return new ActionDataToRestConverterImp(actions, converterInfo);
 	}
 
@@ -113,6 +113,10 @@ public final class ActionDataToRestConverterImp implements ActionDataToRestConve
 			actionLink.setURL(converterInfo.baseURL + "workOrder/");
 			actionLink.setAccept(APPLICATION_UUB_RECORD_JSON);
 			actionLink.setContentType("application/vnd.uub.workorder+json");
+		} else if (Action.BATCH_INDEX == action) {
+			actionLink.setRequestMethod("POST");
+			actionLink.setURL(converterInfo.baseURL + "index/" + recordId + "/");
+			actionLink.setAccept(APPLICATION_UUB_RECORD_JSON);
 		} else {
 			// list / search
 			actionLink.setRequestMethod("GET");

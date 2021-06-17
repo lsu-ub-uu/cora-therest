@@ -16,23 +16,25 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.therest.data.converter.coradata;
+package se.uu.ub.cora.therest.data.converter;
 
-import se.uu.ub.cora.data.DataList;
-import se.uu.ub.cora.data.DataRecord;
+import static org.testng.Assert.assertSame;
 
-public class DataToRestConverterFactoryImp implements DataToRestConverterFactory {
+import org.testng.annotations.Test;
 
-	@Override
-	public DataToRestConverter factorForDataRecord(DataRecord record, String url) {
-		DataGroupToRestConverterFactory converterFactory = new DataGroupToRestConverterFactoryImp();
-		return DataRecordToRestConverter.fromDataRecordWithBaseURLAndConverterFactory(record, url,
-				converterFactory);
+import se.uu.ub.cora.therest.data.RestDataElement;
+import se.uu.ub.cora.therest.data.RestDataGroup;
+import se.uu.ub.cora.therest.data.converter.coradata.DataGroupRestToDataConverter;
+
+public class RestToDataConverterFactoryTest {
+
+	@Test
+	public void testFactor() {
+		RestToDataConverterFactory converterFactory = new RestToDataConverterFactoryImp();
+		RestDataElement dataGroup = RestDataGroup.withNameInData("someDataGroup");
+		DataGroupRestToDataConverter converter = (DataGroupRestToDataConverter) converterFactory
+				.factor(dataGroup);
+		assertSame(converter.getRestDataGroup(), dataGroup);
+
 	}
-
-	@Override
-	public DataToRestConverter factorForDataList(DataList recordList, String url) {
-		return DataListDataToRestConverter.fromDataListWithBaseURL(recordList, url);
-	}
-
 }
