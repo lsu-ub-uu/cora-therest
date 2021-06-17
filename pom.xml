@@ -48,7 +48,7 @@
 		<logger.version>2.2.0</logger.version>
 		<coralog4j.version>2.1.0</coralog4j.version>
 		<coradata.version>4.1-SNAPSHOT</coradata.version>
-		<basicdata.version>2.0.0</basicdata.version>
+		<basicdata.version>2.1-SNAPSHOT</basicdata.version>
 		
 	</properties>
 	
