@@ -42,18 +42,18 @@ import org.glassfish.jersey.media.multipart.FormDataContentDisposition.FormDataC
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.data.Convertible;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataList;
 import se.uu.ub.cora.data.DataRecord;
+import se.uu.ub.cora.data.converter.DataToJsonConverterProvider;
 import se.uu.ub.cora.data.converter.JsonToDataConverterProvider;
 import se.uu.ub.cora.json.parser.JsonValue;
 import se.uu.ub.cora.json.parser.org.OrgJsonParser;
 import se.uu.ub.cora.logger.LoggerProvider;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
-import se.uu.ub.cora.therest.converter.coratorest.CoraToRestConverterFactoryImp;
-import se.uu.ub.cora.therest.converter.resttojson.RestToJsonConverterFactoryImp;
 import se.uu.ub.cora.therest.coradata.DataListSpy;
-import se.uu.ub.cora.therest.data.RestDataList;
+import se.uu.ub.cora.therest.coradata.DataRecordSpy;
 import se.uu.ub.cora.therest.log.LoggerFactorySpy;
 
 public class RecordEndpointTest {
@@ -71,7 +71,7 @@ public class RecordEndpointTest {
 	private RecordEndpoint recordEndpoint;
 	private SpiderInstanceFactorySpy spiderInstanceFactorySpy;
 	private Response response;
-	private TestHttpServletRequest request;
+	private HttpServletRequestSpy requestSpy;
 	private Map<String, String> initInfo = new HashMap<>();
 	private LoggerFactorySpy loggerFactorySpy;
 	private String testedClassName = "RecordEndpoint";
@@ -79,9 +79,16 @@ public class RecordEndpointTest {
 	private String jsonToValidate = "{\"order\":{\"name\":\"validationOrder\",\"children\":[{\"name\":\"recordInfo\",\"children\":[{\"name\":\"dataDivider\",\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"system\"},{\"name\":\"linkedRecordId\",\"value\":\"testSystem\"}]}]},{\"name\":\"recordType\",\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"recordType\"},{\"name\":\"linkedRecordId\",\"value\":\"someRecordType\"}]},{\"name\":\"metadataToValidate\",\"value\":\"existing\"},{\"name\":\"validateLinks\",\"value\":\"false\"}]},\"record\":{\"name\":\"text\",\"children\":[{\"name\":\"recordInfo\",\"children\":[{\"name\":\"id\",\"value\":\"workOrderRecordIdTextVar2Text\"},{\"name\":\"dataDivider\",\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"system\"},{\"name\":\"linkedRecordId\",\"value\":\"cora\"}]}]},{\"name\":\"textPart\",\"children\":[{\"name\":\"text\",\"value\":\"Id på länkad post\"}],\"attributes\":{\"type\":\"default\",\"lang\":\"sv\"}},{\"name\":\"textPart\",\"children\":[{\"name\":\"text\",\"value\":\"Linked record id\"}],\"attributes\":{\"type\":\"alternative\",\"lang\":\"en\"}}]}}";
 	private String defaultJson = "{\"name\":\"someRecordType\",\"children\":[]}";
 	private String jsonFilterData = "{\"name\":\"filter\",\"children\":[{\"name\":\"part\",\"children\":[{\"name\":\"key\",\"value\":\"movieTitle\"},{\"name\":\"value\",\"value\":\"Some title\"}],\"repeatId\":\"0\"}]}";
+	private DataToJsonConverterFactoryCreatorSpy converterFactoryCreatorSpy;
+	private String standardBaseUrlHttp = "http://cora.epc.ub.uu.se/systemone/rest/record/";
+	private String standardBaseUrlHttps = "https://cora.epc.ub.uu.se/systemone/rest/record/";
 
 	@BeforeMethod
 	public void beforeMethod() {
+		converterFactoryCreatorSpy = new DataToJsonConverterFactoryCreatorSpy();
+		DataToJsonConverterProvider
+				.setDataToJsonConverterFactoryCreator(converterFactoryCreatorSpy);
+
 		jsonToDataConverterFactorySpy = new JsonToDataConverterFactorySpy();
 		JsonToDataConverterProvider.setJsonToDataConverterFactory(jsonToDataConverterFactorySpy);
 		loggerFactorySpy = new LoggerFactorySpy();
@@ -91,8 +98,8 @@ public class RecordEndpointTest {
 		SpiderInstanceProvider.setSpiderInstanceFactory(spiderInstanceFactorySpy);
 		SpiderInstanceProvider.setInitInfo(initInfo);
 
-		request = new TestHttpServletRequest();
-		recordEndpoint = new RecordEndpoint(request);
+		requestSpy = new HttpServletRequestSpy();
+		recordEndpoint = new RecordEndpoint(requestSpy);
 
 		setUpSpiesInRecordEndpoint();
 
@@ -100,65 +107,55 @@ public class RecordEndpointTest {
 
 	private void setUpSpiesInRecordEndpoint() {
 		jsonParser = new JsonParserSpy();
-		coraToRestConverterFactory = new CoraToRestConverterFactorySpy();
-		restToJsonConverterFactory = new RestToJsonConverterFactorySpy();
 
 		recordEndpoint.setJsonParser(jsonParser);
-		recordEndpoint.setDataToRestConverterFactory(coraToRestConverterFactory);
-		recordEndpoint.setRestRecordToJsonConverterFactory(restToJsonConverterFactory);
 	}
 
 	@Test
 	public void testInit() {
-		recordEndpoint = new RecordEndpoint(request);
-		assertTrue(recordEndpoint
-				.getDataToRestConverterFactory() instanceof CoraToRestConverterFactoryImp);
-		assertTrue(recordEndpoint
-				.getRestDataToJsonConverterFactory() instanceof RestToJsonConverterFactoryImp);
+		recordEndpoint = new RecordEndpoint(requestSpy);
 		assertTrue(recordEndpoint.getJsonParser() instanceof OrgJsonParser);
 	}
 
 	@Test
 	public void testXForwardedProtoHttps() {
-		request.headers.put("X-Forwarded-Proto", "https");
-		recordEndpoint = new RecordEndpoint(request);
+		requestSpy.headers.put("X-Forwarded-Proto", "https");
+		recordEndpoint = new RecordEndpoint(requestSpy);
 
 		response = recordEndpoint.readRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001);
-		String entityString = response.getEntity().toString();
-		assertTrue(entityString.contains("\"url\":\"https:/"));
+		DataToJsonConverterFactorySpy converterFactory = (DataToJsonConverterFactorySpy) converterFactoryCreatorSpy.MCR
+				.getReturnValue("createFactory", 0);
+
+		converterFactory.MCR.assertParameters("factorUsingBaseUrlAndConvertible", 0,
+				standardBaseUrlHttps);
 	}
 
 	@Test
 	public void testXForwardedProtoHttpsWhenAlreadyHttpsInRequestUrl() {
-		request.headers.put("X-Forwarded-Proto", "https");
-		request.requestURL = new StringBuffer(
+		requestSpy.headers.put("X-Forwarded-Proto", "https");
+		requestSpy.requestURL = new StringBuffer(
 				"https://cora.epc.ub.uu.se/systemone/rest/record/text/");
-		recordEndpoint = new RecordEndpoint(request);
+		recordEndpoint = new RecordEndpoint(requestSpy);
 
 		response = recordEndpoint.readRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001);
-		String entityString = response.getEntity().toString();
-		assertTrue(entityString.contains("\"url\":\"https:/"));
+		DataToJsonConverterFactorySpy converterFactory = (DataToJsonConverterFactorySpy) converterFactoryCreatorSpy.MCR
+				.getReturnValue("createFactory", 0);
+
+		converterFactory.MCR.assertParameters("factorUsingBaseUrlAndConvertible", 0,
+				standardBaseUrlHttps);
 	}
 
 	@Test
 	public void testXForwardedProtoEmpty() {
-		request.headers.put("X-Forwarded-Proto", "");
-		recordEndpoint = new RecordEndpoint(request);
+		requestSpy.headers.put("X-Forwarded-Proto", "");
+		recordEndpoint = new RecordEndpoint(requestSpy);
 
 		response = recordEndpoint.readRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001);
-		String entityString = response.getEntity().toString();
-		assertTrue(entityString.contains("\"url\":\"http:/"));
-	}
+		DataToJsonConverterFactorySpy converterFactory = (DataToJsonConverterFactorySpy) converterFactoryCreatorSpy.MCR
+				.getReturnValue("createFactory", 0);
 
-	@Test
-	public void testReturnedUrl() {
-		request.headers.put("X-Forwarded-Proto", "https");
-		recordEndpoint = new RecordEndpoint(request);
-
-		response = recordEndpoint.readRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001);
-		String entityString = response.getEntity().toString();
-		assertTrue(entityString
-				.contains("\"url\":\"https://cora.epc.ub.uu.se/systemone/rest/record/place/"));
+		converterFactory.MCR.assertParameters("factorUsingBaseUrlAndConvertible", 0,
+				standardBaseUrlHttp);
 	}
 
 	@Test
@@ -190,15 +187,7 @@ public class RecordEndpointTest {
 
 		DataListSpy returnedDataListFromReader = spiderListReaderSpy.returnedDataList;
 
-		assertSame(coraToRestConverterFactory.recordList, returnedDataListFromReader);
-		assertEquals(coraToRestConverterFactory.url,
-				"http://cora.epc.ub.uu.se/systemone/rest/record/");
-
-		RestDataList returnedRestDataList = coraToRestConverterFactory.toRestConverter.returnedRestDataList;
-		assertSame(restToJsonConverterFactory.restData, returnedRestDataList);
-
-		RestRecordToJsonConverterSpy factoredToJsonConverter = restToJsonConverterFactory.restRecordToJsonConverterSpy;
-		assertEquals(factoredToJsonConverter.convertedJson, response.getEntity());
+		assertDataFromSpiderConvertedToJsonUsingConvertersFromProvider(returnedDataListFromReader);
 
 		assertResponseStatusIs(Response.Status.OK);
 	}
@@ -270,24 +259,27 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testReadRecordUsesToRestConverterFactory() {
-		CoraToRestConverterFactorySpy toRestConverterFactory = new CoraToRestConverterFactorySpy();
-		RestToJsonConverterFactorySpy toJsonConverterFactory = new RestToJsonConverterFactorySpy();
-
-		recordEndpoint.setDataToRestConverterFactory(toRestConverterFactory);
-		recordEndpoint.setRestRecordToJsonConverterFactory(toJsonConverterFactory);
 
 		response = recordEndpoint.readRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001);
 
 		DataRecord recordReturnedFromReader = spiderInstanceFactorySpy.spiderRecordReaderSpy.dataRecord;
-		assertEquals(toRestConverterFactory.url, "http://cora.epc.ub.uu.se/systemone/rest/record/");
-		assertSame(toRestConverterFactory.dataRecord, recordReturnedFromReader);
 
-		DataRecordToRestConverterSpy factoredToRestConverter = toRestConverterFactory.toRestConverter;
+		assertDataFromSpiderConvertedToJsonUsingConvertersFromProvider(recordReturnedFromReader);
+	}
 
-		assertNotNull(toJsonConverterFactory.restData);
-		assertSame(toJsonConverterFactory.restData, factoredToRestConverter.returnedRestDataRecord);
-		assertEquals(response.getEntity(),
-				toJsonConverterFactory.restRecordToJsonConverterSpy.convertedJson);
+	private void assertDataFromSpiderConvertedToJsonUsingConvertersFromProvider(
+			Convertible convertible) {
+		DataToJsonConverterFactorySpy converterFactory = (DataToJsonConverterFactorySpy) converterFactoryCreatorSpy.MCR
+				.getReturnValue("createFactory", 0);
+
+		converterFactory.MCR.assertParameters("factorUsingBaseUrlAndConvertible", 0,
+				standardBaseUrlHttp, convertible);
+
+		DataToJsonConverterSpy converterSpy = (DataToJsonConverterSpy) converterFactory.MCR
+				.getReturnValue("factorUsingBaseUrlAndConvertible", 0);
+
+		var entity = response.getEntity();
+		converterSpy.MCR.assertReturn("toJson", 0, entity);
 	}
 
 	@Test
@@ -339,7 +331,10 @@ public class RecordEndpointTest {
 	public void testReadIncomingRecordLinks() {
 		response = recordEndpoint.readIncomingRecordLinks(AUTH_TOKEN, AUTH_TOKEN, PLACE,
 				PLACE_0001);
+		DataList dataList = (DataList) spiderInstanceFactorySpy.spiderRecordIncomingLinksReaderSpy.MCR
+				.getReturnValue("readIncomingLinks", 0);
 
+		assertDataFromSpiderConvertedToJsonUsingConvertersFromProvider(dataList);
 		assertResponseStatusIs(Response.Status.OK);
 	}
 
@@ -509,16 +504,22 @@ public class RecordEndpointTest {
 	@Test
 	public void testCreateRecord() {
 		response = recordEndpoint.createRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultJson);
+
 		assertResponseStatusIs(Response.Status.CREATED);
 		assertTrue(response.getLocation().toString().startsWith("record/" + PLACE));
 	}
 
 	@Test
 	public void testCreateRecordUsesFactories() {
+
 		response = recordEndpoint.createRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultJson);
 
 		DataGroup recordSentOnToSpider = spiderInstanceFactorySpy.spiderCreatorSpy.record;
 		assertJsonStringConvertedToDataUsesCoraData(defaultJson, recordSentOnToSpider);
+		DataRecord createdRecord = (DataRecord) spiderInstanceFactorySpy.spiderCreatorSpy.MCR
+				.getReturnValue("createAndStoreRecord", 0);
+
+		assertDataFromSpiderConvertedToJsonUsingConvertersFromProvider(createdRecord);
 
 		assertResponseStatusIs(Response.Status.CREATED);
 		assertTrue(response.getLocation().toString().startsWith("record/" + PLACE));
@@ -783,16 +784,7 @@ public class RecordEndpointTest {
 
 		DataList returnedDataListFromReader = spiderRecordSearcherSpy.searchResult;
 
-		assertSame(coraToRestConverterFactory.recordList, returnedDataListFromReader);
-		assertEquals(coraToRestConverterFactory.url,
-				"http://cora.epc.ub.uu.se/systemone/rest/record/");
-
-		RestDataList returnedRestDataList = coraToRestConverterFactory.toRestConverter.returnedRestDataList;
-		assertSame(restToJsonConverterFactory.restData, returnedRestDataList);
-
-		RestRecordToJsonConverterSpy factoredToJsonConverter = restToJsonConverterFactory.restRecordToJsonConverterSpy;
-		assertEquals(factoredToJsonConverter.convertedJson, response.getEntity());
-
+		assertDataFromSpiderConvertedToJsonUsingConvertersFromProvider(returnedDataListFromReader);
 	}
 
 	@Test
@@ -822,7 +814,6 @@ public class RecordEndpointTest {
 		response = recordEndpoint.searchRecord(AUTH_TOKEN, AUTH_TOKEN, "aSearchId", defaultJson);
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.OK);
-		assertEquals(response.getEntity(), "some converted json");
 	}
 
 	@Test
@@ -902,8 +893,11 @@ public class RecordEndpointTest {
 		DataGroup recordReturnedDataPart = converterSpyForRecord.dataPartToReturn;
 		assertSame(recordToValidateSentOnToSpider, recordReturnedDataPart);
 
+		DataRecord validationResult = (DataRecord) spiderInstanceFactorySpy.spiderRecordValidatorSpy.MCR
+				.getReturnValue("validateRecord", 0);
+		assertDataFromSpiderConvertedToJsonUsingConvertersFromProvider(validationResult);
+
 		assertResponseStatusIs(Response.Status.OK);
-		assertEquals(response.getEntity(), "some converted json");
 	}
 
 	@Test
@@ -950,8 +944,8 @@ public class RecordEndpointTest {
 
 		assertEquals(indexBatchJobCreator.type, PLACE);
 
-		assertEquals(response.getEntity(),
-				restToJsonConverterFactory.restRecordToJsonConverterSpy.convertedJson);
+		DataRecordSpy recordToReturn = spiderInstanceFactorySpy.indexBatchJobCreator.recordToReturn;
+		assertDataFromSpiderConvertedToJsonUsingConvertersFromProvider(recordToReturn);
 
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.CREATED);
@@ -998,13 +992,6 @@ public class RecordEndpointTest {
 	public void testIndexRecordListNoTokenAndUnauthorized() {
 		response = recordEndpoint.indexRecordListUsingAuthTokenByType(null, PLACE, jsonFilterData);
 		assertResponseStatusIs(Response.Status.UNAUTHORIZED);
-	}
-
-	@Test
-	public void testIndexBatchJobResponse() {
-		response = recordEndpoint.indexRecordList(AUTH_TOKEN, AUTH_TOKEN, PLACE, null);
-		Object entity = response.getEntity();
-		assertEquals(entity, "some converted json");
 	}
 
 }

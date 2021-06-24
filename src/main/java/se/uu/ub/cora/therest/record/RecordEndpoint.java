@@ -40,11 +40,15 @@ import javax.ws.rs.core.Response.Status;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 
+import se.uu.ub.cora.data.Convertible;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataList;
 import se.uu.ub.cora.data.DataPart;
 import se.uu.ub.cora.data.DataRecord;
 import se.uu.ub.cora.data.converter.ConversionException;
+import se.uu.ub.cora.data.converter.DataToJsonConverter;
+import se.uu.ub.cora.data.converter.DataToJsonConverterFactory;
+import se.uu.ub.cora.data.converter.DataToJsonConverterProvider;
 import se.uu.ub.cora.data.converter.JsonToDataConverter;
 import se.uu.ub.cora.data.converter.JsonToDataConverterProvider;
 import se.uu.ub.cora.json.parser.JsonObject;
@@ -65,37 +69,24 @@ import se.uu.ub.cora.spider.record.RecordListIndexer;
 import se.uu.ub.cora.spider.record.RecordValidator;
 import se.uu.ub.cora.storage.RecordConflictException;
 import se.uu.ub.cora.storage.RecordNotFoundException;
-import se.uu.ub.cora.therest.converter.coratorest.CoraToRestConverter;
-import se.uu.ub.cora.therest.converter.coratorest.CoraToRestConverterFactory;
-import se.uu.ub.cora.therest.converter.coratorest.CoraToRestConverterFactoryImp;
-import se.uu.ub.cora.therest.converter.resttojson.RestToJsonConverter;
-import se.uu.ub.cora.therest.converter.resttojson.RestToJsonConverterFactory;
-import se.uu.ub.cora.therest.converter.resttojson.RestToJsonConverterFactoryImp;
-import se.uu.ub.cora.therest.data.RestData;
-import se.uu.ub.cora.therest.data.RestDataRecord;
 
 @Path("record")
 public class RecordEndpoint {
 	private static final int AFTERHTTP = 10;
-	private String url;
+	private String baseUrl;
 	HttpServletRequest request;
 	private Logger log = LoggerProvider.getLoggerForClass(RecordEndpoint.class);
 
-	private CoraToRestConverterFactory dataToRestConverterFactory = new CoraToRestConverterFactoryImp();
-	private RestToJsonConverterFactory restDataToJsonConverterFactory = new RestToJsonConverterFactoryImp();
 	private JsonParser jsonParser = new OrgJsonParser();
 
 	public RecordEndpoint(@Context HttpServletRequest req) {
 		request = req;
-		url = getBaseURLFromURI();
+		baseUrl = getBaseURLFromURI();
 	}
 
 	private final String getBaseURLFromURI() {
 		String baseURL = getBaseURLFromRequest();
-
-		baseURL = changeHttpToHttpsIfHeaderSaysSo(baseURL);
-
-		return baseURL;
+		return changeHttpToHttpsIfHeaderSaysSo(baseURL);
 	}
 
 	private final String getBaseURLFromRequest() {
@@ -141,15 +132,15 @@ public class RecordEndpoint {
 
 	private Response tryCreateRecord(String authToken, String type, String jsonRecord)
 			throws URISyntaxException {
-		DataGroup record = convertJsonStringToDataGroup(jsonRecord);
+		DataGroup dataRecord = convertJsonStringToDataGroup(jsonRecord);
 		DataRecord createdRecord = SpiderInstanceProvider.getRecordCreator()
-				.createAndStoreRecord(authToken, type, record);
+				.createAndStoreRecord(authToken, type, dataRecord);
 
 		DataGroup createdGroup = createdRecord.getDataGroup();
 		DataGroup recordInfo = createdGroup.getFirstGroupWithNameInData("recordInfo");
 		String createdId = recordInfo.getFirstAtomicValueWithNameInData("id");
 
-		String json = convertDataRecordToJsonString(createdRecord);
+		String json = convertDataToJsonString(createdRecord);
 
 		String urlDelimiter = "/";
 		URI uri = new URI("record/" + type + urlDelimiter + createdId);
@@ -164,21 +155,12 @@ public class RecordEndpoint {
 		return (DataGroup) dataPart;
 	}
 
-	private String convertDataRecordToJsonString(DataRecord record) {
-		RestDataRecord restDataRecord = convertDataRecordToRestDataRecord(record);
-		RestToJsonConverter dataToJsonConverter = getRestToJsonConverter(restDataRecord);
-		return dataToJsonConverter.toJson();
-	}
-
-	private RestDataRecord convertDataRecordToRestDataRecord(DataRecord record) {
-		CoraToRestConverter toRestConverter = dataToRestConverterFactory.factorForDataRecord(record,
-				url);
-		return (RestDataRecord) toRestConverter.toRest();
-
-	}
-
-	private RestToJsonConverter getRestToJsonConverter(RestDataRecord restDataRecord) {
-		return restDataToJsonConverterFactory.createForRestData(restDataRecord);
+	private String convertDataToJsonString(Convertible convertible) {
+		DataToJsonConverterFactory dataToJsonConverterFactory = DataToJsonConverterProvider
+				.createImplementingFactory();
+		DataToJsonConverter converter = dataToJsonConverterFactory
+				.factorUsingBaseUrlAndConvertible(baseUrl, convertible);
+		return converter.toJson();
 	}
 
 	private Response handleError(String authToken, Exception error) {
@@ -267,19 +249,8 @@ public class RecordEndpoint {
 		DataGroup filter = convertJsonStringToDataGroup(filterAsJson);
 		DataList readRecordList = SpiderInstanceProvider.getRecordListReader()
 				.readRecordList(authToken, type, filter);
-		String json = convertRecordListToJsonString(readRecordList);
+		String json = convertDataToJsonString(readRecordList);
 		return Response.status(Response.Status.OK).entity(json).build();
-	}
-
-	private String convertRecordListToJsonString(DataList readRecordList) {
-		CoraToRestConverter listSpiderToRestConverter = dataToRestConverterFactory
-				.factorForDataList(readRecordList, url);
-
-		RestData restDataList = listSpiderToRestConverter.toRest();
-
-		RestToJsonConverter recordListToJsonConverter = restDataToJsonConverterFactory
-				.createForRestData(restDataList);
-		return recordListToJsonConverter.toJson();
 	}
 
 	@GET
@@ -301,9 +272,9 @@ public class RecordEndpoint {
 	}
 
 	private Response tryReadRecord(String authToken, String type, String id) {
-		DataRecord record = SpiderInstanceProvider.getRecordReader().readRecord(authToken, type,
+		DataRecord dataRecord = SpiderInstanceProvider.getRecordReader().readRecord(authToken, type,
 				id);
-		String json = convertDataRecordToJsonString(record);
+		String json = convertDataToJsonString(dataRecord);
 		return Response.status(Response.Status.OK).entity(json).build();
 	}
 
@@ -329,7 +300,7 @@ public class RecordEndpoint {
 	private Response tryReadIncomingRecordLinks(String authToken, String type, String id) {
 		DataList dataList = SpiderInstanceProvider.getIncomingLinksReader()
 				.readIncomingLinks(authToken, type, id);
-		String json = convertRecordListToJsonString(dataList);
+		String json = convertDataToJsonString(dataList);
 		return Response.status(Response.Status.OK).entity(json).build();
 	}
 
@@ -377,10 +348,10 @@ public class RecordEndpoint {
 	}
 
 	private Response tryUpdateRecord(String authToken, String type, String id, String jsonRecord) {
-		DataGroup record = convertJsonStringToDataGroup(jsonRecord);
+		DataGroup dataRecord = convertJsonStringToDataGroup(jsonRecord);
 		DataRecord updatedRecord = SpiderInstanceProvider.getRecordUpdater().updateRecord(authToken,
-				type, id, record);
-		String json = convertDataRecordToJsonString(updatedRecord);
+				type, id, dataRecord);
+		String json = convertDataToJsonString(updatedRecord);
 		return Response.status(Response.Status.OK).entity(json).build();
 	}
 
@@ -445,7 +416,7 @@ public class RecordEndpoint {
 			InputStream inputStream, String fileName) {
 		DataRecord updatedRecord = SpiderInstanceProvider.getUploader().upload(authToken, type, id,
 				inputStream, fileName);
-		String json = convertDataRecordToJsonString(updatedRecord);
+		String json = convertDataToJsonString(updatedRecord);
 		return Response.ok(json).build();
 	}
 
@@ -473,7 +444,7 @@ public class RecordEndpoint {
 
 		DataList searchRecordList = SpiderInstanceProvider.getRecordSearcher().search(authToken,
 				searchId, searchData);
-		String json = convertRecordListToJsonString(searchRecordList);
+		String json = convertDataToJsonString(searchRecordList);
 		return Response.status(Response.Status.OK).entity(json).build();
 	}
 
@@ -508,7 +479,7 @@ public class RecordEndpoint {
 		DataRecord validationResult = recordValidator.validateRecord(authToken, type,
 				validationOrder, recordToValidate);
 
-		String json = convertDataRecordToJsonString(validationResult);
+		String json = convertDataToJsonString(validationResult);
 		return Response.status(Response.Status.OK).entity(json).build();
 	}
 
@@ -557,29 +528,11 @@ public class RecordEndpoint {
 		DataGroup recordInfo = createdGroup.getFirstGroupWithNameInData("recordInfo");
 		String createdId = recordInfo.getFirstAtomicValueWithNameInData("id");
 
-		String json = convertDataRecordToJsonString(indexBatchJob);
+		String json = convertDataToJsonString(indexBatchJob);
 
 		String urlDelimiter = "/";
 		URI uri = new URI("record/indexBatchJob" + urlDelimiter + createdId);
 		return Response.created(uri).entity(json).build();
-
-	}
-
-	CoraToRestConverterFactory getDataToRestConverterFactory() {
-		return dataToRestConverterFactory;
-	}
-
-	void setDataToRestConverterFactory(CoraToRestConverterFactory converterFactory) {
-		this.dataToRestConverterFactory = converterFactory;
-	}
-
-	RestToJsonConverterFactory getRestDataToJsonConverterFactory() {
-		return restDataToJsonConverterFactory;
-	}
-
-	void setRestRecordToJsonConverterFactory(
-			RestToJsonConverterFactory restRecordToJsonConverterFactory) {
-		this.restDataToJsonConverterFactory = restRecordToJsonConverterFactory;
 
 	}
 

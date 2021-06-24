@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Uppsala University Library
+ * Copyright 2021 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -16,48 +16,46 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.therest.coradata;
+package se.uu.ub.cora.therest.record;
 
-import java.util.ArrayList;
-import java.util.List;
+import se.uu.ub.cora.json.builder.JsonArrayBuilder;
+import se.uu.ub.cora.json.builder.JsonObjectBuilder;
+import se.uu.ub.cora.json.parser.JsonObject;
 
-import se.uu.ub.cora.data.Action;
-import se.uu.ub.cora.data.DataRecordLink;
-
-public class DataRecordLinkSpy extends DataGroupSpy implements DataRecordLink {
-
-	public String nameInData;
-	public List<Action> actions = new ArrayList<>();
-
-	public DataRecordLinkSpy(String nameInData) {
-		super(nameInData);
-	}
+public class JsonObjectBuilderSpy implements JsonObjectBuilder {
 
 	@Override
-	public void addAction(Action action) {
-		actions.add(action);
-
-	}
-
-	@Override
-	public List<Action> getActions() {
-		return actions;
-	}
-
-	@Override
-	public boolean hasReadAction() {
+	public void addKeyJsonArrayBuilder(String arg0, JsonArrayBuilder arg1) {
 		// TODO Auto-generated method stub
-		return false;
+
 	}
 
 	@Override
-	public String getLinkedRecordId() {
+	public void addKeyJsonObjectBuilder(String arg0, JsonObjectBuilder arg1) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void addKeyString(String arg0, String arg1) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public String toJsonFormattedPrettyString() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String getLinkedRecordType() {
+	public String toJsonFormattedString() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public JsonObject toJsonObject() {
 		// TODO Auto-generated method stub
 		return null;
 	}

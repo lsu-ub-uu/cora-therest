@@ -8,6 +8,7 @@ import se.uu.ub.cora.storage.RecordNotFoundException;
 import se.uu.ub.cora.therest.coradata.DataAtomicSpy;
 import se.uu.ub.cora.therest.coradata.DataGroupSpy;
 import se.uu.ub.cora.therest.coradata.DataRecordSpy;
+import se.uu.ub.cora.therest.mcr.MethodCallRecorder;
 
 public class SpiderRecordValidatorSpy implements RecordValidator {
 
@@ -17,10 +18,13 @@ public class SpiderRecordValidatorSpy implements RecordValidator {
 	public DataGroup recordToValidate;
 	public DataGroup validationOrder;
 	public boolean throwRecordNotFoundException = false;
+	public MethodCallRecorder MCR = new MethodCallRecorder();
 
 	@Override
 	public DataRecord validateRecord(String authToken, String recordType,
 			DataGroup validationRecord, DataGroup recordToValidate) {
+		MCR.addCall("authToken", authToken, "recordType", recordType, "validationRecord",
+				validationRecord, "recordToValidate", recordToValidate);
 		this.authToken = authToken;
 		this.recordType = recordType;
 		this.validationOrder = validationRecord;
@@ -35,7 +39,10 @@ public class SpiderRecordValidatorSpy implements RecordValidator {
 			throw new RecordNotFoundException("no record exist with type " + recordType);
 		}
 		DataGroup validationResult = createValidationResult(recordType);
-		return new DataRecordSpy(validationResult);
+
+		DataRecordSpy dataRecordSpy = new DataRecordSpy(validationResult);
+		MCR.addReturned(dataRecordSpy);
+		return dataRecordSpy;
 	}
 
 	private DataGroup createValidationResult(String recordType) {

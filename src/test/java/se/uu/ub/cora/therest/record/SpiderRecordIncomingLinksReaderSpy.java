@@ -25,8 +25,10 @@ import se.uu.ub.cora.spider.record.IncomingLinksReader;
 import se.uu.ub.cora.spider.record.MisuseException;
 import se.uu.ub.cora.storage.RecordNotFoundException;
 import se.uu.ub.cora.therest.coradata.DataListSpy;
+import se.uu.ub.cora.therest.mcr.MethodCallRecorder;
 
 public class SpiderRecordIncomingLinksReaderSpy implements IncomingLinksReader {
+	MethodCallRecorder MCR = new MethodCallRecorder();
 
 	public String authToken;
 	public String type;
@@ -34,11 +36,14 @@ public class SpiderRecordIncomingLinksReaderSpy implements IncomingLinksReader {
 
 	@Override
 	public DataList readIncomingLinks(String authToken, String type, String id) {
+		MCR.addCall("authToken", authToken, "type", type, "id", id);
 		this.authToken = authToken;
 		this.type = type;
 		this.id = id;
 		possiblyThrowExceptionForIncomingLinks(authToken, type, id);
-		return new DataListSpy("someType");
+		DataListSpy dataListSpy = new DataListSpy("someType");
+		MCR.addReturned(dataListSpy);
+		return dataListSpy;
 	}
 
 	private void possiblyThrowExceptionForIncomingLinks(String authToken, String type, String id) {
