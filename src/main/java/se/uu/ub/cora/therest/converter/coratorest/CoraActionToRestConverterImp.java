@@ -176,6 +176,7 @@ public final class CoraActionToRestConverterImp implements CoraActionToRestConve
 				.addChild(RestDataAtomic.withNameInDataAndValue("linkedRecordType", RECORD_TYPE));
 		recordTypeGroup
 				.addChild(RestDataAtomic.withNameInDataAndValue("linkedRecordId", recordType));
+
 		body.addChild(recordTypeGroup);
 		body.addChild(RestDataAtomic.withNameInDataAndValue("recordId", recordId));
 		body.addChild(RestDataAtomic.withNameInDataAndValue("type", "index"));

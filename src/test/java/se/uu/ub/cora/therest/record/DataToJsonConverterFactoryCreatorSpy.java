@@ -16,22 +16,22 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.therest.coradata;
+package se.uu.ub.cora.therest.record;
 
-import se.uu.ub.cora.data.converter.ConversionException;
+import se.uu.ub.cora.data.converter.DataToJsonConverterFactory;
+import se.uu.ub.cora.data.converter.DataToJsonConverterFactoryCreator;
+import se.uu.ub.cora.therest.mcr.MethodCallRecorder;
 
-public class ConversionExceptionSpy extends RuntimeException implements ConversionException {
-
-	private static final long serialVersionUID = 1L;
-	private String message;
-
-	public ConversionExceptionSpy(String string) {
-		this.message = string;
-	}
+public class DataToJsonConverterFactoryCreatorSpy implements DataToJsonConverterFactoryCreator {
+	MethodCallRecorder MCR = new MethodCallRecorder();
 
 	@Override
-	public String getMessage() {
-		return message;
+	public DataToJsonConverterFactory createFactory() {
+		MCR.addCall();
+		DataToJsonConverterFactory converterFactorySpy = new DataToJsonConverterFactorySpy();
+
+		MCR.addReturned(converterFactorySpy);
+		return converterFactorySpy;
 	}
 
 }

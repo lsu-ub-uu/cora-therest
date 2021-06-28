@@ -43,7 +43,7 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpUpgradeHandler;
 import javax.servlet.http.Part;
 
-public class TestHttpServletRequest implements HttpServletRequest {
+public class HttpServletRequestSpy implements HttpServletRequest {
 	public Map<String, String> headers = new HashMap<>();
 	public StringBuffer requestURL;
 

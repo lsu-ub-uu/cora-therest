@@ -28,6 +28,7 @@ import se.uu.ub.cora.spider.record.RecordCreator;
 import se.uu.ub.cora.storage.RecordConflictException;
 import se.uu.ub.cora.storage.RecordNotFoundException;
 import se.uu.ub.cora.therest.coradata.DataRecordSpy;
+import se.uu.ub.cora.therest.mcr.MethodCallRecorder;
 import se.uu.ub.cora.therest.testdata.DataCreator;
 
 public class SpiderCreatorSpy implements RecordCreator {
@@ -35,9 +36,11 @@ public class SpiderCreatorSpy implements RecordCreator {
 	public String authToken;
 	public String type;
 	public DataGroup record;
+	public MethodCallRecorder MCR = new MethodCallRecorder();
 
 	@Override
 	public DataRecord createAndStoreRecord(String authToken, String type, DataGroup record) {
+		MCR.addCall("authToken", authToken, "type", type, "record", record);
 		this.authToken = authToken;
 		this.type = type;
 		this.record = record;
@@ -56,9 +59,11 @@ public class SpiderCreatorSpy implements RecordCreator {
 		} else if ("place_unexpected_error".equals(type)) {
 			throw new NullPointerException("Some error");
 		}
-		return new DataRecordSpy(
+		DataRecordSpy dataRecordSpy = new DataRecordSpy(
 				DataCreator.createRecordWithNameInDataAndIdAndTypeAndLinkedRecordId("nameInData",
 						"someId", type, "linkedRecordId"));
+		MCR.addReturned(dataRecordSpy);
+		return dataRecordSpy;
 	}
 
 }
