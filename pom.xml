@@ -37,18 +37,17 @@
 		<jaxb-api.version>2.3.1</jaxb-api.version>
 		<servlet-api.version>4.0.1</servlet-api.version>
 		<jersey.version>2.32</jersey.version>
-		<bookkeeper.version>5.1-SNAPSHOT</bookkeeper.version>
+		<bookkeeper.version>6.0-SNAPSHOT</bookkeeper.version>
 		<gatekeeperclient.version>3.9.0</gatekeeperclient.version>
 		<beefeater.version>3.4.0</beefeater.version>
-		<solrsearch.version>3.6.0</solrsearch.version>
+		<solrsearch.version>4.0-SNAPSHOT</solrsearch.version>
 		<httphandler.version>2.2.0</httphandler.version>
-		<storage.version>4.1-SNAPSHOT</storage.version>
+		<storage.version>4.0.0</storage.version>
 		<search.version>3.6.0</search.version>
 		<searchstorage.version>3.6.0</searchstorage.version>
 		<logger.version>2.2.0</logger.version>
 		<coralog4j.version>2.1.0</coralog4j.version>
-		<coradata.version>4.1-SNAPSHOT</coradata.version>
-<!-- 		<basicdata.version>2.0.0</basicdata.version> -->
+		<coradata.version>5.0-SNAPSHOT</coradata.version>
 		
 	</properties>
 	
@@ -140,12 +139,6 @@
 			<version>${coradata.version}</version>
 			<scope>provided</scope>
 		</dependency>
-<!-- 		<dependency> -->
-<!-- 			<groupId>se.uu.ub.cora</groupId> -->
-<!-- 			<artifactId>basicdata</artifactId> -->
-<!-- 			<version>${basicdata.version}</version> -->
-<!-- 			<scope>provided</scope> -->
-<!-- 		</dependency> -->
 		<dependency>
 			<groupId>org.glassfish.jersey.containers</groupId>
 			<artifactId>jersey-container-servlet</artifactId>
