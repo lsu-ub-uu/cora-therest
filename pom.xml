@@ -32,7 +32,7 @@
 	<name>The Rest</name>
 	
 	<properties>
-		<json.version>2.3.0</json.version>
+		<json.version>2.4.0</json.version>
 		<spider.version>5.1-SNAPSHOT</spider.version>
 		<jaxb-api.version>2.3.1</jaxb-api.version>
 		<servlet-api.version>4.0.1</servlet-api.version>
@@ -42,12 +42,12 @@
 		<beefeater.version>3.4.0</beefeater.version>
 		<solrsearch.version>4.0-SNAPSHOT</solrsearch.version>
 		<httphandler.version>2.2.0</httphandler.version>
-		<storage.version>4.0.0</storage.version>
+		<storage.version>4.1.0</storage.version>
 		<search.version>3.6.0</search.version>
 		<searchstorage.version>3.6.0</searchstorage.version>
 		<logger.version>2.2.0</logger.version>
 		<coralog4j.version>2.1.0</coralog4j.version>
-		<coradata.version>5.0-SNAPSHOT</coradata.version>
+		<coradata.version>5.0.0</coradata.version>
 		
 	</properties>
 	

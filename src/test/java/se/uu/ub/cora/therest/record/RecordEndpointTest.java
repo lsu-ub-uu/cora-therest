@@ -63,8 +63,6 @@ public class RecordEndpointTest {
 	private static final String PLACE = "place";
 	private static final String AUTH_TOKEN = "authToken";
 	private JsonParserSpy jsonParser;
-	private CoraToRestConverterFactorySpy coraToRestConverterFactory;
-	private RestToJsonConverterFactorySpy restToJsonConverterFactory;
 
 	JsonToDataConverterFactorySpy jsonToDataConverterFactorySpy = new JsonToDataConverterFactorySpy();
 
