@@ -277,7 +277,7 @@ public class RecordEndpointTest {
 				.getReturnValue("factorUsingBaseUrlAndConvertible", 0);
 
 		var entity = response.getEntity();
-		converterSpy.MCR.assertReturn("toJson", 0, entity);
+		converterSpy.MCR.assertReturn("toJsonCompactFormat", 0, entity);
 	}
 
 	@Test

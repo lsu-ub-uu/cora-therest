@@ -160,7 +160,7 @@ public class RecordEndpoint {
 				.createImplementingFactory();
 		DataToJsonConverter converter = dataToJsonConverterFactory
 				.factorUsingBaseUrlAndConvertible(baseUrl, convertible);
-		return converter.toJson();
+		return converter.toJsonCompactFormat();
 	}
 
 	private Response handleError(String authToken, Exception error) {
