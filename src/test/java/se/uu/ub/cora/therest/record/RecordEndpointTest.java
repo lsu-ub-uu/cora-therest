@@ -504,7 +504,8 @@ public class RecordEndpointTest {
 		response = recordEndpoint.createRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultJson);
 
 		assertResponseStatusIs(Response.Status.CREATED);
-		assertTrue(response.getLocation().toString().startsWith("record/" + PLACE));
+		// assertTrue(response.getLocation().toString().startsWith("record/" + PLACE));
+		assertTrue(response.getLocation().toString().startsWith(PLACE));
 	}
 
 	@Test
@@ -520,7 +521,8 @@ public class RecordEndpointTest {
 		assertDataFromSpiderConvertedToJsonUsingConvertersFromProvider(createdRecord);
 
 		assertResponseStatusIs(Response.Status.CREATED);
-		assertTrue(response.getLocation().toString().startsWith("record/" + PLACE));
+		// assertTrue(response.getLocation().toString().startsWith("record/" + PLACE));
+		assertTrue(response.getLocation().toString().startsWith(PLACE));
 	}
 
 	@Test
