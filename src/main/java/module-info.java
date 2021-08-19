@@ -2,9 +2,8 @@ module se.uu.ub.cora.therest {
 	requires transitive se.uu.ub.cora.logger;
 	requires transitive se.uu.ub.cora.storage;
 	requires transitive se.uu.ub.cora.spider;
-	requires transitive jakarta.activation;
-	requires transitive java.ws.rs;
-	requires transitive javax.servlet.api;
+	requires transitive jakarta.ws.rs;
+	requires transitive jakarta.servlet;
 	requires transitive jersey.media.multipart;
 	requires transitive se.uu.ub.cora.httphandler;
 	requires transitive se.uu.ub.cora.gatekeeperclient;

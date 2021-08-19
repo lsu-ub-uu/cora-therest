@@ -29,17 +29,17 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterRegistration;
-import javax.servlet.FilterRegistration.Dynamic;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.Servlet;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRegistration;
-import javax.servlet.SessionCookieConfig;
-import javax.servlet.SessionTrackingMode;
-import javax.servlet.descriptor.JspConfigDescriptor;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterRegistration;
+import jakarta.servlet.FilterRegistration.Dynamic;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.Servlet;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRegistration;
+import jakarta.servlet.SessionCookieConfig;
+import jakarta.servlet.SessionTrackingMode;
+import jakarta.servlet.descriptor.JspConfigDescriptor;
 
 public class ServletContextSpy implements ServletContext {
 
@@ -79,25 +79,6 @@ public class ServletContextSpy implements ServletContext {
 	public void addListener(Class<? extends EventListener> arg0) {
 		// TODO Auto-generated method stub
 
-	}
-
-	@Override
-	public javax.servlet.ServletRegistration.Dynamic addServlet(String arg0, String arg1) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public javax.servlet.ServletRegistration.Dynamic addServlet(String arg0, Servlet arg1) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public javax.servlet.ServletRegistration.Dynamic addServlet(String arg0,
-			Class<? extends Servlet> arg1) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override
@@ -351,13 +332,6 @@ public class ServletContextSpy implements ServletContext {
 	}
 
 	@Override
-	public javax.servlet.ServletRegistration.Dynamic addJspFile(String servletName,
-			String jspFile) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public String getVirtualServerName() {
 		// TODO Auto-generated method stub
 		return null;
@@ -397,6 +371,34 @@ public class ServletContextSpy implements ServletContext {
 	public void setResponseCharacterEncoding(String encoding) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public jakarta.servlet.ServletRegistration.Dynamic addServlet(String servletName,
+			String className) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public jakarta.servlet.ServletRegistration.Dynamic addServlet(String servletName,
+			Servlet servlet) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public jakarta.servlet.ServletRegistration.Dynamic addServlet(String servletName,
+			Class<? extends Servlet> servletClass) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public jakarta.servlet.ServletRegistration.Dynamic addJspFile(String servletName,
+			String jspFile) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
