@@ -24,8 +24,8 @@ import se.uu.ub.cora.spider.authorization.AuthorizationException;
 import se.uu.ub.cora.spider.record.IncomingLinksReader;
 import se.uu.ub.cora.spider.record.MisuseException;
 import se.uu.ub.cora.storage.RecordNotFoundException;
+import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 import se.uu.ub.cora.therest.coradata.DataListSpy;
-import se.uu.ub.cora.therest.mcr.MethodCallRecorder;
 
 public class SpiderRecordIncomingLinksReaderSpy implements IncomingLinksReader {
 	MethodCallRecorder MCR = new MethodCallRecorder();

@@ -27,8 +27,8 @@ import se.uu.ub.cora.spider.record.MisuseException;
 import se.uu.ub.cora.spider.record.RecordCreator;
 import se.uu.ub.cora.storage.RecordConflictException;
 import se.uu.ub.cora.storage.RecordNotFoundException;
+import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 import se.uu.ub.cora.therest.coradata.DataRecordSpy;
-import se.uu.ub.cora.therest.mcr.MethodCallRecorder;
 import se.uu.ub.cora.therest.testdata.DataCreator;
 
 public class SpiderCreatorSpy implements RecordCreator {

@@ -20,7 +20,7 @@ package se.uu.ub.cora.therest.record;
 
 import se.uu.ub.cora.data.converter.DataToJsonConverterFactory;
 import se.uu.ub.cora.data.converter.DataToJsonConverterFactoryCreator;
-import se.uu.ub.cora.therest.mcr.MethodCallRecorder;
+import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 
 public class DataToJsonConverterFactoryCreatorSpy implements DataToJsonConverterFactoryCreator {
 	MethodCallRecorder MCR = new MethodCallRecorder();
