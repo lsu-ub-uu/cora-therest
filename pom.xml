@@ -23,24 +23,25 @@
 	<parent>
 		<groupId>se.uu.ub.cora</groupId>
 		<artifactId>cora-parent</artifactId>
-		<version>1.4.1</version>
+		<version>1.4.4</version>
 	</parent>
 
 	<artifactId>therest</artifactId>
 	<packaging>jar</packaging>
-	<version>6.2-SNAPSHOT</version>
+	<version>7.0-SNAPSHOT</version>
 	<name>The Rest</name>
 	
 	<properties>
+		<testutils.version>1.1.0</testutils.version>
 		<json.version>2.5.0</json.version>
 		<spider.version>5.2.0</spider.version>
 		<jaxb-api.version>2.3.1</jaxb-api.version>
-		<servlet-api.version>4.0.1</servlet-api.version>
-		<jersey.version>2.32</jersey.version>
+		<servlet-api.version>5.0.0</servlet-api.version>
+		<jersey.version>3.0.2</jersey.version>
 		<bookkeeper.version>6.1.0</bookkeeper.version>
 		<gatekeeperclient.version>3.10.0</gatekeeperclient.version>
 		<beefeater.version>3.5.0</beefeater.version>
-		<solrsearch.version>4.1.0</solrsearch.version>
+		<solrsearch.version>4.2.0</solrsearch.version>
 		<httphandler.version>2.3.0</httphandler.version>
 		<storage.version>4.2.0</storage.version>
 		<search.version>3.8.0</search.version>
@@ -64,6 +65,12 @@
 			<groupId>org.testng</groupId>
 			<artifactId>testng</artifactId>
 			<version>${testng.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>se.uu.ub.cora</groupId>
+			<artifactId>testutils</artifactId>
+			<version>${testutils.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -161,8 +168,8 @@
 			<version>${jersey.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
+			<groupId>jakarta.servlet</groupId>
+			<artifactId>jakarta.servlet-api</artifactId>
 			<version>${servlet-api.version}</version>
 			<scope>provided</scope>
 		</dependency>

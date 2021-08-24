@@ -5,10 +5,10 @@ import se.uu.ub.cora.data.DataRecord;
 import se.uu.ub.cora.spider.authorization.AuthorizationException;
 import se.uu.ub.cora.spider.record.RecordValidator;
 import se.uu.ub.cora.storage.RecordNotFoundException;
+import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 import se.uu.ub.cora.therest.coradata.DataAtomicSpy;
 import se.uu.ub.cora.therest.coradata.DataGroupSpy;
 import se.uu.ub.cora.therest.coradata.DataRecordSpy;
-import se.uu.ub.cora.therest.mcr.MethodCallRecorder;
 
 public class SpiderRecordValidatorSpy implements RecordValidator {
 

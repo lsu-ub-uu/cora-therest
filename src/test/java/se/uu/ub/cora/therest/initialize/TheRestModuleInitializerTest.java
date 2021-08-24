@@ -25,12 +25,11 @@ import static org.testng.Assert.assertTrue;
 import java.util.Map;
 import java.util.ServiceLoader;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
-
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletContextEvent;
 import se.uu.ub.cora.logger.LoggerProvider;
 import se.uu.ub.cora.storage.MetadataStorageProvider;
 import se.uu.ub.cora.storage.RecordIdGeneratorProvider;

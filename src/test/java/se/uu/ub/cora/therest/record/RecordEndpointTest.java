@@ -34,14 +34,13 @@ import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition.FormDataContentDispositionBuilder;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 import se.uu.ub.cora.data.Convertible;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataList;
