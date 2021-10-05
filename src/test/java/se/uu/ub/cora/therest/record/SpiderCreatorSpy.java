@@ -55,7 +55,7 @@ public class SpiderCreatorSpy implements RecordCreator {
 			throw new MisuseException(
 					"Data creation on abstract recordType:" + type + " is not allowed");
 		} else if ("place_duplicate".equals(type)) {
-			throw new RecordConflictException("Record already exists");
+			throw RecordConflictException.withMessage("Record already exists");
 		} else if ("place_unexpected_error".equals(type)) {
 			throw new NullPointerException("Some error");
 		}
