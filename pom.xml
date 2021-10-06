@@ -32,7 +32,7 @@
 	<name>The Rest</name>
 	
 	<properties>
-		<json.version>2.5.0</json.version>
+		<json.version>3.0-SNAPSHOT</json.version>
 		<spider.version>5.2.0</spider.version>
 		<jaxb-api.version>2.3.1</jaxb-api.version>
 		<servlet-api.version>5.0.0</servlet-api.version>
