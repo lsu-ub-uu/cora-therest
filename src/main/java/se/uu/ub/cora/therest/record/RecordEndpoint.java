@@ -69,7 +69,6 @@ import se.uu.ub.cora.spider.record.RecordValidator;
 import se.uu.ub.cora.storage.RecordConflictException;
 import se.uu.ub.cora.storage.RecordNotFoundException;
 
-//@Path("record")
 @Path("/")
 public class RecordEndpoint {
 	private static final int AFTERHTTP = 10;
@@ -143,7 +142,6 @@ public class RecordEndpoint {
 		String json = convertDataToJsonString(createdRecord);
 
 		String urlDelimiter = "/";
-		// URI uri = new URI("record/" + type + urlDelimiter + createdId);
 		URI uri = new URI(type + urlDelimiter + createdId);
 		return Response.created(uri).entity(json).build();
 	}
