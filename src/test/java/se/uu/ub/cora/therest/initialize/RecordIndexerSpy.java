@@ -16,4 +16,11 @@ public class RecordIndexerSpy implements RecordIndexer {
 		// TODO Auto-generated method stub
 
 	}
+
+	@Override
+	public void indexDataWithoutExplicitCommit(List<String> ids, DataGroup collectedData,
+			DataGroup dataRecord) {
+		// TODO Auto-generated method stub
+
+	}
 }
