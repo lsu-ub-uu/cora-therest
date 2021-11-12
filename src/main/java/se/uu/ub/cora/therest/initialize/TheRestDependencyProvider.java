@@ -26,10 +26,11 @@ import se.uu.ub.cora.gatekeeperclient.authentication.AuthenticatorImp;
 import se.uu.ub.cora.httphandler.HttpHandlerFactory;
 import se.uu.ub.cora.httphandler.HttpHandlerFactoryImp;
 import se.uu.ub.cora.search.RecordIndexer;
+import se.uu.ub.cora.search.RecordIndexerFactory;
 import se.uu.ub.cora.search.RecordSearch;
 import se.uu.ub.cora.searchstorage.SearchStorage;
 import se.uu.ub.cora.solr.SolrClientProviderImp;
-import se.uu.ub.cora.solrindex.SolrRecordIndexer;
+import se.uu.ub.cora.solrindex.SolrRecordIndexerFactory;
 import se.uu.ub.cora.solrsearch.SolrRecordSearch;
 import se.uu.ub.cora.spider.authentication.Authenticator;
 import se.uu.ub.cora.spider.dependency.DependencyProviderAbstract;
@@ -41,8 +42,8 @@ public class TheRestDependencyProvider extends DependencyProviderAbstract {
 
 	private String gatekeeperUrl;
 	private String solrUrl;
-	private SolrRecordIndexer solrRecordIndexer;
 	private SolrClientProviderImp solrClientProvider;
+	private SolrRecordIndexerFactory solrRecordIndexerFactory;
 
 	public TheRestDependencyProvider(Map<String, String> initInfo) {
 		super(initInfo);
@@ -67,10 +68,8 @@ public class TheRestDependencyProvider extends DependencyProviderAbstract {
 	@Override
 	protected void tryToInitialize() throws NoSuchMethodException, ClassNotFoundException,
 			IllegalAccessException, InvocationTargetException {
-
+		solrRecordIndexerFactory = new SolrRecordIndexerFactory();
 		solrClientProvider = SolrClientProviderImp.usingBaseUrl(solrUrl);
-		solrRecordIndexer = SolrRecordIndexer
-				.createSolrRecordIndexerUsingSolrClientProvider(solrClientProvider);
 	}
 
 	@Override
@@ -88,7 +87,11 @@ public class TheRestDependencyProvider extends DependencyProviderAbstract {
 
 	@Override
 	public RecordIndexer getRecordIndexer() {
-		return solrRecordIndexer;
+		return solrRecordIndexerFactory.factor(solrUrl);
+	}
+
+	RecordIndexerFactory getRecordIndexerFactory() {
+		return solrRecordIndexerFactory;
 	}
 
 }
