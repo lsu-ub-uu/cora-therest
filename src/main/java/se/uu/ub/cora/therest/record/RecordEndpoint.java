@@ -500,11 +500,19 @@ public class RecordEndpoint {
 	@Produces("application/vnd.uub.record+json")
 	public Response indexRecordList(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
-			String filterAsJson) {
+			String indexSettingsAsJson) {
 		String usedToken = getExistingTokenPreferHeader(headerAuthToken, queryAuthToken);
-		String jsonFilter = createEmptyFilterIfParameterDoesNotExist(filterAsJson);
+		String jsonIndexSettings = createEmptyIndexSettingIfParameterDoesNotExist(
+				indexSettingsAsJson);
 
-		return indexRecordListUsingAuthTokenByType(usedToken, type, jsonFilter);
+		return indexRecordListUsingAuthTokenByType(usedToken, type, jsonIndexSettings);
+	}
+
+	private String createEmptyIndexSettingIfParameterDoesNotExist(String indexSettingsAsJson) {
+		if (indexSettingsAsJson == null || indexSettingsAsJson.isEmpty()) {
+			return "{\"name\":\"indexSettings\",\"children\":[]}";
+		}
+		return indexSettingsAsJson;
 	}
 
 	Response indexRecordListUsingAuthTokenByType(String authToken, String type,
@@ -517,11 +525,12 @@ public class RecordEndpoint {
 		}
 	}
 
-	private Response tryIndexRecordList(String authToken, String type, String filterAsJson)
+	private Response tryIndexRecordList(String authToken, String type, String jsonIndexSettings)
 			throws URISyntaxException {
-		DataGroup filter = convertJsonStringToDataGroup(filterAsJson);
+		DataGroup indexSettings = convertJsonStringToDataGroup(jsonIndexSettings);
 		RecordListIndexer indexBatchJobCreator = SpiderInstanceProvider.getRecordListIndexer();
-		DataRecord indexBatchJob = indexBatchJobCreator.indexRecordList(authToken, type, filter);
+		DataRecord indexBatchJob = indexBatchJobCreator.indexRecordList(authToken, type,
+				indexSettings);
 
 		DataGroup createdGroup = indexBatchJob.getDataGroup();
 		DataGroup recordInfo = createdGroup.getFirstGroupWithNameInData("recordInfo");
