@@ -76,6 +76,7 @@ public class RecordEndpointTest {
 	private String jsonToValidate = "{\"order\":{\"name\":\"validationOrder\",\"children\":[{\"name\":\"recordInfo\",\"children\":[{\"name\":\"dataDivider\",\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"system\"},{\"name\":\"linkedRecordId\",\"value\":\"testSystem\"}]}]},{\"name\":\"recordType\",\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"recordType\"},{\"name\":\"linkedRecordId\",\"value\":\"someRecordType\"}]},{\"name\":\"metadataToValidate\",\"value\":\"existing\"},{\"name\":\"validateLinks\",\"value\":\"false\"}]},\"record\":{\"name\":\"text\",\"children\":[{\"name\":\"recordInfo\",\"children\":[{\"name\":\"id\",\"value\":\"workOrderRecordIdTextVar2Text\"},{\"name\":\"dataDivider\",\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"system\"},{\"name\":\"linkedRecordId\",\"value\":\"cora\"}]}]},{\"name\":\"textPart\",\"children\":[{\"name\":\"text\",\"value\":\"Id på länkad post\"}],\"attributes\":{\"type\":\"default\",\"lang\":\"sv\"}},{\"name\":\"textPart\",\"children\":[{\"name\":\"text\",\"value\":\"Linked record id\"}],\"attributes\":{\"type\":\"alternative\",\"lang\":\"en\"}}]}}";
 	private String defaultJson = "{\"name\":\"someRecordType\",\"children\":[]}";
 	private String jsonFilterData = "{\"name\":\"filter\",\"children\":[{\"name\":\"part\",\"children\":[{\"name\":\"key\",\"value\":\"movieTitle\"},{\"name\":\"value\",\"value\":\"Some title\"}],\"repeatId\":\"0\"}]}";
+	private String jsonIndexData = "{\\\"name\\\":\\\"indexSettings\\\",\\\"children\\\":[{\"name\":\"filter\",\"children\":[{\"name\":\"part\",\"children\":[{\"name\":\"key\",\"value\":\"movieTitle\"},{\"name\":\"value\",\"value\":\"Some title\"}],\"repeatId\":\"0\"}]}]}";
 	private DataToJsonConverterFactoryCreatorSpy converterFactoryCreatorSpy;
 	private String standardBaseUrlHttp = "http://cora.epc.ub.uu.se/systemone/rest/record/";
 	private String standardBaseUrlHttps = "https://cora.epc.ub.uu.se/systemone/rest/record/";
@@ -934,12 +935,12 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testBatchIndexWithFilter() {
-		response = recordEndpoint.indexRecordList(AUTH_TOKEN, AUTH_TOKEN, PLACE, jsonFilterData);
+		response = recordEndpoint.indexRecordList(AUTH_TOKEN, AUTH_TOKEN, PLACE, jsonIndexData);
 
 		IndexBatchJobCreatorSpy indexBatchJobCreator = spiderInstanceFactorySpy.indexBatchJobCreator;
 
 		DataGroup filterSentOnToSpider = spiderInstanceFactorySpy.indexBatchJobCreator.filter;
-		assertJsonStringConvertedToDataUsesCoraData(jsonFilterData, filterSentOnToSpider);
+		assertJsonStringConvertedToDataUsesCoraData(jsonIndexData, filterSentOnToSpider);
 
 		assertEquals(indexBatchJobCreator.type, PLACE);
 
@@ -958,7 +959,7 @@ public class RecordEndpointTest {
 		assertResponseStatusIs(Response.Status.CREATED);
 		assertTrue(response.getLocation().toString().startsWith("record/" + INDEX_BATCH_JOB));
 
-		assertEquals(jsonParser.jsonString, "{\"name\":\"filter\",\"children\":[]}");
+		assertEquals(jsonParser.jsonString, "{\"name\":\"indexSettings\",\"children\":[]}");
 
 	}
 
@@ -969,7 +970,7 @@ public class RecordEndpointTest {
 		assertResponseStatusIs(Response.Status.CREATED);
 		assertTrue(response.getLocation().toString().startsWith("record/" + INDEX_BATCH_JOB));
 
-		assertEquals(jsonParser.jsonString, "{\"name\":\"filter\",\"children\":[]}");
+		assertEquals(jsonParser.jsonString, "{\"name\":\"indexSettings\",\"children\":[]}");
 
 	}
 
