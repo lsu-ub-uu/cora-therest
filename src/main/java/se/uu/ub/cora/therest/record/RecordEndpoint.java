@@ -119,29 +119,27 @@ public class RecordEndpoint {
 	@Path("{type}")
 	@Consumes({ "application/vnd.uub.record+json", "application/vnd.uub.record+xml" })
 	@Produces({ "application/vnd.uub.record+json", "application/vnd.uub.record+xml" })
-	public Response createRecord(@HeaderParam("Accept") String accept,
-			@HeaderParam("authToken") String headerAuthToken,
+	public Response createRecord(@HeaderParam("Content-Type") String contentType,
+			@HeaderParam("Accept") String accept, @HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			String inputRecord) {
 		String usedToken = getExistingTokenPreferHeader(headerAuthToken, queryAuthToken);
-		return createRecordUsingAuthTokenWithRecord(accept, usedToken, type, inputRecord);
+		return createRecordUsingAuthTokenWithRecord(contentType, accept, usedToken, type,
+				inputRecord);
 	}
 
-	private Response createRecordUsingAuthTokenWithRecord(String accept, String authToken,
-			String type, String inputRecord) {
+	private Response createRecordUsingAuthTokenWithRecord(String contentType, String accept,
+			String authToken, String type, String inputRecord) {
 		try {
-			return tryCreateRecord(accept, authToken, type, inputRecord);
+			return tryCreateRecord(contentType, accept, authToken, type, inputRecord);
 		} catch (Exception error) {
 			return handleError(authToken, error);
 		}
 	}
 
-	private Response tryCreateRecord(String accept, String authToken, String type,
-			String inputRecord) throws URISyntaxException {
-
-		// DataGroup dataRecord = convertJsonStringToDataGroup(jsonRecord);
-		DataGroup dataRecord = (DataGroup) convertStringToData(accept, inputRecord);
-
+	private Response tryCreateRecord(String contentType, String accept, String authToken,
+			String type, String inputRecord) throws URISyntaxException {
+		DataGroup dataRecord = (DataGroup) convertStringToData(contentType, inputRecord);
 		return createResponseForCreate(accept, authToken, type, dataRecord);
 	}
 
@@ -151,21 +149,15 @@ public class RecordEndpoint {
 				.createAndStoreRecord(authToken, type, dataRecord);
 
 		URI uri = createUri(type, createdRecord);
-		String convertedDataRecord = convertConvertibleToString(accept, createdRecord);
+		String outputRecord = convertConvertibleToString(accept, createdRecord);
 
-		return Response.created(uri).entity(convertedDataRecord)
-				.header(HttpHeaders.CONTENT_TYPE, accept).build();
+		return Response.created(uri).entity(outputRecord).header(HttpHeaders.CONTENT_TYPE, accept)
+				.build();
 	}
 
 	private URI createUri(String type, DataRecord createdRecord) throws URISyntaxException {
-		// TODO: Verify createdId can be read from Record
-		// DataGroup createdGroup = createdRecord.getDataGroup();
-		// DataGroup recordInfo = createdGroup.getFirstGroupWithNameInData("recordInfo");
-		// String createdId = recordInfo.getFirstAtomicValueWithNameInData("id");
 		String createdId = createdRecord.getId();
-		String urlDelimiter = "/";
-		URI uri = new URI(type + urlDelimiter + createdId);
-		return uri;
+		return new URI(type + "/" + createdId);
 	}
 
 	private DataElement convertStringToData(String accept, String input) {
@@ -177,12 +169,9 @@ public class RecordEndpoint {
 	}
 
 	private DataElement convertXmlToDataElement(String input) {
-		DataElement stringToReturn;
 		StringToExternallyConvertibleConverter xmlToConvertibleConverter = ConverterProvider
 				.getStringToExternallyConvertibleConverter("xml");
-
-		stringToReturn = xmlToConvertibleConverter.convert(input);
-		return stringToReturn;
+		return xmlToConvertibleConverter.convert(input);
 	}
 
 	private DataGroup convertJsonStringToDataGroup(String jsonRecord) {
@@ -397,30 +386,36 @@ public class RecordEndpoint {
 
 	@POST
 	@Path("{type}/{id}")
-	@Consumes("application/vnd.uub.record+json")
-	@Produces("application/vnd.uub.record+json")
-	public Response updateRecord(@HeaderParam("authToken") String headerAuthToken,
+	@Consumes({ "application/vnd.uub.record+json", "application/vnd.uub.record+xml" })
+	@Produces({ "application/vnd.uub.record+json", "application/vnd.uub.record+xml" })
+	public Response updateRecord(@HeaderParam("Content-Type") String contentType,
+			@HeaderParam("Accept") String accept, @HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
-			@PathParam("id") String id, String jsonRecord) {
+			@PathParam("id") String id, String inputRecord) {
 		String usedToken = getExistingTokenPreferHeader(headerAuthToken, queryAuthToken);
-		return updateRecordUsingAuthTokenWithRecord(usedToken, type, id, jsonRecord);
+		return updateRecordUsingAuthTokenWithRecord(contentType, accept, usedToken, type, id,
+				inputRecord);
 	}
 
-	public Response updateRecordUsingAuthTokenWithRecord(String authToken, String type, String id,
-			String jsonRecord) {
+	private Response updateRecordUsingAuthTokenWithRecord(String contentType, String accept,
+			String authToken, String type, String id, String inputRecord) {
 		try {
-			return tryUpdateRecord(authToken, type, id, jsonRecord);
+			return tryUpdateRecord(contentType, accept, authToken, type, id, inputRecord);
 		} catch (Exception error) {
 			return handleError(authToken, error);
 		}
 	}
 
-	private Response tryUpdateRecord(String authToken, String type, String id, String jsonRecord) {
-		DataGroup dataRecord = convertJsonStringToDataGroup(jsonRecord);
+	private Response tryUpdateRecord(String contentType, String accept, String authToken,
+			String type, String id, String inputRecord) {
+
+		DataGroup dataRecord = (DataGroup) convertStringToData(contentType, inputRecord);
 		DataRecord updatedRecord = SpiderInstanceProvider.getRecordUpdater().updateRecord(authToken,
 				type, id, dataRecord);
-		String json = convertDataToJson(updatedRecord);
-		return Response.status(Response.Status.OK).entity(json).build();
+		String outputRecord = convertConvertibleToString(accept, updatedRecord);
+
+		return Response.status(Response.Status.OK).header(HttpHeaders.CONTENT_TYPE, accept)
+				.entity(outputRecord).build();
 	}
 
 	@GET
@@ -493,39 +488,56 @@ public class RecordEndpoint {
 
 	@GET
 	@Path("searchResult/{searchId}")
-	@Produces("application/vnd.uub.recordList+json")
-	public Response searchRecord(@HeaderParam("authToken") String headerAuthToken,
+	@Produces({ "application/vnd.uub.recordList+json", "application/vnd.uub.recordList+xml" })
+	public Response searchRecord(@HeaderParam("Accept") String accept,
+			@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("searchId") String searchId,
-			@QueryParam("searchData") String searchDataAsJson) {
+			@QueryParam("searchData") String searchDataAsString) {
 		String usedToken = getExistingTokenPreferHeader(headerAuthToken, queryAuthToken);
-		return searchRecordUsingAuthTokenBySearchData(usedToken, searchId, searchDataAsJson);
+		return searchRecordUsingAuthTokenBySearchData(accept, usedToken, searchId,
+				searchDataAsString);
 	}
 
-	private Response searchRecordUsingAuthTokenBySearchData(String authToken, String searchId,
-			String searchDataAsJson) {
+	private Response searchRecordUsingAuthTokenBySearchData(String accept, String authToken,
+			String searchId, String searchDataAsString) {
 		try {
-			return trySearchRecord(authToken, searchId, searchDataAsJson);
+			return trySearchRecord(accept, authToken, searchId, searchDataAsString);
 		} catch (Exception error) {
 			return handleError(authToken, error);
 		}
 	}
 
-	private Response trySearchRecord(String authToken, String searchId, String searchDataAsJson) {
-		DataGroup searchData = convertJsonStringToDataGroup(searchDataAsJson);
+	private Response trySearchRecord(String accept, String authToken, String searchId,
+			String searchDataAsString) {
+		DataGroup searchData = convertSearchStringToData(searchDataAsString);
 
 		DataList searchRecordList = SpiderInstanceProvider.getRecordSearcher().search(authToken,
 				searchId, searchData);
 
-		String json = convertDataToJson(searchRecordList);
+		String outputRecord = convertConvertibleToString(accept, searchRecordList);
 
-		return Response.status(Response.Status.OK).entity(json).build();
+		return Response.status(Response.Status.OK).header(HttpHeaders.CONTENT_TYPE, accept)
+				.entity(outputRecord).build();
+	}
+
+	private DataGroup convertSearchStringToData(String searchDataAsString) {
+		String searchDataType = calculateSearchDataType(searchDataAsString);
+		return (DataGroup) convertStringToData(searchDataType, searchDataAsString);
+	}
+
+	private String calculateSearchDataType(String searchDataAsString) {
+		if (searchDataAsString.startsWith("<")) {
+			return "+xml";
+		}
+		return "+json";
 	}
 
 	@POST
 	@Path("{type}")
-	@Consumes("application/vnd.uub.workorder+json")
-	@Produces("application/vnd.uub.record+json")
-	public Response validateRecord(@HeaderParam("authToken") String headerAuthToken,
+	@Consumes({ "application/vnd.uub.workorder+json", "application/vnd.uub.workorder+xml" })
+	@Produces({ "application/vnd.uub.record+json", "application/vnd.uub.record+xml" })
+	public Response validateRecord(@HeaderParam("Content-Type") String contentType,
+			@HeaderParam("Accept") String accept, @HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			String jsonValidationRecord) {
 		String usedToken = getExistingTokenPreferHeader(headerAuthToken, queryAuthToken);
