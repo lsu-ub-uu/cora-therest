@@ -67,7 +67,6 @@ import se.uu.ub.cora.therest.coradata.DataRecordSpy;
 import se.uu.ub.cora.therest.log.LoggerFactorySpy;
 
 public class RecordEndpointTest {
-	private static final String INDEX_BATCH_JOB = "indexBatchJob";
 	private static final String DUMMY_NON_AUTHORIZED_TOKEN = "dummyNonAuthorizedToken";
 	private static final String PLACE_0001 = "place:0001";
 	private static final String PLACE = "place";
@@ -186,8 +185,8 @@ public class RecordEndpointTest {
 	private void expectTokenForReadListToPrefereblyBeHeaderThanQuery(String headerAuthToken,
 			String queryAuthToken, String authTokenExpected) {
 		String jsonFilter = "{\"name\":\"filter\",\"children\":[]}";
-		response = recordEndpoint.readRecordList(headerAuthToken, queryAuthToken, PLACE,
-				jsonFilter);
+		response = recordEndpoint.readRecordList("application/vnd.uub.recordList+json",
+				headerAuthToken, queryAuthToken, PLACE, jsonFilter);
 
 		SpiderRecordListReaderSpy spiderListReaderSpy = spiderInstanceFactorySpy.spiderRecordListReaderSpy;
 		assertEquals(spiderListReaderSpy.authToken, authTokenExpected);
@@ -195,7 +194,8 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testReadRecordListWithFilter() {
-		response = recordEndpoint.readRecordList(AUTH_TOKEN, AUTH_TOKEN, PLACE, jsonFilterData);
+		response = recordEndpoint.readRecordList("application/vnd.uub.recordList+json", AUTH_TOKEN,
+				AUTH_TOKEN, PLACE, jsonFilterData);
 
 		SpiderRecordListReaderSpy spiderListReaderSpy = spiderInstanceFactorySpy.spiderRecordListReaderSpy;
 
@@ -211,12 +211,12 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testReadRecordListWithNullAsFilter() {
-		response = recordEndpoint.readRecordList(AUTH_TOKEN, AUTH_TOKEN, PLACE, null);
+		response = recordEndpoint.readRecordList("application/vnd.uub.recordList+json", AUTH_TOKEN,
+				AUTH_TOKEN, PLACE, null);
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.OK);
 
 		assertEquals(jsonParser.jsonString, "{\"name\":\"filter\",\"children\":[]}");
-
 	}
 
 	private void assertEntityExists() {
@@ -228,25 +228,84 @@ public class RecordEndpointTest {
 	}
 
 	@Test
+	public void testReadRecordListForXml() {
+		response = recordEndpoint.readRecordList("application/vnd.uub.recordList+xml", AUTH_TOKEN,
+				AUTH_TOKEN, "place", defaultXml);
+
+		var filterElement = getValueFromConvertAndAssertParameters();
+
+		spiderInstanceFactorySpy.spiderRecordListReaderSpy.MCR.assertParameters("readRecordList", 0,
+				AUTH_TOKEN, "place", filterElement);
+
+		DataList dataList = (DataList) spiderInstanceFactorySpy.spiderRecordListReaderSpy.MCR
+				.getReturnValue("readRecordList", 0);
+
+		assertXmlConvertionOfResponse(dataList);
+		assertEntityExists();
+		assertResponseStatusIs(Response.Status.OK);
+		assertResponseContentTypeIs("application/vnd.uub.recordList+xml");
+	}
+
+	@Test
+	public void testReadRecordListWithNullFilterForXml() {
+		response = recordEndpoint.readRecordList("application/vnd.uub.recordList+xml", AUTH_TOKEN,
+				AUTH_TOKEN, "place", null);
+
+		var filterSentOnToSpider = spiderInstanceFactorySpy.spiderRecordListReaderSpy.filter;
+
+		String defaultFilter = "{\"name\":\"filter\",\"children\":[]}";
+		assertJsonStringConvertedToDataUsesCoraData(defaultFilter, filterSentOnToSpider);
+
+		spiderInstanceFactorySpy.spiderRecordListReaderSpy.MCR.assertParameters("readRecordList", 0,
+				AUTH_TOKEN, "place", filterSentOnToSpider);
+
+		DataList dataList = (DataList) spiderInstanceFactorySpy.spiderRecordListReaderSpy.MCR
+				.getReturnValue("readRecordList", 0);
+
+		assertXmlConvertionOfResponse(dataList);
+		assertEntityExists();
+		assertResponseStatusIs(Response.Status.OK);
+		assertResponseContentTypeIs("application/vnd.uub.recordList+xml");
+	}
+
+	@Test
+	public void testAnnotationsForReadRecordList() throws Exception {
+		Method method = getMethodWithMethodName("readRecordList", 5);
+		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+
+		assertHttpMethodAndPathAnnotation(method, "GET", "{type}/");
+		assertProducesAnnotation(method, "application/vnd.uub.recordList+json",
+				"application/vnd.uub.recordList+xml");
+		assertAcceptAndAuthTokenAnnotation(parameterAnnotations);
+
+		PathParam typeParameter = (PathParam) parameterAnnotations[3][0];
+		assertEquals(typeParameter.value(), "type");
+
+		QueryParam filterParameter = (QueryParam) parameterAnnotations[4][0];
+		assertEquals(filterParameter.value(), "filter");
+	}
+
+	@Test
 	public void testReadRecordListNotFound() {
 		String jsonFilter = "{\"name\":\"filter\",\"children\":[]}";
-		response = recordEndpoint.readRecordList(AUTH_TOKEN, AUTH_TOKEN, "place_NOT_FOUND",
-				jsonFilter);
+		response = recordEndpoint.readRecordList("application/vnd.uub.recordList+json", AUTH_TOKEN,
+				AUTH_TOKEN, "place_NOT_FOUND", jsonFilter);
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
 	}
 
 	@Test
 	public void testReadRecordListUnauthorized() {
 		String jsonFilter = "{\"name\":\"filter\",\"children\":[]}";
-		response = recordEndpoint.readRecordListUsingAuthTokenByType(DUMMY_NON_AUTHORIZED_TOKEN,
-				PLACE, jsonFilter);
+		response = recordEndpoint.readRecordList("application/vnd.uub.recordList+json",
+				DUMMY_NON_AUTHORIZED_TOKEN, AUTH_TOKEN, PLACE, jsonFilter);
 		assertResponseStatusIs(Response.Status.FORBIDDEN);
 	}
 
 	@Test
 	public void testReadRecordListNoTokenAndUnauthorized() {
 		String jsonFilter = "{\"name\":\"filter\",\"children\":[]}";
-		response = recordEndpoint.readRecordListUsingAuthTokenByType(null, PLACE, jsonFilter);
+		response = recordEndpoint.readRecordList("application/vnd.uub.recordList+json", null, null,
+				PLACE, jsonFilter);
 		assertResponseStatusIs(Response.Status.UNAUTHORIZED);
 	}
 
@@ -581,14 +640,14 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testDeleteRecordUnauthorized() {
-		response = recordEndpoint.deleteRecordUsingAuthTokenByTypeAndId(DUMMY_NON_AUTHORIZED_TOKEN,
-				PLACE, PLACE_0001);
+		response = recordEndpoint.deleteRecord(DUMMY_NON_AUTHORIZED_TOKEN, AUTH_TOKEN, PLACE,
+				PLACE_0001);
 		assertResponseStatusIs(Response.Status.FORBIDDEN);
 	}
 
 	@Test
 	public void testDeleteRecordNotFound() {
-		response = recordEndpoint.deleteRecordUsingAuthTokenByTypeAndId("someToken78678567", PLACE,
+		response = recordEndpoint.deleteRecord("someToken78678567", AUTH_TOKEN, PLACE,
 				"place:0001_NOT_FOUND");
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
 	}
@@ -790,8 +849,7 @@ public class RecordEndpointTest {
 				"application/vnd.uub.record+json", AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultJson);
 
 		assertResponseStatusIs(Response.Status.CREATED);
-		// assertTrue(response.getLocation().toString().startsWith("record/" + PLACE));
-		assertTrue(response.getLocation().toString().startsWith(PLACE));
+		assertEquals(response.getLocation().toString(), PLACE + "/idFromDataRecordSpy");
 	}
 
 	@Test
@@ -808,8 +866,7 @@ public class RecordEndpointTest {
 		assertDataFromSpiderConvertedToJsonUsingConvertersFromProvider(createdRecord);
 
 		assertResponseStatusIs(Response.Status.CREATED);
-		// assertTrue(response.getLocation().toString().startsWith("record/" + PLACE));
-		assertTrue(response.getLocation().toString().startsWith(PLACE));
+		assertEquals(response.getLocation().toString(), PLACE + "/idFromDataRecordSpy");
 	}
 
 	@Test
@@ -1370,43 +1427,24 @@ public class RecordEndpointTest {
 		assertResponseStatusIs(Response.Status.OK);
 	}
 
-	@Test
-	public void testValidateRecordForXml() {
-		response = recordEndpoint.validateRecord("application/vnd.uub.workorder+xml",
-				"application/vnd.uub.record+xml", AUTH_TOKEN, AUTH_TOKEN, "workOrder", defaultXml);
-
-		var dataElement = getValueFromConvertAndAssertParameters();
-
-		spiderInstanceFactorySpy.spiderRecordValidatorSpy.MCR.assertParameters("validateRecord", 0,
-				AUTH_TOKEN, "workOrder", PLACE_0001, dataElement);
-
-		DataRecord vaildatedRecord = (DataRecord) spiderInstanceFactorySpy.spiderRecordValidatorSpy.MCR
-				.getReturnValue("validateRecord", 0);
-
-		assertXmlConvertionOfResponse(vaildatedRecord);
-		assertEntityExists();
-		assertResponseStatusIs(Response.Status.OK);
-		assertResponseContentTypeIs("application/vnd.uub.record+xml");
-	}
-
 	// @Test
-	// public void testUpdateRecordBodyInXmlWithReplyInJson() {
-	// response = recordEndpoint.updateRecord("application/vnd.uub.record+xml",
-	// "application/vnd.uub.record+json", AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001,
-	// defaultXml);
+	// public void testValidateRecordForXml() {
+	// response = recordEndpoint.validateRecord("application/vnd.uub.workorder+xml",
+	// "application/vnd.uub.record+xml", AUTH_TOKEN, AUTH_TOKEN, "workOrder", defaultXml);
 	//
 	// var dataElement = getValueFromConvertAndAssertParameters();
 	//
-	// spiderInstanceFactorySpy.spiderRecordUpdaterSpy.MCR.assertParameters("updateRecord", 0,
-	// AUTH_TOKEN, PLACE, PLACE_0001, dataElement);
+	// spiderInstanceFactorySpy.spiderRecordValidatorSpy.MCR.assertParameters("validateRecord", 0,
+	// AUTH_TOKEN, "workOrder", PLACE_0001, dataElement);
 	//
-	// DataRecord updatedRecord = (DataRecord) spiderInstanceFactorySpy.spiderRecordUpdaterSpy.MCR
-	// .getReturnValue("updateRecord", 0);
+	// DataRecord vaildatedRecord = (DataRecord)
+	// spiderInstanceFactorySpy.spiderRecordValidatorSpy.MCR
+	// .getReturnValue("validateRecord", 0);
 	//
-	// assertDataFromSpiderConvertedToJsonUsingConvertersFromProvider(updatedRecord);
+	// assertXmlConvertionOfResponse(vaildatedRecord);
 	// assertEntityExists();
 	// assertResponseStatusIs(Response.Status.OK);
-	// assertResponseContentTypeIs("application/vnd.uub.record+json");
+	// assertResponseContentTypeIs("application/vnd.uub.record+xml");
 	// }
 
 	@Test
@@ -1427,8 +1465,9 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testValidateRecordUnauthorized() {
-		response = recordEndpoint.validateRecordUsingAuthTokenWithRecord(DUMMY_NON_AUTHORIZED_TOKEN,
-				PLACE, jsonToValidate);
+		response = recordEndpoint.validateRecord("application/vnd.uub.workorder+json",
+				"application/vnd.uub.record+json", DUMMY_NON_AUTHORIZED_TOKEN, AUTH_TOKEN,
+				"workOrder", jsonToValidate);
 		assertResponseStatusIs(Response.Status.FORBIDDEN);
 	}
 
@@ -1452,72 +1491,169 @@ public class RecordEndpointTest {
 	private void expectTokenForBatchIndexToPrefereblyBeHeaderThanQuery(String headerAuthToken,
 			String queryAuthToken, String authTokenExpected) {
 		String jsonFilter = "{\"name\":\"filter\",\"children\":[]}";
-		response = recordEndpoint.indexRecordList(headerAuthToken, queryAuthToken, PLACE,
+		response = recordEndpoint.indexRecordList("application/vnd.uub.record+json",
+				"application/vnd.uub.record+json", headerAuthToken, queryAuthToken, PLACE,
 				jsonFilter);
 
-		IndexBatchJobCreatorSpy indexBatchJobSpy = spiderInstanceFactorySpy.indexBatchJobCreator;
+		IndexBatchJobCreatorSpy indexBatchJobSpy = spiderInstanceFactorySpy.spiderRecordListIndexerSpy;
 
 		assertEquals(indexBatchJobSpy.authToken, authTokenExpected);
 	}
 
 	@Test
 	public void testBatchIndexWithFilter() {
-		response = recordEndpoint.indexRecordList(AUTH_TOKEN, AUTH_TOKEN, PLACE, jsonIndexData);
+		response = recordEndpoint.indexRecordList("application/vnd.uub.record+json",
+				"application/vnd.uub.record+json", AUTH_TOKEN, AUTH_TOKEN, PLACE, jsonIndexData);
 
-		IndexBatchJobCreatorSpy indexBatchJobCreator = spiderInstanceFactorySpy.indexBatchJobCreator;
+		IndexBatchJobCreatorSpy indexBatchJobCreator = spiderInstanceFactorySpy.spiderRecordListIndexerSpy;
 
-		DataGroup filterSentOnToSpider = spiderInstanceFactorySpy.indexBatchJobCreator.filter;
+		DataGroup filterSentOnToSpider = spiderInstanceFactorySpy.spiderRecordListIndexerSpy.filter;
 		assertJsonStringConvertedToDataUsesCoraData(jsonIndexData, filterSentOnToSpider);
 
 		assertEquals(indexBatchJobCreator.type, PLACE);
 
-		DataRecordSpy recordToReturn = spiderInstanceFactorySpy.indexBatchJobCreator.recordToReturn;
+		DataRecordSpy recordToReturn = spiderInstanceFactorySpy.spiderRecordListIndexerSpy.recordToReturn;
 		assertDataFromSpiderConvertedToJsonUsingConvertersFromProvider(recordToReturn);
 
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.CREATED);
-		assertTrue(response.getLocation().toString().startsWith("record/" + INDEX_BATCH_JOB));
+		assertEquals(response.getLocation().toString(), "indexBatchJob/idFromDataRecordSpy");
 	}
 
 	@Test
 	public void testIndexRecordListWithNullAsFilter() {
-		response = recordEndpoint.indexRecordList(AUTH_TOKEN, AUTH_TOKEN, PLACE, null);
+		response = recordEndpoint.indexRecordList("application/vnd.uub.record+json",
+				"application/vnd.uub.record+json", AUTH_TOKEN, AUTH_TOKEN, PLACE, null);
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.CREATED);
-		assertTrue(response.getLocation().toString().startsWith("record/" + INDEX_BATCH_JOB));
+		assertEquals(response.getLocation().toString(), "indexBatchJob/idFromDataRecordSpy");
 
 		assertEquals(jsonParser.jsonString, "{\"name\":\"indexSettings\",\"children\":[]}");
-
 	}
 
 	@Test
 	public void testIndexRecordListWithEmptyFilter() {
-		response = recordEndpoint.indexRecordList(AUTH_TOKEN, AUTH_TOKEN, PLACE, "");
+		response = recordEndpoint.indexRecordList("application/vnd.uub.record+json",
+				"application/vnd.uub.record+json", AUTH_TOKEN, AUTH_TOKEN, PLACE, "");
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.CREATED);
-		assertTrue(response.getLocation().toString().startsWith("record/" + INDEX_BATCH_JOB));
+		assertEquals(response.getLocation().toString(), "indexBatchJob/idFromDataRecordSpy");
 
 		assertEquals(jsonParser.jsonString, "{\"name\":\"indexSettings\",\"children\":[]}");
+	}
 
+	@Test
+	public void testIndexRecordListWithFilterAsXmlAndResponseXml() {
+		response = recordEndpoint.indexRecordList("application/vnd.uub.record+xml",
+				"application/vnd.uub.record+xml", AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultXml);
+
+		var filterElement = getValueFromConvertAndAssertParameters();
+
+		spiderInstanceFactorySpy.spiderRecordListIndexerSpy.MCR.assertParameters("indexRecordList",
+				0, AUTH_TOKEN, "place", filterElement);
+
+		DataRecord dataList = (DataRecord) spiderInstanceFactorySpy.spiderRecordListIndexerSpy.MCR
+				.getReturnValue("indexRecordList", 0);
+
+		assertXmlConvertionOfResponse(dataList);
+		assertEntityExists();
+		assertResponseStatusIs(Response.Status.CREATED);
+		assertResponseContentTypeIs("application/vnd.uub.record+xml");
+	}
+
+	@Test
+	public void testIndexRecordListWithFilterAsJsonAndResponseXml() {
+		response = recordEndpoint.indexRecordList("application/vnd.uub.record+json",
+				"application/vnd.uub.record+xml", AUTH_TOKEN, AUTH_TOKEN, PLACE, jsonIndexData);
+
+		DataGroup filterSentOnToSpider = spiderInstanceFactorySpy.spiderRecordListIndexerSpy.filter;
+		assertJsonStringConvertedToDataUsesCoraData(jsonIndexData, filterSentOnToSpider);
+
+		spiderInstanceFactorySpy.spiderRecordListIndexerSpy.MCR.assertParameters("indexRecordList",
+				0, AUTH_TOKEN, "place", filterSentOnToSpider);
+
+		DataRecord dataList = (DataRecord) spiderInstanceFactorySpy.spiderRecordListIndexerSpy.MCR
+				.getReturnValue("indexRecordList", 0);
+
+		assertXmlConvertionOfResponse(dataList);
+		assertEntityExists();
+		assertResponseStatusIs(Response.Status.CREATED);
+		assertResponseContentTypeIs("application/vnd.uub.record+xml");
+	}
+
+	@Test
+	public void testIndexRecordListWithJsonAnWrongContentTypeAndResponseXml() {
+		converterFactorySpy.xmlToDataConverterThrowsException = true;
+
+		response = recordEndpoint.indexRecordList("application/vnd.uub.record+xml",
+				"application/vnd.uub.record+xml", AUTH_TOKEN, AUTH_TOKEN, PLACE, jsonIndexData);
+
+		StringToExternallyConvertibleConverterSpy xmlToDataConverter = (StringToExternallyConvertibleConverterSpy) converterFactorySpy.MCR
+				.getReturnValue("factorStringToExternallyConvertableConverter", 0);
+
+		xmlToDataConverter.MCR.assertParameters("convert", 0, jsonIndexData);
+
+		assertEquals(response.getEntity(), "exception from spy");
+		assertResponseStatusIs(Response.Status.BAD_REQUEST);
+	}
+
+	@Test
+	public void testIndexRecordListWithNullFilterAsXmlAndResponseXml() {
+		response = recordEndpoint.indexRecordList("application/vnd.uub.record+xml",
+				"application/vnd.uub.record+xml", AUTH_TOKEN, AUTH_TOKEN, PLACE, null);
+
+		DataGroup filterSentOnToSpider = spiderInstanceFactorySpy.spiderRecordListIndexerSpy.filter;
+		assertJsonStringConvertedToDataUsesCoraData("{\"name\":\"indexSettings\",\"children\":[]}",
+				filterSentOnToSpider);
+
+		spiderInstanceFactorySpy.spiderRecordListIndexerSpy.MCR.assertParameters("indexRecordList",
+				0, AUTH_TOKEN, "place", filterSentOnToSpider);
+
+		DataRecord dataList = (DataRecord) spiderInstanceFactorySpy.spiderRecordListIndexerSpy.MCR
+				.getReturnValue("indexRecordList", 0);
+
+		assertXmlConvertionOfResponse(dataList);
+		assertEntityExists();
+		assertResponseStatusIs(Response.Status.CREATED);
+		assertResponseContentTypeIs("application/vnd.uub.record+xml");
+	}
+
+	@Test
+	public void testAnnotationsForIndexRecordList() throws Exception {
+		Method method = getMethodWithMethodName("indexRecordList", 6);
+		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+
+		assertHttpMethodAndPathAnnotation(method, "POST", "index/{type}");
+		assertConsumesAnnotation(method, "application/vnd.uub.record+json",
+				"application/vnd.uub.record+xml");
+		assertProducesAnnotation(method, "application/vnd.uub.record+json",
+				"application/vnd.uub.record+xml");
+		assertContentTypeAndAcceptAndAuthTokenAnnotation(parameterAnnotations);
+
+		PathParam typeParameter = (PathParam) parameterAnnotations[4][0];
+		assertEquals(typeParameter.value(), "type");
 	}
 
 	@Test
 	public void testIndexRecordListNotFound() {
-		response = recordEndpoint.indexRecordList(AUTH_TOKEN, AUTH_TOKEN, "recordType_NON_EXISTING",
-				jsonFilterData);
+		response = recordEndpoint.indexRecordList("application/vnd.uub.record+json",
+				"application/vnd.uub.record+json", AUTH_TOKEN, AUTH_TOKEN,
+				"recordType_NON_EXISTING", jsonFilterData);
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
 	}
 
 	@Test
 	public void testIndexRecordListUnauthorized() {
-		response = recordEndpoint.indexRecordListUsingAuthTokenByType(DUMMY_NON_AUTHORIZED_TOKEN,
-				PLACE, jsonFilterData);
+		response = recordEndpoint.indexRecordList("application/vnd.uub.record+json",
+				"application/vnd.uub.record+json", DUMMY_NON_AUTHORIZED_TOKEN, AUTH_TOKEN, PLACE,
+				jsonFilterData);
 		assertResponseStatusIs(Response.Status.FORBIDDEN);
 	}
 
 	@Test
 	public void testIndexRecordListNoTokenAndUnauthorized() {
-		response = recordEndpoint.indexRecordListUsingAuthTokenByType(null, PLACE, jsonFilterData);
+		response = recordEndpoint.indexRecordList("application/vnd.uub.record+json",
+				"application/vnd.uub.record+json", null, null, PLACE, jsonFilterData);
 		assertResponseStatusIs(Response.Status.UNAUTHORIZED);
 	}
 

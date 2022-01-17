@@ -44,7 +44,7 @@ public class SpiderInstanceFactorySpy implements SpiderInstanceFactory {
 	public SpiderRecordIncomingLinksReaderSpy spiderRecordIncomingLinksReaderSpy;
 	public SpiderRecordListReaderSpy spiderRecordListReaderSpy;
 	public SpiderRecordSearcherSpy spiderRecordSearcherSpy;
-	public IndexBatchJobCreatorSpy indexBatchJobCreator;
+	public IndexBatchJobCreatorSpy spiderRecordListIndexerSpy;
 	public String recordType;
 	public boolean throwRecordNotFoundException = false;
 	public boolean throwDataException = false;
@@ -119,8 +119,8 @@ public class SpiderInstanceFactorySpy implements SpiderInstanceFactory {
 
 	@Override
 	public RecordListIndexer factorRecordListIndexer() {
-		indexBatchJobCreator = new IndexBatchJobCreatorSpy();
-		return indexBatchJobCreator;
+		spiderRecordListIndexerSpy = new IndexBatchJobCreatorSpy();
+		return spiderRecordListIndexerSpy;
 	}
 
 }

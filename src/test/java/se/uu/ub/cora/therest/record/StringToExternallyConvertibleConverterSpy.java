@@ -19,6 +19,7 @@
 
 package se.uu.ub.cora.therest.record;
 
+import se.uu.ub.cora.converter.ConverterException;
 import se.uu.ub.cora.converter.StringToExternallyConvertibleConverter;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
@@ -29,11 +30,15 @@ public class StringToExternallyConvertibleConverterSpy
 		implements StringToExternallyConvertibleConverter {
 
 	MethodCallRecorder MCR = new MethodCallRecorder();
+	public boolean throwExceptionOnConvert;
 
 	@Override
 	public DataElement convert(String dataString) {
 		MCR.addCall("dataString", dataString);
 
+		if (throwExceptionOnConvert) {
+			throw new ConverterException("exception from spy");
+		}
 		DataGroup dataPartToReturn = new DataGroupSpy("dummyId");
 		MCR.addReturned(dataPartToReturn);
 		return dataPartToReturn;

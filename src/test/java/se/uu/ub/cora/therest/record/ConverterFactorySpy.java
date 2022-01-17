@@ -25,6 +25,7 @@ import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 
 public class ConverterFactorySpy implements ConverterFactory {
 	MethodCallRecorder MCR = new MethodCallRecorder();
+	public boolean xmlToDataConverterThrowsException = false;
 
 	@Override
 	public ExternallyConvertibleToStringConverter factorExternallyConvertableToStringConverter() {
@@ -40,8 +41,8 @@ public class ConverterFactorySpy implements ConverterFactory {
 	public StringToExternallyConvertibleConverter factorStringToExternallyConvertableConverter() {
 		MCR.addCall();
 
-		StringToExternallyConvertibleConverter converterSpy = new StringToExternallyConvertibleConverterSpy();
-
+		StringToExternallyConvertibleConverterSpy converterSpy = new StringToExternallyConvertibleConverterSpy();
+		converterSpy.throwExceptionOnConvert = xmlToDataConverterThrowsException;
 		MCR.addReturned(converterSpy);
 		return converterSpy;
 	}

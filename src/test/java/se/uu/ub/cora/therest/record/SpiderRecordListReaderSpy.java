@@ -24,6 +24,7 @@ import se.uu.ub.cora.data.DataList;
 import se.uu.ub.cora.spider.authorization.AuthorizationException;
 import se.uu.ub.cora.spider.record.RecordListReader;
 import se.uu.ub.cora.storage.RecordNotFoundException;
+import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 import se.uu.ub.cora.therest.coradata.DataListSpy;
 
 public class SpiderRecordListReaderSpy implements RecordListReader {
@@ -33,13 +34,17 @@ public class SpiderRecordListReaderSpy implements RecordListReader {
 	public DataGroup filter;
 	public DataListSpy returnedDataList;
 
+	MethodCallRecorder MCR = new MethodCallRecorder();
+
 	@Override
 	public DataList readRecordList(String authToken, String type, DataGroup filter) {
+		MCR.addCall("authToken", authToken, "type", type, "filter", filter);
 		this.authToken = authToken;
 		this.type = type;
 		this.filter = filter;
 		possiblyThrowException(authToken, type);
 		returnedDataList = new DataListSpy(type);
+		MCR.addReturned(returnedDataList);
 		return returnedDataList;
 	}
 

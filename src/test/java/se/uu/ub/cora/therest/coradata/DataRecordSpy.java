@@ -103,8 +103,7 @@ public class DataRecordSpy implements DataRecord {
 
 	@Override
 	public String getId() {
-		// TODO Auto-generated method stub
-		return null;
+		return "idFromDataRecordSpy";
 	}
 
 	@Override

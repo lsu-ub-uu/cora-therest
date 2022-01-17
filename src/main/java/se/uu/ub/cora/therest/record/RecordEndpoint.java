@@ -40,6 +40,7 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
+import se.uu.ub.cora.converter.ConverterException;
 import se.uu.ub.cora.converter.ConverterProvider;
 import se.uu.ub.cora.converter.ExternallyConvertibleToStringConverter;
 import se.uu.ub.cora.converter.StringToExternallyConvertibleConverter;
@@ -77,6 +78,7 @@ import se.uu.ub.cora.storage.RecordNotFoundException;
 
 @Path("/")
 public class RecordEndpoint {
+	private static final String URL_DELIMITER = "/";
 	private static final int AFTERHTTP = 10;
 	private String baseUrl;
 	HttpServletRequest request;
@@ -157,7 +159,7 @@ public class RecordEndpoint {
 
 	private URI createUri(String type, DataRecord createdRecord) throws URISyntaxException {
 		String createdId = createdRecord.getId();
-		return new URI(type + "/" + createdId);
+		return new URI(type + URL_DELIMITER + createdId);
 	}
 
 	private DataElement convertStringToData(String accept, String input) {
@@ -227,8 +229,12 @@ public class RecordEndpoint {
 	}
 
 	private boolean errorIsCausedByDataProblem(Exception error) {
-		return error instanceof JsonParseException || error instanceof DataException
-				|| error instanceof ConversionException || error instanceof DataMissingException;
+		return error instanceof ConverterException || errorDuringJsonConversion(error)
+				|| error instanceof DataException || error instanceof DataMissingException;
+	}
+
+	private boolean errorDuringJsonConversion(Exception error) {
+		return error instanceof JsonParseException || error instanceof ConversionException;
 	}
 
 	private Response handleAuthorizationException(String authToken) {
@@ -248,13 +254,14 @@ public class RecordEndpoint {
 
 	@GET
 	@Path("{type}/")
-	@Produces("application/vnd.uub.recordList+json")
-	public Response readRecordList(@HeaderParam("authToken") String headerAuthToken,
+	@Produces({ "application/vnd.uub.recordList+json", "application/vnd.uub.recordList+xml" })
+	public Response readRecordList(@HeaderParam("Accept") String accept,
+			@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			@QueryParam("filter") String filterAsJson) {
 		String usedToken = getExistingTokenPreferHeader(headerAuthToken, queryAuthToken);
 		String filter = createEmptyFilterIfParameterDoesNotExist(filterAsJson);
-		return readRecordListUsingAuthTokenByType(usedToken, type, filter);
+		return readRecordListUsingAuthTokenByType(accept, usedToken, type, filter);
 	}
 
 	private String createEmptyFilterIfParameterDoesNotExist(String filterAsJson) {
@@ -265,21 +272,28 @@ public class RecordEndpoint {
 		return filter;
 	}
 
-	Response readRecordListUsingAuthTokenByType(String authToken, String type,
-			String filterAsJson) {
+	private Response readRecordListUsingAuthTokenByType(String accept, String authToken,
+			String type, String filterAsJson) {
 		try {
-			return tryReadRecordList(authToken, type, filterAsJson);
+			return tryReadRecordList(accept, authToken, type, filterAsJson);
 		} catch (Exception error) {
 			return handleError(authToken, error);
 		}
 	}
 
-	private Response tryReadRecordList(String authToken, String type, String filterAsJson) {
-		DataGroup filter = convertJsonStringToDataGroup(filterAsJson);
+	private Response tryReadRecordList(String accept, String authToken, String type,
+			String filterAsString) {
+		DataGroup filter = convertFilterStringToData(filterAsString);
 		DataList readRecordList = SpiderInstanceProvider.getRecordListReader()
 				.readRecordList(authToken, type, filter);
-		String json = convertDataToJson(readRecordList);
-		return Response.status(Response.Status.OK).entity(json).build();
+		String outputRecord = convertConvertibleToString(accept, readRecordList);
+		return Response.status(Response.Status.OK).header(HttpHeaders.CONTENT_TYPE, accept)
+				.entity(outputRecord).build();
+	}
+
+	private DataGroup convertFilterStringToData(String filterAsString) {
+		String filterDataType = calculateSearchDataType(filterAsString);
+		return (DataGroup) convertStringToData(filterDataType, filterAsString);
 	}
 
 	@GET
@@ -354,9 +368,7 @@ public class RecordEndpoint {
 			String id) {
 		DataList dataList = SpiderInstanceProvider.getIncomingLinksReader()
 				.readIncomingLinks(authToken, type, id);
-
 		String convertedDataList = convertConvertibleToString(accept, dataList);
-
 		return Response.status(Response.Status.OK).header(HttpHeaders.CONTENT_TYPE, accept)
 				.entity(convertedDataList).build();
 	}
@@ -370,7 +382,7 @@ public class RecordEndpoint {
 		return deleteRecordUsingAuthTokenByTypeAndId(usedToken, type, id);
 	}
 
-	public Response deleteRecordUsingAuthTokenByTypeAndId(String authToken, String type,
+	private Response deleteRecordUsingAuthTokenByTypeAndId(String authToken, String type,
 			String id) {
 		try {
 			return tryDeleteRecord(authToken, type, id);
@@ -540,13 +552,15 @@ public class RecordEndpoint {
 			@HeaderParam("Accept") String accept, @HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			String jsonValidationRecord) {
+		// TODO: skriv todo om soppan, låt xml vara dataGroup på "topnivån" just nu för snabb
+		// lösning (inte sen)
 		String usedToken = getExistingTokenPreferHeader(headerAuthToken, queryAuthToken);
 		String recordTypeToUse = "validationOrder";
 		return validateRecordUsingAuthTokenWithRecord(usedToken, recordTypeToUse,
 				jsonValidationRecord);
 	}
 
-	public Response validateRecordUsingAuthTokenWithRecord(String authToken, String type,
+	private Response validateRecordUsingAuthTokenWithRecord(String authToken, String type,
 			String jsonRecord) {
 		try {
 			return tryValidateRecord(authToken, type, jsonRecord);
@@ -583,15 +597,29 @@ public class RecordEndpoint {
 
 	@POST
 	@Path("index/{type}")
-	@Produces("application/vnd.uub.record+json")
-	public Response indexRecordList(@HeaderParam("authToken") String headerAuthToken,
+	@Consumes({ "application/vnd.uub.record+json", "application/vnd.uub.record+xml" })
+	@Produces({ "application/vnd.uub.record+json", "application/vnd.uub.record+xml" })
+	public Response indexRecordList(@HeaderParam("Content-Type") String contentType,
+			@HeaderParam("Accept") String accept, @HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			String indexSettingsAsJson) {
 		String usedToken = getExistingTokenPreferHeader(headerAuthToken, queryAuthToken);
+
+		String contentType2 = createEmptyIndexSettingIfParameterDoesNotExist(contentType,
+				indexSettingsAsJson);
 		String jsonIndexSettings = createEmptyIndexSettingIfParameterDoesNotExist(
 				indexSettingsAsJson);
 
-		return indexRecordListUsingAuthTokenByType(usedToken, type, jsonIndexSettings);
+		return indexRecordListUsingAuthTokenByType(contentType2, accept, usedToken, type,
+				jsonIndexSettings);
+	}
+
+	private String createEmptyIndexSettingIfParameterDoesNotExist(String contentType,
+			String indexSettingsAsJson) {
+		if (indexSettingsAsJson == null || indexSettingsAsJson.isEmpty()) {
+			return "application/vnd.uub.record+json";
+		}
+		return contentType;
 	}
 
 	private String createEmptyIndexSettingIfParameterDoesNotExist(String indexSettingsAsJson) {
@@ -601,32 +629,32 @@ public class RecordEndpoint {
 		return indexSettingsAsJson;
 	}
 
-	Response indexRecordListUsingAuthTokenByType(String authToken, String type,
-			String filterAsJson) {
+	private Response indexRecordListUsingAuthTokenByType(String contentType, String accept,
+			String authToken, String type, String filterAsJson) {
 		try {
-			return tryIndexRecordList(authToken, type, filterAsJson);
+			return tryIndexRecordList(contentType, accept, authToken, type, filterAsJson);
 
 		} catch (Exception error) {
 			return handleError(authToken, error);
 		}
 	}
 
-	private Response tryIndexRecordList(String authToken, String type, String jsonIndexSettings)
-			throws URISyntaxException {
-		DataGroup indexSettings = convertJsonStringToDataGroup(jsonIndexSettings);
+	private Response tryIndexRecordList(String contentType, String accept, String authToken,
+			String type, String jsonIndexSettings) throws URISyntaxException {
+		// String settingsDataType = calculateSearchDataType(jsonIndexSettings);
+		DataGroup indexSettings = (DataGroup) convertStringToData(contentType, jsonIndexSettings);
+
 		RecordListIndexer indexBatchJobCreator = SpiderInstanceProvider.getRecordListIndexer();
 		DataRecord indexBatchJob = indexBatchJobCreator.indexRecordList(authToken, type,
 				indexSettings);
 
-		DataGroup createdGroup = indexBatchJob.getDataGroup();
-		DataGroup recordInfo = createdGroup.getFirstGroupWithNameInData("recordInfo");
-		String createdId = recordInfo.getFirstAtomicValueWithNameInData("id");
+		String createdId = indexBatchJob.getId();
 
-		String json = convertDataToJson(indexBatchJob);
+		String outputRecord = convertConvertibleToString(accept, indexBatchJob);
 
-		String urlDelimiter = "/";
-		URI uri = new URI("record/indexBatchJob" + urlDelimiter + createdId);
-		return Response.created(uri).entity(json).build();
+		URI uri = new URI("indexBatchJob" + URL_DELIMITER + createdId);
+		return Response.created(uri).header(HttpHeaders.CONTENT_TYPE, accept).entity(outputRecord)
+				.build();
 
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Uppsala University Library
+ * Copyright 2021, 2022 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -23,6 +23,7 @@ import se.uu.ub.cora.data.DataRecord;
 import se.uu.ub.cora.spider.authorization.AuthorizationException;
 import se.uu.ub.cora.spider.record.RecordListIndexer;
 import se.uu.ub.cora.storage.RecordNotFoundException;
+import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 import se.uu.ub.cora.therest.coradata.DataAtomicSpy;
 import se.uu.ub.cora.therest.coradata.DataGroupSpy;
 import se.uu.ub.cora.therest.coradata.DataRecordSpy;
@@ -33,10 +34,13 @@ public class IndexBatchJobCreatorSpy implements RecordListIndexer {
 	public String type;
 	public DataGroup filter;
 	public DataRecordSpy recordToReturn;
+	MethodCallRecorder MCR = new MethodCallRecorder();
 
 	@Override
 	public DataRecord indexRecordList(String authToken, String type, DataGroup filter) {
+		MCR.addCall("authToken", authToken, "type", type, "filter", filter);
 		this.authToken = authToken;
+
 		this.type = type;
 		this.filter = filter;
 		possiblyThrowException(authToken, type);
@@ -50,6 +54,7 @@ public class IndexBatchJobCreatorSpy implements RecordListIndexer {
 		indexBatchJob.addChild(recordInfo);
 
 		recordToReturn = new DataRecordSpy(indexBatchJob);
+		MCR.addReturned(recordToReturn);
 		return recordToReturn;
 	}
 
