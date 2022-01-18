@@ -62,6 +62,7 @@ import se.uu.ub.cora.json.parser.JsonValue;
 import se.uu.ub.cora.json.parser.org.OrgJsonParser;
 import se.uu.ub.cora.logger.LoggerProvider;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
+import se.uu.ub.cora.therest.coradata.DataGroupSpy;
 import se.uu.ub.cora.therest.coradata.DataListSpy;
 import se.uu.ub.cora.therest.coradata.DataRecordSpy;
 import se.uu.ub.cora.therest.log.LoggerFactorySpy;
@@ -213,6 +214,16 @@ public class RecordEndpointTest {
 	public void testReadRecordListWithNullAsFilter() {
 		response = recordEndpoint.readRecordList("application/vnd.uub.recordList+json", AUTH_TOKEN,
 				AUTH_TOKEN, PLACE, null);
+		assertEntityExists();
+		assertResponseStatusIs(Response.Status.OK);
+
+		assertEquals(jsonParser.jsonString, "{\"name\":\"filter\",\"children\":[]}");
+	}
+
+	@Test
+	public void testReadRecordListWithEmptyFilter() {
+		response = recordEndpoint.readRecordList("application/vnd.uub.recordList+json", AUTH_TOKEN,
+				AUTH_TOKEN, PLACE, "");
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.OK);
 
@@ -1164,7 +1175,6 @@ public class RecordEndpointTest {
 		 * assertEquals(contentType, "application/octet-stream");
 		 */
 		assertEquals(contentType, "application/octet-stream");
-		// assertEquals(contentType, null);
 		InputStream stream = (InputStream) response.getEntity();
 		assertNotNull(stream);
 
@@ -1427,25 +1437,71 @@ public class RecordEndpointTest {
 		assertResponseStatusIs(Response.Status.OK);
 	}
 
-	// @Test
-	// public void testValidateRecordForXml() {
-	// response = recordEndpoint.validateRecord("application/vnd.uub.workorder+xml",
-	// "application/vnd.uub.record+xml", AUTH_TOKEN, AUTH_TOKEN, "workOrder", defaultXml);
-	//
-	// var dataElement = getValueFromConvertAndAssertParameters();
-	//
-	// spiderInstanceFactorySpy.spiderRecordValidatorSpy.MCR.assertParameters("validateRecord", 0,
-	// AUTH_TOKEN, "workOrder", PLACE_0001, dataElement);
-	//
-	// DataRecord vaildatedRecord = (DataRecord)
-	// spiderInstanceFactorySpy.spiderRecordValidatorSpy.MCR
-	// .getReturnValue("validateRecord", 0);
-	//
-	// assertXmlConvertionOfResponse(vaildatedRecord);
-	// assertEntityExists();
-	// assertResponseStatusIs(Response.Status.OK);
-	// assertResponseContentTypeIs("application/vnd.uub.record+xml");
-	// }
+	@Test
+	public void testValidateRecordForXml() {
+		response = recordEndpoint.validateRecord("application/vnd.uub.record+xml",
+				"application/vnd.uub.record+xml", AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultXml);
+
+		DataGroupSpy container = (DataGroupSpy) getValueFromConvertAndAssertParameters();
+
+		container.MCR.assertParameters("getFirstGroupWithNameInData", 0, "order");
+		container.MCR.assertParameters("getFirstGroupWithNameInData", 1, "record");
+
+		var validationOrder = container.MCR.getReturnValue("getFirstGroupWithNameInData", 0);
+		var recordToValidate = container.MCR.getReturnValue("getFirstGroupWithNameInData", 1);
+
+		spiderInstanceFactorySpy.spiderRecordValidatorSpy.MCR.assertParameters("validateRecord", 0,
+				AUTH_TOKEN, "validationOrder", validationOrder, recordToValidate);
+
+		DataRecord validationResult = (DataRecord) spiderInstanceFactorySpy.spiderRecordValidatorSpy.MCR
+				.getReturnValue("validateRecord", 0);
+
+		assertXmlConvertionOfResponse(validationResult);
+		assertEntityExists();
+		assertResponseStatusIs(Response.Status.OK);
+		assertResponseContentTypeIs("application/vnd.uub.record+xml");
+	}
+
+	@Test
+	public void testValidateRecordInputAsXMLResponseAsJson() {
+		response = recordEndpoint.validateRecord("application/vnd.uub.record+xml",
+				"application/vnd.uub.record+json", AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultXml);
+
+		DataGroupSpy container = (DataGroupSpy) getValueFromConvertAndAssertParameters();
+
+		container.MCR.assertParameters("getFirstGroupWithNameInData", 0, "order");
+		container.MCR.assertParameters("getFirstGroupWithNameInData", 1, "record");
+
+		var validationOrder = container.MCR.getReturnValue("getFirstGroupWithNameInData", 0);
+		var recordToValidate = container.MCR.getReturnValue("getFirstGroupWithNameInData", 1);
+
+		spiderInstanceFactorySpy.spiderRecordValidatorSpy.MCR.assertParameters("validateRecord", 0,
+				AUTH_TOKEN, "validationOrder", validationOrder, recordToValidate);
+
+		DataRecord validationResult = (DataRecord) spiderInstanceFactorySpy.spiderRecordValidatorSpy.MCR
+				.getReturnValue("validateRecord", 0);
+
+		assertDataFromSpiderConvertedToJsonUsingConvertersFromProvider(validationResult);
+		assertEntityExists();
+		assertResponseStatusIs(Response.Status.OK);
+		assertResponseContentTypeIs("application/vnd.uub.record+json");
+	}
+
+	@Test
+	public void testValidateRecordInputJsonWrongContentType() {
+		jsonParser.throwError = true;
+		response = recordEndpoint.validateRecord("application/vnd.uub.record+json",
+				"application/vnd.uub.record+json", AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultXml);
+		assertResponseStatusIs(Response.Status.BAD_REQUEST);
+	}
+
+	@Test
+	public void testValidateRecordInputXmlWrongContentType() {
+		converterFactorySpy.xmlToDataConverterThrowsException = true;
+		response = recordEndpoint.validateRecord("application/vnd.uub.record+xml",
+				"application/vnd.uub.record+json", AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultJson);
+		assertResponseStatusIs(Response.Status.BAD_REQUEST);
+	}
 
 	@Test
 	public void testAnnotationsForValidateRecord() throws Exception {
