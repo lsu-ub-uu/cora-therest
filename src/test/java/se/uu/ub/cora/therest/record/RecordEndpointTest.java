@@ -1640,7 +1640,7 @@ public class RecordEndpointTest {
 		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
 
 		assertHttpMethodAndPathAnnotation(method, "POST", "{type}");
-		assertConsumesAnnotation(method, "application/vnd.uub.workorder+json", "*/*");
+		assertConsumesAnnotation(method, "application/vnd.uub.workorder+json");
 		assertProducesAnnotation(method, "application/vnd.uub.record+json", "*/*");
 		assertAuthTokenAnnotation(parameterAnnotations, 0);
 

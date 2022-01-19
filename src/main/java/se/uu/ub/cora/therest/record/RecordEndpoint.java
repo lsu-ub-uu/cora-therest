@@ -712,7 +712,7 @@ public class RecordEndpoint {
 	 */
 	@POST
 	@Path("{type}")
-	@Consumes({ "application/vnd.uub.workorder+json", "*/*" })
+	@Consumes({ "application/vnd.uub.workorder+json" })
 	@Produces({ "application/vnd.uub.record+json", "*/*" })
 	public Response validateRecordJsonJson(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
