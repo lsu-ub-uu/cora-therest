@@ -78,6 +78,10 @@ import se.uu.ub.cora.storage.RecordNotFoundException;
 
 @Path("/")
 public class RecordEndpoint {
+	private static final String APPLICATION_VND_UUB_RECORD_LIST_XML = "application/vnd.uub.recordList+xml";
+	private static final String APPLICATION_VND_UUB_RECORD_LIST_JSON = "application/vnd.uub.recordList+json";
+	private static final String APPLICATION_VND_UUB_RECORD_XML = "application/vnd.uub.record+xml";
+	private static final String APPLICATION_VND_UUB_RECORD_JSON = "application/vnd.uub.record+json";
 	private static final String URL_DELIMITER = "/";
 	private static final int AFTERHTTP = 10;
 	private String baseUrl;
@@ -121,45 +125,45 @@ public class RecordEndpoint {
 	/** fix: consumes is not a record, but a topDataGroup */
 	@POST
 	@Path("{type}")
-	@Consumes({ "application/vnd.uub.record+json", "*/*" })
-	@Produces({ "application/vnd.uub.record+json", "*/*" })
+	@Consumes({ APPLICATION_VND_UUB_RECORD_JSON, "*/*" })
+	@Produces({ APPLICATION_VND_UUB_RECORD_JSON, "*/*" })
 	public Response createRecordJsonJson(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			String inputRecord) {
-		return createRecord("application/vnd.uub.record+json", "application/vnd.uub.record+json",
+		return createRecord(APPLICATION_VND_UUB_RECORD_JSON, APPLICATION_VND_UUB_RECORD_JSON,
 				headerAuthToken, queryAuthToken, type, inputRecord);
 	}
 
 	@POST
 	@Path("{type}")
-	@Consumes("application/vnd.uub.record+json")
-	@Produces("application/vnd.uub.record+xml")
+	@Consumes(APPLICATION_VND_UUB_RECORD_JSON)
+	@Produces(APPLICATION_VND_UUB_RECORD_XML)
 	public Response createRecordJsonXml(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			String inputRecord) {
-		return createRecord("application/vnd.uub.record+json", "application/vnd.uub.record+xml",
+		return createRecord(APPLICATION_VND_UUB_RECORD_JSON, APPLICATION_VND_UUB_RECORD_XML,
 				headerAuthToken, queryAuthToken, type, inputRecord);
 	}
 
 	@POST
 	@Path("{type}")
-	@Consumes("application/vnd.uub.record+xml")
-	@Produces("application/vnd.uub.record+json")
+	@Consumes(APPLICATION_VND_UUB_RECORD_XML)
+	@Produces(APPLICATION_VND_UUB_RECORD_JSON)
 	public Response createRecordXmlJson(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			String inputRecord) {
-		return createRecord("application/vnd.uub.record+xml", "application/vnd.uub.record+json",
+		return createRecord(APPLICATION_VND_UUB_RECORD_XML, APPLICATION_VND_UUB_RECORD_JSON,
 				headerAuthToken, queryAuthToken, type, inputRecord);
 	}
 
 	@POST
 	@Path("{type}")
-	@Consumes("application/vnd.uub.record+xml")
-	@Produces("application/vnd.uub.record+xml")
+	@Consumes(APPLICATION_VND_UUB_RECORD_XML)
+	@Produces(APPLICATION_VND_UUB_RECORD_XML)
 	public Response createRecordXmlXml(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			String inputRecord) {
-		return createRecord("application/vnd.uub.record+xml", "application/vnd.uub.record+xml",
+		return createRecord(APPLICATION_VND_UUB_RECORD_XML, APPLICATION_VND_UUB_RECORD_XML,
 				headerAuthToken, queryAuthToken, type, inputRecord);
 	}
 
@@ -291,21 +295,21 @@ public class RecordEndpoint {
 
 	@GET
 	@Path("{type}/")
-	@Produces({ "application/vnd.uub.recordList+json", "*/*" })
+	@Produces({ APPLICATION_VND_UUB_RECORD_LIST_JSON, "*/*" })
 	public Response readRecordListJson(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			@QueryParam("filter") String filterAsJson) {
-		return readRecordList("application/vnd.uub.recordList+json", headerAuthToken,
+		return readRecordList(APPLICATION_VND_UUB_RECORD_LIST_JSON, headerAuthToken,
 				queryAuthToken, type, filterAsJson);
 	}
 
 	@GET
 	@Path("{type}/")
-	@Produces("application/vnd.uub.recordList+xml")
+	@Produces(APPLICATION_VND_UUB_RECORD_LIST_XML)
 	public Response readRecordListXml(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			@QueryParam("filter") String filterAsJson) {
-		return readRecordList("application/vnd.uub.recordList+xml", headerAuthToken, queryAuthToken,
+		return readRecordList(APPLICATION_VND_UUB_RECORD_LIST_XML, headerAuthToken, queryAuthToken,
 				type, filterAsJson);
 	}
 
@@ -350,21 +354,21 @@ public class RecordEndpoint {
 
 	@GET
 	@Path("{type}/{id}")
-	@Produces({ "application/vnd.uub.record+json", "*/*" })
+	@Produces({ APPLICATION_VND_UUB_RECORD_JSON, "*/*" })
 	public Response readRecordJson(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			@PathParam("id") String id) {
-		return readRecord("application/vnd.uub.record+json", headerAuthToken, queryAuthToken, type,
+		return readRecord(APPLICATION_VND_UUB_RECORD_JSON, headerAuthToken, queryAuthToken, type,
 				id);
 	}
 
 	@GET
 	@Path("{type}/{id}")
-	@Produces("application/vnd.uub.record+xml")
+	@Produces(APPLICATION_VND_UUB_RECORD_XML)
 	public Response readRecordXml(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			@PathParam("id") String id) {
-		return readRecord("application/vnd.uub.record+xml", headerAuthToken, queryAuthToken, type,
+		return readRecord(APPLICATION_VND_UUB_RECORD_XML, headerAuthToken, queryAuthToken, type,
 				id);
 	}
 
@@ -403,12 +407,9 @@ public class RecordEndpoint {
 	}
 
 	private String convertDataToXml(ExternallyConvertible convertible) {
-		String stringToReturn;
 		ExternallyConvertibleToStringConverter convertibleToXmlConverter = ConverterProvider
 				.getExternallyConvertibleToStringConverter("xml");
-
-		stringToReturn = convertibleToXmlConverter.convertWithLinks(convertible, baseUrl);
-		return stringToReturn;
+		return convertibleToXmlConverter.convertWithLinks(convertible, baseUrl);
 	}
 
 	/**
@@ -417,21 +418,21 @@ public class RecordEndpoint {
 	 */
 	@GET
 	@Path("{type}/{id}/incomingLinks")
-	@Produces({ "application/vnd.uub.recordList+json", "*/*" })
+	@Produces({ APPLICATION_VND_UUB_RECORD_LIST_JSON, "*/*" })
 	public Response readIncomingRecordLinksJson(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			@PathParam("id") String id) {
-		return readIncomingRecordLink("application/vnd.uub.recordList+json", headerAuthToken,
+		return readIncomingRecordLink(APPLICATION_VND_UUB_RECORD_LIST_JSON, headerAuthToken,
 				queryAuthToken, type, id);
 	}
 
 	@GET
 	@Path("{type}/{id}/incomingLinks")
-	@Produces("application/vnd.uub.recordList+xml")
+	@Produces(APPLICATION_VND_UUB_RECORD_LIST_XML)
 	public Response readIncomingRecordLinksXml(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			@PathParam("id") String id) {
-		return readIncomingRecordLink("application/vnd.uub.recordList+xml", headerAuthToken,
+		return readIncomingRecordLink(APPLICATION_VND_UUB_RECORD_LIST_XML, headerAuthToken,
 				queryAuthToken, type, id);
 	}
 
@@ -485,45 +486,45 @@ public class RecordEndpoint {
 	/** fix: consumes is not a record, but a topDataGroup */
 	@POST
 	@Path("{type}/{id}")
-	@Consumes({ "application/vnd.uub.record+json", "*/*" })
-	@Produces({ "application/vnd.uub.record+json", "*/*" })
+	@Consumes({ APPLICATION_VND_UUB_RECORD_JSON, "*/*" })
+	@Produces({ APPLICATION_VND_UUB_RECORD_JSON, "*/*" })
 	public Response updateRecordJsonJson(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			@PathParam("id") String id, String inputRecord) {
-		return updateRecord("application/vnd.uub.record+json", "application/vnd.uub.record+json",
+		return updateRecord(APPLICATION_VND_UUB_RECORD_JSON, APPLICATION_VND_UUB_RECORD_JSON,
 				headerAuthToken, queryAuthToken, type, id, inputRecord);
 	}
 
 	@POST
 	@Path("{type}/{id}")
-	@Consumes("application/vnd.uub.record+json")
-	@Produces("application/vnd.uub.record+xml")
+	@Consumes(APPLICATION_VND_UUB_RECORD_JSON)
+	@Produces(APPLICATION_VND_UUB_RECORD_XML)
 	public Response updateRecordJsonXml(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			@PathParam("id") String id, String inputRecord) {
-		return updateRecord("application/vnd.uub.record+json", "application/vnd.uub.record+xml",
+		return updateRecord(APPLICATION_VND_UUB_RECORD_JSON, APPLICATION_VND_UUB_RECORD_XML,
 				headerAuthToken, queryAuthToken, type, id, inputRecord);
 	}
 
 	@POST
 	@Path("{type}/{id}")
-	@Consumes("application/vnd.uub.record+xml")
-	@Produces("application/vnd.uub.record+json")
+	@Consumes(APPLICATION_VND_UUB_RECORD_XML)
+	@Produces(APPLICATION_VND_UUB_RECORD_JSON)
 	public Response updateRecordXmlJson(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			@PathParam("id") String id, String inputRecord) {
-		return updateRecord("application/vnd.uub.record+xml", "application/vnd.uub.record+json",
+		return updateRecord(APPLICATION_VND_UUB_RECORD_XML, APPLICATION_VND_UUB_RECORD_JSON,
 				headerAuthToken, queryAuthToken, type, id, inputRecord);
 	}
 
 	@POST
 	@Path("{type}/{id}")
-	@Consumes("application/vnd.uub.record+xml")
-	@Produces("application/vnd.uub.record+xml")
+	@Consumes(APPLICATION_VND_UUB_RECORD_XML)
+	@Produces(APPLICATION_VND_UUB_RECORD_XML)
 	public Response updateRecordXmlXml(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			@PathParam("id") String id, String inputRecord) {
-		return updateRecord("application/vnd.uub.record+xml", "application/vnd.uub.record+xml",
+		return updateRecord(APPLICATION_VND_UUB_RECORD_XML, APPLICATION_VND_UUB_RECORD_XML,
 				headerAuthToken, queryAuthToken, type, id, inputRecord);
 	}
 
@@ -592,24 +593,24 @@ public class RecordEndpoint {
 	@POST
 	@Path("{type}/{id}/{streamId}")
 	@Consumes("multipart/form-data")
-	@Produces({ "application/vnd.uub.record+json", "*/*" })
+	@Produces({ APPLICATION_VND_UUB_RECORD_JSON, "*/*" })
 	public Response uploadFileJson(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			@PathParam("id") String id, @FormDataParam("file") InputStream uploadedInputStream,
 			@FormDataParam("file") FormDataContentDisposition fileDetail) {
-		return uploadFile("application/vnd.uub.record+json", headerAuthToken, queryAuthToken, type,
+		return uploadFile(APPLICATION_VND_UUB_RECORD_JSON, headerAuthToken, queryAuthToken, type,
 				id, uploadedInputStream, fileDetail);
 	}
 
 	@POST
 	@Path("{type}/{id}/{streamId}")
 	@Consumes("multipart/form-data")
-	@Produces("application/vnd.uub.record+xml")
+	@Produces(APPLICATION_VND_UUB_RECORD_XML)
 	public Response uploadFileXml(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			@PathParam("id") String id, @FormDataParam("file") InputStream uploadedInputStream,
 			@FormDataParam("file") FormDataContentDisposition fileDetail) {
-		return uploadFile("application/vnd.uub.record+xml", headerAuthToken, queryAuthToken, type,
+		return uploadFile(APPLICATION_VND_UUB_RECORD_XML, headerAuthToken, queryAuthToken, type,
 				id, uploadedInputStream, fileDetail);
 	}
 
@@ -643,21 +644,21 @@ public class RecordEndpoint {
 
 	@GET
 	@Path("searchResult/{searchId}")
-	@Produces({ "application/vnd.uub.recordList+json", "*/*" })
+	@Produces({ APPLICATION_VND_UUB_RECORD_LIST_JSON, "*/*" })
 	public Response searchRecordJson(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("searchId") String searchId,
 			@QueryParam("searchData") String searchDataAsString) {
-		return searchRecord("application/vnd.uub.recordList+json", headerAuthToken, queryAuthToken,
+		return searchRecord(APPLICATION_VND_UUB_RECORD_LIST_JSON, headerAuthToken, queryAuthToken,
 				searchId, searchDataAsString);
 	}
 
 	@GET
 	@Path("searchResult/{searchId}")
-	@Produces("application/vnd.uub.recordList+xml")
+	@Produces(APPLICATION_VND_UUB_RECORD_LIST_XML)
 	public Response searchRecordXml(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("searchId") String searchId,
 			@QueryParam("searchData") String searchDataAsString) {
-		return searchRecord("application/vnd.uub.recordList+xml", headerAuthToken, queryAuthToken,
+		return searchRecord(APPLICATION_VND_UUB_RECORD_LIST_XML, headerAuthToken, queryAuthToken,
 				searchId, searchDataAsString);
 	}
 
@@ -713,47 +714,47 @@ public class RecordEndpoint {
 	@POST
 	@Path("{type}")
 	@Consumes({ "application/vnd.uub.workorder+json" })
-	@Produces({ "application/vnd.uub.record+json", "*/*" })
+	@Produces({ APPLICATION_VND_UUB_RECORD_JSON, "*/*" })
 	public Response validateRecordJsonJson(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			String jsonValidationRecord) {
 		return validateRecord("application/vnd.uub.workorder+json",
-				"application/vnd.uub.record+json", headerAuthToken, queryAuthToken,
+				APPLICATION_VND_UUB_RECORD_JSON, headerAuthToken, queryAuthToken,
 				jsonValidationRecord);
 	}
 
 	@POST
 	@Path("{type}")
 	@Consumes("application/vnd.uub.workorder+json")
-	@Produces("application/vnd.uub.record+xml")
+	@Produces(APPLICATION_VND_UUB_RECORD_XML)
 	public Response validateRecordJsonXml(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			String jsonValidationRecord) {
 		return validateRecord("application/vnd.uub.workorder+json",
-				"application/vnd.uub.record+xml", headerAuthToken, queryAuthToken,
+				APPLICATION_VND_UUB_RECORD_XML, headerAuthToken, queryAuthToken,
 				jsonValidationRecord);
 	}
 
 	@POST
 	@Path("{type}")
 	@Consumes("application/vnd.uub.workorder+xml")
-	@Produces("application/vnd.uub.record+json")
+	@Produces(APPLICATION_VND_UUB_RECORD_JSON)
 	public Response validateRecordXmlJson(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			String jsonValidationRecord) {
 		return validateRecord("application/vnd.uub.workorder+xml",
-				"application/vnd.uub.record+json", headerAuthToken, queryAuthToken,
+				APPLICATION_VND_UUB_RECORD_JSON, headerAuthToken, queryAuthToken,
 				jsonValidationRecord);
 	}
 
 	@POST
 	@Path("{type}")
 	@Consumes("application/vnd.uub.workorder+xml")
-	@Produces("application/vnd.uub.record+xml")
+	@Produces(APPLICATION_VND_UUB_RECORD_XML)
 	public Response validateRecordXmlXml(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			String jsonValidationRecord) {
-		return validateRecord("application/vnd.uub.workorder+xml", "application/vnd.uub.record+xml",
+		return validateRecord("application/vnd.uub.workorder+xml", APPLICATION_VND_UUB_RECORD_XML,
 				headerAuthToken, queryAuthToken, jsonValidationRecord);
 	}
 
@@ -812,45 +813,45 @@ public class RecordEndpoint {
 
 	@POST
 	@Path("index/{type}")
-	@Consumes({ "application/vnd.uub.record+json", "*/*" })
-	@Produces({ "application/vnd.uub.record+json", "*/*" })
+	@Consumes({ APPLICATION_VND_UUB_RECORD_JSON, "*/*" })
+	@Produces({ APPLICATION_VND_UUB_RECORD_JSON, "*/*" })
 	public Response batchIndexJsonJson(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			String indexSettingsAsJson) {
-		return batchIndex("application/vnd.uub.record+json", "application/vnd.uub.record+json",
+		return batchIndex(APPLICATION_VND_UUB_RECORD_JSON, APPLICATION_VND_UUB_RECORD_JSON,
 				headerAuthToken, queryAuthToken, type, indexSettingsAsJson);
 	}
 
 	@POST
 	@Path("index/{type}")
-	@Consumes("application/vnd.uub.record+json")
-	@Produces("application/vnd.uub.record+xml")
+	@Consumes(APPLICATION_VND_UUB_RECORD_JSON)
+	@Produces(APPLICATION_VND_UUB_RECORD_XML)
 	public Response batchIndexJsonXml(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			String indexSettingsAsJson) {
-		return batchIndex("application/vnd.uub.record+json", "application/vnd.uub.record+xml",
+		return batchIndex(APPLICATION_VND_UUB_RECORD_JSON, APPLICATION_VND_UUB_RECORD_XML,
 				headerAuthToken, queryAuthToken, type, indexSettingsAsJson);
 	}
 
 	@POST
 	@Path("index/{type}")
-	@Consumes("application/vnd.uub.record+xml")
-	@Produces("application/vnd.uub.record+json")
+	@Consumes(APPLICATION_VND_UUB_RECORD_XML)
+	@Produces(APPLICATION_VND_UUB_RECORD_JSON)
 	public Response batchIndexXmlJson(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			String indexSettingsAsJson) {
-		return batchIndex("application/vnd.uub.record+xml", "application/vnd.uub.record+json",
+		return batchIndex(APPLICATION_VND_UUB_RECORD_XML, APPLICATION_VND_UUB_RECORD_JSON,
 				headerAuthToken, queryAuthToken, type, indexSettingsAsJson);
 	}
 
 	@POST
 	@Path("index/{type}")
-	@Consumes("application/vnd.uub.record+xml")
-	@Produces("application/vnd.uub.record+xml")
+	@Consumes(APPLICATION_VND_UUB_RECORD_XML)
+	@Produces(APPLICATION_VND_UUB_RECORD_XML)
 	public Response batchIndexXmlXml(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			String indexSettingsAsJson) {
-		return batchIndex("application/vnd.uub.record+xml", "application/vnd.uub.record+xml",
+		return batchIndex(APPLICATION_VND_UUB_RECORD_XML, APPLICATION_VND_UUB_RECORD_XML,
 				headerAuthToken, queryAuthToken, type, indexSettingsAsJson);
 	}
 
@@ -868,7 +869,7 @@ public class RecordEndpoint {
 
 	private String calculateContentTypeToUse(String contentType, String indexSettingsAsJson) {
 		if (indexSettingsAsJson == null || indexSettingsAsJson.isEmpty()) {
-			return "application/vnd.uub.record+json";
+			return APPLICATION_VND_UUB_RECORD_JSON;
 		}
 		return contentType;
 	}

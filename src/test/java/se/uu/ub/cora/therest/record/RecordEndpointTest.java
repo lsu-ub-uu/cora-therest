@@ -68,6 +68,10 @@ import se.uu.ub.cora.therest.coradata.DataRecordSpy;
 import se.uu.ub.cora.therest.log.LoggerFactorySpy;
 
 public class RecordEndpointTest {
+	private static final String APPLICATION_VND_UUB_RECORD_LIST_XML = "application/vnd.uub.recordList+xml";
+	private static final String APPLICATION_VND_UUB_RECORD_LIST_JSON = "application/vnd.uub.recordList+json";
+	private static final String APPLICATION_VND_UUB_RECORD_XML = "application/vnd.uub.record+xml";
+	private static final String APPLICATION_VND_UUB_RECORD_JSON = "application/vnd.uub.record+json";
 	private static final String DUMMY_NON_AUTHORIZED_TOKEN = "dummyNonAuthorizedToken";
 	private static final String PLACE_0001 = "place:0001";
 	private static final String PLACE = "place";
@@ -247,7 +251,7 @@ public class RecordEndpointTest {
 		assertXmlConvertionOfResponse(dataList);
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.OK);
-		assertResponseContentTypeIs("application/vnd.uub.recordList+xml");
+		assertResponseContentTypeIs(APPLICATION_VND_UUB_RECORD_LIST_XML);
 	}
 
 	@Test
@@ -268,7 +272,7 @@ public class RecordEndpointTest {
 		assertXmlConvertionOfResponse(dataList);
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.OK);
-		assertResponseContentTypeIs("application/vnd.uub.recordList+xml");
+		assertResponseContentTypeIs(APPLICATION_VND_UUB_RECORD_LIST_XML);
 	}
 
 	@Test
@@ -277,7 +281,7 @@ public class RecordEndpointTest {
 		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
 
 		assertHttpMethodAndPathAnnotation(method, "GET", "{type}/");
-		assertProducesAnnotation(method, "application/vnd.uub.recordList+json", "*/*");
+		assertProducesAnnotation(method, APPLICATION_VND_UUB_RECORD_LIST_JSON, "*/*");
 		assertAuthTokenAnnotation(parameterAnnotations, 0);
 
 		PathParam typeParameter = (PathParam) parameterAnnotations[2][0];
@@ -293,7 +297,7 @@ public class RecordEndpointTest {
 		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
 
 		assertHttpMethodAndPathAnnotation(method, "GET", "{type}/");
-		assertProducesAnnotation(method, "application/vnd.uub.recordList+xml");
+		assertProducesAnnotation(method, APPLICATION_VND_UUB_RECORD_LIST_XML);
 		assertAuthTokenAnnotation(parameterAnnotations, 0);
 
 		PathParam typeParameter = (PathParam) parameterAnnotations[2][0];
@@ -331,7 +335,7 @@ public class RecordEndpointTest {
 		Method method = getMethodWithMethodName("readRecordJson", 4);
 
 		assertHttpMethodAndPathAnnotation(method, "GET", "{type}/{id}");
-		assertProducesAnnotation(method, "application/vnd.uub.record+json", "*/*");
+		assertProducesAnnotation(method, APPLICATION_VND_UUB_RECORD_JSON, "*/*");
 		assertAnnotationForReadRecordParameters(method);
 	}
 
@@ -340,7 +344,7 @@ public class RecordEndpointTest {
 		Method method = getMethodWithMethodName("readRecordXml", 4);
 
 		assertHttpMethodAndPathAnnotation(method, "GET", "{type}/{id}");
-		assertProducesAnnotation(method, "application/vnd.uub.record+xml");
+		assertProducesAnnotation(method, APPLICATION_VND_UUB_RECORD_XML);
 		assertAnnotationForReadRecordParameters(method);
 	}
 
@@ -444,7 +448,7 @@ public class RecordEndpointTest {
 		response = recordEndpoint.readRecordJson(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001);
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.OK);
-		assertResponseContentTypeIs("application/vnd.uub.record+json");
+		assertResponseContentTypeIs(APPLICATION_VND_UUB_RECORD_JSON);
 	}
 
 	private void assertResponseContentTypeIs(String expectedContentType) {
@@ -456,7 +460,7 @@ public class RecordEndpointTest {
 		response = recordEndpoint.readRecordXml(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001);
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.OK);
-		assertResponseContentTypeIs("application/vnd.uub.record+xml");
+		assertResponseContentTypeIs(APPLICATION_VND_UUB_RECORD_XML);
 	}
 
 	@Test
@@ -572,7 +576,7 @@ public class RecordEndpointTest {
 		assertXmlConvertionOfResponse(dataList);
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.OK);
-		assertResponseContentTypeIs("application/vnd.uub.recordList+xml");
+		assertResponseContentTypeIs(APPLICATION_VND_UUB_RECORD_LIST_XML);
 	}
 
 	@Test
@@ -581,7 +585,7 @@ public class RecordEndpointTest {
 		Method method = getMethodWithMethodName(methodName, 4);
 
 		assertHttpMethodAndPathAnnotation(method, "GET", "{type}/{id}/incomingLinks");
-		assertProducesAnnotation(method, "application/vnd.uub.recordList+json", "*/*");
+		assertProducesAnnotation(method, APPLICATION_VND_UUB_RECORD_LIST_JSON, "*/*");
 		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
 		assertAuthTokenAnnotation(parameterAnnotations, 0);
 		assertTypeAndIdAnnotation(parameterAnnotations, 2);
@@ -593,7 +597,7 @@ public class RecordEndpointTest {
 		Method method = getMethodWithMethodName(methodName, 4);
 
 		assertHttpMethodAndPathAnnotation(method, "GET", "{type}/{id}/incomingLinks");
-		assertProducesAnnotation(method, "application/vnd.uub.recordList+xml");
+		assertProducesAnnotation(method, APPLICATION_VND_UUB_RECORD_LIST_XML);
 		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
 		assertAuthTokenAnnotation(parameterAnnotations, 0);
 		assertTypeAndIdAnnotation(parameterAnnotations, 2);
@@ -749,7 +753,7 @@ public class RecordEndpointTest {
 		assertXmlConvertionOfResponse(updatedRecord);
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.OK);
-		assertResponseContentTypeIs("application/vnd.uub.record+xml");
+		assertResponseContentTypeIs(APPLICATION_VND_UUB_RECORD_XML);
 	}
 
 	@Test
@@ -768,7 +772,7 @@ public class RecordEndpointTest {
 		assertDataFromSpiderConvertedToJsonUsingConvertersFromProvider(updatedRecord);
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.OK);
-		assertResponseContentTypeIs("application/vnd.uub.record+json");
+		assertResponseContentTypeIs(APPLICATION_VND_UUB_RECORD_JSON);
 	}
 
 	@Test
@@ -787,7 +791,7 @@ public class RecordEndpointTest {
 		assertXmlConvertionOfResponse(updatedRecord);
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.OK);
-		assertResponseContentTypeIs("application/vnd.uub.record+xml");
+		assertResponseContentTypeIs(APPLICATION_VND_UUB_RECORD_XML);
 	}
 
 	private Object getValueFromConvertAndAssertParameters() {
@@ -804,8 +808,8 @@ public class RecordEndpointTest {
 		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
 
 		assertHttpMethodAndPathAnnotation(method, "POST", "{type}/{id}");
-		assertConsumesAnnotation(method, "application/vnd.uub.record+json", "*/*");
-		assertProducesAnnotation(method, "application/vnd.uub.record+json", "*/*");
+		assertConsumesAnnotation(method, APPLICATION_VND_UUB_RECORD_JSON, "*/*");
+		assertProducesAnnotation(method, APPLICATION_VND_UUB_RECORD_JSON, "*/*");
 		assertAuthTokenAnnotation(parameterAnnotations, 0);
 		assertTypeAndIdAnnotation(parameterAnnotations, 2);
 	}
@@ -816,8 +820,8 @@ public class RecordEndpointTest {
 		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
 
 		assertHttpMethodAndPathAnnotation(method, "POST", "{type}/{id}");
-		assertConsumesAnnotation(method, "application/vnd.uub.record+json");
-		assertProducesAnnotation(method, "application/vnd.uub.record+xml");
+		assertConsumesAnnotation(method, APPLICATION_VND_UUB_RECORD_JSON);
+		assertProducesAnnotation(method, APPLICATION_VND_UUB_RECORD_XML);
 		assertAuthTokenAnnotation(parameterAnnotations, 0);
 		assertTypeAndIdAnnotation(parameterAnnotations, 2);
 	}
@@ -828,8 +832,8 @@ public class RecordEndpointTest {
 		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
 
 		assertHttpMethodAndPathAnnotation(method, "POST", "{type}/{id}");
-		assertConsumesAnnotation(method, "application/vnd.uub.record+xml");
-		assertProducesAnnotation(method, "application/vnd.uub.record+json");
+		assertConsumesAnnotation(method, APPLICATION_VND_UUB_RECORD_XML);
+		assertProducesAnnotation(method, APPLICATION_VND_UUB_RECORD_JSON);
 		assertAuthTokenAnnotation(parameterAnnotations, 0);
 		assertTypeAndIdAnnotation(parameterAnnotations, 2);
 	}
@@ -840,8 +844,8 @@ public class RecordEndpointTest {
 		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
 
 		assertHttpMethodAndPathAnnotation(method, "POST", "{type}/{id}");
-		assertConsumesAnnotation(method, "application/vnd.uub.record+xml");
-		assertProducesAnnotation(method, "application/vnd.uub.record+xml");
+		assertConsumesAnnotation(method, APPLICATION_VND_UUB_RECORD_XML);
+		assertProducesAnnotation(method, APPLICATION_VND_UUB_RECORD_XML);
 		assertAuthTokenAnnotation(parameterAnnotations, 0);
 		assertTypeAndIdAnnotation(parameterAnnotations, 2);
 	}
@@ -938,7 +942,7 @@ public class RecordEndpointTest {
 		assertXmlConvertionOfResponse(createdRecord);
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.CREATED);
-		assertResponseContentTypeIs("application/vnd.uub.record+xml");
+		assertResponseContentTypeIs(APPLICATION_VND_UUB_RECORD_XML);
 	}
 
 	@Test
@@ -955,7 +959,7 @@ public class RecordEndpointTest {
 		assertDataFromSpiderConvertedToJsonUsingConvertersFromProvider(createdRecord);
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.CREATED);
-		assertResponseContentTypeIs("application/vnd.uub.record+json");
+		assertResponseContentTypeIs(APPLICATION_VND_UUB_RECORD_JSON);
 	}
 
 	@Test
@@ -972,7 +976,7 @@ public class RecordEndpointTest {
 		assertXmlConvertionOfResponse(createdRecord);
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.CREATED);
-		assertResponseContentTypeIs("application/vnd.uub.record+xml");
+		assertResponseContentTypeIs(APPLICATION_VND_UUB_RECORD_XML);
 	}
 
 	@Test
@@ -981,8 +985,8 @@ public class RecordEndpointTest {
 		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
 
 		assertHttpMethodAndPathAnnotation(method, "POST", "{type}");
-		assertConsumesAnnotation(method, "application/vnd.uub.record+json", "*/*");
-		assertProducesAnnotation(method, "application/vnd.uub.record+json", "*/*");
+		assertConsumesAnnotation(method, APPLICATION_VND_UUB_RECORD_JSON, "*/*");
+		assertProducesAnnotation(method, APPLICATION_VND_UUB_RECORD_JSON, "*/*");
 		assertAuthTokenAnnotation(parameterAnnotations, 0);
 		PathParam typeParameter = (PathParam) parameterAnnotations[2][0];
 		assertEquals(typeParameter.value(), "type");
@@ -994,8 +998,8 @@ public class RecordEndpointTest {
 		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
 
 		assertHttpMethodAndPathAnnotation(method, "POST", "{type}");
-		assertConsumesAnnotation(method, "application/vnd.uub.record+json");
-		assertProducesAnnotation(method, "application/vnd.uub.record+xml");
+		assertConsumesAnnotation(method, APPLICATION_VND_UUB_RECORD_JSON);
+		assertProducesAnnotation(method, APPLICATION_VND_UUB_RECORD_XML);
 		assertAuthTokenAnnotation(parameterAnnotations, 0);
 		PathParam typeParameter = (PathParam) parameterAnnotations[2][0];
 		assertEquals(typeParameter.value(), "type");
@@ -1007,8 +1011,8 @@ public class RecordEndpointTest {
 		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
 
 		assertHttpMethodAndPathAnnotation(method, "POST", "{type}");
-		assertConsumesAnnotation(method, "application/vnd.uub.record+xml");
-		assertProducesAnnotation(method, "application/vnd.uub.record+json");
+		assertConsumesAnnotation(method, APPLICATION_VND_UUB_RECORD_XML);
+		assertProducesAnnotation(method, APPLICATION_VND_UUB_RECORD_JSON);
 		assertAuthTokenAnnotation(parameterAnnotations, 0);
 		PathParam typeParameter = (PathParam) parameterAnnotations[2][0];
 		assertEquals(typeParameter.value(), "type");
@@ -1020,8 +1024,8 @@ public class RecordEndpointTest {
 		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
 
 		assertHttpMethodAndPathAnnotation(method, "POST", "{type}");
-		assertConsumesAnnotation(method, "application/vnd.uub.record+xml");
-		assertProducesAnnotation(method, "application/vnd.uub.record+xml");
+		assertConsumesAnnotation(method, APPLICATION_VND_UUB_RECORD_XML);
+		assertProducesAnnotation(method, APPLICATION_VND_UUB_RECORD_XML);
 		assertAuthTokenAnnotation(parameterAnnotations, 0);
 		PathParam typeParameter = (PathParam) parameterAnnotations[2][0];
 		assertEquals(typeParameter.value(), "type");
@@ -1148,7 +1152,7 @@ public class RecordEndpointTest {
 		assertXmlConvertionOfResponse(uploadedFile);
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.OK);
-		assertResponseContentTypeIs("application/vnd.uub.record+xml");
+		assertResponseContentTypeIs(APPLICATION_VND_UUB_RECORD_XML);
 	}
 
 	@Test
@@ -1159,7 +1163,7 @@ public class RecordEndpointTest {
 		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
 
 		assertHttpMethodAndPathAnnotation(method, "POST", "{type}/{id}/{streamId}");
-		assertProducesAnnotation(method, "application/vnd.uub.record+json", "*/*");
+		assertProducesAnnotation(method, APPLICATION_VND_UUB_RECORD_JSON, "*/*");
 		assertAuthTokenAnnotation(parameterAnnotations, 0);
 		assertTypeAndIdAnnotation(parameterAnnotations, 2);
 
@@ -1177,7 +1181,7 @@ public class RecordEndpointTest {
 		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
 
 		assertHttpMethodAndPathAnnotation(method, "POST", "{type}/{id}/{streamId}");
-		assertProducesAnnotation(method, "application/vnd.uub.record+xml");
+		assertProducesAnnotation(method, APPLICATION_VND_UUB_RECORD_XML);
 		assertAuthTokenAnnotation(parameterAnnotations, 0);
 		assertTypeAndIdAnnotation(parameterAnnotations, 2);
 
@@ -1199,7 +1203,7 @@ public class RecordEndpointTest {
 		InputStream stream = createUplodedInputStream();
 
 		response = recordEndpoint.uploadFileUsingAuthTokenWithStream(
-				"application/vnd.uub.record+json", DUMMY_NON_AUTHORIZED_TOKEN, "image",
+				APPLICATION_VND_UUB_RECORD_JSON, DUMMY_NON_AUTHORIZED_TOKEN, "image",
 				"image:123456789", stream, "someFile.tif");
 
 		assertResponseStatusIs(Response.Status.FORBIDDEN);
@@ -1410,7 +1414,7 @@ public class RecordEndpointTest {
 		assertXmlConvertionOfResponse(searchRecord);
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.OK);
-		assertResponseContentTypeIs("application/vnd.uub.recordList+xml");
+		assertResponseContentTypeIs(APPLICATION_VND_UUB_RECORD_LIST_XML);
 	}
 
 	@Test
@@ -1428,7 +1432,7 @@ public class RecordEndpointTest {
 		assertDataFromSpiderConvertedToJsonUsingConvertersFromProvider(searchRecord);
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.OK);
-		assertResponseContentTypeIs("application/vnd.uub.recordList+json");
+		assertResponseContentTypeIs(APPLICATION_VND_UUB_RECORD_LIST_JSON);
 	}
 
 	@Test
@@ -1437,7 +1441,7 @@ public class RecordEndpointTest {
 		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
 
 		assertHttpMethodAndPathAnnotation(method, "GET", "searchResult/{searchId}");
-		assertProducesAnnotation(method, "application/vnd.uub.recordList+json", "*/*");
+		assertProducesAnnotation(method, APPLICATION_VND_UUB_RECORD_LIST_JSON, "*/*");
 		assertAuthTokenAnnotation(parameterAnnotations, 0);
 
 		PathParam searchIdParameter = (PathParam) parameterAnnotations[2][0];
@@ -1453,7 +1457,7 @@ public class RecordEndpointTest {
 		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
 
 		assertHttpMethodAndPathAnnotation(method, "GET", "searchResult/{searchId}");
-		assertProducesAnnotation(method, "application/vnd.uub.recordList+xml");
+		assertProducesAnnotation(method, APPLICATION_VND_UUB_RECORD_LIST_XML);
 		assertAuthTokenAnnotation(parameterAnnotations, 0);
 
 		PathParam searchIdParameter = (PathParam) parameterAnnotations[2][0];
@@ -1569,7 +1573,7 @@ public class RecordEndpointTest {
 		assertXmlConvertionOfResponse(validationResult);
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.OK);
-		assertResponseContentTypeIs("application/vnd.uub.record+xml");
+		assertResponseContentTypeIs(APPLICATION_VND_UUB_RECORD_XML);
 	}
 
 	@Test
@@ -1593,7 +1597,7 @@ public class RecordEndpointTest {
 		assertXmlConvertionOfResponse(validationResult);
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.OK);
-		assertResponseContentTypeIs("application/vnd.uub.record+xml");
+		assertResponseContentTypeIs(APPLICATION_VND_UUB_RECORD_XML);
 	}
 
 	@Test
@@ -1617,7 +1621,7 @@ public class RecordEndpointTest {
 		assertDataFromSpiderConvertedToJsonUsingConvertersFromProvider(validationResult);
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.OK);
-		assertResponseContentTypeIs("application/vnd.uub.record+json");
+		assertResponseContentTypeIs(APPLICATION_VND_UUB_RECORD_JSON);
 	}
 
 	@Test
@@ -1641,7 +1645,7 @@ public class RecordEndpointTest {
 
 		assertHttpMethodAndPathAnnotation(method, "POST", "{type}");
 		assertConsumesAnnotation(method, "application/vnd.uub.workorder+json");
-		assertProducesAnnotation(method, "application/vnd.uub.record+json", "*/*");
+		assertProducesAnnotation(method, APPLICATION_VND_UUB_RECORD_JSON, "*/*");
 		assertAuthTokenAnnotation(parameterAnnotations, 0);
 
 		PathParam typeParameter = (PathParam) parameterAnnotations[2][0];
@@ -1655,7 +1659,7 @@ public class RecordEndpointTest {
 
 		assertHttpMethodAndPathAnnotation(method, "POST", "{type}");
 		assertConsumesAnnotation(method, "application/vnd.uub.workorder+json");
-		assertProducesAnnotation(method, "application/vnd.uub.record+xml");
+		assertProducesAnnotation(method, APPLICATION_VND_UUB_RECORD_XML);
 		assertAuthTokenAnnotation(parameterAnnotations, 0);
 
 		PathParam typeParameter = (PathParam) parameterAnnotations[2][0];
@@ -1669,7 +1673,7 @@ public class RecordEndpointTest {
 
 		assertHttpMethodAndPathAnnotation(method, "POST", "{type}");
 		assertConsumesAnnotation(method, "application/vnd.uub.workorder+xml");
-		assertProducesAnnotation(method, "application/vnd.uub.record+json");
+		assertProducesAnnotation(method, APPLICATION_VND_UUB_RECORD_JSON);
 		assertAuthTokenAnnotation(parameterAnnotations, 0);
 
 		PathParam typeParameter = (PathParam) parameterAnnotations[2][0];
@@ -1683,7 +1687,7 @@ public class RecordEndpointTest {
 
 		assertHttpMethodAndPathAnnotation(method, "POST", "{type}");
 		assertConsumesAnnotation(method, "application/vnd.uub.workorder+xml");
-		assertProducesAnnotation(method, "application/vnd.uub.record+xml");
+		assertProducesAnnotation(method, APPLICATION_VND_UUB_RECORD_XML);
 		assertAuthTokenAnnotation(parameterAnnotations, 0);
 
 		PathParam typeParameter = (PathParam) parameterAnnotations[2][0];
@@ -1778,7 +1782,7 @@ public class RecordEndpointTest {
 		assertXmlConvertionOfResponse(dataList);
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.CREATED);
-		assertResponseContentTypeIs("application/vnd.uub.record+xml");
+		assertResponseContentTypeIs(APPLICATION_VND_UUB_RECORD_XML);
 	}
 
 	@Test
@@ -1796,7 +1800,7 @@ public class RecordEndpointTest {
 		assertDataFromSpiderConvertedToJsonUsingConvertersFromProvider(dataList);
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.CREATED);
-		assertResponseContentTypeIs("application/vnd.uub.record+json");
+		assertResponseContentTypeIs(APPLICATION_VND_UUB_RECORD_JSON);
 	}
 
 	@Test
@@ -1815,7 +1819,7 @@ public class RecordEndpointTest {
 		assertXmlConvertionOfResponse(dataList);
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.CREATED);
-		assertResponseContentTypeIs("application/vnd.uub.record+xml");
+		assertResponseContentTypeIs(APPLICATION_VND_UUB_RECORD_XML);
 	}
 
 	@Test
@@ -1850,7 +1854,7 @@ public class RecordEndpointTest {
 		assertXmlConvertionOfResponse(dataList);
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.CREATED);
-		assertResponseContentTypeIs("application/vnd.uub.record+xml");
+		assertResponseContentTypeIs(APPLICATION_VND_UUB_RECORD_XML);
 	}
 
 	@Test
@@ -1859,8 +1863,8 @@ public class RecordEndpointTest {
 		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
 
 		assertHttpMethodAndPathAnnotation(method, "POST", "index/{type}");
-		assertConsumesAnnotation(method, "application/vnd.uub.record+json", "*/*");
-		assertProducesAnnotation(method, "application/vnd.uub.record+json", "*/*");
+		assertConsumesAnnotation(method, APPLICATION_VND_UUB_RECORD_JSON, "*/*");
+		assertProducesAnnotation(method, APPLICATION_VND_UUB_RECORD_JSON, "*/*");
 		assertAuthTokenAnnotation(parameterAnnotations, 0);
 
 		PathParam typeParameter = (PathParam) parameterAnnotations[2][0];
@@ -1873,8 +1877,8 @@ public class RecordEndpointTest {
 		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
 
 		assertHttpMethodAndPathAnnotation(method, "POST", "index/{type}");
-		assertConsumesAnnotation(method, "application/vnd.uub.record+json");
-		assertProducesAnnotation(method, "application/vnd.uub.record+xml");
+		assertConsumesAnnotation(method, APPLICATION_VND_UUB_RECORD_JSON);
+		assertProducesAnnotation(method, APPLICATION_VND_UUB_RECORD_XML);
 		assertAuthTokenAnnotation(parameterAnnotations, 0);
 
 		PathParam typeParameter = (PathParam) parameterAnnotations[2][0];
@@ -1887,8 +1891,8 @@ public class RecordEndpointTest {
 		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
 
 		assertHttpMethodAndPathAnnotation(method, "POST", "index/{type}");
-		assertConsumesAnnotation(method, "application/vnd.uub.record+xml");
-		assertProducesAnnotation(method, "application/vnd.uub.record+json");
+		assertConsumesAnnotation(method, APPLICATION_VND_UUB_RECORD_XML);
+		assertProducesAnnotation(method, APPLICATION_VND_UUB_RECORD_JSON);
 		assertAuthTokenAnnotation(parameterAnnotations, 0);
 
 		PathParam typeParameter = (PathParam) parameterAnnotations[2][0];
@@ -1901,8 +1905,8 @@ public class RecordEndpointTest {
 		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
 
 		assertHttpMethodAndPathAnnotation(method, "POST", "index/{type}");
-		assertConsumesAnnotation(method, "application/vnd.uub.record+xml");
-		assertProducesAnnotation(method, "application/vnd.uub.record+xml");
+		assertConsumesAnnotation(method, APPLICATION_VND_UUB_RECORD_XML);
+		assertProducesAnnotation(method, APPLICATION_VND_UUB_RECORD_XML);
 		assertAuthTokenAnnotation(parameterAnnotations, 0);
 
 		PathParam typeParameter = (PathParam) parameterAnnotations[2][0];
