@@ -1,5 +1,5 @@
 /*
- * Copyright 2016, 2019 Uppsala University Library
+ * Copyright 2016, 2019, 2022 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -44,7 +44,7 @@ public class SpiderInstanceFactorySpy implements SpiderInstanceFactory {
 	public SpiderRecordIncomingLinksReaderSpy spiderRecordIncomingLinksReaderSpy;
 	public SpiderRecordListReaderSpy spiderRecordListReaderSpy;
 	public SpiderRecordSearcherSpy spiderRecordSearcherSpy;
-	public IndexBatchJobCreatorSpy indexBatchJobCreator;
+	public IndexBatchJobCreatorSpy spiderRecordListIndexerSpy;
 	public String recordType;
 	public boolean throwRecordNotFoundException = false;
 	public boolean throwDataException = false;
@@ -119,8 +119,8 @@ public class SpiderInstanceFactorySpy implements SpiderInstanceFactory {
 
 	@Override
 	public RecordListIndexer factorRecordListIndexer() {
-		indexBatchJobCreator = new IndexBatchJobCreatorSpy();
-		return indexBatchJobCreator;
+		spiderRecordListIndexerSpy = new IndexBatchJobCreatorSpy();
+		return spiderRecordListIndexerSpy;
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Uppsala University Library
+ * Copyright 2016, 2022 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -25,11 +25,13 @@ import se.uu.ub.cora.spider.authorization.AuthorizationException;
 import se.uu.ub.cora.spider.record.DataException;
 import se.uu.ub.cora.spider.record.RecordUpdater;
 import se.uu.ub.cora.storage.RecordNotFoundException;
+import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 import se.uu.ub.cora.therest.coradata.DataRecordSpy;
 import se.uu.ub.cora.therest.testdata.DataCreator;
 
 public class SpiderRecordUpdaterSpy implements RecordUpdater {
 
+	MethodCallRecorder MCR = new MethodCallRecorder();
 	public String authToken;
 	public String type;
 	public String id;
@@ -38,14 +40,19 @@ public class SpiderRecordUpdaterSpy implements RecordUpdater {
 
 	@Override
 	public DataRecord updateRecord(String authToken, String type, String id, DataGroup record) {
+		MCR.addCall("authToken", authToken, "type", type, "id", id, "record", record);
+
 		this.authToken = authToken;
 		this.type = type;
 		this.id = id;
 		this.record = record;
 		possiblyThrowException(authToken, type, id);
-		return new DataRecordSpy(
+		DataRecordSpy dataRecordSpy = new DataRecordSpy(
 				DataCreator.createRecordWithNameInDataAndIdAndTypeAndLinkedRecordId("nameInData",
 						id, type, "linkedRecordId"));
+
+		MCR.addReturned(dataRecordSpy);
+		return dataRecordSpy;
 	}
 
 	private void possiblyThrowException(String authToken, String type, String id) {

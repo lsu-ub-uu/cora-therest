@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2016, 2018, 2021 Uppsala University Library
+ * Copyright 2015, 2016, 2018, 2021, 2022 Uppsala University Library
  * Copyright 2016 Olov McKie
  *
  * This file is part of Cora.
@@ -29,6 +29,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.util.HashMap;
@@ -36,11 +38,20 @@ import java.util.Map;
 
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition.FormDataContentDispositionBuilder;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.HeaderParam;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
+import se.uu.ub.cora.converter.ConverterProvider;
 import se.uu.ub.cora.data.Convertible;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataList;
@@ -51,19 +62,19 @@ import se.uu.ub.cora.json.parser.JsonValue;
 import se.uu.ub.cora.json.parser.org.OrgJsonParser;
 import se.uu.ub.cora.logger.LoggerProvider;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
+import se.uu.ub.cora.therest.coradata.DataGroupSpy;
 import se.uu.ub.cora.therest.coradata.DataListSpy;
 import se.uu.ub.cora.therest.coradata.DataRecordSpy;
 import se.uu.ub.cora.therest.log.LoggerFactorySpy;
 
 public class RecordEndpointTest {
-	private static final String INDEX_BATCH_JOB = "indexBatchJob";
 	private static final String DUMMY_NON_AUTHORIZED_TOKEN = "dummyNonAuthorizedToken";
 	private static final String PLACE_0001 = "place:0001";
 	private static final String PLACE = "place";
 	private static final String AUTH_TOKEN = "authToken";
 	private JsonParserSpy jsonParser;
 
-	JsonToDataConverterFactorySpy jsonToDataConverterFactorySpy = new JsonToDataConverterFactorySpy();
+	private JsonToDataConverterFactorySpy jsonToDataConverterFactorySpy = new JsonToDataConverterFactorySpy();
 
 	private RecordEndpoint recordEndpoint;
 	private SpiderInstanceFactorySpy spiderInstanceFactorySpy;
@@ -75,22 +86,27 @@ public class RecordEndpointTest {
 
 	private String jsonToValidate = "{\"order\":{\"name\":\"validationOrder\",\"children\":[{\"name\":\"recordInfo\",\"children\":[{\"name\":\"dataDivider\",\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"system\"},{\"name\":\"linkedRecordId\",\"value\":\"testSystem\"}]}]},{\"name\":\"recordType\",\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"recordType\"},{\"name\":\"linkedRecordId\",\"value\":\"someRecordType\"}]},{\"name\":\"metadataToValidate\",\"value\":\"existing\"},{\"name\":\"validateLinks\",\"value\":\"false\"}]},\"record\":{\"name\":\"text\",\"children\":[{\"name\":\"recordInfo\",\"children\":[{\"name\":\"id\",\"value\":\"workOrderRecordIdTextVar2Text\"},{\"name\":\"dataDivider\",\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"system\"},{\"name\":\"linkedRecordId\",\"value\":\"cora\"}]}]},{\"name\":\"textPart\",\"children\":[{\"name\":\"text\",\"value\":\"Id på länkad post\"}],\"attributes\":{\"type\":\"default\",\"lang\":\"sv\"}},{\"name\":\"textPart\",\"children\":[{\"name\":\"text\",\"value\":\"Linked record id\"}],\"attributes\":{\"type\":\"alternative\",\"lang\":\"en\"}}]}}";
 	private String defaultJson = "{\"name\":\"someRecordType\",\"children\":[]}";
+	private String defaultXml = "<someXml></someXml>";
 	private String jsonFilterData = "{\"name\":\"filter\",\"children\":[{\"name\":\"part\",\"children\":[{\"name\":\"key\",\"value\":\"movieTitle\"},{\"name\":\"value\",\"value\":\"Some title\"}],\"repeatId\":\"0\"}]}";
 	private String jsonIndexData = "{\\\"name\\\":\\\"indexSettings\\\",\\\"children\\\":[{\"name\":\"filter\",\"children\":[{\"name\":\"part\",\"children\":[{\"name\":\"key\",\"value\":\"movieTitle\"},{\"name\":\"value\",\"value\":\"Some title\"}],\"repeatId\":\"0\"}]}]}";
 	private DataToJsonConverterFactoryCreatorSpy converterFactoryCreatorSpy;
+	private ConverterFactorySpy converterFactorySpy;
 	private String standardBaseUrlHttp = "http://cora.epc.ub.uu.se/systemone/rest/record/";
 	private String standardBaseUrlHttps = "https://cora.epc.ub.uu.se/systemone/rest/record/";
 
 	@BeforeMethod
 	public void beforeMethod() {
+		loggerFactorySpy = new LoggerFactorySpy();
+		LoggerProvider.setLoggerFactory(loggerFactorySpy);
 		converterFactoryCreatorSpy = new DataToJsonConverterFactoryCreatorSpy();
 		DataToJsonConverterProvider
 				.setDataToJsonConverterFactoryCreator(converterFactoryCreatorSpy);
 
+		converterFactorySpy = new ConverterFactorySpy();
+		ConverterProvider.setConverterFactory("xml", converterFactorySpy);
+
 		jsonToDataConverterFactorySpy = new JsonToDataConverterFactorySpy();
 		JsonToDataConverterProvider.setJsonToDataConverterFactory(jsonToDataConverterFactorySpy);
-		loggerFactorySpy = new LoggerFactorySpy();
-		LoggerProvider.setLoggerFactory(loggerFactorySpy);
 		initInfo.put("theRestPublicPathToSystem", "/systemone/rest/");
 		spiderInstanceFactorySpy = new SpiderInstanceFactorySpy();
 		SpiderInstanceProvider.setSpiderInstanceFactory(spiderInstanceFactorySpy);
@@ -120,7 +136,7 @@ public class RecordEndpointTest {
 		requestSpy.headers.put("X-Forwarded-Proto", "https");
 		recordEndpoint = new RecordEndpoint(requestSpy);
 
-		response = recordEndpoint.readRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001);
+		response = recordEndpoint.readRecordJson(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001);
 		DataToJsonConverterFactorySpy converterFactory = (DataToJsonConverterFactorySpy) converterFactoryCreatorSpy.MCR
 				.getReturnValue("createFactory", 0);
 
@@ -135,7 +151,7 @@ public class RecordEndpointTest {
 				"https://cora.epc.ub.uu.se/systemone/rest/record/text/");
 		recordEndpoint = new RecordEndpoint(requestSpy);
 
-		response = recordEndpoint.readRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001);
+		response = recordEndpoint.readRecordJson(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001);
 		DataToJsonConverterFactorySpy converterFactory = (DataToJsonConverterFactorySpy) converterFactoryCreatorSpy.MCR
 				.getReturnValue("createFactory", 0);
 
@@ -148,7 +164,7 @@ public class RecordEndpointTest {
 		requestSpy.headers.put("X-Forwarded-Proto", "");
 		recordEndpoint = new RecordEndpoint(requestSpy);
 
-		response = recordEndpoint.readRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001);
+		response = recordEndpoint.readRecordJson(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001);
 		DataToJsonConverterFactorySpy converterFactory = (DataToJsonConverterFactorySpy) converterFactoryCreatorSpy.MCR
 				.getReturnValue("createFactory", 0);
 
@@ -167,7 +183,7 @@ public class RecordEndpointTest {
 	private void expectTokenForReadListToPrefereblyBeHeaderThanQuery(String headerAuthToken,
 			String queryAuthToken, String authTokenExpected) {
 		String jsonFilter = "{\"name\":\"filter\",\"children\":[]}";
-		response = recordEndpoint.readRecordList(headerAuthToken, queryAuthToken, PLACE,
+		response = recordEndpoint.readRecordListJson(headerAuthToken, queryAuthToken, PLACE,
 				jsonFilter);
 
 		SpiderRecordListReaderSpy spiderListReaderSpy = spiderInstanceFactorySpy.spiderRecordListReaderSpy;
@@ -176,7 +192,7 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testReadRecordListWithFilter() {
-		response = recordEndpoint.readRecordList(AUTH_TOKEN, AUTH_TOKEN, PLACE, jsonFilterData);
+		response = recordEndpoint.readRecordListJson(AUTH_TOKEN, AUTH_TOKEN, PLACE, jsonFilterData);
 
 		SpiderRecordListReaderSpy spiderListReaderSpy = spiderInstanceFactorySpy.spiderRecordListReaderSpy;
 
@@ -192,16 +208,24 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testReadRecordListWithNullAsFilter() {
-		response = recordEndpoint.readRecordList(AUTH_TOKEN, AUTH_TOKEN, PLACE, null);
+		response = recordEndpoint.readRecordListJson(AUTH_TOKEN, AUTH_TOKEN, PLACE, null);
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.OK);
 
 		assertEquals(jsonParser.jsonString, "{\"name\":\"filter\",\"children\":[]}");
+	}
 
+	@Test
+	public void testReadRecordListWithEmptyFilter() {
+		response = recordEndpoint.readRecordListJson(AUTH_TOKEN, AUTH_TOKEN, PLACE, "");
+		assertEntityExists();
+		assertResponseStatusIs(Response.Status.OK);
+
+		assertEquals(jsonParser.jsonString, "{\"name\":\"filter\",\"children\":[]}");
 	}
 
 	private void assertEntityExists() {
-		assertNotNull(response.getEntity(), "An entity in json format should be returned");
+		assertNotNull(response.getEntity(), "An entity should be returned");
 	}
 
 	private void assertResponseStatusIs(Status responseStatus) {
@@ -209,9 +233,80 @@ public class RecordEndpointTest {
 	}
 
 	@Test
+	public void testReadRecordListForXml() {
+		response = recordEndpoint.readRecordListXml(AUTH_TOKEN, AUTH_TOKEN, "place", defaultXml);
+
+		var filterElement = getValueFromConvertAndAssertParameters();
+
+		spiderInstanceFactorySpy.spiderRecordListReaderSpy.MCR.assertParameters("readRecordList", 0,
+				AUTH_TOKEN, "place", filterElement);
+
+		DataList dataList = (DataList) spiderInstanceFactorySpy.spiderRecordListReaderSpy.MCR
+				.getReturnValue("readRecordList", 0);
+
+		assertXmlConvertionOfResponse(dataList);
+		assertEntityExists();
+		assertResponseStatusIs(Response.Status.OK);
+		assertResponseContentTypeIs("application/vnd.uub.recordList+xml");
+	}
+
+	@Test
+	public void testReadRecordListWithNullFilterForXml() {
+		response = recordEndpoint.readRecordListXml(AUTH_TOKEN, AUTH_TOKEN, "place", null);
+
+		var filterSentOnToSpider = spiderInstanceFactorySpy.spiderRecordListReaderSpy.filter;
+
+		String defaultFilter = "{\"name\":\"filter\",\"children\":[]}";
+		assertJsonStringConvertedToDataUsesCoraData(defaultFilter, filterSentOnToSpider);
+
+		spiderInstanceFactorySpy.spiderRecordListReaderSpy.MCR.assertParameters("readRecordList", 0,
+				AUTH_TOKEN, "place", filterSentOnToSpider);
+
+		DataList dataList = (DataList) spiderInstanceFactorySpy.spiderRecordListReaderSpy.MCR
+				.getReturnValue("readRecordList", 0);
+
+		assertXmlConvertionOfResponse(dataList);
+		assertEntityExists();
+		assertResponseStatusIs(Response.Status.OK);
+		assertResponseContentTypeIs("application/vnd.uub.recordList+xml");
+	}
+
+	@Test
+	public void testAnnotationsForReadRecordListJson() throws Exception {
+		Method method = getMethodWithMethodName("readRecordListJson", 4);
+		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+
+		assertHttpMethodAndPathAnnotation(method, "GET", "{type}/");
+		assertProducesAnnotation(method, "application/vnd.uub.recordList+json", "*/*");
+		assertAuthTokenAnnotation(parameterAnnotations, 0);
+
+		PathParam typeParameter = (PathParam) parameterAnnotations[2][0];
+		assertEquals(typeParameter.value(), "type");
+
+		QueryParam filterParameter = (QueryParam) parameterAnnotations[3][0];
+		assertEquals(filterParameter.value(), "filter");
+	}
+
+	@Test
+	public void testAnnotationsForReadRecordListXml() throws Exception {
+		Method method = getMethodWithMethodName("readRecordListXml", 4);
+		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+
+		assertHttpMethodAndPathAnnotation(method, "GET", "{type}/");
+		assertProducesAnnotation(method, "application/vnd.uub.recordList+xml");
+		assertAuthTokenAnnotation(parameterAnnotations, 0);
+
+		PathParam typeParameter = (PathParam) parameterAnnotations[2][0];
+		assertEquals(typeParameter.value(), "type");
+
+		QueryParam filterParameter = (QueryParam) parameterAnnotations[3][0];
+		assertEquals(filterParameter.value(), "filter");
+	}
+
+	@Test
 	public void testReadRecordListNotFound() {
 		String jsonFilter = "{\"name\":\"filter\",\"children\":[]}";
-		response = recordEndpoint.readRecordList(AUTH_TOKEN, AUTH_TOKEN, "place_NOT_FOUND",
+		response = recordEndpoint.readRecordListJson(AUTH_TOKEN, AUTH_TOKEN, "place_NOT_FOUND",
 				jsonFilter);
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
 	}
@@ -219,16 +314,111 @@ public class RecordEndpointTest {
 	@Test
 	public void testReadRecordListUnauthorized() {
 		String jsonFilter = "{\"name\":\"filter\",\"children\":[]}";
-		response = recordEndpoint.readRecordListUsingAuthTokenByType(DUMMY_NON_AUTHORIZED_TOKEN,
-				PLACE, jsonFilter);
+		response = recordEndpoint.readRecordListJson(DUMMY_NON_AUTHORIZED_TOKEN, AUTH_TOKEN, PLACE,
+				jsonFilter);
 		assertResponseStatusIs(Response.Status.FORBIDDEN);
 	}
 
 	@Test
 	public void testReadRecordListNoTokenAndUnauthorized() {
 		String jsonFilter = "{\"name\":\"filter\",\"children\":[]}";
-		response = recordEndpoint.readRecordListUsingAuthTokenByType(null, PLACE, jsonFilter);
+		response = recordEndpoint.readRecordListJson(null, null, PLACE, jsonFilter);
 		assertResponseStatusIs(Response.Status.UNAUTHORIZED);
+	}
+
+	@Test
+	public void testAnnotationsForReadJson() throws Exception {
+		Method method = getMethodWithMethodName("readRecordJson", 4);
+
+		assertHttpMethodAndPathAnnotation(method, "GET", "{type}/{id}");
+		assertProducesAnnotation(method, "application/vnd.uub.record+json", "*/*");
+		assertAnnotationForReadRecordParameters(method);
+	}
+
+	@Test
+	public void testAnnotationsForReadXml() throws Exception {
+		Method method = getMethodWithMethodName("readRecordXml", 4);
+
+		assertHttpMethodAndPathAnnotation(method, "GET", "{type}/{id}");
+		assertProducesAnnotation(method, "application/vnd.uub.record+xml");
+		assertAnnotationForReadRecordParameters(method);
+	}
+
+	private void assertHttpMethodAndPathAnnotation(Method method, String httpMethod,
+			String expectedPath) {
+		assertHttpMethodAnnotation(method, httpMethod);
+		assertPathAnnotation(method, expectedPath);
+	}
+
+	private void assertHttpMethodAnnotation(Method method, String httpMethod) {
+		Annotation[] annotations = method.getAnnotations();
+		Class<? extends Annotation> httpMethodAnnotation = annotations[0].annotationType();
+		String httpMethodAnnotationClassName = httpMethodAnnotation.toString();
+		assertTrue(httpMethodAnnotationClassName.endsWith(httpMethod));
+	}
+
+	private void assertPathAnnotation(Method method, String expectedPath) {
+		Path pathAnnotation = method.getAnnotation(Path.class);
+		assertNotNull(pathAnnotation);
+		assertEquals(pathAnnotation.value(), expectedPath);
+	}
+
+	private void assertAnnotationForReadRecordParameters(Method method) {
+		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+		assertAuthTokenAnnotation(parameterAnnotations, 0);
+		assertTypeAndIdAnnotation(parameterAnnotations, 2);
+	}
+
+	private void assertTypeAndIdAnnotation(Annotation[][] parameterAnnotations, int startPosition) {
+		PathParam typeParameter = (PathParam) parameterAnnotations[startPosition][0];
+		assertEquals(typeParameter.value(), "type");
+
+		PathParam idParameter = (PathParam) parameterAnnotations[startPosition + 1][0];
+		assertEquals(idParameter.value(), "id");
+	}
+
+	private void assertProducesAnnotation(Method method, String... accept) {
+		Produces producesAnnotation = method.getAnnotation(Produces.class);
+		assertNotNull(producesAnnotation);
+		assertProducesValues(producesAnnotation, accept);
+		assertEquals(producesAnnotation.value().length, accept.length);
+	}
+
+	private void assertConsumesAnnotation(Method method, String... accept) {
+		Consumes consumesAnnotation = method.getAnnotation(Consumes.class);
+		assertNotNull(consumesAnnotation);
+		assertConsumesValues(consumesAnnotation, accept);
+		assertEquals(consumesAnnotation.value().length, accept.length);
+	}
+
+	private void assertConsumesValues(Consumes consumesAnnotation, String... accept) {
+		for (int i = 0; i < accept.length; i++) {
+			assertEquals(consumesAnnotation.value()[i], accept[i]);
+		}
+	}
+
+	private void assertProducesValues(Produces producesAnnotation, String... accept) {
+		for (int i = 0; i < accept.length; i++) {
+			assertEquals(producesAnnotation.value()[i], accept[i]);
+		}
+	}
+
+	private Method getMethodWithMethodName(String methodName, int numOfParameters)
+			throws NoSuchMethodException {
+		Class<? extends RecordEndpoint> endpointClass = recordEndpoint.getClass();
+
+		var parameters = generateParameters(numOfParameters);
+
+		return endpointClass.getMethod(methodName, parameters);
+	}
+
+	private Class<?>[] generateParameters(int numOfParameters) {
+		Class<?>[] parameters = new Class<?>[numOfParameters];
+
+		for (int i = 0; i < numOfParameters; i++) {
+			parameters[i] = String.class;
+		}
+		return parameters;
 	}
 
 	@Test
@@ -242,26 +432,39 @@ public class RecordEndpointTest {
 	private void expectTokenForReadToPreferablyBeHeaderThanQuery(String headerAuthToken,
 			String queryAuthToken, String authTokenExpected) {
 
-		response = recordEndpoint.readRecord(headerAuthToken, queryAuthToken, PLACE, PLACE_0001);
+		response = recordEndpoint.readRecordJson(headerAuthToken, queryAuthToken, PLACE,
+				PLACE_0001);
 
 		SpiderRecordReaderSpy spiderReaderSpy = spiderInstanceFactorySpy.spiderRecordReaderSpy;
 		assertEquals(spiderReaderSpy.authToken, authTokenExpected);
 	}
 
 	@Test
-	public void testReadRecord() {
-		response = recordEndpoint.readRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001);
+	public void testReadRecordJson() {
+		response = recordEndpoint.readRecordJson(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001);
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.OK);
+		assertResponseContentTypeIs("application/vnd.uub.record+json");
+	}
+
+	private void assertResponseContentTypeIs(String expectedContentType) {
+		assertEquals(response.getHeaders().getFirst(HttpHeaders.CONTENT_TYPE), expectedContentType);
 	}
 
 	@Test
-	public void testReadRecordUsesToRestConverterFactory() {
+	public void testReadRecordXml() {
+		response = recordEndpoint.readRecordXml(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001);
+		assertEntityExists();
+		assertResponseStatusIs(Response.Status.OK);
+		assertResponseContentTypeIs("application/vnd.uub.record+xml");
+	}
 
-		response = recordEndpoint.readRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001);
+	@Test
+	public void testReadRecordUsesToRestConverterFactoryForJson() {
+
+		response = recordEndpoint.readRecordJson(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001);
 
 		DataRecord recordReturnedFromReader = spiderInstanceFactorySpy.spiderRecordReaderSpy.dataRecord;
-
 		assertDataFromSpiderConvertedToJsonUsingConvertersFromProvider(recordReturnedFromReader);
 	}
 
@@ -281,28 +484,51 @@ public class RecordEndpointTest {
 	}
 
 	@Test
+	public void testReadRecordUsesXmlConverterForAcceptXml() {
+
+		response = recordEndpoint.readRecordXml(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001);
+
+		DataRecord recordReturnedFromReader = spiderInstanceFactorySpy.spiderRecordReaderSpy.dataRecord;
+		assertXmlConvertionOfResponse(recordReturnedFromReader);
+	}
+
+	private void assertXmlConvertionOfResponse(Convertible convertible) {
+
+		ExternallyConvertibleToStringConverterSpy dataToXmlConverter = (ExternallyConvertibleToStringConverterSpy) converterFactorySpy.MCR
+				.getReturnValue("factorExternallyConvertableToStringConverter", 0);
+
+		dataToXmlConverter.MCR.assertParameters("convertWithLinks", 0, convertible,
+				standardBaseUrlHttp);
+
+		var entity = response.getEntity();
+		dataToXmlConverter.MCR.assertReturn("convertWithLinks", 0, entity);
+	}
+
+	@Test
 	public void testReadRecordUnauthenticated() {
-		response = recordEndpoint.readRecordUsingAuthTokenByTypeAndId("dummyNonAuthenticatedToken",
-				PLACE, PLACE_0001);
+		response = recordEndpoint.readRecordJson("dummyNonAuthenticatedToken", AUTH_TOKEN, PLACE,
+				PLACE_0001);
 		assertResponseStatusIs(Response.Status.UNAUTHORIZED);
 	}
 
 	@Test
 	public void testReadRecordUnauthorized() {
-		response = recordEndpoint.readRecordUsingAuthTokenByTypeAndId(DUMMY_NON_AUTHORIZED_TOKEN,
-				PLACE, PLACE_0001);
+		response = recordEndpoint.readRecordJson(DUMMY_NON_AUTHORIZED_TOKEN, AUTH_TOKEN, PLACE,
+				PLACE_0001);
 		assertResponseStatusIs(Response.Status.FORBIDDEN);
 	}
 
 	@Test
 	public void testReadRecordNotFound() {
-		response = recordEndpoint.readRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, "place:0001_NOT_FOUND");
+		response = recordEndpoint.readRecordJson(AUTH_TOKEN, AUTH_TOKEN, PLACE,
+				"place:0001_NOT_FOUND");
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
 	}
 
 	@Test
 	public void testReadRecordAbstractRecordType() {
-		response = recordEndpoint.readRecord(AUTH_TOKEN, AUTH_TOKEN, "binary", "image:123456789");
+		response = recordEndpoint.readRecordJson(AUTH_TOKEN, AUTH_TOKEN, "binary",
+				"image:123456789");
 		assertResponseStatusIs(Response.Status.OK);
 	}
 
@@ -318,16 +544,16 @@ public class RecordEndpointTest {
 	private void expectTokenForReadIncomingLinksToPrefereblyBeHeaderThanQuery(
 			String headerAuthToken, String queryAuthToken, String authTokenExpected) {
 
-		response = recordEndpoint.readIncomingRecordLinks(headerAuthToken, queryAuthToken, PLACE,
-				PLACE_0001);
+		response = recordEndpoint.readIncomingRecordLinksJson(headerAuthToken, queryAuthToken,
+				PLACE, PLACE_0001);
 
 		SpiderRecordIncomingLinksReaderSpy spiderIncomingLinksReaderSpy = spiderInstanceFactorySpy.spiderRecordIncomingLinksReaderSpy;
 		assertEquals(spiderIncomingLinksReaderSpy.authToken, authTokenExpected);
 	}
 
 	@Test
-	public void testReadIncomingRecordLinks() {
-		response = recordEndpoint.readIncomingRecordLinks(AUTH_TOKEN, AUTH_TOKEN, PLACE,
+	public void testReadIncomingRecordLinksForJson() {
+		response = recordEndpoint.readIncomingRecordLinksJson(AUTH_TOKEN, AUTH_TOKEN, PLACE,
 				PLACE_0001);
 		DataList dataList = (DataList) spiderInstanceFactorySpy.spiderRecordIncomingLinksReaderSpy.MCR
 				.getReturnValue("readIncomingLinks", 0);
@@ -337,15 +563,66 @@ public class RecordEndpointTest {
 	}
 
 	@Test
+	public void testReadIncomingRecordLinksForXml() {
+		response = recordEndpoint.readIncomingRecordLinksXml(AUTH_TOKEN, AUTH_TOKEN, PLACE,
+				PLACE_0001);
+		DataList dataList = (DataList) spiderInstanceFactorySpy.spiderRecordIncomingLinksReaderSpy.MCR
+				.getReturnValue("readIncomingLinks", 0);
+
+		assertXmlConvertionOfResponse(dataList);
+		assertEntityExists();
+		assertResponseStatusIs(Response.Status.OK);
+		assertResponseContentTypeIs("application/vnd.uub.recordList+xml");
+	}
+
+	@Test
+	public void testAnnotationsForReadIncomingRecordLinksJson() throws Exception {
+		String methodName = "readIncomingRecordLinksJson";
+		Method method = getMethodWithMethodName(methodName, 4);
+
+		assertHttpMethodAndPathAnnotation(method, "GET", "{type}/{id}/incomingLinks");
+		assertProducesAnnotation(method, "application/vnd.uub.recordList+json", "*/*");
+		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+		assertAuthTokenAnnotation(parameterAnnotations, 0);
+		assertTypeAndIdAnnotation(parameterAnnotations, 2);
+	}
+
+	@Test
+	public void testAnnotationsForReadIncomingRecordLinksXml() throws Exception {
+		String methodName = "readIncomingRecordLinksXml";
+		Method method = getMethodWithMethodName(methodName, 4);
+
+		assertHttpMethodAndPathAnnotation(method, "GET", "{type}/{id}/incomingLinks");
+		assertProducesAnnotation(method, "application/vnd.uub.recordList+xml");
+		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+		assertAuthTokenAnnotation(parameterAnnotations, 0);
+		assertTypeAndIdAnnotation(parameterAnnotations, 2);
+	}
+
+	// private void assertAcceptAndAuthTokenAnnotation(Annotation[][] parameterAnnotations) {
+	// HeaderParam acceptParameter = (HeaderParam) parameterAnnotations[0][0];
+	// assertEquals(acceptParameter.value(), "Accept");
+	// assertAuthTokenAnnotation(parameterAnnotations, 1);
+	// }
+
+	private void assertAuthTokenAnnotation(Annotation[][] parameterAnnotations, int startPosition) {
+		HeaderParam headerAuthTokenParameter = (HeaderParam) parameterAnnotations[startPosition][0];
+		assertEquals(headerAuthTokenParameter.value(), "authToken");
+		QueryParam queryAuthTokenParameter = (QueryParam) parameterAnnotations[startPosition
+				+ 1][0];
+		assertEquals(queryAuthTokenParameter.value(), "authToken");
+	}
+
+	@Test
 	public void testReadIncomingLinksUnauthorized() {
-		response = recordEndpoint.readIncomingRecordLinksUsingAuthTokenByTypeAndId(
-				DUMMY_NON_AUTHORIZED_TOKEN, PLACE, PLACE_0001);
+		response = recordEndpoint.readIncomingRecordLinksJson(DUMMY_NON_AUTHORIZED_TOKEN,
+				AUTH_TOKEN, PLACE, PLACE_0001);
 		assertResponseStatusIs(Response.Status.FORBIDDEN);
 	}
 
 	@Test
 	public void testReadIncomingLinksNotFound() {
-		response = recordEndpoint.readIncomingRecordLinks(AUTH_TOKEN, AUTH_TOKEN, PLACE,
+		response = recordEndpoint.readIncomingRecordLinksJson(AUTH_TOKEN, AUTH_TOKEN, PLACE,
 				"place:0001_NOT_FOUND");
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
 	}
@@ -353,7 +630,7 @@ public class RecordEndpointTest {
 	@Test
 	public void testReadIncomingLinksAbstractRecordType() {
 		String type = "abstract";
-		response = recordEndpoint.readIncomingRecordLinks(AUTH_TOKEN, AUTH_TOKEN, type,
+		response = recordEndpoint.readIncomingRecordLinksJson(AUTH_TOKEN, AUTH_TOKEN, type,
 				"canBeWhatEverIdTypeIsChecked");
 		assertResponseStatusIs(Response.Status.METHOD_NOT_ALLOWED);
 	}
@@ -390,16 +667,29 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testDeleteRecordUnauthorized() {
-		response = recordEndpoint.deleteRecordUsingAuthTokenByTypeAndId(DUMMY_NON_AUTHORIZED_TOKEN,
-				PLACE, PLACE_0001);
+		response = recordEndpoint.deleteRecord(DUMMY_NON_AUTHORIZED_TOKEN, AUTH_TOKEN, PLACE,
+				PLACE_0001);
 		assertResponseStatusIs(Response.Status.FORBIDDEN);
 	}
 
 	@Test
 	public void testDeleteRecordNotFound() {
-		response = recordEndpoint.deleteRecordUsingAuthTokenByTypeAndId("someToken78678567", PLACE,
+		response = recordEndpoint.deleteRecord("someToken78678567", AUTH_TOKEN, PLACE,
 				"place:0001_NOT_FOUND");
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
+	}
+
+	@Test
+	public void testAnnotationsForDeletRecord() throws Exception {
+		String methodName = "deleteRecord";
+		Method method = getMethodWithMethodName(methodName, 4);
+
+		assertHttpMethodAndPathAnnotation(method, "DELETE", "{type}/{id}");
+
+		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+
+		assertAuthTokenAnnotation(parameterAnnotations, 0);
+		assertTypeAndIdAnnotation(parameterAnnotations, 2);
 	}
 
 	@Test
@@ -413,23 +703,23 @@ public class RecordEndpointTest {
 	private void expectTokenForUpdateToPrefereblyBeHeaderThanQuery(String headerAuthToken,
 			String queryAuthToken, String authTokenExpected) {
 
-		response = recordEndpoint.updateRecord(headerAuthToken, queryAuthToken, PLACE, PLACE_0001,
-				defaultJson);
+		response = recordEndpoint.updateRecordJsonJson(headerAuthToken, queryAuthToken, PLACE,
+				PLACE_0001, defaultJson);
 
 		SpiderRecordUpdaterSpy spiderUpdaterSpy = spiderInstanceFactorySpy.spiderRecordUpdaterSpy;
 		assertEquals(spiderUpdaterSpy.authToken, authTokenExpected);
 	}
 
 	@Test
-	public void testUpdateRecord() {
-		response = recordEndpoint.updateRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001,
+	public void testUpdateRecordForJson() {
+		response = recordEndpoint.updateRecordJsonJson(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001,
 				defaultJson);
 		assertResponseStatusIs(Response.Status.OK);
 	}
 
 	@Test
 	public void testUpdateRecordUsesFactories() {
-		response = recordEndpoint.updateRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001,
+		response = recordEndpoint.updateRecordJsonJson(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001,
 				defaultJson);
 
 		DataGroup recordSentOnToSpider = spiderInstanceFactorySpy.spiderRecordUpdaterSpy.record;
@@ -446,22 +736,133 @@ public class RecordEndpointTest {
 	}
 
 	@Test
+	public void testUpdateRecordForJsonXml() {
+		response = recordEndpoint.updateRecordJsonXml(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001,
+				defaultJson);
+
+		DataGroup recordSentOnToSpider = spiderInstanceFactorySpy.spiderRecordUpdaterSpy.record;
+		assertJsonStringConvertedToDataUsesCoraData(defaultJson, recordSentOnToSpider);
+
+		DataRecord updatedRecord = (DataRecord) spiderInstanceFactorySpy.spiderRecordUpdaterSpy.MCR
+				.getReturnValue("updateRecord", 0);
+
+		assertXmlConvertionOfResponse(updatedRecord);
+		assertEntityExists();
+		assertResponseStatusIs(Response.Status.OK);
+		assertResponseContentTypeIs("application/vnd.uub.record+xml");
+	}
+
+	@Test
+	public void testUpdateRecordBodyInXmlWithReplyInJson() {
+		response = recordEndpoint.updateRecordXmlJson(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001,
+				defaultXml);
+
+		var dataElement = getValueFromConvertAndAssertParameters();
+
+		spiderInstanceFactorySpy.spiderRecordUpdaterSpy.MCR.assertParameters("updateRecord", 0,
+				AUTH_TOKEN, PLACE, PLACE_0001, dataElement);
+
+		DataRecord updatedRecord = (DataRecord) spiderInstanceFactorySpy.spiderRecordUpdaterSpy.MCR
+				.getReturnValue("updateRecord", 0);
+
+		assertDataFromSpiderConvertedToJsonUsingConvertersFromProvider(updatedRecord);
+		assertEntityExists();
+		assertResponseStatusIs(Response.Status.OK);
+		assertResponseContentTypeIs("application/vnd.uub.record+json");
+	}
+
+	@Test
+	public void testUpdateRecordForXmlXml() {
+		response = recordEndpoint.updateRecordXmlXml(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001,
+				defaultXml);
+
+		var dataElement = getValueFromConvertAndAssertParameters();
+
+		spiderInstanceFactorySpy.spiderRecordUpdaterSpy.MCR.assertParameters("updateRecord", 0,
+				AUTH_TOKEN, PLACE, PLACE_0001, dataElement);
+
+		DataRecord updatedRecord = (DataRecord) spiderInstanceFactorySpy.spiderRecordUpdaterSpy.MCR
+				.getReturnValue("updateRecord", 0);
+
+		assertXmlConvertionOfResponse(updatedRecord);
+		assertEntityExists();
+		assertResponseStatusIs(Response.Status.OK);
+		assertResponseContentTypeIs("application/vnd.uub.record+xml");
+	}
+
+	private Object getValueFromConvertAndAssertParameters() {
+		StringToExternallyConvertibleConverterSpy xmlToDataConverter = (StringToExternallyConvertibleConverterSpy) converterFactorySpy.MCR
+				.getReturnValue("factorStringToExternallyConvertableConverter", 0);
+		xmlToDataConverter.MCR.assertParameters("convert", 0, defaultXml);
+		var dataElement = xmlToDataConverter.MCR.getReturnValue("convert", 0);
+		return dataElement;
+	}
+
+	@Test
+	public void testAnnotationsForUpdateRecordJsonJson() throws Exception {
+		Method method = getMethodWithMethodName("updateRecordJsonJson", 5);
+		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+
+		assertHttpMethodAndPathAnnotation(method, "POST", "{type}/{id}");
+		assertConsumesAnnotation(method, "application/vnd.uub.record+json", "*/*");
+		assertProducesAnnotation(method, "application/vnd.uub.record+json", "*/*");
+		assertAuthTokenAnnotation(parameterAnnotations, 0);
+		assertTypeAndIdAnnotation(parameterAnnotations, 2);
+	}
+
+	@Test
+	public void testAnnotationsForUpdateRecordJsonXml() throws Exception {
+		Method method = getMethodWithMethodName("updateRecordJsonXml", 5);
+		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+
+		assertHttpMethodAndPathAnnotation(method, "POST", "{type}/{id}");
+		assertConsumesAnnotation(method, "application/vnd.uub.record+json");
+		assertProducesAnnotation(method, "application/vnd.uub.record+xml");
+		assertAuthTokenAnnotation(parameterAnnotations, 0);
+		assertTypeAndIdAnnotation(parameterAnnotations, 2);
+	}
+
+	@Test
+	public void testAnnotationsForUpdateRecordXmlJson() throws Exception {
+		Method method = getMethodWithMethodName("updateRecordXmlJson", 5);
+		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+
+		assertHttpMethodAndPathAnnotation(method, "POST", "{type}/{id}");
+		assertConsumesAnnotation(method, "application/vnd.uub.record+xml");
+		assertProducesAnnotation(method, "application/vnd.uub.record+json");
+		assertAuthTokenAnnotation(parameterAnnotations, 0);
+		assertTypeAndIdAnnotation(parameterAnnotations, 2);
+	}
+
+	@Test
+	public void testAnnotationsForUpdateRecordXmlXml() throws Exception {
+		Method method = getMethodWithMethodName("updateRecordXmlXml", 5);
+		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+
+		assertHttpMethodAndPathAnnotation(method, "POST", "{type}/{id}");
+		assertConsumesAnnotation(method, "application/vnd.uub.record+xml");
+		assertProducesAnnotation(method, "application/vnd.uub.record+xml");
+		assertAuthTokenAnnotation(parameterAnnotations, 0);
+		assertTypeAndIdAnnotation(parameterAnnotations, 2);
+	}
+
+	@Test
 	public void testUpdateRecordUnauthorized() {
-		response = recordEndpoint.updateRecordUsingAuthTokenWithRecord(DUMMY_NON_AUTHORIZED_TOKEN,
+		response = recordEndpoint.updateRecordJsonJson(DUMMY_NON_AUTHORIZED_TOKEN, AUTH_TOKEN,
 				PLACE, PLACE_0001, defaultJson);
 		assertResponseStatusIs(Response.Status.FORBIDDEN);
 	}
 
 	@Test
 	public void testUpdateRecordNotFound() {
-		response = recordEndpoint.updateRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE,
+		response = recordEndpoint.updateRecordJsonJson(AUTH_TOKEN, AUTH_TOKEN, PLACE,
 				PLACE_0001 + "_NOT_FOUND", defaultJson);
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
 	}
 
 	@Test
 	public void testUpdateRecordTypeNotFound() {
-		response = recordEndpoint.updateRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE + "_NOT_FOUND",
+		response = recordEndpoint.updateRecordJsonJson(AUTH_TOKEN, AUTH_TOKEN, PLACE + "_NOT_FOUND",
 				PLACE_0001, defaultJson);
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
 	}
@@ -469,7 +870,7 @@ public class RecordEndpointTest {
 	@Test
 	public void testUpdateRecordBadContentInJson() {
 		jsonParser.throwError = true;
-		response = recordEndpoint.updateRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001,
+		response = recordEndpoint.updateRecordJsonJson(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001,
 				defaultJson);
 		assertResponseStatusIs(Response.Status.BAD_REQUEST);
 	}
@@ -477,7 +878,7 @@ public class RecordEndpointTest {
 	@Test
 	public void testUpdateRecordWrongDataTypeInJson() {
 		spiderInstanceFactorySpy.throwDataException = true;
-		response = recordEndpoint.updateRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001,
+		response = recordEndpoint.updateRecordJsonJson(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001,
 				defaultJson);
 		assertResponseStatusIs(Response.Status.BAD_REQUEST);
 	}
@@ -493,7 +894,8 @@ public class RecordEndpointTest {
 	private void expectTokenForCreateToPreferablyBeHeaderThanQuery(String headerAuthToken,
 			String queryAuthToken, String authTokenExpected) {
 
-		response = recordEndpoint.createRecord(headerAuthToken, queryAuthToken, PLACE, defaultJson);
+		response = recordEndpoint.createRecordJsonJson(headerAuthToken, queryAuthToken, PLACE,
+				defaultJson);
 
 		SpiderCreatorSpy spiderCreatorSpy = spiderInstanceFactorySpy.spiderCreatorSpy;
 		assertEquals(spiderCreatorSpy.authToken, authTokenExpected);
@@ -501,17 +903,16 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testCreateRecord() {
-		response = recordEndpoint.createRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultJson);
+		response = recordEndpoint.createRecordJsonJson(AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultJson);
 
 		assertResponseStatusIs(Response.Status.CREATED);
-		// assertTrue(response.getLocation().toString().startsWith("record/" + PLACE));
-		assertTrue(response.getLocation().toString().startsWith(PLACE));
+		assertEquals(response.getLocation().toString(), PLACE + "/idFromDataRecordSpy");
 	}
 
 	@Test
 	public void testCreateRecordUsesFactories() {
 
-		response = recordEndpoint.createRecord(AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultJson);
+		response = recordEndpoint.createRecordJsonJson(AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultJson);
 
 		DataGroup recordSentOnToSpider = spiderInstanceFactorySpy.spiderCreatorSpy.record;
 		assertJsonStringConvertedToDataUsesCoraData(defaultJson, recordSentOnToSpider);
@@ -521,20 +922,121 @@ public class RecordEndpointTest {
 		assertDataFromSpiderConvertedToJsonUsingConvertersFromProvider(createdRecord);
 
 		assertResponseStatusIs(Response.Status.CREATED);
-		// assertTrue(response.getLocation().toString().startsWith("record/" + PLACE));
-		assertTrue(response.getLocation().toString().startsWith(PLACE));
+		assertEquals(response.getLocation().toString(), PLACE + "/idFromDataRecordSpy");
+	}
+
+	@Test
+	public void testCreateRecordBodyInJsonWithReplyInXml() {
+		response = recordEndpoint.createRecordJsonXml(AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultJson);
+
+		DataGroup recordSentOnToSpider = spiderInstanceFactorySpy.spiderCreatorSpy.record;
+		assertJsonStringConvertedToDataUsesCoraData(defaultJson, recordSentOnToSpider);
+
+		DataRecord createdRecord = (DataRecord) spiderInstanceFactorySpy.spiderCreatorSpy.MCR
+				.getReturnValue("createAndStoreRecord", 0);
+
+		assertXmlConvertionOfResponse(createdRecord);
+		assertEntityExists();
+		assertResponseStatusIs(Response.Status.CREATED);
+		assertResponseContentTypeIs("application/vnd.uub.record+xml");
+	}
+
+	@Test
+	public void testCreateRecordBodyInXmlWithReplyInJson() {
+		response = recordEndpoint.createRecordXmlJson(AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultXml);
+
+		var dataElement = getValueFromConvertAndAssertParameters();
+		spiderInstanceFactorySpy.spiderCreatorSpy.MCR.assertParameters("createAndStoreRecord", 0,
+				AUTH_TOKEN, PLACE, dataElement);
+
+		DataRecord createdRecord = (DataRecord) spiderInstanceFactorySpy.spiderCreatorSpy.MCR
+				.getReturnValue("createAndStoreRecord", 0);
+
+		assertDataFromSpiderConvertedToJsonUsingConvertersFromProvider(createdRecord);
+		assertEntityExists();
+		assertResponseStatusIs(Response.Status.CREATED);
+		assertResponseContentTypeIs("application/vnd.uub.record+json");
+	}
+
+	@Test
+	public void testCreateRecordForXmlXml() {
+		response = recordEndpoint.createRecordXmlXml(AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultXml);
+
+		var dataElement = getValueFromConvertAndAssertParameters();
+		spiderInstanceFactorySpy.spiderCreatorSpy.MCR.assertParameters("createAndStoreRecord", 0,
+				AUTH_TOKEN, PLACE, dataElement);
+
+		DataRecord createdRecord = (DataRecord) spiderInstanceFactorySpy.spiderCreatorSpy.MCR
+				.getReturnValue("createAndStoreRecord", 0);
+
+		assertXmlConvertionOfResponse(createdRecord);
+		assertEntityExists();
+		assertResponseStatusIs(Response.Status.CREATED);
+		assertResponseContentTypeIs("application/vnd.uub.record+xml");
+	}
+
+	@Test
+	public void testAnnotationsForCreateRecordJsonJson() throws Exception {
+		Method method = getMethodWithMethodName("createRecordJsonJson", 4);
+		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+
+		assertHttpMethodAndPathAnnotation(method, "POST", "{type}");
+		assertConsumesAnnotation(method, "application/vnd.uub.record+json", "*/*");
+		assertProducesAnnotation(method, "application/vnd.uub.record+json", "*/*");
+		assertAuthTokenAnnotation(parameterAnnotations, 0);
+		PathParam typeParameter = (PathParam) parameterAnnotations[2][0];
+		assertEquals(typeParameter.value(), "type");
+	}
+
+	@Test
+	public void testAnnotationsForCreateRecordJsonXml() throws Exception {
+		Method method = getMethodWithMethodName("createRecordJsonXml", 4);
+		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+
+		assertHttpMethodAndPathAnnotation(method, "POST", "{type}");
+		assertConsumesAnnotation(method, "application/vnd.uub.record+json");
+		assertProducesAnnotation(method, "application/vnd.uub.record+xml");
+		assertAuthTokenAnnotation(parameterAnnotations, 0);
+		PathParam typeParameter = (PathParam) parameterAnnotations[2][0];
+		assertEquals(typeParameter.value(), "type");
+	}
+
+	@Test
+	public void testAnnotationsForCreateRecordXmlJson() throws Exception {
+		Method method = getMethodWithMethodName("createRecordXmlJson", 4);
+		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+
+		assertHttpMethodAndPathAnnotation(method, "POST", "{type}");
+		assertConsumesAnnotation(method, "application/vnd.uub.record+xml");
+		assertProducesAnnotation(method, "application/vnd.uub.record+json");
+		assertAuthTokenAnnotation(parameterAnnotations, 0);
+		PathParam typeParameter = (PathParam) parameterAnnotations[2][0];
+		assertEquals(typeParameter.value(), "type");
+	}
+
+	@Test
+	public void testAnnotationsForCreateRecordXmlXml() throws Exception {
+		Method method = getMethodWithMethodName("createRecordXmlXml", 4);
+		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+
+		assertHttpMethodAndPathAnnotation(method, "POST", "{type}");
+		assertConsumesAnnotation(method, "application/vnd.uub.record+xml");
+		assertProducesAnnotation(method, "application/vnd.uub.record+xml");
+		assertAuthTokenAnnotation(parameterAnnotations, 0);
+		PathParam typeParameter = (PathParam) parameterAnnotations[2][0];
+		assertEquals(typeParameter.value(), "type");
 	}
 
 	@Test
 	public void testCreateRecordBadCreatedLocation() {
 		String type = "place&& &&\\\\";
-		response = recordEndpoint.createRecord(AUTH_TOKEN, AUTH_TOKEN, type, defaultJson);
+		response = recordEndpoint.createRecordJsonJson(AUTH_TOKEN, AUTH_TOKEN, type, defaultJson);
 		assertResponseStatusIs(Response.Status.BAD_REQUEST);
 	}
 
 	@Test
 	public void testCreateRecordUnauthorized() {
-		response = recordEndpoint.createRecordUsingAuthTokenWithRecord(DUMMY_NON_AUTHORIZED_TOKEN,
+		response = recordEndpoint.createRecordJsonJson(DUMMY_NON_AUTHORIZED_TOKEN, AUTH_TOKEN,
 				PLACE, defaultJson);
 		assertResponseStatusIs(Response.Status.FORBIDDEN);
 	}
@@ -542,14 +1044,13 @@ public class RecordEndpointTest {
 	@Test
 	public void testCreateNonExistingRecordType() {
 		String type = "recordType_NON_EXISTING";
-		response = recordEndpoint.createRecordUsingAuthTokenWithRecord(AUTH_TOKEN, type,
-				defaultJson);
+		response = recordEndpoint.createRecordJsonJson(AUTH_TOKEN, AUTH_TOKEN, type, defaultJson);
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
 	}
 
 	@Test
 	public void testCreateRecordNotValid() {
-		response = recordEndpoint.createRecord(AUTH_TOKEN, AUTH_TOKEN, "place_NON_VALID",
+		response = recordEndpoint.createRecordJsonJson(AUTH_TOKEN, AUTH_TOKEN, "place_NON_VALID",
 				defaultJson);
 		assertResponseStatusIs(Response.Status.BAD_REQUEST);
 	}
@@ -557,7 +1058,7 @@ public class RecordEndpointTest {
 	@Test
 	public void testCreateRecordConversionException() {
 		jsonToDataConverterFactorySpy.throwError = true;
-		response = recordEndpoint.createRecordUsingAuthTokenWithRecord("someToken78678567", PLACE,
+		response = recordEndpoint.createRecordJsonJson("someToken78678567", AUTH_TOKEN, PLACE,
 				defaultJson);
 		assertResponseStatusIs(Response.Status.BAD_REQUEST);
 	}
@@ -565,13 +1066,13 @@ public class RecordEndpointTest {
 	@Test
 	public void testCreateRecordAbstractRecordType() {
 		String type = "abstract";
-		response = recordEndpoint.createRecord(AUTH_TOKEN, AUTH_TOKEN, type, defaultJson);
+		response = recordEndpoint.createRecordJsonJson(AUTH_TOKEN, AUTH_TOKEN, type, defaultJson);
 		assertResponseStatusIs(Response.Status.METHOD_NOT_ALLOWED);
 	}
 
 	@Test
 	public void testCreateRecordDuplicateUserSuppliedId() {
-		response = recordEndpoint.createRecord(AUTH_TOKEN, AUTH_TOKEN, "place_duplicate",
+		response = recordEndpoint.createRecordJsonJson(AUTH_TOKEN, AUTH_TOKEN, "place_duplicate",
 				defaultJson);
 		assertResponseStatusIs(Response.Status.CONFLICT);
 
@@ -580,8 +1081,8 @@ public class RecordEndpointTest {
 	@Test
 	public void testCreateRecordUnexpectedError() {
 		assertEquals(loggerFactorySpy.getNoOfErrorExceptionsUsingClassName(testedClassName), 0);
-		response = recordEndpoint.createRecord(AUTH_TOKEN, AUTH_TOKEN, "place_unexpected_error",
-				defaultJson);
+		response = recordEndpoint.createRecordJsonJson(AUTH_TOKEN, AUTH_TOKEN,
+				"place_unexpected_error", defaultJson);
 		assertResponseStatusIs(Response.Status.INTERNAL_SERVER_ERROR);
 		assertEquals(loggerFactorySpy.getNoOfErrorExceptionsUsingClassName(testedClassName), 1);
 		assertEquals(loggerFactorySpy.getErrorLogMessageUsingClassNameAndNo(testedClassName, 0),
@@ -601,55 +1102,116 @@ public class RecordEndpointTest {
 
 	private void expectTokenForUploadToPreferablyBeHeaderThanQuery(String headerAuthToken,
 			String queryAuthToken, String authTokenExpected) {
+		InputStream stream = createUplodedInputStream();
+		FormDataContentDisposition formDataContentDisposition = createformDataContent();
 
-		FormDataContentDispositionBuilder builder = FormDataContentDisposition
-				.name("multipart;form-data");
-		builder.fileName("adele1.png");
-		FormDataContentDisposition formDataContentDisposition = builder.build();
-		InputStream stream = new ByteArrayInputStream("a string".getBytes(StandardCharsets.UTF_8));
-
-		response = recordEndpoint.uploadFile(headerAuthToken, queryAuthToken, "image",
+		response = recordEndpoint.uploadFileJson(headerAuthToken, queryAuthToken, "image",
 				"image:123456789", stream, formDataContentDisposition);
 
 		SpiderUploaderSpy spiderUploaderSpy = spiderInstanceFactorySpy.spiderUploaderSpy;
 		assertEquals(spiderUploaderSpy.authToken, authTokenExpected);
 	}
 
-	@Test
-	public void testUpload() throws ParseException {
-		InputStream stream = new ByteArrayInputStream("a string".getBytes(StandardCharsets.UTF_8));
+	private ByteArrayInputStream createUplodedInputStream() {
+		return new ByteArrayInputStream("a string".getBytes(StandardCharsets.UTF_8));
+	}
 
+	private FormDataContentDisposition createformDataContent() {
 		FormDataContentDispositionBuilder builder = FormDataContentDisposition
 				.name("multipart;form-data");
 		builder.fileName("adele1.png");
 		FormDataContentDisposition formDataContentDisposition = builder.build();
+		return formDataContentDisposition;
+	}
 
-		response = recordEndpoint.uploadFile(AUTH_TOKEN, AUTH_TOKEN, "image", "image:123456789",
+	@Test
+	public void testUploadFileForJson() throws ParseException {
+		InputStream stream = createUplodedInputStream();
+		FormDataContentDisposition formDataContentDisposition = createformDataContent();
+
+		response = recordEndpoint.uploadFileJson(AUTH_TOKEN, AUTH_TOKEN, "image", "image:123456789",
 				stream, formDataContentDisposition);
 
 		assertResponseStatusIs(Response.Status.OK);
 	}
 
 	@Test
-	public void testUploadUnauthorized() {
-		InputStream stream = new ByteArrayInputStream("a string".getBytes(StandardCharsets.UTF_8));
+	public void testUploadFileForXml() {
+		InputStream stream = createUplodedInputStream();
+		FormDataContentDisposition formDataContentDisposition = createformDataContent();
 
-		response = recordEndpoint.uploadFileUsingAuthTokenWithStream(DUMMY_NON_AUTHORIZED_TOKEN,
-				"image", "image:123456789", stream, "someFile.tif");
+		response = recordEndpoint.uploadFileXml(AUTH_TOKEN, AUTH_TOKEN, "image", "image:123456789",
+				stream, formDataContentDisposition);
+		DataRecord uploadedFile = (DataRecord) spiderInstanceFactorySpy.spiderUploaderSpy.MCR
+				.getReturnValue("upload", 0);
+
+		assertXmlConvertionOfResponse(uploadedFile);
+		assertEntityExists();
+		assertResponseStatusIs(Response.Status.OK);
+		assertResponseContentTypeIs("application/vnd.uub.record+xml");
+	}
+
+	@Test
+	public void testAnnotationsForUploadFileJson() throws Exception {
+		Class<?>[] parameters = { String.class, String.class, String.class, String.class,
+				InputStream.class, FormDataContentDisposition.class };
+		Method method = getMethodWithMethodName("uploadFileJson", parameters);
+		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+
+		assertHttpMethodAndPathAnnotation(method, "POST", "{type}/{id}/{streamId}");
+		assertProducesAnnotation(method, "application/vnd.uub.record+json", "*/*");
+		assertAuthTokenAnnotation(parameterAnnotations, 0);
+		assertTypeAndIdAnnotation(parameterAnnotations, 2);
+
+		FormDataParam uploadedInputStreamParameter = (FormDataParam) parameterAnnotations[4][0];
+		assertEquals(uploadedInputStreamParameter.value(), "file");
+		FormDataParam fileDetailParameter = (FormDataParam) parameterAnnotations[5][0];
+		assertEquals(fileDetailParameter.value(), "file");
+	}
+
+	@Test
+	public void testAnnotationsForUploadFileXml() throws Exception {
+		Class<?>[] parameters = { String.class, String.class, String.class, String.class,
+				InputStream.class, FormDataContentDisposition.class };
+		Method method = getMethodWithMethodName("uploadFileXml", parameters);
+		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+
+		assertHttpMethodAndPathAnnotation(method, "POST", "{type}/{id}/{streamId}");
+		assertProducesAnnotation(method, "application/vnd.uub.record+xml");
+		assertAuthTokenAnnotation(parameterAnnotations, 0);
+		assertTypeAndIdAnnotation(parameterAnnotations, 2);
+
+		FormDataParam uploadedInputStreamParameter = (FormDataParam) parameterAnnotations[4][0];
+		assertEquals(uploadedInputStreamParameter.value(), "file");
+		FormDataParam fileDetailParameter = (FormDataParam) parameterAnnotations[5][0];
+		assertEquals(fileDetailParameter.value(), "file");
+	}
+
+	private Method getMethodWithMethodName(String methodName, Class<?>[] parameters)
+			throws NoSuchMethodException {
+		Class<? extends RecordEndpoint> endpointClass = recordEndpoint.getClass();
+		Method method = endpointClass.getMethod(methodName, parameters);
+		return method;
+	}
+
+	@Test
+	public void testUploadUnauthorized() {
+		InputStream stream = createUplodedInputStream();
+
+		response = recordEndpoint.uploadFileUsingAuthTokenWithStream(
+				"application/vnd.uub.record+json", DUMMY_NON_AUTHORIZED_TOKEN, "image",
+				"image:123456789", stream, "someFile.tif");
 
 		assertResponseStatusIs(Response.Status.FORBIDDEN);
 	}
 
 	@Test
 	public void testUploadNotFound() {
-		InputStream stream = new ByteArrayInputStream("a string".getBytes(StandardCharsets.UTF_8));
+		InputStream stream = createUplodedInputStream();
 
-		FormDataContentDispositionBuilder builder = FormDataContentDisposition
-				.name("multipart;form-data");
-		builder.fileName("adele1.png");
-		FormDataContentDisposition formDataContentDisposition = builder.build();
+		FormDataContentDisposition formDataContentDisposition = createformDataContent();
 
-		response = recordEndpoint.uploadFile(AUTH_TOKEN, AUTH_TOKEN, "image",
+		response = recordEndpoint.uploadFileJson(AUTH_TOKEN, AUTH_TOKEN, "image",
 				"image:123456789_NOT_FOUND", stream, formDataContentDisposition);
 
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
@@ -657,14 +1219,11 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testUploadNotAChildOfBinary() {
-		InputStream stream = new ByteArrayInputStream("a string".getBytes(StandardCharsets.UTF_8));
+		InputStream stream = createUplodedInputStream();
 
-		FormDataContentDispositionBuilder builder = FormDataContentDisposition
-				.name("multipart;form-data");
-		builder.fileName("adele1.png");
-		FormDataContentDisposition formDataContentDisposition = builder.build();
+		FormDataContentDisposition formDataContentDisposition = createformDataContent();
 
-		response = recordEndpoint.uploadFile(AUTH_TOKEN, AUTH_TOKEN, "not_child_of_binary_type",
+		response = recordEndpoint.uploadFileJson(AUTH_TOKEN, AUTH_TOKEN, "not_child_of_binary_type",
 				"image:123456789", stream, formDataContentDisposition);
 
 		assertResponseStatusIs(Response.Status.METHOD_NOT_ALLOWED);
@@ -677,7 +1236,7 @@ public class RecordEndpointTest {
 		builder.fileName("adele1.png");
 		FormDataContentDisposition formDataContentDisposition = builder.build();
 
-		response = recordEndpoint.uploadFile(AUTH_TOKEN, AUTH_TOKEN, "image", "image:123456789",
+		response = recordEndpoint.uploadFileJson(AUTH_TOKEN, AUTH_TOKEN, "image", "image:123456789",
 				null, formDataContentDisposition);
 
 		assertResponseStatusIs(Response.Status.BAD_REQUEST);
@@ -718,7 +1277,6 @@ public class RecordEndpointTest {
 		 * assertEquals(contentType, "application/octet-stream");
 		 */
 		assertEquals(contentType, "application/octet-stream");
-		// assertEquals(contentType, null);
 		InputStream stream = (InputStream) response.getEntity();
 		assertNotNull(stream);
 
@@ -738,6 +1296,24 @@ public class RecordEndpointTest {
 
 		String contentDisposition = response.getHeaderString("Content-Disposition");
 		assertEquals(contentDisposition, "attachment; filename=someFile");
+	}
+
+	@Test
+	public void testAnnotationsForDownloadFile() throws Exception {
+		Method method = getMethodWithMethodName("downloadFile", 5);
+		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+
+		assertHttpMethodAndPathAnnotation(method, "GET", "{type}/{id}/{streamId}");
+
+		assertAuthTokenAnnotation(parameterAnnotations, 0);
+		assertTypeAndIdAnnotation(parameterAnnotations, 2);
+		assertStreamIdAnnotation(parameterAnnotations);
+
+	}
+
+	private void assertStreamIdAnnotation(Annotation[][] parameterAnnotations) {
+		PathParam streamIdParameter = (PathParam) parameterAnnotations[4][0];
+		assertEquals(streamIdParameter.value(), "streamId");
 	}
 
 	@Test
@@ -763,7 +1339,8 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testSearchRecordInputsReachSpider() {
-		response = recordEndpoint.searchRecord(AUTH_TOKEN, AUTH_TOKEN, "aSearchId", defaultJson);
+		response = recordEndpoint.searchRecordJson(AUTH_TOKEN, AUTH_TOKEN, "aSearchId",
+				defaultJson);
 
 		SpiderRecordSearcherSpy spiderRecordSearcherSpy = spiderInstanceFactorySpy.spiderRecordSearcherSpy;
 		assertEquals(spiderRecordSearcherSpy.authToken, AUTH_TOKEN);
@@ -775,7 +1352,8 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testSearchRecordUsesFactoriesCorrectly() {
-		response = recordEndpoint.searchRecord(AUTH_TOKEN, AUTH_TOKEN, "aSearchId", defaultJson);
+		response = recordEndpoint.searchRecordJson(AUTH_TOKEN, AUTH_TOKEN, "aSearchId",
+				defaultJson);
 
 		SpiderRecordSearcherSpy spiderRecordSearcherSpy = spiderInstanceFactorySpy.spiderRecordSearcherSpy;
 
@@ -789,21 +1367,21 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testSearchRecordRightTokenInputsReachSpider() {
-		response = recordEndpoint.searchRecord(AUTH_TOKEN, null, "aSearchId", defaultJson);
+		response = recordEndpoint.searchRecordJson(AUTH_TOKEN, null, "aSearchId", defaultJson);
 		SpiderRecordSearcherSpy spiderRecordSearcherSpy = spiderInstanceFactorySpy.spiderRecordSearcherSpy;
 		assertEquals(spiderRecordSearcherSpy.authToken, AUTH_TOKEN);
 	}
 
 	@Test
 	public void testSearchRecordRightTokenInputsReachSpider2() {
-		response = recordEndpoint.searchRecord(null, AUTH_TOKEN, "aSearchId", defaultJson);
+		response = recordEndpoint.searchRecordJson(null, AUTH_TOKEN, "aSearchId", defaultJson);
 		SpiderRecordSearcherSpy spiderRecordSearcherSpy = spiderInstanceFactorySpy.spiderRecordSearcherSpy;
 		assertEquals(spiderRecordSearcherSpy.authToken, AUTH_TOKEN);
 	}
 
 	@Test
 	public void testSearchRecordRightTokenInputsReachSpider3() {
-		response = recordEndpoint.searchRecord(AUTH_TOKEN, "otherAuthToken", "aSearchId",
+		response = recordEndpoint.searchRecordJson(AUTH_TOKEN, "otherAuthToken", "aSearchId",
 				defaultJson);
 		SpiderRecordSearcherSpy spiderRecordSearcherSpy = spiderInstanceFactorySpy.spiderRecordSearcherSpy;
 		assertEquals(spiderRecordSearcherSpy.authToken, AUTH_TOKEN);
@@ -811,36 +1389,105 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testSearchRecord() {
-		response = recordEndpoint.searchRecord(AUTH_TOKEN, AUTH_TOKEN, "aSearchId", defaultJson);
+		response = recordEndpoint.searchRecordJson(AUTH_TOKEN, AUTH_TOKEN, "aSearchId",
+				defaultJson);
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.OK);
 	}
 
 	@Test
+	public void testSearchRecordForXml() {
+		response = recordEndpoint.searchRecordXml(AUTH_TOKEN, AUTH_TOKEN, "aSearchId", defaultXml);
+
+		var dataElement = getValueFromConvertAndAssertParameters();
+
+		spiderInstanceFactorySpy.spiderRecordSearcherSpy.MCR.assertParameters("search", 0,
+				AUTH_TOKEN, "aSearchId", dataElement);
+
+		DataList searchRecord = (DataList) spiderInstanceFactorySpy.spiderRecordSearcherSpy.MCR
+				.getReturnValue("search", 0);
+
+		assertXmlConvertionOfResponse(searchRecord);
+		assertEntityExists();
+		assertResponseStatusIs(Response.Status.OK);
+		assertResponseContentTypeIs("application/vnd.uub.recordList+xml");
+	}
+
+	@Test
+	public void testSearchRecordSearchDataInXmlForJson() {
+		response = recordEndpoint.searchRecordJson(AUTH_TOKEN, AUTH_TOKEN, "aSearchId", defaultXml);
+
+		var dataElement = getValueFromConvertAndAssertParameters();
+
+		spiderInstanceFactorySpy.spiderRecordSearcherSpy.MCR.assertParameters("search", 0,
+				AUTH_TOKEN, "aSearchId", dataElement);
+
+		DataList searchRecord = (DataList) spiderInstanceFactorySpy.spiderRecordSearcherSpy.MCR
+				.getReturnValue("search", 0);
+
+		assertDataFromSpiderConvertedToJsonUsingConvertersFromProvider(searchRecord);
+		assertEntityExists();
+		assertResponseStatusIs(Response.Status.OK);
+		assertResponseContentTypeIs("application/vnd.uub.recordList+json");
+	}
+
+	@Test
+	public void testAnnotationsForSearchRecordJson() throws Exception {
+		Method method = getMethodWithMethodName("searchRecordJson", 4);
+		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+
+		assertHttpMethodAndPathAnnotation(method, "GET", "searchResult/{searchId}");
+		assertProducesAnnotation(method, "application/vnd.uub.recordList+json", "*/*");
+		assertAuthTokenAnnotation(parameterAnnotations, 0);
+
+		PathParam searchIdParameter = (PathParam) parameterAnnotations[2][0];
+		assertEquals(searchIdParameter.value(), "searchId");
+
+		QueryParam searchDataAsQueryParameter = (QueryParam) parameterAnnotations[3][0];
+		assertEquals(searchDataAsQueryParameter.value(), "searchData");
+	}
+
+	@Test
+	public void testAnnotationsForSearchRecordXml() throws Exception {
+		Method method = getMethodWithMethodName("searchRecordXml", 4);
+		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+
+		assertHttpMethodAndPathAnnotation(method, "GET", "searchResult/{searchId}");
+		assertProducesAnnotation(method, "application/vnd.uub.recordList+xml");
+		assertAuthTokenAnnotation(parameterAnnotations, 0);
+
+		PathParam searchIdParameter = (PathParam) parameterAnnotations[2][0];
+		assertEquals(searchIdParameter.value(), "searchId");
+
+		QueryParam searchDataAsQueryParameter = (QueryParam) parameterAnnotations[3][0];
+		assertEquals(searchDataAsQueryParameter.value(), "searchData");
+	}
+
+	@Test
 	public void testSearchRecordSearchIdNotFound() {
-		response = recordEndpoint.searchRecord(AUTH_TOKEN, AUTH_TOKEN, "aSearchId_NOT_FOUND",
+		response = recordEndpoint.searchRecordJson(AUTH_TOKEN, AUTH_TOKEN, "aSearchId_NOT_FOUND",
 				defaultJson);
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
 	}
 
 	@Test
 	public void testSearchRecordInvalidSearchData() {
-		response = recordEndpoint.searchRecord(AUTH_TOKEN, AUTH_TOKEN, "aSearchId_INVALID_DATA",
+		response = recordEndpoint.searchRecordJson(AUTH_TOKEN, AUTH_TOKEN, "aSearchId_INVALID_DATA",
 				defaultJson);
 		assertResponseStatusIs(Response.Status.BAD_REQUEST);
 	}
 
 	@Test
 	public void testSearchRecordUnauthorized() {
-		response = recordEndpoint.searchRecord(DUMMY_NON_AUTHORIZED_TOKEN,
+		response = recordEndpoint.searchRecordJson(DUMMY_NON_AUTHORIZED_TOKEN,
 				DUMMY_NON_AUTHORIZED_TOKEN, "aSearchId", defaultJson);
 		assertResponseStatusIs(Response.Status.FORBIDDEN);
 	}
 
 	@Test
 	public void testSearchRecordUnauthenticated() {
-		response = recordEndpoint.searchRecord("nonExistingToken", "nonExistingToken", "aSearchId",
-				defaultJson);
+		response = recordEndpoint.searchRecordJson("nonExistingToken", "nonExistingToken",
+				"aSearchId", defaultJson);
 		assertResponseStatusIs(Response.Status.UNAUTHORIZED);
 	}
 
@@ -855,7 +1502,7 @@ public class RecordEndpointTest {
 	private void expectTokenForValidateToPrefereblyBeHeaderThanQuery(String headerAuthToken,
 			String queryAuthToken, String authTokenExpected) {
 
-		response = recordEndpoint.validateRecord(headerAuthToken, queryAuthToken, PLACE,
+		response = recordEndpoint.validateRecordJsonJson(headerAuthToken, queryAuthToken, PLACE,
 				jsonToValidate);
 
 		SpiderRecordValidatorSpy spiderRecordValidatorSpy = spiderInstanceFactorySpy.spiderRecordValidatorSpy;
@@ -865,7 +1512,8 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testValidateRecord() {
-		response = recordEndpoint.validateRecord(AUTH_TOKEN, AUTH_TOKEN, "workOrder", defaultJson);
+		response = recordEndpoint.validateRecordJsonJson(AUTH_TOKEN, AUTH_TOKEN, "workOrder",
+				defaultJson);
 
 		assertEquals(jsonParser.jsonString, defaultJson);
 
@@ -901,16 +1549,159 @@ public class RecordEndpointTest {
 	}
 
 	@Test
+	public void testValidateRecordForXml() {
+		response = recordEndpoint.validateRecordXmlXml(AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultXml);
+
+		DataGroupSpy container = (DataGroupSpy) getValueFromConvertAndAssertParameters();
+
+		container.MCR.assertParameters("getFirstGroupWithNameInData", 0, "order");
+		container.MCR.assertParameters("getFirstGroupWithNameInData", 1, "record");
+
+		var validationOrder = container.MCR.getReturnValue("getFirstGroupWithNameInData", 0);
+		var recordToValidate = container.MCR.getReturnValue("getFirstGroupWithNameInData", 1);
+
+		spiderInstanceFactorySpy.spiderRecordValidatorSpy.MCR.assertParameters("validateRecord", 0,
+				AUTH_TOKEN, "validationOrder", validationOrder, recordToValidate);
+
+		DataRecord validationResult = (DataRecord) spiderInstanceFactorySpy.spiderRecordValidatorSpy.MCR
+				.getReturnValue("validateRecord", 0);
+
+		assertXmlConvertionOfResponse(validationResult);
+		assertEntityExists();
+		assertResponseStatusIs(Response.Status.OK);
+		assertResponseContentTypeIs("application/vnd.uub.record+xml");
+	}
+
+	@Test
+	public void testValidateRecordInputAsJsonResponseAsXml() {
+		response = recordEndpoint.validateRecordJsonXml(AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultJson);
+
+		JsonValueSpy topJsonObject = jsonParser.returnedJsonValue;
+		assertEquals(topJsonObject.keys.get(0), "order");
+		assertEquals(topJsonObject.keys.get(1), "record");
+
+		DataGroup validationOrderSentOnToSpider = spiderInstanceFactorySpy.spiderRecordValidatorSpy.validationOrder;
+		DataGroup recordToValidateSentOnToSpider = spiderInstanceFactorySpy.spiderRecordValidatorSpy.recordToValidate;
+
+		spiderInstanceFactorySpy.spiderRecordValidatorSpy.MCR.assertParameters("validateRecord", 0,
+				AUTH_TOKEN, "validationOrder", validationOrderSentOnToSpider,
+				recordToValidateSentOnToSpider);
+
+		DataRecord validationResult = (DataRecord) spiderInstanceFactorySpy.spiderRecordValidatorSpy.MCR
+				.getReturnValue("validateRecord", 0);
+
+		assertXmlConvertionOfResponse(validationResult);
+		assertEntityExists();
+		assertResponseStatusIs(Response.Status.OK);
+		assertResponseContentTypeIs("application/vnd.uub.record+xml");
+	}
+
+	@Test
+	public void testValidateRecordInputAsXMLResponseAsJson() {
+		response = recordEndpoint.validateRecordXmlJson(AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultXml);
+
+		DataGroupSpy container = (DataGroupSpy) getValueFromConvertAndAssertParameters();
+
+		container.MCR.assertParameters("getFirstGroupWithNameInData", 0, "order");
+		container.MCR.assertParameters("getFirstGroupWithNameInData", 1, "record");
+
+		var validationOrder = container.MCR.getReturnValue("getFirstGroupWithNameInData", 0);
+		var recordToValidate = container.MCR.getReturnValue("getFirstGroupWithNameInData", 1);
+
+		spiderInstanceFactorySpy.spiderRecordValidatorSpy.MCR.assertParameters("validateRecord", 0,
+				AUTH_TOKEN, "validationOrder", validationOrder, recordToValidate);
+
+		DataRecord validationResult = (DataRecord) spiderInstanceFactorySpy.spiderRecordValidatorSpy.MCR
+				.getReturnValue("validateRecord", 0);
+
+		assertDataFromSpiderConvertedToJsonUsingConvertersFromProvider(validationResult);
+		assertEntityExists();
+		assertResponseStatusIs(Response.Status.OK);
+		assertResponseContentTypeIs("application/vnd.uub.record+json");
+	}
+
+	@Test
+	public void testValidateRecordInputJsonWrongContentType() {
+		jsonParser.throwError = true;
+		response = recordEndpoint.validateRecordJsonJson(AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultXml);
+		assertResponseStatusIs(Response.Status.BAD_REQUEST);
+	}
+
+	@Test
+	public void testValidateRecordInputXmlWrongContentType() {
+		converterFactorySpy.xmlToDataConverterThrowsException = true;
+		response = recordEndpoint.validateRecordXmlJson(AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultJson);
+		assertResponseStatusIs(Response.Status.BAD_REQUEST);
+	}
+
+	@Test
+	public void testAnnotationsForValidateRecordJsonJson() throws Exception {
+		Method method = getMethodWithMethodName("validateRecordJsonJson", 4);
+		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+
+		assertHttpMethodAndPathAnnotation(method, "POST", "{type}");
+		assertConsumesAnnotation(method, "application/vnd.uub.workorder+json");
+		assertProducesAnnotation(method, "application/vnd.uub.record+json", "*/*");
+		assertAuthTokenAnnotation(parameterAnnotations, 0);
+
+		PathParam typeParameter = (PathParam) parameterAnnotations[2][0];
+		assertEquals(typeParameter.value(), "type");
+	}
+
+	@Test
+	public void testAnnotationsForValidateRecordJsonXml() throws Exception {
+		Method method = getMethodWithMethodName("validateRecordJsonXml", 4);
+		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+
+		assertHttpMethodAndPathAnnotation(method, "POST", "{type}");
+		assertConsumesAnnotation(method, "application/vnd.uub.workorder+json");
+		assertProducesAnnotation(method, "application/vnd.uub.record+xml");
+		assertAuthTokenAnnotation(parameterAnnotations, 0);
+
+		PathParam typeParameter = (PathParam) parameterAnnotations[2][0];
+		assertEquals(typeParameter.value(), "type");
+	}
+
+	@Test
+	public void testAnnotationsForValidateRecordXmlJson() throws Exception {
+		Method method = getMethodWithMethodName("validateRecordXmlJson", 4);
+		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+
+		assertHttpMethodAndPathAnnotation(method, "POST", "{type}");
+		assertConsumesAnnotation(method, "application/vnd.uub.workorder+xml");
+		assertProducesAnnotation(method, "application/vnd.uub.record+json");
+		assertAuthTokenAnnotation(parameterAnnotations, 0);
+
+		PathParam typeParameter = (PathParam) parameterAnnotations[2][0];
+		assertEquals(typeParameter.value(), "type");
+	}
+
+	@Test
+	public void testAnnotationsForValidateRecordXmlXml() throws Exception {
+		Method method = getMethodWithMethodName("validateRecordXmlXml", 4);
+		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+
+		assertHttpMethodAndPathAnnotation(method, "POST", "{type}");
+		assertConsumesAnnotation(method, "application/vnd.uub.workorder+xml");
+		assertProducesAnnotation(method, "application/vnd.uub.record+xml");
+		assertAuthTokenAnnotation(parameterAnnotations, 0);
+
+		PathParam typeParameter = (PathParam) parameterAnnotations[2][0];
+		assertEquals(typeParameter.value(), "type");
+	}
+
+	@Test
 	public void testValidateRecordUnauthorized() {
-		response = recordEndpoint.validateRecordUsingAuthTokenWithRecord(DUMMY_NON_AUTHORIZED_TOKEN,
-				PLACE, jsonToValidate);
+		response = recordEndpoint.validateRecordJsonJson(DUMMY_NON_AUTHORIZED_TOKEN, AUTH_TOKEN,
+				"workOrder", jsonToValidate);
 		assertResponseStatusIs(Response.Status.FORBIDDEN);
 	}
 
 	@Test
 	public void testValidateRecordTypeNotFound() {
 		spiderInstanceFactorySpy.throwRecordNotFoundException = true;
-		response = recordEndpoint.validateRecord(AUTH_TOKEN, AUTH_TOKEN, "workOrder", defaultJson);
+		response = recordEndpoint.validateRecordJsonJson(AUTH_TOKEN, AUTH_TOKEN, "workOrder",
+				defaultJson);
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
 	}
 
@@ -925,72 +1716,216 @@ public class RecordEndpointTest {
 	private void expectTokenForBatchIndexToPrefereblyBeHeaderThanQuery(String headerAuthToken,
 			String queryAuthToken, String authTokenExpected) {
 		String jsonFilter = "{\"name\":\"filter\",\"children\":[]}";
-		response = recordEndpoint.indexRecordList(headerAuthToken, queryAuthToken, PLACE,
+		response = recordEndpoint.batchIndexJsonJson(headerAuthToken, queryAuthToken, PLACE,
 				jsonFilter);
 
-		IndexBatchJobCreatorSpy indexBatchJobSpy = spiderInstanceFactorySpy.indexBatchJobCreator;
+		IndexBatchJobCreatorSpy indexBatchJobSpy = spiderInstanceFactorySpy.spiderRecordListIndexerSpy;
 
 		assertEquals(indexBatchJobSpy.authToken, authTokenExpected);
 	}
 
 	@Test
 	public void testBatchIndexWithFilter() {
-		response = recordEndpoint.indexRecordList(AUTH_TOKEN, AUTH_TOKEN, PLACE, jsonIndexData);
+		response = recordEndpoint.batchIndexJsonJson(AUTH_TOKEN, AUTH_TOKEN, PLACE, jsonIndexData);
 
-		IndexBatchJobCreatorSpy indexBatchJobCreator = spiderInstanceFactorySpy.indexBatchJobCreator;
+		IndexBatchJobCreatorSpy indexBatchJobCreator = spiderInstanceFactorySpy.spiderRecordListIndexerSpy;
 
-		DataGroup filterSentOnToSpider = spiderInstanceFactorySpy.indexBatchJobCreator.filter;
+		DataGroup filterSentOnToSpider = spiderInstanceFactorySpy.spiderRecordListIndexerSpy.filter;
 		assertJsonStringConvertedToDataUsesCoraData(jsonIndexData, filterSentOnToSpider);
 
 		assertEquals(indexBatchJobCreator.type, PLACE);
 
-		DataRecordSpy recordToReturn = spiderInstanceFactorySpy.indexBatchJobCreator.recordToReturn;
+		DataRecordSpy recordToReturn = spiderInstanceFactorySpy.spiderRecordListIndexerSpy.recordToReturn;
 		assertDataFromSpiderConvertedToJsonUsingConvertersFromProvider(recordToReturn);
 
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.CREATED);
-		assertTrue(response.getLocation().toString().startsWith("record/" + INDEX_BATCH_JOB));
+		assertEquals(response.getLocation().toString(), "indexBatchJob/idFromDataRecordSpy");
 	}
 
 	@Test
 	public void testIndexRecordListWithNullAsFilter() {
-		response = recordEndpoint.indexRecordList(AUTH_TOKEN, AUTH_TOKEN, PLACE, null);
+		response = recordEndpoint.batchIndexJsonJson(AUTH_TOKEN, AUTH_TOKEN, PLACE, null);
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.CREATED);
-		assertTrue(response.getLocation().toString().startsWith("record/" + INDEX_BATCH_JOB));
+		assertEquals(response.getLocation().toString(), "indexBatchJob/idFromDataRecordSpy");
 
 		assertEquals(jsonParser.jsonString, "{\"name\":\"indexSettings\",\"children\":[]}");
-
 	}
 
 	@Test
 	public void testIndexRecordListWithEmptyFilter() {
-		response = recordEndpoint.indexRecordList(AUTH_TOKEN, AUTH_TOKEN, PLACE, "");
+		response = recordEndpoint.batchIndexJsonJson(AUTH_TOKEN, AUTH_TOKEN, PLACE, "");
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.CREATED);
-		assertTrue(response.getLocation().toString().startsWith("record/" + INDEX_BATCH_JOB));
+		assertEquals(response.getLocation().toString(), "indexBatchJob/idFromDataRecordSpy");
 
 		assertEquals(jsonParser.jsonString, "{\"name\":\"indexSettings\",\"children\":[]}");
+	}
 
+	@Test
+	public void testIndexRecordListWithFilterAsXmlAndResponseXml() {
+		response = recordEndpoint.batchIndexXmlXml(AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultXml);
+
+		var filterElement = getValueFromConvertAndAssertParameters();
+
+		spiderInstanceFactorySpy.spiderRecordListIndexerSpy.MCR.assertParameters("indexRecordList",
+				0, AUTH_TOKEN, "place", filterElement);
+
+		DataRecord dataList = (DataRecord) spiderInstanceFactorySpy.spiderRecordListIndexerSpy.MCR
+				.getReturnValue("indexRecordList", 0);
+
+		assertXmlConvertionOfResponse(dataList);
+		assertEntityExists();
+		assertResponseStatusIs(Response.Status.CREATED);
+		assertResponseContentTypeIs("application/vnd.uub.record+xml");
+	}
+
+	@Test
+	public void testIndexRecordListWithFilterAsXmlndResponseJson() {
+		response = recordEndpoint.batchIndexXmlJson(AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultXml);
+
+		var filterElement = getValueFromConvertAndAssertParameters();
+
+		spiderInstanceFactorySpy.spiderRecordListIndexerSpy.MCR.assertParameters("indexRecordList",
+				0, AUTH_TOKEN, "place", filterElement);
+
+		DataRecord dataList = (DataRecord) spiderInstanceFactorySpy.spiderRecordListIndexerSpy.MCR
+				.getReturnValue("indexRecordList", 0);
+
+		assertDataFromSpiderConvertedToJsonUsingConvertersFromProvider(dataList);
+		assertEntityExists();
+		assertResponseStatusIs(Response.Status.CREATED);
+		assertResponseContentTypeIs("application/vnd.uub.record+json");
+	}
+
+	@Test
+	public void testIndexRecordListWithFilterAsJsonAndResponseXml() {
+		response = recordEndpoint.batchIndexJsonXml(AUTH_TOKEN, AUTH_TOKEN, PLACE, jsonIndexData);
+
+		DataGroup filterSentOnToSpider = spiderInstanceFactorySpy.spiderRecordListIndexerSpy.filter;
+		assertJsonStringConvertedToDataUsesCoraData(jsonIndexData, filterSentOnToSpider);
+
+		spiderInstanceFactorySpy.spiderRecordListIndexerSpy.MCR.assertParameters("indexRecordList",
+				0, AUTH_TOKEN, "place", filterSentOnToSpider);
+
+		DataRecord dataList = (DataRecord) spiderInstanceFactorySpy.spiderRecordListIndexerSpy.MCR
+				.getReturnValue("indexRecordList", 0);
+
+		assertXmlConvertionOfResponse(dataList);
+		assertEntityExists();
+		assertResponseStatusIs(Response.Status.CREATED);
+		assertResponseContentTypeIs("application/vnd.uub.record+xml");
+	}
+
+	@Test
+	public void testIndexRecordListWithJsonAnWrongContentTypeAndResponseXml() {
+		converterFactorySpy.xmlToDataConverterThrowsException = true;
+
+		response = recordEndpoint.batchIndexXmlXml(AUTH_TOKEN, AUTH_TOKEN, PLACE, jsonIndexData);
+
+		StringToExternallyConvertibleConverterSpy xmlToDataConverter = (StringToExternallyConvertibleConverterSpy) converterFactorySpy.MCR
+				.getReturnValue("factorStringToExternallyConvertableConverter", 0);
+
+		xmlToDataConverter.MCR.assertParameters("convert", 0, jsonIndexData);
+
+		assertEquals(response.getEntity(), "exception from spy");
+		assertResponseStatusIs(Response.Status.BAD_REQUEST);
+	}
+
+	@Test
+	public void testIndexRecordListWithNullFilterAsXmlAndResponseXml() {
+		response = recordEndpoint.batchIndexXmlXml(AUTH_TOKEN, AUTH_TOKEN, PLACE, null);
+
+		DataGroup filterSentOnToSpider = spiderInstanceFactorySpy.spiderRecordListIndexerSpy.filter;
+		assertJsonStringConvertedToDataUsesCoraData("{\"name\":\"indexSettings\",\"children\":[]}",
+				filterSentOnToSpider);
+
+		spiderInstanceFactorySpy.spiderRecordListIndexerSpy.MCR.assertParameters("indexRecordList",
+				0, AUTH_TOKEN, "place", filterSentOnToSpider);
+
+		DataRecord dataList = (DataRecord) spiderInstanceFactorySpy.spiderRecordListIndexerSpy.MCR
+				.getReturnValue("indexRecordList", 0);
+
+		assertXmlConvertionOfResponse(dataList);
+		assertEntityExists();
+		assertResponseStatusIs(Response.Status.CREATED);
+		assertResponseContentTypeIs("application/vnd.uub.record+xml");
+	}
+
+	@Test
+	public void testAnnotationsForIndexRecordListJsonJson() throws Exception {
+		Method method = getMethodWithMethodName("batchIndexJsonJson", 4);
+		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+
+		assertHttpMethodAndPathAnnotation(method, "POST", "index/{type}");
+		assertConsumesAnnotation(method, "application/vnd.uub.record+json", "*/*");
+		assertProducesAnnotation(method, "application/vnd.uub.record+json", "*/*");
+		assertAuthTokenAnnotation(parameterAnnotations, 0);
+
+		PathParam typeParameter = (PathParam) parameterAnnotations[2][0];
+		assertEquals(typeParameter.value(), "type");
+	}
+
+	@Test
+	public void testAnnotationsForIndexRecordListJsonXml() throws Exception {
+		Method method = getMethodWithMethodName("batchIndexJsonXml", 4);
+		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+
+		assertHttpMethodAndPathAnnotation(method, "POST", "index/{type}");
+		assertConsumesAnnotation(method, "application/vnd.uub.record+json");
+		assertProducesAnnotation(method, "application/vnd.uub.record+xml");
+		assertAuthTokenAnnotation(parameterAnnotations, 0);
+
+		PathParam typeParameter = (PathParam) parameterAnnotations[2][0];
+		assertEquals(typeParameter.value(), "type");
+	}
+
+	@Test
+	public void testAnnotationsForIndexRecordListXmlJson() throws Exception {
+		Method method = getMethodWithMethodName("batchIndexXmlJson", 4);
+		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+
+		assertHttpMethodAndPathAnnotation(method, "POST", "index/{type}");
+		assertConsumesAnnotation(method, "application/vnd.uub.record+xml");
+		assertProducesAnnotation(method, "application/vnd.uub.record+json");
+		assertAuthTokenAnnotation(parameterAnnotations, 0);
+
+		PathParam typeParameter = (PathParam) parameterAnnotations[2][0];
+		assertEquals(typeParameter.value(), "type");
+	}
+
+	@Test
+	public void testAnnotationsForIndexRecordListXmlXml() throws Exception {
+		Method method = getMethodWithMethodName("batchIndexXmlXml", 4);
+		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+
+		assertHttpMethodAndPathAnnotation(method, "POST", "index/{type}");
+		assertConsumesAnnotation(method, "application/vnd.uub.record+xml");
+		assertProducesAnnotation(method, "application/vnd.uub.record+xml");
+		assertAuthTokenAnnotation(parameterAnnotations, 0);
+
+		PathParam typeParameter = (PathParam) parameterAnnotations[2][0];
+		assertEquals(typeParameter.value(), "type");
 	}
 
 	@Test
 	public void testIndexRecordListNotFound() {
-		response = recordEndpoint.indexRecordList(AUTH_TOKEN, AUTH_TOKEN, "recordType_NON_EXISTING",
-				jsonFilterData);
+		response = recordEndpoint.batchIndexJsonJson(AUTH_TOKEN, AUTH_TOKEN,
+				"recordType_NON_EXISTING", jsonFilterData);
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
 	}
 
 	@Test
 	public void testIndexRecordListUnauthorized() {
-		response = recordEndpoint.indexRecordListUsingAuthTokenByType(DUMMY_NON_AUTHORIZED_TOKEN,
-				PLACE, jsonFilterData);
+		response = recordEndpoint.batchIndexJsonJson(DUMMY_NON_AUTHORIZED_TOKEN, AUTH_TOKEN, PLACE,
+				jsonFilterData);
 		assertResponseStatusIs(Response.Status.FORBIDDEN);
 	}
 
 	@Test
 	public void testIndexRecordListNoTokenAndUnauthorized() {
-		response = recordEndpoint.indexRecordListUsingAuthTokenByType(null, PLACE, jsonFilterData);
+		response = recordEndpoint.batchIndexJsonJson(null, null, PLACE, jsonFilterData);
 		assertResponseStatusIs(Response.Status.UNAUTHORIZED);
 	}
 

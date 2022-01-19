@@ -29,8 +29,11 @@ import se.uu.ub.cora.data.DataAttribute;
 import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.spider.data.DataMissingException;
+import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 
 public class DataGroupSpy implements DataGroup {
+	public MethodCallRecorder MCR = new MethodCallRecorder();
+
 	public String nameInData;
 	public List<DataElement> children = new ArrayList<>();
 	public String repeatId;
@@ -42,20 +45,27 @@ public class DataGroupSpy implements DataGroup {
 
 	@Override
 	public String getRepeatId() {
+		MCR.addCall();
+		MCR.addReturned(repeatId);
 		return repeatId;
 	}
 
 	@Override
 	public String getNameInData() {
+		MCR.addCall();
+		MCR.addReturned(nameInData);
 		return nameInData;
 	}
 
 	@Override
 	public String getFirstAtomicValueWithNameInData(String nameInData) {
+		MCR.addCall("nameInData", nameInData);
 		for (DataElement dataElement : children) {
 			if (nameInData.equals(dataElement.getNameInData())) {
 				if (dataElement instanceof DataAtomic) {
-					return ((DataAtomic) dataElement).getValue();
+					String out = ((DataAtomic) dataElement).getValue();
+					MCR.addReturned(out);
+					return out;
 				}
 			}
 		}
@@ -64,10 +74,18 @@ public class DataGroupSpy implements DataGroup {
 
 	@Override
 	public DataGroup getFirstGroupWithNameInData(String childNameInData) {
+		MCR.addCall("childNameInData", childNameInData);
+		if (children.size() == 0) {
+			DataGroup out = new DataGroupSpy(childNameInData);
+			MCR.addReturned(out);
+			return out;
+		}
 		for (DataElement dataElement : children) {
 			if (childNameInData.equals(dataElement.getNameInData())) {
 				if (dataElement instanceof DataGroup) {
-					return ((DataGroup) dataElement);
+					DataGroup dataGroup = (DataGroup) dataElement;
+					MCR.addReturned(dataGroup);
+					return dataGroup;
 				}
 			}
 		}
@@ -76,48 +94,58 @@ public class DataGroupSpy implements DataGroup {
 
 	@Override
 	public void addChild(DataElement dataElement) {
+		MCR.addCall("dataElement", dataElement);
 		children.add(dataElement);
-
 	}
 
 	@Override
 	public List<DataElement> getChildren() {
+		MCR.addCall();
+		MCR.addReturned(children);
 		return children;
 	}
 
 	@Override
 	public boolean containsChildWithNameInData(String nameInData) {
+		MCR.addCall("nameInData", nameInData);
 		for (DataElement dataElement : children) {
 			if (nameInData.equals(dataElement.getNameInData())) {
+				MCR.addReturned(true);
 				return true;
 			}
 		}
+		MCR.addReturned(false);
 		return false;
 	}
 
 	@Override
 	public void setRepeatId(String repeatId) {
+		MCR.addCall("repeatId", repeatId);
 		this.repeatId = repeatId;
-
 	}
 
 	@Override
 	public void addAttributeByIdWithValue(String id, String value) {
+		MCR.addCall("id", id, "value", value);
 		attributes.add(new DataAttributeSpy(id, value));
 	}
 
 	@Override
 	public DataElement getFirstChildWithNameInData(String nameInData) {
+		MCR.addCall("nameInData", nameInData);
 		for (DataElement dataElement : children) {
 			if (nameInData.equals(dataElement.getNameInData())) {
+				MCR.addReturned(dataElement);
 				return dataElement;
 			}
 		}
+		MCR.addReturned(null);
 		return null;
 	}
 
 	@Override
 	public List<DataGroup> getAllGroupsWithNameInData(String nameInData) {
+		MCR.addCall("nameInData", nameInData);
 		List<DataGroup> matchingDataGroups = new ArrayList<>();
 		for (DataElement dataElement : children) {
 			if (nameInData.equals(dataElement.getNameInData())
@@ -125,26 +153,32 @@ public class DataGroupSpy implements DataGroup {
 				matchingDataGroups.add((DataGroup) dataElement);
 			}
 		}
+		MCR.addReturned(matchingDataGroups);
 		return matchingDataGroups;
 	}
 
 	@Override
 	public DataAttribute getAttribute(String attributeId) {
+		MCR.addCall("attributeId", attributeId);
 		for (DataAttribute dataAttribute : attributes) {
 			if (dataAttribute.getNameInData().equals(attributeId)) {
+				MCR.addReturned(dataAttribute);
 				return dataAttribute;
 			}
 		}
+		MCR.addReturned(null);
 		return null;
 	}
 
 	@Override
 	public Collection<DataAttribute> getAttributes() {
+		MCR.addCall();
 		return attributes;
 	}
 
 	@Override
 	public List<DataAtomic> getAllDataAtomicsWithNameInData(String childNameInData) {
+		MCR.addCall("childNameInData", childNameInData);
 		List<DataAtomic> matchingDataAtomics = new ArrayList<>();
 		for (DataElement dataElement : children) {
 			if (childNameInData.equals(dataElement.getNameInData())
@@ -152,11 +186,13 @@ public class DataGroupSpy implements DataGroup {
 				matchingDataAtomics.add((DataAtomic) dataElement);
 			}
 		}
+		MCR.addReturned(matchingDataAtomics);
 		return matchingDataAtomics;
 	}
 
 	@Override
 	public boolean removeFirstChildWithNameInData(String childNameInData) {
+		MCR.addCall("childNameInData", childNameInData);
 		boolean removed = false;
 		for (DataElement dataElement : getChildren()) {
 			if (dataElementsNameInDataIs(dataElement, childNameInData)) {
@@ -164,11 +200,15 @@ public class DataGroupSpy implements DataGroup {
 				removed = true;
 			}
 		}
+		MCR.addReturned(removed);
 		return removed;
 	}
 
 	private boolean dataElementsNameInDataIs(DataElement dataElement, String childNameInData) {
-		return dataElement.getNameInData().equals(childNameInData);
+		MCR.addCall("dataElement", dataElement, "childNameInData", childNameInData);
+		boolean out = dataElement.getNameInData().equals(childNameInData);
+		MCR.addReturned(out);
+		return out;
 	}
 
 	@Override
