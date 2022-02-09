@@ -78,6 +78,7 @@ import se.uu.ub.cora.storage.RecordNotFoundException;
 
 @Path("/")
 public class RecordEndpoint {
+	private static final String TEXT_PLAIN_CHARSET_UTF_8 = "text/plain; charset=UTF-8";
 	private static final String APPLICATION_VND_UUB_RECORD_LIST_XML = "application/vnd.uub.recordList+xml";
 	private static final String APPLICATION_VND_UUB_RECORD_LIST_XML_QS09 = "application/vnd.uub.recordList+xml;qs=0.9";
 	private static final String APPLICATION_VND_UUB_RECORD_LIST_JSON = "application/vnd.uub.recordList+json";
@@ -288,11 +289,13 @@ public class RecordEndpoint {
 	}
 
 	private Response buildResponseIncludingMessage(Exception error, Status status) {
-		return Response.status(status).entity(error.getMessage()).build();
+		return Response.status(status).entity(error.getMessage())
+				.header(HttpHeaders.CONTENT_TYPE, TEXT_PLAIN_CHARSET_UTF_8).build();
 	}
 
 	private Response buildResponse(Status status) {
-		return Response.status(status).build();
+		return Response.status(status).header(HttpHeaders.CONTENT_TYPE, TEXT_PLAIN_CHARSET_UTF_8)
+				.build();
 	}
 
 	@GET

@@ -68,6 +68,7 @@ import se.uu.ub.cora.therest.coradata.DataRecordSpy;
 import se.uu.ub.cora.therest.log.LoggerFactorySpy;
 
 public class RecordEndpointTest {
+	private static final String TEXT_PLAIN = "text/plain; charset=UTF-8";
 	private static final String APPLICATION_VND_UUB_RECORD_LIST_XML = "application/vnd.uub.recordList+xml";
 	private static final String APPLICATION_VND_UUB_RECORD_LIST_XML_QS09 = "application/vnd.uub.recordList+xml;qs=0.9";
 	private static final String APPLICATION_VND_UUB_RECORD_LIST_JSON = "application/vnd.uub.recordList+json";
@@ -857,6 +858,7 @@ public class RecordEndpointTest {
 		response = recordEndpoint.updateRecordJsonJson(DUMMY_NON_AUTHORIZED_TOKEN, AUTH_TOKEN,
 				PLACE, PLACE_0001, defaultJson);
 		assertResponseStatusIs(Response.Status.FORBIDDEN);
+		assertResponseContentTypeIs(TEXT_PLAIN);
 	}
 
 	@Test
@@ -864,6 +866,7 @@ public class RecordEndpointTest {
 		response = recordEndpoint.updateRecordJsonJson(AUTH_TOKEN, AUTH_TOKEN, PLACE,
 				PLACE_0001 + "_NOT_FOUND", defaultJson);
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
+		assertResponseContentTypeIs(TEXT_PLAIN);
 	}
 
 	@Test
@@ -871,6 +874,7 @@ public class RecordEndpointTest {
 		response = recordEndpoint.updateRecordJsonJson(AUTH_TOKEN, AUTH_TOKEN, PLACE + "_NOT_FOUND",
 				PLACE_0001, defaultJson);
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
+		assertResponseContentTypeIs(TEXT_PLAIN);
 	}
 
 	@Test
@@ -879,6 +883,7 @@ public class RecordEndpointTest {
 		response = recordEndpoint.updateRecordJsonJson(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001,
 				defaultJson);
 		assertResponseStatusIs(Response.Status.BAD_REQUEST);
+		assertResponseContentTypeIs(TEXT_PLAIN);
 	}
 
 	@Test
@@ -1081,7 +1086,7 @@ public class RecordEndpointTest {
 		response = recordEndpoint.createRecordJsonJson(AUTH_TOKEN, AUTH_TOKEN, "place_duplicate",
 				defaultJson);
 		assertResponseStatusIs(Response.Status.CONFLICT);
-
+		assertResponseContentTypeIs(TEXT_PLAIN);
 	}
 
 	@Test
@@ -1233,6 +1238,7 @@ public class RecordEndpointTest {
 				"image:123456789", stream, formDataContentDisposition);
 
 		assertResponseStatusIs(Response.Status.METHOD_NOT_ALLOWED);
+		assertResponseContentTypeIs(TEXT_PLAIN);
 	}
 
 	@Test
@@ -1246,6 +1252,7 @@ public class RecordEndpointTest {
 				null, formDataContentDisposition);
 
 		assertResponseStatusIs(Response.Status.BAD_REQUEST);
+		assertResponseContentTypeIs(TEXT_PLAIN);
 	}
 
 	@Test
@@ -1341,6 +1348,7 @@ public class RecordEndpointTest {
 		response = recordEndpoint.downloadFile(AUTH_TOKEN, AUTH_TOKEN, "image", "image:123456789",
 				"");
 		assertResponseStatusIs(Response.Status.BAD_REQUEST);
+		assertResponseContentTypeIs(TEXT_PLAIN);
 	}
 
 	@Test
@@ -1631,6 +1639,7 @@ public class RecordEndpointTest {
 		jsonParser.throwError = true;
 		response = recordEndpoint.validateRecordJsonJson(AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultXml);
 		assertResponseStatusIs(Response.Status.BAD_REQUEST);
+		assertResponseContentTypeIs(TEXT_PLAIN);
 	}
 
 	@Test
@@ -1638,6 +1647,7 @@ public class RecordEndpointTest {
 		converterFactorySpy.xmlToDataConverterThrowsException = true;
 		response = recordEndpoint.validateRecordXmlJson(AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultJson);
 		assertResponseStatusIs(Response.Status.BAD_REQUEST);
+		assertResponseContentTypeIs(TEXT_PLAIN);
 	}
 
 	@Test
@@ -1701,6 +1711,7 @@ public class RecordEndpointTest {
 		response = recordEndpoint.validateRecordJsonJson(DUMMY_NON_AUTHORIZED_TOKEN, AUTH_TOKEN,
 				"workOrder", jsonToValidate);
 		assertResponseStatusIs(Response.Status.FORBIDDEN);
+		assertResponseContentTypeIs(TEXT_PLAIN);
 	}
 
 	@Test
@@ -1933,6 +1944,7 @@ public class RecordEndpointTest {
 	public void testIndexRecordListNoTokenAndUnauthorized() {
 		response = recordEndpoint.batchIndexJsonJson(null, null, PLACE, jsonFilterData);
 		assertResponseStatusIs(Response.Status.UNAUTHORIZED);
+		assertResponseContentTypeIs(TEXT_PLAIN);
 	}
 
 }

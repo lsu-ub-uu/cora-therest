@@ -36,9 +36,9 @@
 		<spider.version>5.5.0</spider.version>
 		<jaxb-api.version>2.3.1</jaxb-api.version>
 		<servlet-api.version>5.0.0</servlet-api.version>
-		<jersey.version>3.0.3</jersey.version>
-		<bookkeeper.version>6.4.0</bookkeeper.version>
-		<gatekeeperclient.version>3.12.0</gatekeeperclient.version>
+		<jersey.version>3.0.4</jersey.version>
+		<bookkeeper.version>6.5.0</bookkeeper.version>
+		<gatekeeperclient.version>3.13.0</gatekeeperclient.version>
 		<beefeater.version>3.6.0</beefeater.version>
 		<solrsearch.version>4.4.0</solrsearch.version>
 		<httphandler.version>2.4.0</httphandler.version>
@@ -50,7 +50,7 @@
 		<coradata.version>5.4.0</coradata.version> 
 		<testutils.version>1.2.0</testutils.version>
 		<converter.version>2.0.0</converter.version>
-		<xmlconverter.version>1.9.0</xmlconverter.version>
+		<xmlconverter.version>1.10.0</xmlconverter.version>
 	</properties>
 	
 	<scm>
