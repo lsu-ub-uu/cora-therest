@@ -22,6 +22,7 @@ package se.uu.ub.cora.therest.record;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.MessageFormat;
 
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
@@ -78,7 +79,7 @@ import se.uu.ub.cora.storage.RecordNotFoundException;
 
 @Path("/")
 public class RecordEndpoint {
-	private static final String TEXT_PLAIN_CHARSET_UTF_8 = "text/plain; charset=UTF-8";
+	private static final String TEXT_PLAIN_CHARSET_UTF_8 = "text/plain; charset=utf-8";
 	private static final String APPLICATION_VND_UUB_RECORD_LIST_XML = "application/vnd.uub.recordList+xml";
 	private static final String APPLICATION_VND_UUB_RECORD_LIST_XML_QS09 = "application/vnd.uub.recordList+xml;qs=0.9";
 	private static final String APPLICATION_VND_UUB_RECORD_LIST_JSON = "application/vnd.uub.recordList+json";
@@ -182,7 +183,8 @@ public class RecordEndpoint {
 		try {
 			return tryCreateRecord(contentType, accept, authToken, type, inputRecord);
 		} catch (Exception error) {
-			return handleError(authToken, error);
+			String errorFromCaller = "Error creating new record for recordType: {0}.";
+			return handleError(authToken, error, MessageFormat.format(errorFromCaller, type));
 		}
 	}
 
@@ -239,7 +241,7 @@ public class RecordEndpoint {
 		return converter.toJsonCompactFormat();
 	}
 
-	private Response handleError(String authToken, Exception error) {
+	private Response handleError(String authToken, Exception error, String errorFromCaller) {
 		if (error instanceof RecordConflictException) {
 			return buildResponseIncludingMessage(error, Response.Status.CONFLICT);
 		}
@@ -249,11 +251,16 @@ public class RecordEndpoint {
 		}
 
 		if (errorIsCausedByDataProblem(error)) {
-			return buildResponseIncludingMessage(error, Response.Status.BAD_REQUEST);
+			// return buildResponseIncludingMessage(error, Response.Status.BAD_REQUEST);
+			return Response.status(Response.Status.BAD_REQUEST)
+					.entity(errorFromCaller + " " + error.getMessage())
+					.header(HttpHeaders.CONTENT_TYPE, TEXT_PLAIN_CHARSET_UTF_8).build();
 		}
 
 		if (error instanceof RecordNotFoundException) {
-			return buildResponseIncludingMessage(error, Response.Status.NOT_FOUND);
+			return Response.status(Response.Status.NOT_FOUND)
+					.entity(errorFromCaller + " Not found.")
+					.header(HttpHeaders.CONTENT_TYPE, TEXT_PLAIN_CHARSET_UTF_8).build();
 		}
 
 		if (error instanceof URISyntaxException) {
@@ -338,7 +345,8 @@ public class RecordEndpoint {
 		try {
 			return tryReadRecordList(accept, authToken, type, filterAsJson);
 		} catch (Exception error) {
-			return handleError(authToken, error);
+			String errorFromCaller = "Error reading records with recordType: {0}.";
+			return handleError(authToken, error, MessageFormat.format(errorFromCaller, type));
 		}
 	}
 
@@ -388,7 +396,9 @@ public class RecordEndpoint {
 		try {
 			return tryReadRecord(accept, authToken, type, id);
 		} catch (Exception error) {
-			return handleError(authToken, error);
+			String errorFromCaller = "Error reading record with recordType: {0} and "
+					+ "recordId: {1}.";
+			return handleError(authToken, error, MessageFormat.format(errorFromCaller, type, id));
 		}
 	}
 
@@ -452,7 +462,7 @@ public class RecordEndpoint {
 		try {
 			return tryReadIncomingRecordLinks(accept, authToken, type, id);
 		} catch (Exception error) {
-			return handleError(authToken, error);
+			return handleError(authToken, error, "Some error");
 		}
 	}
 
@@ -479,7 +489,7 @@ public class RecordEndpoint {
 		try {
 			return tryDeleteRecord(authToken, type, id);
 		} catch (Exception error) {
-			return handleError(authToken, error);
+			return handleError(authToken, error, "Some error");
 		}
 	}
 
@@ -545,7 +555,7 @@ public class RecordEndpoint {
 		try {
 			return tryUpdateRecord(contentType, accept, authToken, type, id, inputRecord);
 		} catch (Exception error) {
-			return handleError(authToken, error);
+			return handleError(authToken, error, "Some error");
 		}
 	}
 
@@ -579,7 +589,7 @@ public class RecordEndpoint {
 		try {
 			return tryDownloadFile(authToken, type, id, streamId);
 		} catch (Exception error) {
-			return handleError(authToken, error);
+			return handleError(authToken, error, "Some error");
 		}
 	}
 
@@ -633,7 +643,7 @@ public class RecordEndpoint {
 		try {
 			return tryUploadFile(accept, authToken, type, id, uploadedInputStream, fileName);
 		} catch (Exception error) {
-			return handleError(authToken, error);
+			return handleError(authToken, error, "Some error");
 		}
 	}
 
@@ -679,7 +689,7 @@ public class RecordEndpoint {
 		try {
 			return trySearchRecord(accept, authToken, searchId, searchDataAsString);
 		} catch (Exception error) {
-			return handleError(authToken, error);
+			return handleError(authToken, error, "Some error");
 		}
 	}
 
@@ -773,7 +783,7 @@ public class RecordEndpoint {
 		try {
 			return tryValidateRecord(contentType, accept, authToken, type, jsonRecord);
 		} catch (Exception error) {
-			return handleError(authToken, error);
+			return handleError(authToken, error, "Some error");
 		}
 	}
 
@@ -889,7 +899,8 @@ public class RecordEndpoint {
 			return tryIndexRecordList(contentType, accept, authToken, type, filterAsJson);
 
 		} catch (Exception error) {
-			return handleError(authToken, error);
+			String errorFromCaller = "Error indexing records with recordType: {0}.";
+			return handleError(authToken, error, MessageFormat.format(errorFromCaller, type));
 		}
 	}
 

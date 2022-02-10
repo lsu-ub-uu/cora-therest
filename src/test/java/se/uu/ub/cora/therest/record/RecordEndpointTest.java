@@ -22,6 +22,7 @@ package se.uu.ub.cora.therest.record;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
 
@@ -68,7 +69,7 @@ import se.uu.ub.cora.therest.coradata.DataRecordSpy;
 import se.uu.ub.cora.therest.log.LoggerFactorySpy;
 
 public class RecordEndpointTest {
-	private static final String TEXT_PLAIN = "text/plain; charset=UTF-8";
+	private static final String TEXT_PLAIN = "text/plain; charset=utf-8";
 	private static final String APPLICATION_VND_UUB_RECORD_LIST_XML = "application/vnd.uub.recordList+xml";
 	private static final String APPLICATION_VND_UUB_RECORD_LIST_XML_QS09 = "application/vnd.uub.recordList+xml;qs=0.9";
 	private static final String APPLICATION_VND_UUB_RECORD_LIST_JSON = "application/vnd.uub.recordList+json";
@@ -316,6 +317,8 @@ public class RecordEndpointTest {
 		response = recordEndpoint.readRecordListJson(AUTH_TOKEN, AUTH_TOKEN, "place_NOT_FOUND",
 				jsonFilter);
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
+		assertEquals(response.getEntity(),
+				"Error reading records with recordType: place_NOT_FOUND. Not found.");
 	}
 
 	@Test
@@ -530,6 +533,8 @@ public class RecordEndpointTest {
 		response = recordEndpoint.readRecordJson(AUTH_TOKEN, AUTH_TOKEN, PLACE,
 				"place:0001_NOT_FOUND");
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
+		assertEquals(response.getEntity(), "Error reading record with recordType: " + PLACE
+				+ " and recordId: place:0001_NOT_FOUND. Not found.");
 	}
 
 	@Test
@@ -1043,6 +1048,7 @@ public class RecordEndpointTest {
 		String type = "place&& &&\\\\";
 		response = recordEndpoint.createRecordJsonJson(AUTH_TOKEN, AUTH_TOKEN, type, defaultJson);
 		assertResponseStatusIs(Response.Status.BAD_REQUEST);
+		assertNull(response.getEntity());
 	}
 
 	@Test
@@ -1064,6 +1070,8 @@ public class RecordEndpointTest {
 		response = recordEndpoint.createRecordJsonJson(AUTH_TOKEN, AUTH_TOKEN, "place_NON_VALID",
 				defaultJson);
 		assertResponseStatusIs(Response.Status.BAD_REQUEST);
+		assertEquals(response.getEntity(),
+				"Error creating new record for recordType: place_NON_VALID. Data is not valid");
 	}
 
 	@Test
@@ -1072,6 +1080,8 @@ public class RecordEndpointTest {
 		response = recordEndpoint.createRecordJsonJson("someToken78678567", AUTH_TOKEN, PLACE,
 				defaultJson);
 		assertResponseStatusIs(Response.Status.BAD_REQUEST);
+		assertEquals(response.getEntity(), "Error creating new record for recordType: " + PLACE
+				+ ". Error from converter spy");
 	}
 
 	@Test
@@ -1846,7 +1856,8 @@ public class RecordEndpointTest {
 
 		xmlToDataConverter.MCR.assertParameters("convert", 0, jsonIndexData);
 
-		assertEquals(response.getEntity(), "exception from spy");
+		assertEquals(response.getEntity(),
+				"Error indexing records with recordType: place. exception from spy");
 		assertResponseStatusIs(Response.Status.BAD_REQUEST);
 	}
 
