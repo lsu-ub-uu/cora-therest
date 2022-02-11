@@ -251,7 +251,6 @@ public class RecordEndpoint {
 		}
 
 		if (errorIsCausedByDataProblem(error)) {
-			// return buildResponseIncludingMessage(error, Response.Status.BAD_REQUEST);
 			return Response.status(Response.Status.BAD_REQUEST)
 					.entity(errorFromCaller + " " + error.getMessage())
 					.header(HttpHeaders.CONTENT_TYPE, TEXT_PLAIN_CHARSET_UTF_8).build();
@@ -555,7 +554,10 @@ public class RecordEndpoint {
 		try {
 			return tryUpdateRecord(contentType, accept, authToken, type, id, inputRecord);
 		} catch (Exception error) {
-			return handleError(authToken, error, "Some error");
+			String errorFromCaller = "Error updating record with recordType: {0} and "
+					+ "recordId: {1}.";
+			return handleError(authToken, error, MessageFormat.format(errorFromCaller, type, id));
+
 		}
 	}
 
@@ -689,7 +691,8 @@ public class RecordEndpoint {
 		try {
 			return trySearchRecord(accept, authToken, searchId, searchDataAsString);
 		} catch (Exception error) {
-			return handleError(authToken, error, "Some error");
+			String errorFromCaller = "Error searching record with searchId: {0}.";
+			return handleError(authToken, error, MessageFormat.format(errorFromCaller, searchId));
 		}
 	}
 

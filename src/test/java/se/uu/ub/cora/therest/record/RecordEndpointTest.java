@@ -864,6 +864,7 @@ public class RecordEndpointTest {
 				PLACE, PLACE_0001, defaultJson);
 		assertResponseStatusIs(Response.Status.FORBIDDEN);
 		assertResponseContentTypeIs(TEXT_PLAIN);
+		assertEquals(response.getEntity(), null);
 	}
 
 	@Test
@@ -872,6 +873,8 @@ public class RecordEndpointTest {
 				PLACE_0001 + "_NOT_FOUND", defaultJson);
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
 		assertResponseContentTypeIs(TEXT_PLAIN);
+		assertEquals(response.getEntity(), "Error updating record with recordType: " + PLACE
+				+ " and recordId: " + PLACE_0001 + "_NOT_FOUND. Not found.");
 	}
 
 	@Test
@@ -880,6 +883,8 @@ public class RecordEndpointTest {
 				PLACE_0001, defaultJson);
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
 		assertResponseContentTypeIs(TEXT_PLAIN);
+		assertEquals(response.getEntity(), "Error updating record with recordType: " + PLACE
+				+ "_NOT_FOUND and recordId: " + PLACE_0001 + ". Not found.");
 	}
 
 	@Test
@@ -889,6 +894,8 @@ public class RecordEndpointTest {
 				defaultJson);
 		assertResponseStatusIs(Response.Status.BAD_REQUEST);
 		assertResponseContentTypeIs(TEXT_PLAIN);
+		assertEquals(response.getEntity(), "Error updating record with recordType: " + PLACE
+				+ " and recordId: " + PLACE_0001 + ". some parse exception from spy");
 	}
 
 	@Test
@@ -897,6 +904,8 @@ public class RecordEndpointTest {
 		response = recordEndpoint.updateRecordJsonJson(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001,
 				defaultJson);
 		assertResponseStatusIs(Response.Status.BAD_REQUEST);
+		assertEquals(response.getEntity(), "Error updating record with recordType: " + PLACE
+				+ " and recordId: " + PLACE_0001 + ". some data exception from update");
 	}
 
 	@Test
@@ -1492,6 +1501,8 @@ public class RecordEndpointTest {
 		response = recordEndpoint.searchRecordJson(AUTH_TOKEN, AUTH_TOKEN, "aSearchId_NOT_FOUND",
 				defaultJson);
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
+		assertEquals(response.getEntity(),
+				"Error searching record with searchId: aSearchId_NOT_FOUND. Not found.");
 	}
 
 	@Test
@@ -1499,6 +1510,8 @@ public class RecordEndpointTest {
 		response = recordEndpoint.searchRecordJson(AUTH_TOKEN, AUTH_TOKEN, "aSearchId_INVALID_DATA",
 				defaultJson);
 		assertResponseStatusIs(Response.Status.BAD_REQUEST);
+		assertEquals(response.getEntity(),
+				"Error searching record with searchId: aSearchId_INVALID_DATA. SearchData is invalid");
 	}
 
 	@Test
@@ -1506,6 +1519,7 @@ public class RecordEndpointTest {
 		response = recordEndpoint.searchRecordJson(DUMMY_NON_AUTHORIZED_TOKEN,
 				DUMMY_NON_AUTHORIZED_TOKEN, "aSearchId", defaultJson);
 		assertResponseStatusIs(Response.Status.FORBIDDEN);
+		assertEquals(response.getEntity(), null);
 	}
 
 	@Test
@@ -1513,6 +1527,7 @@ public class RecordEndpointTest {
 		response = recordEndpoint.searchRecordJson("nonExistingToken", "nonExistingToken",
 				"aSearchId", defaultJson);
 		assertResponseStatusIs(Response.Status.UNAUTHORIZED);
+		assertEquals(response.getEntity(), null);
 	}
 
 	@Test
