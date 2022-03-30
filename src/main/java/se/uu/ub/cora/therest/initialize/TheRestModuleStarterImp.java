@@ -35,6 +35,7 @@ import se.uu.ub.cora.storage.RecordIdGeneratorProvider;
 import se.uu.ub.cora.storage.RecordStorageProvider;
 import se.uu.ub.cora.storage.SelectOrder;
 import se.uu.ub.cora.storage.StreamStorageProvider;
+import se.uu.ub.cora.storage.archive.RecordArchiveProvider;
 
 public class TheRestModuleStarterImp implements TheRestModuleStarter {
 	private static final String FOUND = "Found ";
@@ -74,6 +75,11 @@ public class TheRestModuleStarterImp implements TheRestModuleStarter {
 				providers.streamStorageProviderImplementations, "StreamStorageProvider");
 		streamStorageProvider.startUsingInitInfo(initInfo);
 		dependencyProvider.setStreamStorageProvider(streamStorageProvider);
+
+		RecordArchiveProvider recordArchiveProvider = getImplementationBasedOnPreferenceLevelThrowErrorIfNone(
+				providers.recordArchiveProviderImplementations, "RecordArchiveProvider");
+		recordArchiveProvider.startUsingInitInfo(initInfo);
+		// dependencyProvider.setRecordArchiverProvider(recordArchiveProvider);
 
 		RecordIdGeneratorProvider recordIdGeneratorProvider = getImplementationBasedOnPreferenceLevelThrowErrorIfNone(
 				providers.recordIdGeneratorProviderImplementations, "RecordIdGeneratorProvider");

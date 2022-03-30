@@ -40,6 +40,7 @@ import se.uu.ub.cora.storage.MetadataStorageProvider;
 import se.uu.ub.cora.storage.RecordIdGeneratorProvider;
 import se.uu.ub.cora.storage.RecordStorageProvider;
 import se.uu.ub.cora.storage.StreamStorageProvider;
+import se.uu.ub.cora.storage.archive.RecordArchiveProvider;
 import se.uu.ub.cora.therest.log.LoggerFactorySpy;
 
 public class TheRestModuleStarterTest {
@@ -67,6 +68,10 @@ public class TheRestModuleStarterTest {
 		List<StreamStorageProvider> streamStorageProviders = new ArrayList<>();
 		streamStorageProviders.add(new StreamStorageProviderSpy());
 		providers.streamStorageProviderImplementations = streamStorageProviders;
+
+		List<RecordArchiveProvider> recordArchiveProviders = new ArrayList<>();
+		recordArchiveProviders.add(new RecordArchiveProviderSpy());
+		providers.recordArchiveProviderImplementations = recordArchiveProviders;
 
 		List<RecordIdGeneratorProvider> recordIdGeneratorProviders = new ArrayList<>();
 		recordIdGeneratorProviders.add(new RecordIdGeneratorProviderSpy());
@@ -207,6 +212,17 @@ public class TheRestModuleStarterTest {
 		DependencyProviderSpy startedDependencyProvider = (DependencyProviderSpy) starter
 				.getStartedDependencyProvider();
 		assertSame(startedDependencyProvider.getRecordStorageProvider(), recordStorageProvider);
+	}
+
+	@Test
+	public void testStartModuleInitInfoSentToRecordArchiveProviderImplementation()
+			throws Exception {
+		startTheRestModuleStarter();
+		RecordArchiveProviderSpy recordArchiveProvider = (RecordArchiveProviderSpy) providers.recordArchiveProviderImplementations
+				.iterator().next();
+
+		recordArchiveProvider.MCR.assertParameters("startUsingInitInfo", 0, initInfo);
+		// assertSame(recordStorageProvider.initInfo, initInfo);
 	}
 
 	@Test

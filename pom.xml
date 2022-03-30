@@ -28,7 +28,7 @@
 
 	<artifactId>therest</artifactId>
 	<packaging>jar</packaging>
-	<version>7.7-SNAPSHOT</version>
+	<version>8.0-SNAPSHOT</version>
 	<name>The Rest</name>
 	
 	<properties>
@@ -42,7 +42,7 @@
 		<beefeater.version>3.6.0</beefeater.version>
 		<solrsearch.version>4.4.0</solrsearch.version>
 		<httphandler.version>2.4.0</httphandler.version>
-		<storage.version>5.2.0</storage.version>
+		<storage.version>6.0-SNAPSHOT</storage.version>
 		<search.version>4.1.0</search.version>
 		<searchstorage.version>3.10.0</searchstorage.version>
 		<logger.version>2.4.0</logger.version>
@@ -51,6 +51,7 @@
 		<testutils.version>1.2.0</testutils.version>
 		<converter.version>2.0.0</converter.version>
 		<xmlconverter.version>1.10.0</xmlconverter.version>
+<!--		<fedoraarchive.version>1.0-SNAPSHOT</fedoraarchive.version>  -->
 	</properties>
 	
 	<scm>
@@ -186,5 +187,11 @@
 			<version>${xmlconverter.version}</version>
 			<scope>compile</scope>
 		</dependency>
+<!--				<dependency>
+			<groupId>se.uu.ub.cora</groupId>
+			<artifactId>fedoraarchive</artifactId>
+			<version>${fedoraarchive.version}</version>
+			<scope>compile</scope>
+		</dependency> -->
 	</dependencies>
 </project>
