@@ -33,7 +33,7 @@
 	
 	<properties>
 		<json.version>3.1.0</json.version>
-		<spider.version>5.5.0</spider.version>
+		<spider.version>6.0-SNAPSHOT</spider.version>
 		<jaxb-api.version>2.3.1</jaxb-api.version>
 		<servlet-api.version>5.0.0</servlet-api.version>
 		<jersey.version>3.0.4</jersey.version>
@@ -51,7 +51,6 @@
 		<testutils.version>1.2.0</testutils.version>
 		<converter.version>2.0.0</converter.version>
 		<xmlconverter.version>1.10.0</xmlconverter.version>
-<!--		<fedoraarchive.version>1.0-SNAPSHOT</fedoraarchive.version>  -->
 	</properties>
 	
 	<scm>
@@ -187,11 +186,5 @@
 			<version>${xmlconverter.version}</version>
 			<scope>compile</scope>
 		</dependency>
-<!--				<dependency>
-			<groupId>se.uu.ub.cora</groupId>
-			<artifactId>fedoraarchive</artifactId>
-			<version>${fedoraarchive.version}</version>
-			<scope>compile</scope>
-		</dependency> -->
 	</dependencies>
 </project>

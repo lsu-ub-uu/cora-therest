@@ -34,6 +34,7 @@ import se.uu.ub.cora.storage.MetadataStorageProvider;
 import se.uu.ub.cora.storage.RecordIdGeneratorProvider;
 import se.uu.ub.cora.storage.RecordStorageProvider;
 import se.uu.ub.cora.storage.StreamStorageProvider;
+import se.uu.ub.cora.storage.archive.RecordArchiveProvider;
 
 public class DependencyProviderSpy extends DependencyProviderAbstract {
 
@@ -109,6 +110,10 @@ public class DependencyProviderSpy extends DependencyProviderAbstract {
 
 	public RecordStorageProvider getRecordStorageProvider() {
 		return recordStorageProvider;
+	}
+
+	public RecordArchiveProvider getRecordArchiveProvider() {
+		return recordArchiveProvider;
 	}
 
 	public StreamStorageProvider getStreamStorageProvider() {

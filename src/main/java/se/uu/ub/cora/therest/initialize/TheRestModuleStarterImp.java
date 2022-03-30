@@ -1,6 +1,6 @@
 /*
  * Copyright 2019 Olov McKie
- * Copyright 2019 Uppsala University Library
+ * Copyright 2019, 2022 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -79,7 +79,7 @@ public class TheRestModuleStarterImp implements TheRestModuleStarter {
 		RecordArchiveProvider recordArchiveProvider = getImplementationBasedOnPreferenceLevelThrowErrorIfNone(
 				providers.recordArchiveProviderImplementations, "RecordArchiveProvider");
 		recordArchiveProvider.startUsingInitInfo(initInfo);
-		// dependencyProvider.setRecordArchiverProvider(recordArchiveProvider);
+		dependencyProvider.setRecordArchiveProvider(recordArchiveProvider);
 
 		RecordIdGeneratorProvider recordIdGeneratorProvider = getImplementationBasedOnPreferenceLevelThrowErrorIfNone(
 				providers.recordIdGeneratorProviderImplementations, "RecordIdGeneratorProvider");
