@@ -47,7 +47,7 @@
 		<searchstorage.version>3.10.0</searchstorage.version>
 		<logger.version>2.4.0</logger.version>
 		<coralog4j.version>2.1.0</coralog4j.version>
-		<coradata.version>5.4.0</coradata.version> 
+		<coradata.version>6.0.0</coradata.version> 
 		<testutils.version>1.2.0</testutils.version>
 		<converter.version>2.0.0</converter.version>
 		<xmlconverter.version>1.10.0</xmlconverter.version>
