@@ -20,29 +20,15 @@ package se.uu.ub.cora.therest.initialize;
 
 import java.util.Map;
 
-import se.uu.ub.cora.storage.MetadataStorageProvider;
-import se.uu.ub.cora.storage.RecordIdGeneratorProvider;
-import se.uu.ub.cora.storage.RecordStorageProvider;
-import se.uu.ub.cora.storage.StreamStorageProvider;
+import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 
 public class TheRestModuleStarterSpy implements TheRestModuleStarter {
 
-	boolean startWasCalled = false;
-	Map<String, String> initInfo;
-	public Iterable<RecordStorageProvider> recordStorageProviderImplementations;
-	public Iterable<StreamStorageProvider> streamStorageProviderImplementations;
-	public Iterable<RecordIdGeneratorProvider> recordIdGeneratorProviderImplementations;
-	public Iterable<MetadataStorageProvider> metadataStorageProviderImplementations;
+	MethodCallRecorder MCR = new MethodCallRecorder();
 
 	@Override
 	public void startUsingInitInfoAndProviders(Map<String, String> initInfo, Providers providers) {
-		recordStorageProviderImplementations = providers.recordStorageProviderImplementations;
-		streamStorageProviderImplementations = providers.streamStorageProviderImplementations;
-		recordIdGeneratorProviderImplementations = providers.recordIdGeneratorProviderImplementations;
-		metadataStorageProviderImplementations = providers.metadataStorageProviderImplementations;
-		this.initInfo = initInfo;
-		startWasCalled = true;
-
+		MCR.addCall("initInfo", initInfo, "providers", providers);
 	}
 
 }

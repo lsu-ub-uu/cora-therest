@@ -22,11 +22,13 @@ import se.uu.ub.cora.storage.MetadataStorageProvider;
 import se.uu.ub.cora.storage.RecordIdGeneratorProvider;
 import se.uu.ub.cora.storage.RecordStorageProvider;
 import se.uu.ub.cora.storage.StreamStorageProvider;
+import se.uu.ub.cora.storage.archive.RecordArchiveProvider;
 
 public class Providers {
 
 	public Iterable<RecordStorageProvider> recordStorageProviderImplementations;
 	public Iterable<StreamStorageProvider> streamStorageProviderImplementations;
+	public Iterable<RecordArchiveProvider> recordArchiveProviderImplementations;
 	public Iterable<RecordIdGeneratorProvider> recordIdGeneratorProviderImplementations;
 	public Iterable<MetadataStorageProvider> metadataStorageProviderImplementations;
 

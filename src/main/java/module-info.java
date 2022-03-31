@@ -14,6 +14,7 @@ module se.uu.ub.cora.therest {
 
 	uses se.uu.ub.cora.storage.RecordStorageProvider;
 	uses se.uu.ub.cora.storage.StreamStorageProvider;
+	uses se.uu.ub.cora.storage.archive.RecordArchiveProvider;
 	uses se.uu.ub.cora.storage.RecordIdGeneratorProvider;
 	uses se.uu.ub.cora.storage.MetadataStorageProvider;
 

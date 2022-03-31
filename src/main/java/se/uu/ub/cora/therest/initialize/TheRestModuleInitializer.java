@@ -34,6 +34,7 @@ import se.uu.ub.cora.storage.MetadataStorageProvider;
 import se.uu.ub.cora.storage.RecordIdGeneratorProvider;
 import se.uu.ub.cora.storage.RecordStorageProvider;
 import se.uu.ub.cora.storage.StreamStorageProvider;
+import se.uu.ub.cora.storage.archive.RecordArchiveProvider;
 
 @WebListener
 public class TheRestModuleInitializer implements ServletContextListener {
@@ -92,6 +93,8 @@ public class TheRestModuleInitializer implements ServletContextListener {
 				.load(RecordStorageProvider.class);
 		providers.streamStorageProviderImplementations = ServiceLoader
 				.load(StreamStorageProvider.class);
+		providers.recordArchiveProviderImplementations = ServiceLoader
+				.load(RecordArchiveProvider.class);
 		providers.recordIdGeneratorProviderImplementations = ServiceLoader
 				.load(RecordIdGeneratorProvider.class);
 		providers.metadataStorageProviderImplementations = ServiceLoader
@@ -102,13 +105,11 @@ public class TheRestModuleInitializer implements ServletContextListener {
 		starter.startUsingInitInfoAndProviders(initInfo, providers);
 	}
 
-	TheRestModuleStarter getStarter() {
-		// needed for test
+	TheRestModuleStarter onlyForTestGetStarter() {
 		return starter;
 	}
 
-	void setStarter(TheRestModuleStarter starter) {
-		// needed for test
+	void onlyForTestSetStarter(TheRestModuleStarter starter) {
 		this.starter = starter;
 	}
 

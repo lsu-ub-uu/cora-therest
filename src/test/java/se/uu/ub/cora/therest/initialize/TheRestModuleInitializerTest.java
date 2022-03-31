@@ -35,6 +35,7 @@ import se.uu.ub.cora.storage.MetadataStorageProvider;
 import se.uu.ub.cora.storage.RecordIdGeneratorProvider;
 import se.uu.ub.cora.storage.RecordStorageProvider;
 import se.uu.ub.cora.storage.StreamStorageProvider;
+import se.uu.ub.cora.storage.archive.RecordArchiveProvider;
 import se.uu.ub.cora.therest.log.LoggerFactorySpy;
 
 public class TheRestModuleInitializerTest {
@@ -61,12 +62,12 @@ public class TheRestModuleInitializerTest {
 	@Test
 	public void testNonExceptionThrowingStartup() throws Exception {
 		TheRestModuleStarterSpy starter = startTheRestModuleInitializerWithStarterSpy();
-		assertTrue(starter.startWasCalled);
+		starter.MCR.assertMethodWasCalled("startUsingInitInfoAndProviders");
 	}
 
 	private TheRestModuleStarterSpy startTheRestModuleInitializerWithStarterSpy() {
 		TheRestModuleStarterSpy starter = new TheRestModuleStarterSpy();
-		initializer.setStarter(starter);
+		initializer.onlyForTestSetStarter(starter);
 		initializer.contextInitialized(context);
 		return starter;
 	}
@@ -131,7 +132,9 @@ public class TheRestModuleInitializerTest {
 	@Test
 	public void testInitParametersArePassedOnToStarter() {
 		TheRestModuleStarterSpy starter = startTheRestModuleInitializerWithStarterSpy();
-		Map<String, String> initInfo = starter.initInfo;
+		Map<String, String> initInfo = getInitInfoFromStarterSpy(starter);
+
+		// Map<String, String> initInfo = starter.initInfo;
 		assertEquals(initInfo.size(), 4);
 		assertEquals(initInfo.get("theRestPublicPathToSystem"), "/therest/rest/");
 		assertEquals(initInfo.get("dependencyProviderClassName"),
@@ -140,64 +143,77 @@ public class TheRestModuleInitializerTest {
 		assertEquals(initInfo.get("initParam2"), "initValue2");
 	}
 
+	private Map<String, String> getInitInfoFromStarterSpy(TheRestModuleStarterSpy starter) {
+		return (Map<String, String>) starter.MCR
+				.getValueForMethodNameAndCallNumberAndParameterName(
+						"startUsingInitInfoAndProviders", 0, "initInfo");
+	}
+
 	@Test
 	public void testRecordStorageProviderImplementationsArePassedOnToStarter() {
 		TheRestModuleStarterSpy starter = startTheRestModuleInitializerWithStarterSpy();
 
-		Iterable<RecordStorageProvider> iterable = starter.recordStorageProviderImplementations;
-		assertTrue(iterable instanceof ServiceLoader);
+		Providers providers = getProviders(starter);
+		Iterable<RecordStorageProvider> provider = providers.recordStorageProviderImplementations;
+
+		assertTrue(provider instanceof ServiceLoader);
+	}
+
+	private Providers getProviders(TheRestModuleStarterSpy starter) {
+		Providers providers = (Providers) starter.MCR
+				.getValueForMethodNameAndCallNumberAndParameterName(
+						"startUsingInitInfoAndProviders", 0, "providers");
+		return providers;
 	}
 
 	@Test
 	public void testStreamStorageProviderImplementationsArePassedOnToStarter() {
 		TheRestModuleStarterSpy starter = startTheRestModuleInitializerWithStarterSpy();
 
-		Iterable<StreamStorageProvider> iterable = starter.streamStorageProviderImplementations;
-		assertTrue(iterable instanceof ServiceLoader);
+		Providers providers = getProviders(starter);
+		Iterable<StreamStorageProvider> provider = providers.streamStorageProviderImplementations;
+
+		assertTrue(provider instanceof ServiceLoader);
+	}
+
+	@Test
+	public void testRecordArchiveProviderImplementationsArePassedOnToStarter() {
+		TheRestModuleStarterSpy starter = startTheRestModuleInitializerWithStarterSpy();
+
+		Providers providers = getProviders(starter);
+
+		Iterable<RecordArchiveProvider> provider = providers.recordArchiveProviderImplementations;
+
+		assertTrue(provider instanceof ServiceLoader);
 	}
 
 	@Test
 	public void testRecordIdGeneratorProviderImplementationsArePassedOnToStarter() {
 		TheRestModuleStarterSpy starter = startTheRestModuleInitializerWithStarterSpy();
 
-		Iterable<RecordIdGeneratorProvider> iterable = starter.recordIdGeneratorProviderImplementations;
-		assertTrue(iterable instanceof ServiceLoader);
+		Providers providers = getProviders(starter);
+		Iterable<RecordIdGeneratorProvider> provider = providers.recordIdGeneratorProviderImplementations;
+
+		assertTrue(provider instanceof ServiceLoader);
 	}
 
 	@Test
 	public void testMetadataStorageProviderImplementationsArePassedOnToStarter() {
 		TheRestModuleStarterSpy starter = startTheRestModuleInitializerWithStarterSpy();
 
-		Iterable<MetadataStorageProvider> iterable = starter.metadataStorageProviderImplementations;
-		assertTrue(iterable instanceof ServiceLoader);
+		Providers providers = getProviders(starter);
+		Iterable<MetadataStorageProvider> provider = providers.metadataStorageProviderImplementations;
+
+		assertTrue(provider instanceof ServiceLoader);
 	}
 
-	// @Test
-	// public void testUserStorageProviderImplementationsArePassedOnToStarter() {
-	// TheRestModuleStarterSpy starter = startTheRestModuleInitializerWithStarterSpy();
-	//
-	// Iterable<UserStorageProvider> iterable = starter.userStorageProviderImplementations;
-	// assertTrue(iterable instanceof ServiceLoader);
-	// }
-	//
 	@Test
 	public void testInitUsesDefaultTheRestModuleStarter() throws Exception {
 		// makeSureErrorIsThrownAsNoImplementationsExistInThisModule();
-		TheRestModuleStarterImp starter = (TheRestModuleStarterImp) initializer.getStarter();
+		TheRestModuleStarterImp starter = (TheRestModuleStarterImp) initializer
+				.onlyForTestGetStarter();
 		assertStarterIsTheRestModuleStarter(starter);
 	}
-
-	// private void makeSureErrorIsThrownAsNoImplementationsExistInThisModule() {
-	// Exception caughtException = null;
-	// try {
-	// initializer.contextInitialized(context);
-	// } catch (Exception e) {
-	// caughtException = e;
-	// }
-	// assertTrue(caughtException instanceof TheRestInitializationException);
-	// assertEquals(caughtException.getMessage(),
-	// "No implementations found for UserPickerProvider");
-	// }
 
 	private void assertStarterIsTheRestModuleStarter(TheRestModuleStarter starter) {
 		assertTrue(starter instanceof TheRestModuleStarterImp);

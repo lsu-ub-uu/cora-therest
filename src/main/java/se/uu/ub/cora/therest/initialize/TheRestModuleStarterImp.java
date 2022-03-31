@@ -1,6 +1,6 @@
 /*
  * Copyright 2019 Olov McKie
- * Copyright 2019 Uppsala University Library
+ * Copyright 2019, 2022 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -35,6 +35,7 @@ import se.uu.ub.cora.storage.RecordIdGeneratorProvider;
 import se.uu.ub.cora.storage.RecordStorageProvider;
 import se.uu.ub.cora.storage.SelectOrder;
 import se.uu.ub.cora.storage.StreamStorageProvider;
+import se.uu.ub.cora.storage.archive.RecordArchiveProvider;
 
 public class TheRestModuleStarterImp implements TheRestModuleStarter {
 	private static final String FOUND = "Found ";
@@ -74,6 +75,11 @@ public class TheRestModuleStarterImp implements TheRestModuleStarter {
 				providers.streamStorageProviderImplementations, "StreamStorageProvider");
 		streamStorageProvider.startUsingInitInfo(initInfo);
 		dependencyProvider.setStreamStorageProvider(streamStorageProvider);
+
+		RecordArchiveProvider recordArchiveProvider = getImplementationBasedOnPreferenceLevelThrowErrorIfNone(
+				providers.recordArchiveProviderImplementations, "RecordArchiveProvider");
+		recordArchiveProvider.startUsingInitInfo(initInfo);
+		dependencyProvider.setRecordArchiveProvider(recordArchiveProvider);
 
 		RecordIdGeneratorProvider recordIdGeneratorProvider = getImplementationBasedOnPreferenceLevelThrowErrorIfNone(
 				providers.recordIdGeneratorProviderImplementations, "RecordIdGeneratorProvider");
