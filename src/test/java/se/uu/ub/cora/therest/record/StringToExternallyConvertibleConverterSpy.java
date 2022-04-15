@@ -21,8 +21,8 @@ package se.uu.ub.cora.therest.record;
 
 import se.uu.ub.cora.converter.ConverterException;
 import se.uu.ub.cora.converter.StringToExternallyConvertibleConverter;
-import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.ExternallyConvertible;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 import se.uu.ub.cora.therest.coradata.DataGroupSpy;
 
@@ -33,7 +33,7 @@ public class StringToExternallyConvertibleConverterSpy
 	public boolean throwExceptionOnConvert;
 
 	@Override
-	public DataElement convert(String dataString) {
+	public ExternallyConvertible convert(String dataString) {
 		MCR.addCall("dataString", dataString);
 
 		if (throwExceptionOnConvert) {

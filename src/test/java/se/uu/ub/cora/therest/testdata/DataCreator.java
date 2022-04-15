@@ -313,10 +313,10 @@ public final class DataCreator {
 
 	public static DataResourceLink createResourceLinkMaster() {
 		DataResourceLink master = new DataResourceLinkSpy("master");
-		master.addChild(new DataAtomicSpy("streamId", "aStreamId"));
-		master.addChild(new DataAtomicSpy("filename", "aFilename"));
-		master.addChild(new DataAtomicSpy("filesize", "1234"));
-		master.addChild(new DataAtomicSpy("mimeType", "application/tiff"));
+		master.setStreamId("aStreamId");
+		master.setFileName("aFilename");
+		master.setFileSize("1234");
+		master.setMimeType("application/tiff");
 		master.addAction(Action.READ);
 		return master;
 	}

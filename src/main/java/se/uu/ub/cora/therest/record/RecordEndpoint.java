@@ -46,10 +46,8 @@ import se.uu.ub.cora.converter.ConverterProvider;
 import se.uu.ub.cora.converter.ExternallyConvertibleToStringConverter;
 import se.uu.ub.cora.converter.StringToExternallyConvertibleConverter;
 import se.uu.ub.cora.data.Convertible;
-import se.uu.ub.cora.data.DataElement;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataList;
-import se.uu.ub.cora.data.DataPart;
 import se.uu.ub.cora.data.DataRecord;
 import se.uu.ub.cora.data.ExternallyConvertible;
 import se.uu.ub.cora.data.converter.ConversionException;
@@ -190,7 +188,7 @@ public class RecordEndpoint {
 
 	private Response tryCreateRecord(String contentType, String accept, String authToken,
 			String type, String inputRecord) throws URISyntaxException {
-		DataGroup dataRecord = (DataGroup) convertStringToData(contentType, inputRecord);
+		DataGroup dataRecord = convertStringToDataGroup(contentType, inputRecord);
 		return createResponseForCreate(accept, authToken, type, dataRecord);
 	}
 
@@ -211,7 +209,7 @@ public class RecordEndpoint {
 		return new URI(type + URL_DELIMITER + createdId);
 	}
 
-	private DataElement convertStringToData(String accept, String input) {
+	private DataGroup convertStringToDataGroup(String accept, String input) {
 		if (accept.endsWith("+xml")) {
 			return convertXmlToDataElement(input);
 		} else {
@@ -219,18 +217,17 @@ public class RecordEndpoint {
 		}
 	}
 
-	private DataElement convertXmlToDataElement(String input) {
+	private DataGroup convertXmlToDataElement(String input) {
 		StringToExternallyConvertibleConverter xmlToConvertibleConverter = ConverterProvider
 				.getStringToExternallyConvertibleConverter("xml");
-		return xmlToConvertibleConverter.convert(input);
+		return (DataGroup) xmlToConvertibleConverter.convert(input);
 	}
 
 	private DataGroup convertJsonStringToDataGroup(String jsonRecord) {
 		JsonValue jsonValue = jsonParser.parseString(jsonRecord);
 		JsonToDataConverter jsonToDataConverter = JsonToDataConverterProvider
 				.getConverterUsingJsonObject(jsonValue);
-		DataPart dataPart = jsonToDataConverter.toInstance();
-		return (DataGroup) dataPart;
+		return (DataGroup) jsonToDataConverter.toInstance();
 	}
 
 	private String convertDataToJson(ExternallyConvertible convertible) {
@@ -361,7 +358,7 @@ public class RecordEndpoint {
 
 	private DataGroup convertFilterStringToData(String filterAsString) {
 		String filterDataType = calculateSearchDataType(filterAsString);
-		return (DataGroup) convertStringToData(filterDataType, filterAsString);
+		return convertStringToDataGroup(filterDataType, filterAsString);
 	}
 
 	@GET
@@ -564,7 +561,7 @@ public class RecordEndpoint {
 	private Response tryUpdateRecord(String contentType, String accept, String authToken,
 			String type, String id, String inputRecord) {
 
-		DataGroup dataRecord = (DataGroup) convertStringToData(contentType, inputRecord);
+		DataGroup dataRecord = convertStringToDataGroup(contentType, inputRecord);
 		DataRecord updatedRecord = SpiderInstanceProvider.getRecordUpdater().updateRecord(authToken,
 				type, id, dataRecord);
 		String outputRecord = convertConvertibleToString(accept, updatedRecord);
@@ -711,7 +708,7 @@ public class RecordEndpoint {
 
 	private DataGroup convertSearchStringToData(String searchDataAsString) {
 		String searchDataType = calculateSearchDataType(searchDataAsString);
-		return (DataGroup) convertStringToData(searchDataType, searchDataAsString);
+		return convertStringToDataGroup(searchDataType, searchDataAsString);
 	}
 
 	private String calculateSearchDataType(String searchDataAsString) {
@@ -795,7 +792,7 @@ public class RecordEndpoint {
 		DataGroup validationOrder = null;
 		DataGroup recordToValidate = null;
 		if (contentType.endsWith("+xml")) {
-			DataGroup container = (DataGroup) convertXmlToDataElement(inputRecord);
+			DataGroup container = convertXmlToDataElement(inputRecord);
 			validationOrder = container.getFirstGroupWithNameInData("order");
 			recordToValidate = container.getFirstGroupWithNameInData("record");
 		} else {
@@ -822,8 +819,7 @@ public class RecordEndpoint {
 		JsonValue jsonObjectForName = jsonObject.getValue(name);
 		JsonToDataConverter jsonToDataConverter = JsonToDataConverterProvider
 				.getConverterUsingJsonObject(jsonObjectForName);
-		DataPart dataPart = jsonToDataConverter.toInstance();
-		return (DataGroup) dataPart;
+		return (DataGroup) jsonToDataConverter.toInstance();
 	}
 
 	@POST
@@ -909,7 +905,7 @@ public class RecordEndpoint {
 
 	private Response tryIndexRecordList(String contentType, String accept, String authToken,
 			String type, String jsonIndexSettings) throws URISyntaxException {
-		DataGroup indexSettings = (DataGroup) convertStringToData(contentType, jsonIndexSettings);
+		DataGroup indexSettings = convertStringToDataGroup(contentType, jsonIndexSettings);
 
 		RecordListIndexer indexBatchJobCreator = SpiderInstanceProvider.getRecordListIndexer();
 		DataRecord indexBatchJob = indexBatchJobCreator.indexRecordList(authToken, type,

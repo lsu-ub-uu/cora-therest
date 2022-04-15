@@ -40,20 +40,56 @@ public class DataResourceLinkSpy extends DataGroupSpy implements DataResourceLin
 	}
 
 	@Override
-	public List<Action> getActions() {
-		return actions;
-	}
-
-	@Override
 	public boolean hasReadAction() {
-		// TODO Auto-generated method stub
-		return false;
+		return actions.contains(Action.READ);
 	}
 
 	@Override
 	public String getMimeType() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void setStreamId(String streamId) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public String getStreamId() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setFileName(String fileName) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public String getFileName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setFileSize(String fileSize) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public String getFileSize() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setMimeType(String mimeType) {
+		// TODO Auto-generated method stub
+
 	}
 
 }
