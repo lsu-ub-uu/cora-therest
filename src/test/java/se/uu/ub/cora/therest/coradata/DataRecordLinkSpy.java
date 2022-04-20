@@ -40,14 +40,8 @@ public class DataRecordLinkSpy extends DataGroupSpy implements DataRecordLink {
 	}
 
 	@Override
-	public List<Action> getActions() {
-		return actions;
-	}
-
-	@Override
 	public boolean hasReadAction() {
-		// TODO Auto-generated method stub
-		return false;
+		return actions.contains(Action.READ);
 	}
 
 	@Override
