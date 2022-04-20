@@ -40,7 +40,7 @@
 		<bookkeeper.version>7.0.0</bookkeeper.version>
 		<gatekeeperclient.version>4.0.0</gatekeeperclient.version>
 		<beefeater.version>3.7.0</beefeater.version>
-		<solrsearch.version>4.8-SNAPSHOT</solrsearch.version>
+		<solrsearch.version>4.8.0</solrsearch.version>
 		<httphandler.version>2.6.0</httphandler.version>
 		<storage.version>6.2.0</storage.version>
 		<search.version>4.4.0</search.version>
