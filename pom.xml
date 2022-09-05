@@ -33,24 +33,24 @@
 	
 	<properties>
 		<json.version>3.3.0</json.version>
-		<spider.version>7.0.0</spider.version>
+		<spider.version>7.2.0</spider.version>
 		<jaxb-api.version>2.3.1</jaxb-api.version>
 		<servlet-api.version>5.0.0</servlet-api.version>
-		<jersey.version>3.0.4</jersey.version>
-		<bookkeeper.version>7.0.0</bookkeeper.version>
-		<gatekeeperclient.version>4.0.0</gatekeeperclient.version>
+		<jersey.version>3.0.8</jersey.version>
+		<bookkeeper.version>7.1.0</bookkeeper.version>
+		<gatekeeperclient.version>4.1.0</gatekeeperclient.version>
 		<beefeater.version>3.7.0</beefeater.version>
 		<solrsearch.version>4.8.0</solrsearch.version>
 		<httphandler.version>2.6.0</httphandler.version>
-		<storage.version>6.2.0</storage.version>
-		<search.version>4.4.0</search.version>
-		<searchstorage.version>3.13.0</searchstorage.version>
+		<storage.version>6.4.0</storage.version>
+		<search.version>4.5.0</search.version>
+		<searchstorage.version>3.14.0</searchstorage.version>
 		<logger.version>2.5.0</logger.version>
 		<coralog4j.version>2.1.0</coralog4j.version>
-		<coradata.version>7.0.0</coradata.version>
-		<testutils.version>1.4.0</testutils.version>
-		<converter.version>3.0.0</converter.version>
-		<xmlconverter.version>2.1.0</xmlconverter.version>
+		<coradata.version>7.1.0</coradata.version>
+		<testutils.version>1.5.0</testutils.version>
+		<converter.version>3.1.0</converter.version>
+		<xmlconverter.version>2.2.0</xmlconverter.version>
 	</properties>
 	
 	<scm>
