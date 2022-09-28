@@ -68,6 +68,7 @@ import se.uu.ub.cora.spider.authorization.AuthorizationException;
 import se.uu.ub.cora.spider.data.DataMissingException;
 import se.uu.ub.cora.spider.data.SpiderInputStream;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
+import se.uu.ub.cora.spider.record.ConflictException;
 import se.uu.ub.cora.spider.record.DataException;
 import se.uu.ub.cora.spider.record.MisuseException;
 import se.uu.ub.cora.spider.record.RecordListIndexer;
@@ -239,7 +240,7 @@ public class RecordEndpoint {
 	}
 
 	private Response handleError(String authToken, Exception error, String errorFromCaller) {
-		if (error instanceof RecordConflictException) {
+		if (error instanceof ConflictException || error instanceof RecordConflictException) {
 			return buildResponseIncludingMessage(error, Response.Status.CONFLICT);
 		}
 

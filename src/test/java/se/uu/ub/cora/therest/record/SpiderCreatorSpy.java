@@ -22,6 +22,7 @@ package se.uu.ub.cora.therest.record;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataRecord;
 import se.uu.ub.cora.spider.authorization.AuthorizationException;
+import se.uu.ub.cora.spider.record.ConflictException;
 import se.uu.ub.cora.spider.record.DataException;
 import se.uu.ub.cora.spider.record.MisuseException;
 import se.uu.ub.cora.spider.record.RecordCreator;
@@ -54,6 +55,8 @@ public class SpiderCreatorSpy implements RecordCreator {
 		} else if ("abstract".equals(type)) {
 			throw new MisuseException(
 					"Data creation on abstract recordType:" + type + " is not allowed");
+		} else if ("place_duplicate_spider".equals(type)) {
+			throw ConflictException.withMessage("Record already exists in spider");
 		} else if ("place_duplicate".equals(type)) {
 			throw RecordConflictException.withMessage("Record already exists");
 		} else if ("place_unexpected_error".equals(type)) {

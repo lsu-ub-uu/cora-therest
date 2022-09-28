@@ -19,10 +19,11 @@
 
 package se.uu.ub.cora.therest.initialize;
 
+import java.util.List;
 import java.util.Set;
 
 import se.uu.ub.cora.beefeater.authentication.User;
-import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.collected.PermissionTerm;
 import se.uu.ub.cora.spider.authorization.SpiderAuthorizator;
 
 public class SpiderAuthorizorAlwaysAuthorized implements SpiderAuthorizator {
@@ -43,21 +44,21 @@ public class SpiderAuthorizorAlwaysAuthorized implements SpiderAuthorizator {
 
 	@Override
 	public boolean userIsAuthorizedForActionOnRecordTypeAndCollectedData(User user, String action,
-			String string, DataGroup collectedData) {
+			String recordType, List<PermissionTerm> permissionTerms) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public void checkUserIsAuthorizedForActionOnRecordTypeAndCollectedData(User user, String action,
-			String recordType, DataGroup collectedData) {
+			String recordType, List<PermissionTerm> permissionTerms) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public Set<String> checkGetUsersMatchedRecordPartPermissionsForActionOnRecordTypeAndCollectedData(
-			User user, String action, String recordType, DataGroup collectedData,
+			User user, String action, String recordType, List<PermissionTerm> permissionTerms,
 			boolean calculateRecordPartPermissions) {
 		// TODO Auto-generated method stub
 		return null;

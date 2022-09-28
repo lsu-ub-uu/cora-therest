@@ -1101,6 +1101,16 @@ public class RecordEndpointTest {
 	}
 
 	@Test
+	public void testCreateRecordDuplicateFromSpider() {
+		response = recordEndpoint.createRecordJsonJson(AUTH_TOKEN, AUTH_TOKEN,
+				"place_duplicate_spider", defaultJson);
+		assertResponseStatusIs(Response.Status.CONFLICT);
+		assertResponseContentTypeIs(TEXT_PLAIN);
+		assertEquals(response.getEntity(), "Record already exists in spider");
+
+	}
+
+	@Test
 	public void testCreateRecordDuplicateUserSuppliedId() {
 		response = recordEndpoint.createRecordJsonJson(AUTH_TOKEN, AUTH_TOKEN, "place_duplicate",
 				defaultJson);

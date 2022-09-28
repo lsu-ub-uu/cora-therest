@@ -19,19 +19,21 @@
 
 package se.uu.ub.cora.therest.record;
 
+import java.util.Collections;
+import java.util.List;
+
 import se.uu.ub.cora.bookkeeper.linkcollector.DataRecordLinkCollector;
 import se.uu.ub.cora.data.DataGroup;
-import se.uu.ub.cora.therest.coradata.DataGroupSpy;
+import se.uu.ub.cora.data.collected.Link;
 
 public class DataRecordLinkCollectorSpy implements DataRecordLinkCollector {
 
 	public boolean collectLinksWasCalled = false;
 
-	public DataGroup collectedDataLinks = new DataGroupSpy("collectedDataLinks");
+	public List<Link> collectedDataLinks = Collections.emptyList();
 
 	@Override
-	public DataGroup collectLinks(String metadataId, DataGroup dataGroup, String fromRecordType,
-			String fromRecordId) {
+	public List<Link> collectLinks(String metadataId, DataGroup dataGroup) {
 		collectLinksWasCalled = true;
 		return collectedDataLinks;
 	}

@@ -22,6 +22,8 @@ import java.util.Collection;
 import java.util.List;
 
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.collected.Link;
+import se.uu.ub.cora.data.collected.StorageTerm;
 import se.uu.ub.cora.searchstorage.SearchStorage;
 import se.uu.ub.cora.storage.RecordStorage;
 import se.uu.ub.cora.storage.StorageReadResult;
@@ -29,89 +31,70 @@ import se.uu.ub.cora.storage.StorageReadResult;
 public class RecordStorageSpy implements RecordStorage, SearchStorage {
 
 	@Override
-	public void create(String arg0, String arg1, DataGroup arg2, DataGroup arg3, DataGroup arg4,
-			String arg5) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void deleteByTypeAndId(String arg0, String arg1) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public Collection<DataGroup> generateLinkCollectionPointingToRecord(String arg0, String arg1) {
+	public DataGroup getSearchTerm(String searchTermId) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public boolean linksExistForRecord(String arg0, String arg1) {
+	public DataGroup getCollectIndexTerm(String collectIndexTermId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public DataGroup read(List<String> types, String id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void create(String type, String id, DataGroup dataRecord, List<StorageTerm> storageTerms,
+			List<Link> links, String dataDivider) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void deleteByTypeAndId(String type, String id) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public boolean linksExistForRecord(String type, String id) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public DataGroup read(String arg0, String arg1) {
+	public void update(String type, String id, DataGroup dataRecord, List<StorageTerm> storageTerms,
+			List<Link> links, String dataDivider) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public StorageReadResult readList(List<String> types, DataGroup filter) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public StorageReadResult readAbstractList(String arg0, DataGroup arg1) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public DataGroup readLinkList(String arg0, String arg1) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public StorageReadResult readList(String arg0, DataGroup arg1) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean recordExistsForAbstractOrImplementingRecordTypeAndRecordId(String arg0,
-			String arg1) {
+	public boolean recordExistsForListOfImplementingRecordTypesAndRecordId(List<String> types,
+			String id) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public void update(String arg0, String arg1, DataGroup arg2, DataGroup arg3, DataGroup arg4,
-			String arg5) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public DataGroup getCollectIndexTerm(String arg0) {
+	public Collection<DataGroup> generateLinkCollectionPointingToRecord(String type, String id) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public DataGroup getSearchTerm(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public long getTotalNumberOfRecordsForType(String type, DataGroup filter) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public long getTotalNumberOfRecordsForAbstractType(String abstractType,
-			List<String> implementingTypes, DataGroup filter) {
+	public long getTotalNumberOfRecordsForTypes(List<String> types, DataGroup filter) {
 		// TODO Auto-generated method stub
 		return 0;
 	}

@@ -20,15 +20,12 @@ package se.uu.ub.cora.therest.coradata;
 
 import se.uu.ub.cora.bookkeeper.termcollector.DataGroupTermCollector;
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.collected.CollectTerms;
 
 public class DataGroupSearchTermCollectorSpy implements DataGroupTermCollector {
-	@Override
-	public DataGroup collectTerms(String metadataId, DataGroup collectedSearchTerms) {
-		return new DataGroupSpy("recordIndexData");
-	}
 
 	@Override
-	public DataGroup collectTermsWithoutTypeAndId(String metadataGroupId, DataGroup dataGroup) {
+	public CollectTerms collectTerms(String metadataGroupId, DataGroup dataGroup) {
 		// TODO Auto-generated method stub
 		return null;
 	}
