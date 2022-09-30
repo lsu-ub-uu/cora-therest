@@ -254,7 +254,7 @@ public final class DataCreator {
 		DataGroup recordToRecordLink = createDataForRecordToRecordLink();
 
 		DataRecordLinkCollectorSpy linkCollector = new DataRecordLinkCollectorSpy();
-		linkCollector.collectedDataLinks.addChild(recordToRecordLink);
+		// linkCollector.collectedDataLinks.addChild(recordToRecordLink);
 		return linkCollector;
 	}
 
