@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Uppsala University Library
+ * Copyright 2022 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -18,28 +18,19 @@
  */
 package se.uu.ub.cora.therest.initialize;
 
-import java.util.Map;
+import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.searchstorage.SearchStorageView;
 
-import se.uu.ub.cora.storage.RecordStorage;
-import se.uu.ub.cora.storage.RecordStorageProvider;
-
-public class RecordStorageProviderSpy2 implements RecordStorageProvider {
-	boolean started = false;
-	public Map<String, String> initInfo;
+public class SearchStorageViewSpy implements SearchStorageView {
 
 	@Override
-	public int getOrderToSelectImplementionsBy() {
-		return 10;
+	public DataGroup getSearchTerm(String searchTermId) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
-	public void startUsingInitInfo(Map<String, String> initInfo) {
-		started = true;
-		this.initInfo = initInfo;
-	}
-
-	@Override
-	public RecordStorage getRecordStorage() {
+	public DataGroup getCollectIndexTerm(String collectIndexTermId) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -38,7 +38,6 @@ import se.uu.ub.cora.logger.LoggerProvider;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
 import se.uu.ub.cora.storage.MetadataStorageProvider;
 import se.uu.ub.cora.storage.RecordIdGeneratorProvider;
-import se.uu.ub.cora.storage.RecordStorageProvider;
 import se.uu.ub.cora.storage.StreamStorageProvider;
 import se.uu.ub.cora.storage.archive.RecordArchiveProvider;
 import se.uu.ub.cora.therest.log.LoggerFactorySpy;
@@ -60,10 +59,6 @@ public class TheRestModuleStarterTest {
 		initInfo.put("dependencyProviderClassName",
 				"se.uu.ub.cora.therest.initialize.DependencyProviderSpy");
 		providers = new Providers();
-
-		List<RecordStorageProvider> recordStorageProviders = new ArrayList<>();
-		recordStorageProviders.add(new RecordStorageProviderSpy());
-		providers.recordStorageProviderImplementations = recordStorageProviders;
 
 		List<StreamStorageProvider> streamStorageProviders = new ArrayList<>();
 		streamStorageProviders.add(new StreamStorageProviderSpy());
@@ -121,34 +116,19 @@ public class TheRestModuleStarterTest {
 		}
 	}
 
-	@Test
-	public void testStartModuleInitInfoSentToRecordStorageProviderImplementation()
-			throws Exception {
-		RecordStorageProviderSpy recordStorageProvider = (RecordStorageProviderSpy) providers.recordStorageProviderImplementations
-				.iterator().next();
-		startTheRestModuleStarter();
-		assertSame(recordStorageProvider.initInfo, initInfo);
-	}
+	// @Test
+	// public void testStartModuleInitInfoSentToRecordStorageProviderImplementation()
+	// throws Exception {
+	// RecordStorageProviderSpy recordStorageProvider = (RecordStorageProviderSpy)
+	// providers.recordStorageProviderImplementations
+	// .iterator().next();
+	// startTheRestModuleStarter();
+	// assertSame(recordStorageProvider.initInfo, initInfo);
+	// }
 
 	private void startTheRestModuleStarter() {
 		starter = new TheRestModuleStarterImp();
 		starter.startUsingInitInfoAndProviders(initInfo, providers);
-	}
-
-	@Test(expectedExceptions = TheRestInitializationException.class, expectedExceptionsMessageRegExp = ""
-			+ "No implementations found for RecordStorageProvider")
-	public void testStartModuleThrowsErrorIfNoRecordStorageImplementations() throws Exception {
-		providers.recordStorageProviderImplementations = new ArrayList<>();
-		startTheRestModuleStarter();
-	}
-
-	@Test
-	public void testStartModuleLogsErrorIfNoRecordStorageProviderImplementations()
-			throws Exception {
-		providers.recordStorageProviderImplementations = new ArrayList<>();
-		startTheRestMakeSureAnExceptionIsThrown();
-		assertEquals(loggerFactorySpy.getFatalLogMessageUsingClassNameAndNo(testedClassName, 0),
-				"No implementations found for RecordStorageProvider");
 	}
 
 	private void startTheRestMakeSureAnExceptionIsThrown() {
@@ -159,59 +139,6 @@ public class TheRestModuleStarterTest {
 			caughtException = e;
 		}
 		assertNotNull(caughtException);
-	}
-
-	@Test
-	public void testStartModuleLogsInfoIfMoreThanOneRecordStorageProviderImplementations()
-			throws Exception {
-		List<RecordStorageProvider> recordStorageProviders = (List<RecordStorageProvider>) providers.recordStorageProviderImplementations;
-		recordStorageProviders.add(new RecordStorageProviderSpy2());
-		recordStorageProviders.add(new RecordStorageProviderSpy());
-		startTheRestModuleStarter();
-		assertEquals(loggerFactorySpy.getInfoLogMessageUsingClassNameAndNo(testedClassName, 0),
-				"Found se.uu.ub.cora.therest.initialize.RecordStorageProviderSpy as "
-						+ "RecordStorageProvider implementation with select order 0.");
-		assertEquals(loggerFactorySpy.getInfoLogMessageUsingClassNameAndNo(testedClassName, 1),
-				"Found se.uu.ub.cora.therest.initialize.RecordStorageProviderSpy2 as "
-						+ "RecordStorageProvider implementation with select order 10.");
-		assertEquals(loggerFactorySpy.getInfoLogMessageUsingClassNameAndNo(testedClassName, 2),
-				"Found se.uu.ub.cora.therest.initialize.RecordStorageProviderSpy as "
-						+ "RecordStorageProvider implementation with select order 0.");
-	}
-
-	@Test
-	public void testStartModuleLogsInfoAndStartsRecordStorageProviderWithHigestSelectOrder()
-			throws Exception {
-		List<RecordStorageProvider> recordStorageProviders = (List<RecordStorageProvider>) providers.recordStorageProviderImplementations;
-		recordStorageProviders.add(new RecordStorageProviderSpy2());
-		recordStorageProviders.add(new RecordStorageProviderSpy());
-		startTheRestModuleStarter();
-
-		assertEquals(loggerFactorySpy.getInfoLogMessageUsingClassNameAndNo(testedClassName, 3),
-				"Using se.uu.ub.cora.therest.initialize.RecordStorageProviderSpy2 as "
-						+ "RecordStorageProvider implementation.");
-		Iterator<RecordStorageProvider> recordStorageProviderIterator = providers.recordStorageProviderImplementations
-				.iterator();
-		RecordStorageProviderSpy recordStorageProvider = (RecordStorageProviderSpy) recordStorageProviderIterator
-				.next();
-		RecordStorageProviderSpy2 recordStorageProvider2 = (RecordStorageProviderSpy2) recordStorageProviderIterator
-				.next();
-		RecordStorageProviderSpy recordStorageProvider12 = (RecordStorageProviderSpy) recordStorageProviderIterator
-				.next();
-		assertSame(recordStorageProvider2.initInfo, initInfo);
-		assertFalse(recordStorageProvider.started);
-		assertTrue(recordStorageProvider2.started);
-		assertFalse(recordStorageProvider12.started);
-	}
-
-	@Test
-	public void testChoosenRecordStorageProviderIsUsedByDependencyProvider() throws Exception {
-		startTheRestModuleStarter();
-		RecordStorageProviderSpy recordStorageProvider = (RecordStorageProviderSpy) providers.recordStorageProviderImplementations
-				.iterator().next();
-		DependencyProviderSpy startedDependencyProvider = (DependencyProviderSpy) starter
-				.getStartedDependencyProvider();
-		assertSame(startedDependencyProvider.getRecordStorageProvider(), recordStorageProvider);
 	}
 
 	@Test
@@ -249,13 +176,13 @@ public class TheRestModuleStarterTest {
 		recordArchiveProviders.add(archiveProvider);
 		recordArchiveProviders.add(new RecordArchiveProviderSpy());
 		startTheRestModuleStarter();
-		assertEquals(loggerFactorySpy.getInfoLogMessageUsingClassNameAndNo(testedClassName, 4),
+		assertEquals(loggerFactorySpy.getInfoLogMessageUsingClassNameAndNo(testedClassName, 2),
 				"Found se.uu.ub.cora.therest.initialize.RecordArchiveProviderSpy as "
 						+ "RecordArchiveProvider implementation with select order 0.");
-		assertEquals(loggerFactorySpy.getInfoLogMessageUsingClassNameAndNo(testedClassName, 5),
+		assertEquals(loggerFactorySpy.getInfoLogMessageUsingClassNameAndNo(testedClassName, 3),
 				"Found se.uu.ub.cora.therest.initialize.RecordArchiveProviderSpy as "
 						+ "RecordArchiveProvider implementation with select order 13.");
-		assertEquals(loggerFactorySpy.getInfoLogMessageUsingClassNameAndNo(testedClassName, 6),
+		assertEquals(loggerFactorySpy.getInfoLogMessageUsingClassNameAndNo(testedClassName, 4),
 				"Found se.uu.ub.cora.therest.initialize.RecordArchiveProviderSpy as "
 						+ "RecordArchiveProvider implementation with select order 0.");
 	}
@@ -270,7 +197,7 @@ public class TheRestModuleStarterTest {
 		recordArchiveProviders.add(new RecordArchiveProviderSpy());
 		startTheRestModuleStarter();
 
-		assertEquals(loggerFactorySpy.getInfoLogMessageUsingClassNameAndNo(testedClassName, 7),
+		assertEquals(loggerFactorySpy.getInfoLogMessageUsingClassNameAndNo(testedClassName, 5),
 				"Using se.uu.ub.cora.therest.initialize.RecordArchiveProviderSpy as "
 						+ "RecordArchiveProvider implementation.");
 		Iterator<RecordArchiveProvider> recordArchiveProviderIterator = providers.recordArchiveProviderImplementations
@@ -328,13 +255,13 @@ public class TheRestModuleStarterTest {
 		streamStorageProviders.add(new StreamStorageProviderSpy2());
 		streamStorageProviders.add(new StreamStorageProviderSpy());
 		startTheRestModuleStarter();
-		assertEquals(loggerFactorySpy.getInfoLogMessageUsingClassNameAndNo(testedClassName, 2),
+		assertEquals(loggerFactorySpy.getInfoLogMessageUsingClassNameAndNo(testedClassName, 0),
 				"Found se.uu.ub.cora.therest.initialize.StreamStorageProviderSpy as "
 						+ "StreamStorageProvider implementation with select order 0.");
-		assertEquals(loggerFactorySpy.getInfoLogMessageUsingClassNameAndNo(testedClassName, 3),
+		assertEquals(loggerFactorySpy.getInfoLogMessageUsingClassNameAndNo(testedClassName, 1),
 				"Found se.uu.ub.cora.therest.initialize.StreamStorageProviderSpy2 as "
 						+ "StreamStorageProvider implementation with select order 10.");
-		assertEquals(loggerFactorySpy.getInfoLogMessageUsingClassNameAndNo(testedClassName, 4),
+		assertEquals(loggerFactorySpy.getInfoLogMessageUsingClassNameAndNo(testedClassName, 2),
 				"Found se.uu.ub.cora.therest.initialize.StreamStorageProviderSpy as "
 						+ "StreamStorageProvider implementation with select order 0.");
 	}
@@ -347,7 +274,7 @@ public class TheRestModuleStarterTest {
 		streamStorageProviders.add(new StreamStorageProviderSpy());
 		startTheRestModuleStarter();
 
-		assertEquals(loggerFactorySpy.getInfoLogMessageUsingClassNameAndNo(testedClassName, 5),
+		assertEquals(loggerFactorySpy.getInfoLogMessageUsingClassNameAndNo(testedClassName, 3),
 				"Using se.uu.ub.cora.therest.initialize.StreamStorageProviderSpy2 as "
 						+ "StreamStorageProvider implementation.");
 		Iterator<StreamStorageProvider> streamStorageProviderIterator = providers.streamStorageProviderImplementations
@@ -406,13 +333,13 @@ public class TheRestModuleStarterTest {
 		recordIdGeneratorProviders.add(new RecordIdGeneratorProviderSpy2());
 		recordIdGeneratorProviders.add(new RecordIdGeneratorProviderSpy());
 		startTheRestModuleStarter();
-		assertEquals(loggerFactorySpy.getInfoLogMessageUsingClassNameAndNo(testedClassName, 6),
+		assertEquals(loggerFactorySpy.getInfoLogMessageUsingClassNameAndNo(testedClassName, 4),
 				"Found se.uu.ub.cora.therest.initialize.RecordIdGeneratorProviderSpy as "
 						+ "RecordIdGeneratorProvider implementation with select order 0.");
-		assertEquals(loggerFactorySpy.getInfoLogMessageUsingClassNameAndNo(testedClassName, 7),
+		assertEquals(loggerFactorySpy.getInfoLogMessageUsingClassNameAndNo(testedClassName, 5),
 				"Found se.uu.ub.cora.therest.initialize.RecordIdGeneratorProviderSpy2 as "
 						+ "RecordIdGeneratorProvider implementation with select order 10.");
-		assertEquals(loggerFactorySpy.getInfoLogMessageUsingClassNameAndNo(testedClassName, 8),
+		assertEquals(loggerFactorySpy.getInfoLogMessageUsingClassNameAndNo(testedClassName, 6),
 				"Found se.uu.ub.cora.therest.initialize.RecordIdGeneratorProviderSpy as "
 						+ "RecordIdGeneratorProvider implementation with select order 0.");
 	}
@@ -425,7 +352,7 @@ public class TheRestModuleStarterTest {
 		recordIdGeneratorProviders.add(new RecordIdGeneratorProviderSpy());
 		startTheRestModuleStarter();
 
-		assertEquals(loggerFactorySpy.getInfoLogMessageUsingClassNameAndNo(testedClassName, 9),
+		assertEquals(loggerFactorySpy.getInfoLogMessageUsingClassNameAndNo(testedClassName, 7),
 				"Using se.uu.ub.cora.therest.initialize.RecordIdGeneratorProviderSpy2 as "
 						+ "RecordIdGeneratorProvider implementation.");
 		Iterator<RecordIdGeneratorProvider> recordIdGeneratorProviderIterator = providers.recordIdGeneratorProviderImplementations
@@ -485,13 +412,13 @@ public class TheRestModuleStarterTest {
 		metadataStorageProviders.add(new MetadataStorageProviderSpy2());
 		metadataStorageProviders.add(new MetadataStorageProviderSpy());
 		startTheRestModuleStarter();
-		assertEquals(loggerFactorySpy.getInfoLogMessageUsingClassNameAndNo(testedClassName, 8),
+		assertEquals(loggerFactorySpy.getInfoLogMessageUsingClassNameAndNo(testedClassName, 6),
 				"Found se.uu.ub.cora.therest.initialize.MetadataStorageProviderSpy as "
 						+ "MetadataStorageProvider implementation with select order 0.");
-		assertEquals(loggerFactorySpy.getInfoLogMessageUsingClassNameAndNo(testedClassName, 9),
+		assertEquals(loggerFactorySpy.getInfoLogMessageUsingClassNameAndNo(testedClassName, 7),
 				"Found se.uu.ub.cora.therest.initialize.MetadataStorageProviderSpy2 as "
 						+ "MetadataStorageProvider implementation with select order 10.");
-		assertEquals(loggerFactorySpy.getInfoLogMessageUsingClassNameAndNo(testedClassName, 10),
+		assertEquals(loggerFactorySpy.getInfoLogMessageUsingClassNameAndNo(testedClassName, 8),
 				"Found se.uu.ub.cora.therest.initialize.MetadataStorageProviderSpy as "
 						+ "MetadataStorageProvider implementation with select order 0.");
 	}
@@ -504,7 +431,7 @@ public class TheRestModuleStarterTest {
 		metadataStorageProviders.add(new MetadataStorageProviderSpy());
 		startTheRestModuleStarter();
 
-		assertEquals(loggerFactorySpy.getInfoLogMessageUsingClassNameAndNo(testedClassName, 11),
+		assertEquals(loggerFactorySpy.getInfoLogMessageUsingClassNameAndNo(testedClassName, 9),
 				"Using se.uu.ub.cora.therest.initialize.MetadataStorageProviderSpy2 as "
 						+ "MetadataStorageProvider implementation.");
 		Iterator<MetadataStorageProvider> metadataStorageProviderIterator = providers.metadataStorageProviderImplementations

@@ -28,11 +28,11 @@ import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.annotation.WebListener;
+import se.uu.ub.cora.initialize.SettingsProvider;
 import se.uu.ub.cora.logger.Logger;
 import se.uu.ub.cora.logger.LoggerProvider;
 import se.uu.ub.cora.storage.MetadataStorageProvider;
 import se.uu.ub.cora.storage.RecordIdGeneratorProvider;
-import se.uu.ub.cora.storage.RecordStorageProvider;
 import se.uu.ub.cora.storage.StreamStorageProvider;
 import se.uu.ub.cora.storage.archive.RecordArchiveProvider;
 
@@ -54,6 +54,7 @@ public class TheRestModuleInitializer implements ServletContextListener {
 		String simpleName = TheRestModuleInitializer.class.getSimpleName();
 		log.logInfoUsingMessage(simpleName + " starting...");
 		collectInitInformation();
+		SettingsProvider.setSettings(initInfo);
 		ensureNeededParametersExistsInInitInfo();
 		collectProviderImplementationsAndAddToProviders();
 		startTheRestStarter();
@@ -89,8 +90,6 @@ public class TheRestModuleInitializer implements ServletContextListener {
 	}
 
 	private void collectProviderImplementationsAndAddToProviders() {
-		providers.recordStorageProviderImplementations = ServiceLoader
-				.load(RecordStorageProvider.class);
 		providers.streamStorageProviderImplementations = ServiceLoader
 				.load(StreamStorageProvider.class);
 		providers.recordArchiveProviderImplementations = ServiceLoader

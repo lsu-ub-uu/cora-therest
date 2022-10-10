@@ -30,10 +30,10 @@ import org.testng.annotations.Test;
 
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletContextEvent;
+import se.uu.ub.cora.initialize.SettingsProvider;
 import se.uu.ub.cora.logger.LoggerProvider;
 import se.uu.ub.cora.storage.MetadataStorageProvider;
 import se.uu.ub.cora.storage.RecordIdGeneratorProvider;
-import se.uu.ub.cora.storage.RecordStorageProvider;
 import se.uu.ub.cora.storage.StreamStorageProvider;
 import se.uu.ub.cora.storage.archive.RecordArchiveProvider;
 import se.uu.ub.cora.therest.log.LoggerFactorySpy;
@@ -130,6 +130,17 @@ public class TheRestModuleInitializerTest {
 	}
 
 	@Test
+	public void testSettingsProviderIsInitialized() throws Exception {
+		startTheRestModuleInitializerWithStarterSpy();
+
+		assertEquals(SettingsProvider.getSetting("theRestPublicPathToSystem"), "/therest/rest/");
+		assertEquals(SettingsProvider.getSetting("dependencyProviderClassName"),
+				"se.uu.ub.cora.therest.initialize.DependencyProviderSpy");
+		assertEquals(SettingsProvider.getSetting("initParam1"), "initValue1");
+		assertEquals(SettingsProvider.getSetting("initParam2"), "initValue2");
+	}
+
+	@Test
 	public void testInitParametersArePassedOnToStarter() {
 		TheRestModuleStarterSpy starter = startTheRestModuleInitializerWithStarterSpy();
 		Map<String, String> initInfo = getInitInfoFromStarterSpy(starter);
@@ -144,19 +155,8 @@ public class TheRestModuleInitializerTest {
 	}
 
 	private Map<String, String> getInitInfoFromStarterSpy(TheRestModuleStarterSpy starter) {
-		return (Map<String, String>) starter.MCR
-				.getValueForMethodNameAndCallNumberAndParameterName(
-						"startUsingInitInfoAndProviders", 0, "initInfo");
-	}
-
-	@Test
-	public void testRecordStorageProviderImplementationsArePassedOnToStarter() {
-		TheRestModuleStarterSpy starter = startTheRestModuleInitializerWithStarterSpy();
-
-		Providers providers = getProviders(starter);
-		Iterable<RecordStorageProvider> provider = providers.recordStorageProviderImplementations;
-
-		assertTrue(provider instanceof ServiceLoader);
+		return (Map<String, String>) starter.MCR.getValueForMethodNameAndCallNumberAndParameterName(
+				"startUsingInitInfoAndProviders", 0, "initInfo");
 	}
 
 	private Providers getProviders(TheRestModuleStarterSpy starter) {

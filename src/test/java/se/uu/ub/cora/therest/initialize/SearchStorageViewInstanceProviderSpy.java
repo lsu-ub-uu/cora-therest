@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Uppsala University Library
+ * Copyright 2022 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -18,32 +18,23 @@
  */
 package se.uu.ub.cora.therest.initialize;
 
-import java.util.Map;
+import se.uu.ub.cora.searchstorage.SearchStorageView;
+import se.uu.ub.cora.searchstorage.SearchStorageViewInstanceProvider;
+import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
+import se.uu.ub.cora.testutils.mrv.MethodReturnValues;
 
-import se.uu.ub.cora.storage.RecordStorage;
-import se.uu.ub.cora.storage.RecordStorageProvider;
+public class SearchStorageViewInstanceProviderSpy implements SearchStorageViewInstanceProvider {
+	public MethodCallRecorder MCR = new MethodCallRecorder();
+	public MethodReturnValues MRV = new MethodReturnValues();
 
-public class RecordStorageProviderSpy implements RecordStorageProvider {
-
-	public Map<String, String> initInfo;
-	boolean started = false;
-	RecordStorageSpy recordStorageSpy = new RecordStorageSpy();
-
-	@Override
-	public int getOrderToSelectImplementionsBy() {
-		// TODO Auto-generated method stub
-		return 0;
+	public SearchStorageViewInstanceProviderSpy() {
+		MCR.useMRV(MRV);
+		MRV.setDefaultReturnValuesSupplier("getStorageView", SearchStorageViewSpy::new);
 	}
 
 	@Override
-	public void startUsingInitInfo(Map<String, String> initInfo) {
-		started = true;
-		this.initInfo = initInfo;
-	}
-
-	@Override
-	public RecordStorage getRecordStorage() {
-		return recordStorageSpy;
+	public SearchStorageView getStorageView() {
+		return (SearchStorageView) MCR.addCallAndReturnFromMRV();
 	}
 
 }

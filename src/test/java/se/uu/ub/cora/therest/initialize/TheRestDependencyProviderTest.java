@@ -24,7 +24,6 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNotSame;
-import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
 
 import java.util.HashMap;
@@ -38,7 +37,8 @@ import se.uu.ub.cora.logger.LoggerProvider;
 import se.uu.ub.cora.search.RecordIndexer;
 import se.uu.ub.cora.search.RecordIndexerFactory;
 import se.uu.ub.cora.search.RecordSearch;
-import se.uu.ub.cora.searchstorage.SearchStorage;
+import se.uu.ub.cora.searchstorage.SearchStorageProvider;
+import se.uu.ub.cora.searchstorage.SearchStorageView;
 import se.uu.ub.cora.solr.SolrClientProviderImp;
 import se.uu.ub.cora.solrindex.SolrRecordIndexer;
 import se.uu.ub.cora.solrindex.SolrRecordIndexerFactory;
@@ -49,28 +49,32 @@ import se.uu.ub.cora.storage.MetadataStorageProvider;
 import se.uu.ub.cora.storage.RecordIdGeneratorProvider;
 import se.uu.ub.cora.storage.RecordStorageProvider;
 import se.uu.ub.cora.storage.StreamStorageProvider;
+import se.uu.ub.cora.storage.spies.RecordStorageInstanceProviderSpy;
 import se.uu.ub.cora.therest.log.LoggerFactorySpy;
 
 public class TheRestDependencyProviderTest {
 	private TheRestDependencyProvider dependencyProvider;
-	private Map<String, String> initInfo;
+	private Map<String, String> settings;
 	private LoggerFactorySpy loggerFactorySpy;
 	private String testedBaseClassName = "DependencyProviderAbstract";
+	private RecordStorageInstanceProviderSpy recordStorageInstanceProviderSpy = new RecordStorageInstanceProviderSpy();
 
 	@BeforeMethod
 	public void setUp() throws Exception {
 		loggerFactorySpy = new LoggerFactorySpy();
 		LoggerProvider.setLoggerFactory(loggerFactorySpy);
-		initInfo = new HashMap<>();
-		initInfo.put("gatekeeperURL", "http://localhost:8080/gatekeeper/");
-		initInfo.put("solrURL", "http://localhost:8983/solr/stuff");
-		dependencyProvider = new TheRestDependencyProvider(initInfo);
+		settings = new HashMap<>();
+		settings.put("gatekeeperURL", "http://localhost:8080/gatekeeper/");
+		settings.put("solrURL", "http://localhost:8983/solr/stuff");
+		dependencyProvider = new TheRestDependencyProvider(settings);
 		setPluggedInStorageNormallySetByTheRestModuleStarterImp();
 	}
 
 	private void setPluggedInStorageNormallySetByTheRestModuleStarterImp() {
-		RecordStorageProvider recordStorageProvider = new RecordStorageProviderSpy();
-		dependencyProvider.setRecordStorageProvider(recordStorageProvider);
+		RecordStorageProvider
+				.onlyForTestSetRecordStorageInstanceProvider(recordStorageInstanceProviderSpy);
+		// RecordStorageProvider recordStorageProvider = new RecordStorageProviderSpy();
+		// dependencyProvider.setRecordStorageProvider(recordStorageProvider);
 		StreamStorageProvider streamStorageProvider = new StreamStorageProviderSpy();
 		dependencyProvider.setStreamStorageProvider(streamStorageProvider);
 		RecordIdGeneratorProvider recordIdGeneratorProvider = new RecordIdGeneratorProviderSpy();
@@ -88,7 +92,7 @@ public class TheRestDependencyProviderTest {
 	private Exception callSystemOneDependencyProviderAndReturnResultingError() {
 		Exception thrownException = null;
 		try {
-			dependencyProvider = new TheRestDependencyProvider(initInfo);
+			dependencyProvider = new TheRestDependencyProvider(settings);
 		} catch (Exception e) {
 			thrownException = e;
 		}
@@ -106,7 +110,7 @@ public class TheRestDependencyProviderTest {
 
 	@Test
 	public void testMissingGatekeeperUrlInInitInfo() {
-		initInfo.remove("gatekeeperURL");
+		settings.remove("gatekeeperURL");
 
 		Exception thrownException = callSystemOneDependencyProviderAndReturnResultingError();
 
@@ -123,7 +127,7 @@ public class TheRestDependencyProviderTest {
 	public void testtestGetAuthenticatorUsesGatekeeperUrl() {
 		AuthenticatorImp authenticator = (AuthenticatorImp) dependencyProvider.getAuthenticator();
 		assertNotNull(authenticator);
-		assertEquals(authenticator.getBaseURL(), initInfo.get("gatekeeperURL"));
+		assertEquals(authenticator.getBaseURL(), settings.get("gatekeeperURL"));
 	}
 
 	@Test
@@ -154,7 +158,7 @@ public class TheRestDependencyProviderTest {
 
 	@Test
 	public void testMissingSolrUrlInInitInfo() {
-		initInfo.remove("solrURL");
+		settings.remove("solrURL");
 
 		Exception thrownException = callSystemOneDependencyProviderAndReturnResultingError();
 
@@ -177,9 +181,13 @@ public class TheRestDependencyProviderTest {
 
 	@Test
 	public void testGetRecordSearchUsesRecordStorageAsSearchStorage() {
+		SearchStorageViewInstanceProviderSpy instanceProviderSpy = new SearchStorageViewInstanceProviderSpy();
+		SearchStorageProvider.onlyForTestSetSearchStorageViewInstanceProvider(instanceProviderSpy);
+
 		SolrRecordSearch recordSearcher = (SolrRecordSearch) dependencyProvider.getRecordSearch();
-		SearchStorage searchStorage = recordSearcher.getSearchStorage();
-		assertSame(searchStorage, dependencyProvider.getRecordStorage());
+
+		SearchStorageView searchStorageView = recordSearcher.onlyForTestGetSearchStorageView();
+		instanceProviderSpy.MCR.assertReturn("getStorageView", 0, searchStorageView);
 	}
 
 	@Test

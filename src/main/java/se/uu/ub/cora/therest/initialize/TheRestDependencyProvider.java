@@ -28,7 +28,7 @@ import se.uu.ub.cora.httphandler.HttpHandlerFactoryImp;
 import se.uu.ub.cora.search.RecordIndexer;
 import se.uu.ub.cora.search.RecordIndexerFactory;
 import se.uu.ub.cora.search.RecordSearch;
-import se.uu.ub.cora.searchstorage.SearchStorage;
+import se.uu.ub.cora.searchstorage.SearchStorageProvider;
 import se.uu.ub.cora.solr.SolrClientProviderImp;
 import se.uu.ub.cora.solrindex.SolrRecordIndexerFactory;
 import se.uu.ub.cora.solrsearch.SolrRecordSearch;
@@ -45,8 +45,8 @@ public class TheRestDependencyProvider extends DependencyProviderAbstract {
 	private SolrClientProviderImp solrClientProvider;
 	private SolrRecordIndexerFactory solrRecordIndexerFactory;
 
-	public TheRestDependencyProvider(Map<String, String> initInfo) {
-		super(initInfo);
+	public TheRestDependencyProvider(Map<String, String> settings) {
+		super(settings);
 	}
 
 	@Override
@@ -82,7 +82,7 @@ public class TheRestDependencyProvider extends DependencyProviderAbstract {
 	@Override
 	public RecordSearch getRecordSearch() {
 		return SolrRecordSearch.createSolrRecordSearchUsingSolrClientProviderAndSearchStorage(
-				solrClientProvider, (SearchStorage) getRecordStorage());
+				solrClientProvider, SearchStorageProvider.getStorageView());
 	}
 
 	@Override

@@ -32,7 +32,6 @@ import se.uu.ub.cora.spider.authorization.SpiderAuthorizator;
 import se.uu.ub.cora.spider.dependency.DependencyProviderAbstract;
 import se.uu.ub.cora.storage.MetadataStorageProvider;
 import se.uu.ub.cora.storage.RecordIdGeneratorProvider;
-import se.uu.ub.cora.storage.RecordStorageProvider;
 import se.uu.ub.cora.storage.StreamStorageProvider;
 import se.uu.ub.cora.storage.archive.RecordArchiveProvider;
 
@@ -106,10 +105,6 @@ public class DependencyProviderSpy extends DependencyProviderAbstract {
 	protected void readInitInfo() {
 		// TODO Auto-generated method stub
 
-	}
-
-	public RecordStorageProvider getRecordStorageProvider() {
-		return recordStorageProvider;
 	}
 
 	public RecordArchiveProvider getRecordArchiveProvider() {

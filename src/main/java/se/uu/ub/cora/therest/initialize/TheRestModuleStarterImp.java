@@ -23,6 +23,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
+import se.uu.ub.cora.initialize.SelectOrder;
 import se.uu.ub.cora.logger.Logger;
 import se.uu.ub.cora.logger.LoggerProvider;
 import se.uu.ub.cora.spider.dependency.DependencyProviderAbstract;
@@ -32,8 +33,6 @@ import se.uu.ub.cora.spider.dependency.SpiderInstanceFactoryImp;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
 import se.uu.ub.cora.storage.MetadataStorageProvider;
 import se.uu.ub.cora.storage.RecordIdGeneratorProvider;
-import se.uu.ub.cora.storage.RecordStorageProvider;
-import se.uu.ub.cora.storage.SelectOrder;
 import se.uu.ub.cora.storage.StreamStorageProvider;
 import se.uu.ub.cora.storage.archive.RecordArchiveProvider;
 
@@ -66,11 +65,6 @@ public class TheRestModuleStarterImp implements TheRestModuleStarter {
 	}
 
 	private void startProviders() {
-		RecordStorageProvider recordStorageProvider = getImplementationBasedOnPreferenceLevelThrowErrorIfNone(
-				providers.recordStorageProviderImplementations, "RecordStorageProvider");
-		recordStorageProvider.startUsingInitInfo(initInfo);
-		dependencyProvider.setRecordStorageProvider(recordStorageProvider);
-
 		StreamStorageProvider streamStorageProvider = getImplementationBasedOnPreferenceLevelThrowErrorIfNone(
 				providers.streamStorageProviderImplementations, "StreamStorageProvider");
 		streamStorageProvider.startUsingInitInfo(initInfo);
