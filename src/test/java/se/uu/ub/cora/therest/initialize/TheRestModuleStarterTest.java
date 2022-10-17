@@ -36,7 +36,6 @@ import org.testng.annotations.Test;
 
 import se.uu.ub.cora.logger.LoggerProvider;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
-import se.uu.ub.cora.storage.MetadataStorageProvider;
 import se.uu.ub.cora.storage.RecordIdGeneratorProvider;
 import se.uu.ub.cora.storage.StreamStorageProvider;
 import se.uu.ub.cora.storage.archive.RecordArchiveProvider;
@@ -71,10 +70,6 @@ public class TheRestModuleStarterTest {
 		List<RecordIdGeneratorProvider> recordIdGeneratorProviders = new ArrayList<>();
 		recordIdGeneratorProviders.add(new RecordIdGeneratorProviderSpy());
 		providers.recordIdGeneratorProviderImplementations = recordIdGeneratorProviders;
-
-		List<MetadataStorageProvider> metadataStorageProviders = new ArrayList<>();
-		metadataStorageProviders.add(new MetadataStorageProviderSpy());
-		providers.metadataStorageProviderImplementations = metadataStorageProviders;
 	}
 
 	@Test
@@ -380,83 +375,92 @@ public class TheRestModuleStarterTest {
 				recordIdGeneratorProvider);
 	}
 
-	@Test
-	public void testStartModuleInitInfoSentToMetadataStorageProviderImplementation()
-			throws Exception {
-		MetadataStorageProviderSpy metadataStorageProvider = (MetadataStorageProviderSpy) providers.metadataStorageProviderImplementations
-				.iterator().next();
-		startTheRestModuleStarter();
-		assertSame(metadataStorageProvider.initInfo, initInfo);
-	}
+	// @Test
+	// public void testStartModuleInitInfoSentToMetadataStorageProviderImplementation()
+	// throws Exception {
+	// MetadataStorageProviderSpy metadataStorageProvider = (MetadataStorageProviderSpy)
+	// providers.metadataStorageProviderImplementations
+	// .iterator().next();
+	// startTheRestModuleStarter();
+	// assertSame(metadataStorageProvider.initInfo, initInfo);
+	// }
+	//
+	// @Test(expectedExceptions = TheRestInitializationException.class,
+	// expectedExceptionsMessageRegExp = ""
+	// + "No implementations found for MetadataStorageProvider")
+	// public void testStartModuleThrowsErrorIfNoMetadataStorageImplementations() throws Exception {
+	// providers.metadataStorageProviderImplementations = new ArrayList<>();
+	// startTheRestModuleStarter();
+	// }
+	//
+	// @Test
+	// public void testStartModuleLogsErrorIfNoMetadataStorageProviderImplementations()
+	// throws Exception {
+	// providers.metadataStorageProviderImplementations = new ArrayList<>();
+	// startTheRestMakeSureAnExceptionIsThrown();
+	// assertEquals(loggerFactorySpy.getFatalLogMessageUsingClassNameAndNo(testedClassName, 0),
+	// "No implementations found for MetadataStorageProvider");
+	// }
+	//
+	// @Test
+	// public void testStartModuleLogsInfoIfMoreThanOneMetadataStorageProviderImplementations()
+	// throws Exception {
+	// List<MetadataStorageProvider> metadataStorageProviders = (List<MetadataStorageProvider>)
+	// providers.metadataStorageProviderImplementations;
+	// metadataStorageProviders.add(new MetadataStorageProviderSpy2());
+	// metadataStorageProviders.add(new MetadataStorageProviderSpy());
+	// startTheRestModuleStarter();
+	// assertEquals(loggerFactorySpy.getInfoLogMessageUsingClassNameAndNo(testedClassName, 6),
+	// "Found se.uu.ub.cora.therest.initialize.MetadataStorageProviderSpy as "
+	// + "MetadataStorageProvider implementation with select order 0.");
+	// assertEquals(loggerFactorySpy.getInfoLogMessageUsingClassNameAndNo(testedClassName, 7),
+	// "Found se.uu.ub.cora.therest.initialize.MetadataStorageProviderSpy2 as "
+	// + "MetadataStorageProvider implementation with select order 10.");
+	// assertEquals(loggerFactorySpy.getInfoLogMessageUsingClassNameAndNo(testedClassName, 8),
+	// "Found se.uu.ub.cora.therest.initialize.MetadataStorageProviderSpy as "
+	// + "MetadataStorageProvider implementation with select order 0.");
+	// }
 
-	@Test(expectedExceptions = TheRestInitializationException.class, expectedExceptionsMessageRegExp = ""
-			+ "No implementations found for MetadataStorageProvider")
-	public void testStartModuleThrowsErrorIfNoMetadataStorageImplementations() throws Exception {
-		providers.metadataStorageProviderImplementations = new ArrayList<>();
-		startTheRestModuleStarter();
-	}
-
-	@Test
-	public void testStartModuleLogsErrorIfNoMetadataStorageProviderImplementations()
-			throws Exception {
-		providers.metadataStorageProviderImplementations = new ArrayList<>();
-		startTheRestMakeSureAnExceptionIsThrown();
-		assertEquals(loggerFactorySpy.getFatalLogMessageUsingClassNameAndNo(testedClassName, 0),
-				"No implementations found for MetadataStorageProvider");
-	}
-
-	@Test
-	public void testStartModuleLogsInfoIfMoreThanOneMetadataStorageProviderImplementations()
-			throws Exception {
-		List<MetadataStorageProvider> metadataStorageProviders = (List<MetadataStorageProvider>) providers.metadataStorageProviderImplementations;
-		metadataStorageProviders.add(new MetadataStorageProviderSpy2());
-		metadataStorageProviders.add(new MetadataStorageProviderSpy());
-		startTheRestModuleStarter();
-		assertEquals(loggerFactorySpy.getInfoLogMessageUsingClassNameAndNo(testedClassName, 6),
-				"Found se.uu.ub.cora.therest.initialize.MetadataStorageProviderSpy as "
-						+ "MetadataStorageProvider implementation with select order 0.");
-		assertEquals(loggerFactorySpy.getInfoLogMessageUsingClassNameAndNo(testedClassName, 7),
-				"Found se.uu.ub.cora.therest.initialize.MetadataStorageProviderSpy2 as "
-						+ "MetadataStorageProvider implementation with select order 10.");
-		assertEquals(loggerFactorySpy.getInfoLogMessageUsingClassNameAndNo(testedClassName, 8),
-				"Found se.uu.ub.cora.therest.initialize.MetadataStorageProviderSpy as "
-						+ "MetadataStorageProvider implementation with select order 0.");
-	}
-
-	@Test
-	public void testStartModuleLogsInfoAndStartsMetadataStorageProviderWithHigestSelectOrder()
-			throws Exception {
-		List<MetadataStorageProvider> metadataStorageProviders = (List<MetadataStorageProvider>) providers.metadataStorageProviderImplementations;
-		metadataStorageProviders.add(new MetadataStorageProviderSpy2());
-		metadataStorageProviders.add(new MetadataStorageProviderSpy());
-		startTheRestModuleStarter();
-
-		assertEquals(loggerFactorySpy.getInfoLogMessageUsingClassNameAndNo(testedClassName, 9),
-				"Using se.uu.ub.cora.therest.initialize.MetadataStorageProviderSpy2 as "
-						+ "MetadataStorageProvider implementation.");
-		Iterator<MetadataStorageProvider> metadataStorageProviderIterator = providers.metadataStorageProviderImplementations
-				.iterator();
-		MetadataStorageProviderSpy metadataStorageProvider = (MetadataStorageProviderSpy) metadataStorageProviderIterator
-				.next();
-		MetadataStorageProviderSpy2 metadataStorageProvider2 = (MetadataStorageProviderSpy2) metadataStorageProviderIterator
-				.next();
-		MetadataStorageProviderSpy metadataStorageProvider12 = (MetadataStorageProviderSpy) metadataStorageProviderIterator
-				.next();
-		assertSame(metadataStorageProvider2.initInfo, initInfo);
-		assertFalse(metadataStorageProvider.started);
-		assertTrue(metadataStorageProvider2.started);
-		assertFalse(metadataStorageProvider12.started);
-	}
-
-	@Test
-	public void testChoosenMetadataStorageProviderIsUsedByDependencyProvider() throws Exception {
-		startTheRestModuleStarter();
-		MetadataStorageProviderSpy metadataStorageProvider = (MetadataStorageProviderSpy) providers.metadataStorageProviderImplementations
-				.iterator().next();
-		DependencyProviderSpy startedDependencyProvider = (DependencyProviderSpy) starter
-				.getStartedDependencyProvider();
-		assertSame(startedDependencyProvider.getMetadataStorageProvider(), metadataStorageProvider);
-	}
+	// @Test
+	// public void testStartModuleLogsInfoAndStartsMetadataStorageProviderWithHigestSelectOrder()
+	// throws Exception {
+	// List<MetadataStorageProvider> metadataStorageProviders = (List<MetadataStorageProvider>)
+	// providers.metadataStorageProviderImplementations;
+	// metadataStorageProviders.add(new MetadataStorageProviderSpy2());
+	// metadataStorageProviders.add(new MetadataStorageProviderSpy());
+	// startTheRestModuleStarter();
+	//
+	// assertEquals(loggerFactorySpy.getInfoLogMessageUsingClassNameAndNo(testedClassName, 9),
+	// "Using se.uu.ub.cora.therest.initialize.MetadataStorageProviderSpy2 as "
+	// + "MetadataStorageProvider implementation.");
+	// Iterator<MetadataStorageProvider> metadataStorageProviderIterator =
+	// providers.metadataStorageProviderImplementations
+	// .iterator();
+	// MetadataStorageProviderSpy metadataStorageProvider = (MetadataStorageProviderSpy)
+	// metadataStorageProviderIterator
+	// .next();
+	// MetadataStorageProviderSpy2 metadataStorageProvider2 = (MetadataStorageProviderSpy2)
+	// metadataStorageProviderIterator
+	// .next();
+	// MetadataStorageProviderSpy metadataStorageProvider12 = (MetadataStorageProviderSpy)
+	// metadataStorageProviderIterator
+	// .next();
+	// assertSame(metadataStorageProvider2.initInfo, initInfo);
+	// assertFalse(metadataStorageProvider.started);
+	// assertTrue(metadataStorageProvider2.started);
+	// assertFalse(metadataStorageProvider12.started);
+	// }
+	//
+	// @Test
+	// public void testChoosenMetadataStorageProviderIsUsedByDependencyProvider() throws Exception {
+	// startTheRestModuleStarter();
+	// MetadataStorageProviderSpy metadataStorageProvider = (MetadataStorageProviderSpy)
+	// providers.metadataStorageProviderImplementations
+	// .iterator().next();
+	// DependencyProviderSpy startedDependencyProvider = (DependencyProviderSpy) starter
+	// .getStartedDependencyProvider();
+	// assertSame(startedDependencyProvider.getMetadataStorageProvider(), metadataStorageProvider);
+	// }
 
 	@Test
 	public void testInitializeExtendedFunctionalityHasBeenCalled() throws Exception {
