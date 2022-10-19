@@ -31,7 +31,6 @@ import se.uu.ub.cora.spider.dependency.SpiderDependencyProvider;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceFactory;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceFactoryImp;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
-import se.uu.ub.cora.storage.MetadataStorageProvider;
 import se.uu.ub.cora.storage.RecordIdGeneratorProvider;
 import se.uu.ub.cora.storage.StreamStorageProvider;
 import se.uu.ub.cora.storage.archive.RecordArchiveProvider;
@@ -79,11 +78,6 @@ public class TheRestModuleStarterImp implements TheRestModuleStarter {
 				providers.recordIdGeneratorProviderImplementations, "RecordIdGeneratorProvider");
 		recordIdGeneratorProvider.startUsingInitInfo(initInfo);
 		dependencyProvider.setRecordIdGeneratorProvider(recordIdGeneratorProvider);
-
-		MetadataStorageProvider metadataStorageProvider = getImplementationBasedOnPreferenceLevelThrowErrorIfNone(
-				providers.metadataStorageProviderImplementations, "MetadataStorageProvider");
-		metadataStorageProvider.startUsingInitInfo(initInfo);
-		dependencyProvider.setMetadataStorageProvider(metadataStorageProvider);
 
 		dependencyProvider.initializeExtendedFunctionality();
 	}

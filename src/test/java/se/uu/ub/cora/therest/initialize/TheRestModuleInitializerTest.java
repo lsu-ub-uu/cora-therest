@@ -32,7 +32,6 @@ import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletContextEvent;
 import se.uu.ub.cora.initialize.SettingsProvider;
 import se.uu.ub.cora.logger.LoggerProvider;
-import se.uu.ub.cora.storage.MetadataStorageProvider;
 import se.uu.ub.cora.storage.RecordIdGeneratorProvider;
 import se.uu.ub.cora.storage.StreamStorageProvider;
 import se.uu.ub.cora.storage.archive.RecordArchiveProvider;
@@ -197,15 +196,16 @@ public class TheRestModuleInitializerTest {
 		assertTrue(provider instanceof ServiceLoader);
 	}
 
-	@Test
-	public void testMetadataStorageProviderImplementationsArePassedOnToStarter() {
-		TheRestModuleStarterSpy starter = startTheRestModuleInitializerWithStarterSpy();
-
-		Providers providers = getProviders(starter);
-		Iterable<MetadataStorageProvider> provider = providers.metadataStorageProviderImplementations;
-
-		assertTrue(provider instanceof ServiceLoader);
-	}
+	// @Test
+	// public void testMetadataStorageProviderImplementationsArePassedOnToStarter() {
+	// TheRestModuleStarterSpy starter = startTheRestModuleInitializerWithStarterSpy();
+	//
+	// Providers providers = getProviders(starter);
+	// Iterable<MetadataStorageProvider> provider =
+	// providers.metadataStorageProviderImplementations;
+	//
+	// assertTrue(provider instanceof ServiceLoader);
+	// }
 
 	@Test
 	public void testInitUsesDefaultTheRestModuleStarter() throws Exception {

@@ -45,7 +45,6 @@ import se.uu.ub.cora.solrindex.SolrRecordIndexerFactory;
 import se.uu.ub.cora.solrsearch.SolrRecordSearch;
 import se.uu.ub.cora.spider.authorization.PermissionRuleCalculator;
 import se.uu.ub.cora.spider.dependency.SpiderInitializationException;
-import se.uu.ub.cora.storage.MetadataStorageProvider;
 import se.uu.ub.cora.storage.RecordIdGeneratorProvider;
 import se.uu.ub.cora.storage.RecordStorageProvider;
 import se.uu.ub.cora.storage.StreamStorageProvider;
@@ -73,14 +72,10 @@ public class TheRestDependencyProviderTest {
 	private void setPluggedInStorageNormallySetByTheRestModuleStarterImp() {
 		RecordStorageProvider
 				.onlyForTestSetRecordStorageInstanceProvider(recordStorageInstanceProviderSpy);
-		// RecordStorageProvider recordStorageProvider = new RecordStorageProviderSpy();
-		// dependencyProvider.setRecordStorageProvider(recordStorageProvider);
 		StreamStorageProvider streamStorageProvider = new StreamStorageProviderSpy();
 		dependencyProvider.setStreamStorageProvider(streamStorageProvider);
 		RecordIdGeneratorProvider recordIdGeneratorProvider = new RecordIdGeneratorProviderSpy();
 		dependencyProvider.setRecordIdGeneratorProvider(recordIdGeneratorProvider);
-		MetadataStorageProvider metadataStorageProvider = new MetadataStorageProviderSpy();
-		dependencyProvider.setMetadataStorageProvider(metadataStorageProvider);
 	}
 
 	@Test

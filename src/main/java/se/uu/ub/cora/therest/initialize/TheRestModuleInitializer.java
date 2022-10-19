@@ -31,7 +31,6 @@ import jakarta.servlet.annotation.WebListener;
 import se.uu.ub.cora.initialize.SettingsProvider;
 import se.uu.ub.cora.logger.Logger;
 import se.uu.ub.cora.logger.LoggerProvider;
-import se.uu.ub.cora.storage.MetadataStorageProvider;
 import se.uu.ub.cora.storage.RecordIdGeneratorProvider;
 import se.uu.ub.cora.storage.StreamStorageProvider;
 import se.uu.ub.cora.storage.archive.RecordArchiveProvider;
@@ -96,8 +95,6 @@ public class TheRestModuleInitializer implements ServletContextListener {
 				.load(RecordArchiveProvider.class);
 		providers.recordIdGeneratorProviderImplementations = ServiceLoader
 				.load(RecordIdGeneratorProvider.class);
-		providers.metadataStorageProviderImplementations = ServiceLoader
-				.load(MetadataStorageProvider.class);
 	}
 
 	private void startTheRestStarter() {
