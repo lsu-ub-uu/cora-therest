@@ -30,9 +30,9 @@ import se.uu.ub.cora.spider.authentication.Authenticator;
 import se.uu.ub.cora.spider.authorization.PermissionRuleCalculator;
 import se.uu.ub.cora.spider.authorization.SpiderAuthorizator;
 import se.uu.ub.cora.spider.dependency.DependencyProviderAbstract;
-import se.uu.ub.cora.storage.RecordIdGeneratorProvider;
 import se.uu.ub.cora.storage.StreamStorageProvider;
 import se.uu.ub.cora.storage.archive.RecordArchiveProvider;
+import se.uu.ub.cora.storage.idgenerator.RecordIdGeneratorProvider;
 
 public class DependencyProviderSpy extends DependencyProviderAbstract {
 

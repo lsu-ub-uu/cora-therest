@@ -31,9 +31,9 @@ import se.uu.ub.cora.spider.dependency.SpiderDependencyProvider;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceFactory;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceFactoryImp;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
-import se.uu.ub.cora.storage.RecordIdGeneratorProvider;
 import se.uu.ub.cora.storage.StreamStorageProvider;
 import se.uu.ub.cora.storage.archive.RecordArchiveProvider;
+import se.uu.ub.cora.storage.idgenerator.RecordIdGeneratorProvider;
 
 public class TheRestModuleStarterImp implements TheRestModuleStarter {
 	private static final String FOUND = "Found ";
