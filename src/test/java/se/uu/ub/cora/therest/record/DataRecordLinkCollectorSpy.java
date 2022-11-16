@@ -20,7 +20,7 @@
 package se.uu.ub.cora.therest.record;
 
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 
 import se.uu.ub.cora.bookkeeper.linkcollector.DataRecordLinkCollector;
 import se.uu.ub.cora.data.DataGroup;
@@ -30,10 +30,10 @@ public class DataRecordLinkCollectorSpy implements DataRecordLinkCollector {
 
 	public boolean collectLinksWasCalled = false;
 
-	public List<Link> collectedDataLinks = Collections.emptyList();
+	public Set<Link> collectedDataLinks = Collections.emptySet();
 
 	@Override
-	public List<Link> collectLinks(String metadataId, DataGroup dataGroup) {
+	public Set<Link> collectLinks(String metadataId, DataGroup dataGroup) {
 		collectLinksWasCalled = true;
 		return collectedDataLinks;
 	}
