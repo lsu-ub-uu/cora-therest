@@ -172,9 +172,15 @@ public class RecordEndpoint {
 
 	private Response createRecord(String contentType, String accept, String headerAuthToken,
 			String queryAuthToken, String type, String inputRecord) {
+		long t1 = System.currentTimeMillis();
+		System.out.println("CREATE*****************************");
 		String usedToken = getExistingTokenPreferHeader(headerAuthToken, queryAuthToken);
-		return createRecordUsingAuthTokenWithRecord(contentType, accept, usedToken, type,
-				inputRecord);
+		Response createRecordUsingAuthTokenWithRecord = createRecordUsingAuthTokenWithRecord(
+				contentType, accept, usedToken, type, inputRecord);
+		long t2 = System.currentTimeMillis();
+		System.out.println("Create (" + (t2 - t1) + " ms): " + type);
+
+		return createRecordUsingAuthTokenWithRecord;
 	}
 
 	private Response createRecordUsingAuthTokenWithRecord(String contentType, String accept,
@@ -324,9 +330,18 @@ public class RecordEndpoint {
 
 	private Response readRecordList(String accept, String headerAuthToken, String queryAuthToken,
 			String type, String filterAsJson) {
+
+		long t1 = System.currentTimeMillis();
+		System.out.println("READ LIST*****************************");
+
 		String usedToken = getExistingTokenPreferHeader(headerAuthToken, queryAuthToken);
 		String filter = createEmptyFilterIfParameterDoesNotExist(filterAsJson);
-		return readRecordListUsingAuthTokenByType(accept, usedToken, type, filter);
+		Response readRecordListUsingAuthTokenByType = readRecordListUsingAuthTokenByType(accept,
+				usedToken, type, filter);
+		long t2 = System.currentTimeMillis();
+
+		System.out.println("Read List (" + (t2 - t1) + " ms): " + type);
+		return readRecordListUsingAuthTokenByType;
 	}
 
 	private String createEmptyFilterIfParameterDoesNotExist(String filterAsJson) {
@@ -384,8 +399,18 @@ public class RecordEndpoint {
 
 	private Response readRecord(String accept, String headerAuthToken, String queryAuthToken,
 			String type, String id) {
+
+		long t1 = System.currentTimeMillis();
+		System.out.println("READ*****************************");
+
 		String usedToken = getExistingTokenPreferHeader(headerAuthToken, queryAuthToken);
-		return readRecordUsingAuthTokenByTypeAndId(accept, usedToken, type, id);
+		Response readRecordUsingAuthTokenByTypeAndId = readRecordUsingAuthTokenByTypeAndId(accept,
+				usedToken, type, id);
+
+		long t2 = System.currentTimeMillis();
+		System.out.println("Read (" + (t2 - t1) + " ms): " + type);
+
+		return readRecordUsingAuthTokenByTypeAndId;
 	}
 
 	private Response readRecordUsingAuthTokenByTypeAndId(String accept, String authToken,
@@ -450,8 +475,17 @@ public class RecordEndpoint {
 
 	private Response readIncomingRecordLink(String accept, String headerAuthToken,
 			String queryAuthToken, String type, String id) {
+
+		long t1 = System.currentTimeMillis();
+		System.out.println("READ INCOMING LINKS *****************************");
+
 		String usedToken = getExistingTokenPreferHeader(headerAuthToken, queryAuthToken);
-		return readIncomingRecordLinksUsingAuthTokenByTypeAndId(accept, usedToken, type, id);
+		Response readIncomingRecordLinksUsingAuthTokenByTypeAndId = readIncomingRecordLinksUsingAuthTokenByTypeAndId(
+				accept, usedToken, type, id);
+		long t2 = System.currentTimeMillis();
+		System.out.println("Read incoming links (" + (t2 - t1) + " ms): " + type);
+
+		return readIncomingRecordLinksUsingAuthTokenByTypeAndId;
 	}
 
 	private Response readIncomingRecordLinksUsingAuthTokenByTypeAndId(String accept,
@@ -477,8 +511,17 @@ public class RecordEndpoint {
 	public Response deleteRecord(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			@PathParam("id") String id) {
+
+		long t1 = System.currentTimeMillis();
+		System.out.println("DELETE *****************************");
 		String usedToken = getExistingTokenPreferHeader(headerAuthToken, queryAuthToken);
-		return deleteRecordUsingAuthTokenByTypeAndId(usedToken, type, id);
+		Response deleteRecordUsingAuthTokenByTypeAndId = deleteRecordUsingAuthTokenByTypeAndId(
+				usedToken, type, id);
+
+		long t2 = System.currentTimeMillis();
+		System.out.println("Delete (" + (t2 - t1) + " ms): " + type);
+
+		return deleteRecordUsingAuthTokenByTypeAndId;
 	}
 
 	private Response deleteRecordUsingAuthTokenByTypeAndId(String authToken, String type,
@@ -542,9 +585,18 @@ public class RecordEndpoint {
 
 	private Response updateRecord(String contentType, String accept, String headerAuthToken,
 			String queryAuthToken, String type, String id, String inputRecord) {
+
+		long t1 = System.currentTimeMillis();
+		System.out.println("UPDATE *****************************");
+
 		String usedToken = getExistingTokenPreferHeader(headerAuthToken, queryAuthToken);
-		return updateRecordUsingAuthTokenWithRecord(contentType, accept, usedToken, type, id,
-				inputRecord);
+		Response updateRecordUsingAuthTokenWithRecord = updateRecordUsingAuthTokenWithRecord(
+				contentType, accept, usedToken, type, id, inputRecord);
+
+		long t2 = System.currentTimeMillis();
+		System.out.println("Update (" + (t2 - t1) + " ms): " + type);
+
+		return updateRecordUsingAuthTokenWithRecord;
 	}
 
 	private Response updateRecordUsingAuthTokenWithRecord(String contentType, String accept,
