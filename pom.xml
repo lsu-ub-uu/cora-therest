@@ -37,7 +37,7 @@
 		<jaxb-api.version>2.3.1</jaxb-api.version>
 		<servlet-api.version>5.0.0</servlet-api.version>
 		<jersey.version>3.0.8</jersey.version>
-		<bookkeeper.version>8.3.0</bookkeeper.version>
+		<bookkeeper.version>9.0-SNAPSHOT</bookkeeper.version>
 		<gatekeeperclient.version>4.5.0</gatekeeperclient.version>
 		<beefeater.version>3.11.0</beefeater.version>
 		<solrsearch.version>5.3.0</solrsearch.version>
