@@ -57,7 +57,7 @@ public class SpiderRecordReaderSpy implements RecordReader {
 		}
 
 		if ("place:0001_NOT_FOUND".equals(id)) {
-			throw new RecordNotFoundException("no record exsist with id " + id);
+			throw RecordNotFoundException.withMessage("no record exsist with id " + id);
 		}
 	}
 }

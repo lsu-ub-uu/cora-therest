@@ -51,7 +51,7 @@ public class SpiderRecordIncomingLinksReaderSpy implements IncomingLinksReader {
 			throw new AuthorizationException("not authorized");
 		}
 		if ("place:0001_NOT_FOUND".equals(id)) {
-			throw new RecordNotFoundException("no record exsist with id " + id);
+			throw RecordNotFoundException.withMessage("no record exsist with id " + id);
 		}
 		if ("abstract".equals(type)) {
 			throw new MisuseException("Reading for record: " + id + " on the abstract recordType:"

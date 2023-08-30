@@ -67,7 +67,7 @@ public class SpiderUploaderSpy implements Uploader {
 			throw new AuthorizationException("not authorized");
 		}
 		if ("image:123456789_NOT_FOUND".equals(id)) {
-			throw new RecordNotFoundException("No record exists with recordId: " + id);
+			throw RecordNotFoundException.withMessage("No record exists with recordId: " + id);
 		}
 
 		if ("not_child_of_binary_type".equals(type)) {

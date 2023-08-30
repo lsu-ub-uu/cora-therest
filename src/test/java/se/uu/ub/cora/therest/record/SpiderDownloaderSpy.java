@@ -50,20 +50,20 @@ public class SpiderDownloaderSpy implements Downloader {
 	}
 
 	private void possiblyThrowException(String authToken, String type, String id, String resource) {
-		if("dummyNonAuthorizedToken".equals(authToken)){
+		if ("dummyNonAuthorizedToken".equals(authToken)) {
 			throw new AuthorizationException("not authorized");
 		}
 
-		if("image:123456789_NOT_FOUND".equals(id)){
-			throw new RecordNotFoundException("No record exists with recordId: " + id);
+		if ("image:123456789_NOT_FOUND".equals(id)) {
+			throw RecordNotFoundException.withMessage("No record exists with recordId: " + id);
 		}
 
-		if("not_child_of_binary_type".equals(type)){
+		if ("not_child_of_binary_type".equals(type)) {
 			throw new MisuseException(
 					"It is only possible to download files to recordTypes that are children of binary");
 		}
 
-		if("".equals(resource)){
+		if ("".equals(resource)) {
 			throw new DataMissingException("No stream to store");
 		}
 	}

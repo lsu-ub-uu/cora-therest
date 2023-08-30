@@ -49,7 +49,7 @@ public class SpiderCreatorSpy implements RecordCreator {
 			throw new AuthorizationException("not authorized");
 		}
 		if ("recordType_NON_EXISTING".equals(type)) {
-			throw new RecordNotFoundException("no record exist with type " + type);
+			throw RecordNotFoundException.withMessage("no record exist with type " + type);
 		} else if ("place_NON_VALID".equals(type)) {
 			throw new DataException("Data is not valid");
 		} else if ("abstract".equals(type)) {
