@@ -650,7 +650,7 @@ public class RecordEndpoint {
 	private Response tryUploadFile(String accept, String authToken, String type, String id,
 			InputStream inputStream, String fileName) {
 		DataRecord updatedRecord = SpiderInstanceProvider.getUploader().upload(authToken, type, id,
-				inputStream, fileName);
+				inputStream, resourceType);
 
 		String convertedDataList = convertConvertibleToString(accept, updatedRecord);
 

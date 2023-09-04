@@ -42,8 +42,7 @@ public class SpiderUploaderSpy implements Uploader {
 	public String fileName;
 
 	@Override
-	public DataRecord upload(String authToken, String type, String id, InputStream inputStream,
-			String fileName) {
+	public DataRecord upload(String authToken, String type, String id, InputStream inputStream, String resourceType) {
 		MCR.addCall("authToken", authToken, "type", type, "id", id, "inputStream", inputStream,
 				"fileName", fileName);
 		this.authToken = authToken;
