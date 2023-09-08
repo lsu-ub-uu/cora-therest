@@ -80,6 +80,7 @@ public class RecordEndpointTest {
 	private static final String PLACE_0001 = "place:0001";
 	private static final String PLACE = "place";
 	private static final String AUTH_TOKEN = "authToken";
+	private static final String SOME_RESOUTCE_TYPE = "someResourceType";
 	private JsonParserSpy jsonParser;
 
 	private JsonToDataConverterFactorySpy jsonToDataConverterFactorySpy = new JsonToDataConverterFactorySpy();
@@ -1146,7 +1147,7 @@ public class RecordEndpointTest {
 		FormDataContentDisposition formDataContentDisposition = createformDataContent();
 
 		response = recordEndpoint.uploadFileJson(headerAuthToken, queryAuthToken, "image",
-				"image:123456789", stream, formDataContentDisposition);
+				"image:123456789", stream, SOME_RESOUTCE_TYPE);
 
 		SpiderUploaderSpy spiderUploaderSpy = spiderInstanceFactorySpy.spiderUploaderSpy;
 		assertEquals(spiderUploaderSpy.authToken, authTokenExpected);
@@ -1170,7 +1171,7 @@ public class RecordEndpointTest {
 		FormDataContentDisposition formDataContentDisposition = createformDataContent();
 
 		response = recordEndpoint.uploadFileJson(AUTH_TOKEN, AUTH_TOKEN, "image", "image:123456789",
-				stream, formDataContentDisposition);
+				stream, SOME_RESOUTCE_TYPE);
 
 		assertResponseStatusIs(Response.Status.OK);
 	}
@@ -1178,10 +1179,11 @@ public class RecordEndpointTest {
 	@Test
 	public void testUploadFileForXml() {
 		InputStream stream = createUplodedInputStream();
-		FormDataContentDisposition formDataContentDisposition = createformDataContent();
+		// FormDataContentDisposition formDataContentDisposition = createformDataContent();
 
 		response = recordEndpoint.uploadFileXml(AUTH_TOKEN, AUTH_TOKEN, "image", "image:123456789",
-				stream, formDataContentDisposition);
+				stream, SOME_RESOUTCE_TYPE);
+		// stream, formDataContentDisposition);
 		DataRecord uploadedFile = (DataRecord) spiderInstanceFactorySpy.spiderUploaderSpy.MCR
 				.getReturnValue("upload", 0);
 
@@ -1194,37 +1196,41 @@ public class RecordEndpointTest {
 	@Test
 	public void testAnnotationsForUploadFileJson() throws Exception {
 		Class<?>[] parameters = { String.class, String.class, String.class, String.class,
-				InputStream.class, FormDataContentDisposition.class };
+				InputStream.class, String.class };
 		Method method = getMethodWithMethodName("uploadFileJson", parameters);
 		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
 
-		assertHttpMethodAndPathAnnotation(method, "POST", "{type}/{id}/{streamId}");
+		assertHttpMethodAndPathAnnotation(method, "POST", "{type}/{id}/{resourceType}");
 		assertProducesAnnotation(method, APPLICATION_VND_UUB_RECORD_JSON);
 		assertAuthTokenAnnotation(parameterAnnotations, 0);
 		assertTypeAndIdAnnotation(parameterAnnotations, 2);
 
 		FormDataParam uploadedInputStreamParameter = (FormDataParam) parameterAnnotations[4][0];
 		assertEquals(uploadedInputStreamParameter.value(), "file");
-		FormDataParam fileDetailParameter = (FormDataParam) parameterAnnotations[5][0];
-		assertEquals(fileDetailParameter.value(), "file");
+		PathParam typeParameter = (PathParam) parameterAnnotations[5][0];
+		assertEquals(typeParameter.value(), "resourceType");
+		// FormDataParam fileDetailParameter = (FormDataParam) parameterAnnotations[5][0];
+		// assertEquals(fileDetailParameter.value(), "file");
 	}
 
 	@Test
 	public void testAnnotationsForUploadFileXml() throws Exception {
 		Class<?>[] parameters = { String.class, String.class, String.class, String.class,
-				InputStream.class, FormDataContentDisposition.class };
+				InputStream.class, String.class };
 		Method method = getMethodWithMethodName("uploadFileXml", parameters);
 		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
 
-		assertHttpMethodAndPathAnnotation(method, "POST", "{type}/{id}/{streamId}");
+		assertHttpMethodAndPathAnnotation(method, "POST", "{type}/{id}/{resourceType}");
 		assertProducesAnnotation(method, APPLICATION_VND_UUB_RECORD_XML_QS09);
 		assertAuthTokenAnnotation(parameterAnnotations, 0);
 		assertTypeAndIdAnnotation(parameterAnnotations, 2);
 
 		FormDataParam uploadedInputStreamParameter = (FormDataParam) parameterAnnotations[4][0];
 		assertEquals(uploadedInputStreamParameter.value(), "file");
-		FormDataParam fileDetailParameter = (FormDataParam) parameterAnnotations[5][0];
-		assertEquals(fileDetailParameter.value(), "file");
+		PathParam typeParameter = (PathParam) parameterAnnotations[5][0];
+		assertEquals(typeParameter.value(), "resourceType");
+		// FormDataParam fileDetailParameter = (FormDataParam) parameterAnnotations[5][0];
+		// assertEquals(fileDetailParameter.value(), "file");
 	}
 
 	private Method getMethodWithMethodName(String methodName, Class<?>[] parameters)
@@ -1240,7 +1246,7 @@ public class RecordEndpointTest {
 
 		response = recordEndpoint.uploadFileUsingAuthTokenWithStream(
 				APPLICATION_VND_UUB_RECORD_JSON, DUMMY_NON_AUTHORIZED_TOKEN, "image",
-				"image:123456789", stream, "someFile.tif");
+				"image:123456789", stream, SOME_RESOUTCE_TYPE);
 
 		assertResponseStatusIs(Response.Status.FORBIDDEN);
 	}
@@ -1252,7 +1258,7 @@ public class RecordEndpointTest {
 		FormDataContentDisposition formDataContentDisposition = createformDataContent();
 
 		response = recordEndpoint.uploadFileJson(AUTH_TOKEN, AUTH_TOKEN, "image",
-				"image:123456789_NOT_FOUND", stream, formDataContentDisposition);
+				"image:123456789_NOT_FOUND", stream, SOME_RESOUTCE_TYPE);
 
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
 	}
@@ -1264,7 +1270,7 @@ public class RecordEndpointTest {
 		FormDataContentDisposition formDataContentDisposition = createformDataContent();
 
 		response = recordEndpoint.uploadFileJson(AUTH_TOKEN, AUTH_TOKEN, "not_child_of_binary_type",
-				"image:123456789", stream, formDataContentDisposition);
+				"image:123456789", stream, SOME_RESOUTCE_TYPE);
 
 		assertResponseStatusIs(Response.Status.METHOD_NOT_ALLOWED);
 		assertResponseContentTypeIs(TEXT_PLAIN);
@@ -1278,7 +1284,7 @@ public class RecordEndpointTest {
 		FormDataContentDisposition formDataContentDisposition = builder.build();
 
 		response = recordEndpoint.uploadFileJson(AUTH_TOKEN, AUTH_TOKEN, "image", "image:123456789",
-				null, formDataContentDisposition);
+				null, SOME_RESOUTCE_TYPE);
 
 		assertResponseStatusIs(Response.Status.BAD_REQUEST);
 		assertResponseContentTypeIs(TEXT_PLAIN);

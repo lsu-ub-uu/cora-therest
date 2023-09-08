@@ -24,7 +24,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
 
-import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -606,49 +605,50 @@ public class RecordEndpoint {
 	}
 
 	@POST
-	@Path("{type}/{id}/{streamId}")
+	@Path("{type}/{id}/{resourceType}")
 	@Consumes("multipart/form-data")
 	@Produces({ APPLICATION_VND_UUB_RECORD_JSON })
 	public Response uploadFileJson(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			@PathParam("id") String id, @FormDataParam("file") InputStream uploadedInputStream,
-			@FormDataParam("file") FormDataContentDisposition fileDetail) {
+			@PathParam("resourceType") String resourceType) {
+		// @FormDataParam("file") FormDataContentDisposition fileDetail) {
 		return uploadFile(APPLICATION_VND_UUB_RECORD_JSON, headerAuthToken, queryAuthToken, type,
-				id, uploadedInputStream, fileDetail);
+				id, uploadedInputStream, resourceType);
 	}
 
 	@POST
-	@Path("{type}/{id}/{streamId}")
+	@Path("{type}/{id}/{resourceType}")
 	@Consumes("multipart/form-data")
 	@Produces(APPLICATION_VND_UUB_RECORD_XML_QS09)
 	public Response uploadFileXml(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			@PathParam("id") String id, @FormDataParam("file") InputStream uploadedInputStream,
-			@FormDataParam("file") FormDataContentDisposition fileDetail) {
+			@PathParam("resourceType") String resourceType) {
+		// @FormDataParam("file") FormDataContentDisposition fileDetail) {
 		return uploadFile(APPLICATION_VND_UUB_RECORD_XML, headerAuthToken, queryAuthToken, type, id,
-				uploadedInputStream, fileDetail);
+				uploadedInputStream, resourceType);
 	}
 
 	private Response uploadFile(String accept, String headerAuthToken, String queryAuthToken,
-			String type, String id, InputStream uploadedInputStream,
-			FormDataContentDisposition fileDetail) {
-		String fileName = fileDetail.getFileName();
+			String type, String id, InputStream uploadedInputStream, String resourceType) {
+		// String fileName = fileDetail.getFileName();
 		String usedToken = getExistingTokenPreferHeader(headerAuthToken, queryAuthToken);
 		return uploadFileUsingAuthTokenWithStream(accept, usedToken, type, id, uploadedInputStream,
-				fileName);
+				resourceType);
 	}
 
 	Response uploadFileUsingAuthTokenWithStream(String accept, String authToken, String type,
-			String id, InputStream uploadedInputStream, String fileName) {
+			String id, InputStream uploadedInputStream, String resourceType) {
 		try {
-			return tryUploadFile(accept, authToken, type, id, uploadedInputStream, fileName);
+			return tryUploadFile(accept, authToken, type, id, uploadedInputStream, resourceType);
 		} catch (Exception error) {
 			return handleError(authToken, error, "Some error");
 		}
 	}
 
 	private Response tryUploadFile(String accept, String authToken, String type, String id,
-			InputStream inputStream, String fileName) {
+			InputStream inputStream, String resourceType) {
 		DataRecord updatedRecord = SpiderInstanceProvider.getUploader().upload(authToken, type, id,
 				inputStream, resourceType);
 
