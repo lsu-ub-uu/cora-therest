@@ -65,7 +65,7 @@ import se.uu.ub.cora.logger.LoggerProvider;
 import se.uu.ub.cora.spider.authentication.AuthenticationException;
 import se.uu.ub.cora.spider.authorization.AuthorizationException;
 import se.uu.ub.cora.spider.data.DataMissingException;
-import se.uu.ub.cora.spider.data.SpiderInputStream;
+import se.uu.ub.cora.spider.data.ResourceInputStream;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
 import se.uu.ub.cora.spider.record.ConflictException;
 import se.uu.ub.cora.spider.record.DataException;
@@ -571,30 +571,31 @@ public class RecordEndpoint {
 	}
 
 	@GET
-	@Path("{type}/{id}/{streamId}")
-	public Response downloadFile(@HeaderParam("authToken") String headerAuthToken,
+	@Path("{type}/{id}/{resourceType}")
+	public Response downloadResource(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
-			@PathParam("id") String id, @PathParam("streamId") String streamId) {
+			@PathParam("id") String id, @PathParam("resourceType") String resourceType) {
 		String usedToken = getExistingTokenPreferHeader(headerAuthToken, queryAuthToken);
-		return downloadFileUsingAuthTokenWithStream(usedToken, type, id, streamId);
+		return downloadResourceUsingAuthTokenWithStream(usedToken, type, id, resourceType);
 	}
 
 	private String getExistingTokenPreferHeader(String headerAuthToken, String queryAuthToken) {
 		return headerAuthToken != null ? headerAuthToken : queryAuthToken;
 	}
 
-	Response downloadFileUsingAuthTokenWithStream(String authToken, String type, String id,
-			String streamId) {
+	Response downloadResourceUsingAuthTokenWithStream(String authToken, String type, String id,
+			String resourceType) {
 		try {
-			return tryDownloadFile(authToken, type, id, streamId);
+			return tryDownloadResource(authToken, type, id, resourceType);
 		} catch (Exception error) {
 			return handleError(authToken, error, "Some error");
 		}
 	}
 
-	private Response tryDownloadFile(String authToken, String type, String id, String streamId) {
-		SpiderInputStream streamOut = SpiderInstanceProvider.getDownloader().download(authToken,
-				type, id, streamId);
+	private Response tryDownloadResource(String authToken, String type, String id,
+			String resourceType) {
+		ResourceInputStream streamOut = SpiderInstanceProvider.getDownloader().download(authToken,
+				type, id, resourceType);
 		/*
 		 * when we detect and store type of file in spider set it like this return
 		 * Response.ok(streamOut.stream).type("application/octet-stream")
@@ -608,46 +609,47 @@ public class RecordEndpoint {
 	@Path("{type}/{id}/{resourceType}")
 	@Consumes("multipart/form-data")
 	@Produces({ APPLICATION_VND_UUB_RECORD_JSON })
-	public Response uploadFileJson(@HeaderParam("authToken") String headerAuthToken,
+	public Response uploadResourceJson(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			@PathParam("id") String id, @FormDataParam("file") InputStream uploadedInputStream,
 			@PathParam("resourceType") String resourceType) {
 		// @FormDataParam("file") FormDataContentDisposition fileDetail) {
-		return uploadFile(APPLICATION_VND_UUB_RECORD_JSON, headerAuthToken, queryAuthToken, type,
-				id, uploadedInputStream, resourceType);
+		return uploadResource(APPLICATION_VND_UUB_RECORD_JSON, headerAuthToken, queryAuthToken,
+				type, id, uploadedInputStream, resourceType);
 	}
 
 	@POST
 	@Path("{type}/{id}/{resourceType}")
 	@Consumes("multipart/form-data")
 	@Produces(APPLICATION_VND_UUB_RECORD_XML_QS09)
-	public Response uploadFileXml(@HeaderParam("authToken") String headerAuthToken,
+	public Response uploadResourceXml(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			@PathParam("id") String id, @FormDataParam("file") InputStream uploadedInputStream,
 			@PathParam("resourceType") String resourceType) {
 		// @FormDataParam("file") FormDataContentDisposition fileDetail) {
-		return uploadFile(APPLICATION_VND_UUB_RECORD_XML, headerAuthToken, queryAuthToken, type, id,
-				uploadedInputStream, resourceType);
+		return uploadResource(APPLICATION_VND_UUB_RECORD_XML, headerAuthToken, queryAuthToken, type,
+				id, uploadedInputStream, resourceType);
 	}
 
-	private Response uploadFile(String accept, String headerAuthToken, String queryAuthToken,
+	private Response uploadResource(String accept, String headerAuthToken, String queryAuthToken,
 			String type, String id, InputStream uploadedInputStream, String resourceType) {
 		// String fileName = fileDetail.getFileName();
 		String usedToken = getExistingTokenPreferHeader(headerAuthToken, queryAuthToken);
-		return uploadFileUsingAuthTokenWithStream(accept, usedToken, type, id, uploadedInputStream,
-				resourceType);
+		return uploadResourceUsingAuthTokenWithStream(accept, usedToken, type, id,
+				uploadedInputStream, resourceType);
 	}
 
-	Response uploadFileUsingAuthTokenWithStream(String accept, String authToken, String type,
+	Response uploadResourceUsingAuthTokenWithStream(String accept, String authToken, String type,
 			String id, InputStream uploadedInputStream, String resourceType) {
 		try {
-			return tryUploadFile(accept, authToken, type, id, uploadedInputStream, resourceType);
+			return tryUploadResource(accept, authToken, type, id, uploadedInputStream,
+					resourceType);
 		} catch (Exception error) {
 			return handleError(authToken, error, "Some error");
 		}
 	}
 
-	private Response tryUploadFile(String accept, String authToken, String type, String id,
+	private Response tryUploadResource(String accept, String authToken, String type, String id,
 			InputStream inputStream, String resourceType) {
 		DataRecord updatedRecord = SpiderInstanceProvider.getUploader().upload(authToken, type, id,
 				inputStream, resourceType);

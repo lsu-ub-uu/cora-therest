@@ -1146,7 +1146,7 @@ public class RecordEndpointTest {
 		InputStream stream = createUplodedInputStream();
 		FormDataContentDisposition formDataContentDisposition = createformDataContent();
 
-		response = recordEndpoint.uploadFileJson(headerAuthToken, queryAuthToken, "image",
+		response = recordEndpoint.uploadResourceJson(headerAuthToken, queryAuthToken, "image",
 				"image:123456789", stream, SOME_RESOUTCE_TYPE);
 
 		SpiderUploaderSpy spiderUploaderSpy = spiderInstanceFactorySpy.spiderUploaderSpy;
@@ -1170,8 +1170,8 @@ public class RecordEndpointTest {
 		InputStream stream = createUplodedInputStream();
 		FormDataContentDisposition formDataContentDisposition = createformDataContent();
 
-		response = recordEndpoint.uploadFileJson(AUTH_TOKEN, AUTH_TOKEN, "image", "image:123456789",
-				stream, SOME_RESOUTCE_TYPE);
+		response = recordEndpoint.uploadResourceJson(AUTH_TOKEN, AUTH_TOKEN, "image",
+				"image:123456789", stream, SOME_RESOUTCE_TYPE);
 
 		assertResponseStatusIs(Response.Status.OK);
 	}
@@ -1181,8 +1181,8 @@ public class RecordEndpointTest {
 		InputStream stream = createUplodedInputStream();
 		// FormDataContentDisposition formDataContentDisposition = createformDataContent();
 
-		response = recordEndpoint.uploadFileXml(AUTH_TOKEN, AUTH_TOKEN, "image", "image:123456789",
-				stream, SOME_RESOUTCE_TYPE);
+		response = recordEndpoint.uploadResourceXml(AUTH_TOKEN, AUTH_TOKEN, "image",
+				"image:123456789", stream, SOME_RESOUTCE_TYPE);
 		// stream, formDataContentDisposition);
 		DataRecord uploadedFile = (DataRecord) spiderInstanceFactorySpy.spiderUploaderSpy.MCR
 				.getReturnValue("upload", 0);
@@ -1194,10 +1194,10 @@ public class RecordEndpointTest {
 	}
 
 	@Test
-	public void testAnnotationsForUploadFileJson() throws Exception {
+	public void testAnnotationsForUploadResourceJson() throws Exception {
 		Class<?>[] parameters = { String.class, String.class, String.class, String.class,
 				InputStream.class, String.class };
-		Method method = getMethodWithMethodName("uploadFileJson", parameters);
+		Method method = getMethodWithMethodName("uploadResourceJson", parameters);
 		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
 
 		assertHttpMethodAndPathAnnotation(method, "POST", "{type}/{id}/{resourceType}");
@@ -1214,10 +1214,10 @@ public class RecordEndpointTest {
 	}
 
 	@Test
-	public void testAnnotationsForUploadFileXml() throws Exception {
+	public void testAnnotationsForUploadResourceXml() throws Exception {
 		Class<?>[] parameters = { String.class, String.class, String.class, String.class,
 				InputStream.class, String.class };
-		Method method = getMethodWithMethodName("uploadFileXml", parameters);
+		Method method = getMethodWithMethodName("uploadResourceXml", parameters);
 		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
 
 		assertHttpMethodAndPathAnnotation(method, "POST", "{type}/{id}/{resourceType}");
@@ -1244,7 +1244,7 @@ public class RecordEndpointTest {
 	public void testUploadUnauthorized() {
 		InputStream stream = createUplodedInputStream();
 
-		response = recordEndpoint.uploadFileUsingAuthTokenWithStream(
+		response = recordEndpoint.uploadResourceUsingAuthTokenWithStream(
 				APPLICATION_VND_UUB_RECORD_JSON, DUMMY_NON_AUTHORIZED_TOKEN, "image",
 				"image:123456789", stream, SOME_RESOUTCE_TYPE);
 
@@ -1257,7 +1257,7 @@ public class RecordEndpointTest {
 
 		FormDataContentDisposition formDataContentDisposition = createformDataContent();
 
-		response = recordEndpoint.uploadFileJson(AUTH_TOKEN, AUTH_TOKEN, "image",
+		response = recordEndpoint.uploadResourceJson(AUTH_TOKEN, AUTH_TOKEN, "image",
 				"image:123456789_NOT_FOUND", stream, SOME_RESOUTCE_TYPE);
 
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
@@ -1269,8 +1269,8 @@ public class RecordEndpointTest {
 
 		FormDataContentDisposition formDataContentDisposition = createformDataContent();
 
-		response = recordEndpoint.uploadFileJson(AUTH_TOKEN, AUTH_TOKEN, "not_child_of_binary_type",
-				"image:123456789", stream, SOME_RESOUTCE_TYPE);
+		response = recordEndpoint.uploadResourceJson(AUTH_TOKEN, AUTH_TOKEN,
+				"not_child_of_binary_type", "image:123456789", stream, SOME_RESOUTCE_TYPE);
 
 		assertResponseStatusIs(Response.Status.METHOD_NOT_ALLOWED);
 		assertResponseContentTypeIs(TEXT_PLAIN);
@@ -1283,8 +1283,8 @@ public class RecordEndpointTest {
 		builder.fileName("adele1.png");
 		FormDataContentDisposition formDataContentDisposition = builder.build();
 
-		response = recordEndpoint.uploadFileJson(AUTH_TOKEN, AUTH_TOKEN, "image", "image:123456789",
-				null, SOME_RESOUTCE_TYPE);
+		response = recordEndpoint.uploadResourceJson(AUTH_TOKEN, AUTH_TOKEN, "image",
+				"image:123456789", null, SOME_RESOUTCE_TYPE);
 
 		assertResponseStatusIs(Response.Status.BAD_REQUEST);
 		assertResponseContentTypeIs(TEXT_PLAIN);
@@ -1301,7 +1301,7 @@ public class RecordEndpointTest {
 	private void expectTokenForDownloadToPreferablyBeHeaderThanQuery(String headerAuthToken,
 			String queryAuthToken, String authTokenExpected) {
 
-		response = recordEndpoint.downloadFile(headerAuthToken, queryAuthToken, "image",
+		response = recordEndpoint.downloadResource(headerAuthToken, queryAuthToken, "image",
 				"image:123456789", "master");
 
 		SpiderDownloaderSpy spiderDownloaderSpy = spiderInstanceFactorySpy.spiderDownloaderSpy;
@@ -1310,15 +1310,15 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testDownloadUnauthorized() throws IOException {
-		response = recordEndpoint.downloadFileUsingAuthTokenWithStream(DUMMY_NON_AUTHORIZED_TOKEN,
-				"image", "image:123456789", "master");
+		response = recordEndpoint.downloadResourceUsingAuthTokenWithStream(
+				DUMMY_NON_AUTHORIZED_TOKEN, "image", "image:123456789", SOME_RESOUTCE_TYPE);
 		assertResponseStatusIs(Response.Status.FORBIDDEN);
 	}
 
 	@Test
 	public void testDownload() throws IOException {
-		response = recordEndpoint.downloadFile(AUTH_TOKEN, AUTH_TOKEN, "image", "image:123456789",
-				"master");
+		response = recordEndpoint.downloadResource(AUTH_TOKEN, AUTH_TOKEN, "image",
+				"image:123456789", "master");
 		String contentType = response.getHeaderString("Content-Type");
 		/*
 		 * when we detect and store type of file in spider check it like this
@@ -1347,11 +1347,11 @@ public class RecordEndpointTest {
 	}
 
 	@Test
-	public void testAnnotationsForDownloadFile() throws Exception {
-		Method method = getMethodWithMethodName("downloadFile", 5);
+	public void testAnnotationsForDownloadResource() throws Exception {
+		Method method = getMethodWithMethodName("downloadResource", 5);
 		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
 
-		assertHttpMethodAndPathAnnotation(method, "GET", "{type}/{id}/{streamId}");
+		assertHttpMethodAndPathAnnotation(method, "GET", "{type}/{id}/{resourceType}");
 
 		assertAuthTokenAnnotation(parameterAnnotations, 0);
 		assertTypeAndIdAnnotation(parameterAnnotations, 2);
@@ -1361,27 +1361,27 @@ public class RecordEndpointTest {
 
 	private void assertStreamIdAnnotation(Annotation[][] parameterAnnotations) {
 		PathParam streamIdParameter = (PathParam) parameterAnnotations[4][0];
-		assertEquals(streamIdParameter.value(), "streamId");
+		assertEquals(streamIdParameter.value(), "resourceType");
 	}
 
 	@Test
 	public void testDownloadNotFound() throws IOException {
-		response = recordEndpoint.downloadFile(AUTH_TOKEN, AUTH_TOKEN, "image",
+		response = recordEndpoint.downloadResource(AUTH_TOKEN, AUTH_TOKEN, "image",
 				"image:123456789_NOT_FOUND", "master");
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
 	}
 
 	@Test
 	public void testDownloadNotAChildOfBinary() throws IOException {
-		response = recordEndpoint.downloadFile(AUTH_TOKEN, AUTH_TOKEN, "not_child_of_binary_type",
-				"image:123456789", "master");
+		response = recordEndpoint.downloadResource(AUTH_TOKEN, AUTH_TOKEN,
+				"not_child_of_binary_type", "image:123456789", "master");
 		assertResponseStatusIs(Response.Status.METHOD_NOT_ALLOWED);
 	}
 
 	@Test
 	public void testDownloadBadRequest() throws IOException {
-		response = recordEndpoint.downloadFile(AUTH_TOKEN, AUTH_TOKEN, "image", "image:123456789",
-				"");
+		response = recordEndpoint.downloadResource(AUTH_TOKEN, AUTH_TOKEN, "image",
+				"image:123456789", "");
 		assertResponseStatusIs(Response.Status.BAD_REQUEST);
 		assertResponseContentTypeIs(TEXT_PLAIN);
 	}
