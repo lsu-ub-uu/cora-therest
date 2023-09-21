@@ -42,8 +42,7 @@ public class SpiderUploaderSpy implements Uploader {
 	public String fileName;
 
 	@Override
-	public DataRecord upload(String authToken, String type, String id, InputStream inputStream,
-			String fileName) {
+	public DataRecord upload(String authToken, String type, String id, InputStream inputStream, String resourceType) {
 		MCR.addCall("authToken", authToken, "type", type, "id", id, "inputStream", inputStream,
 				"fileName", fileName);
 		this.authToken = authToken;
@@ -67,7 +66,7 @@ public class SpiderUploaderSpy implements Uploader {
 			throw new AuthorizationException("not authorized");
 		}
 		if ("image:123456789_NOT_FOUND".equals(id)) {
-			throw new RecordNotFoundException("No record exists with recordId: " + id);
+			throw RecordNotFoundException.withMessage("No record exists with recordId: " + id);
 		}
 
 		if ("not_child_of_binary_type".equals(type)) {

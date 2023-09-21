@@ -59,7 +59,7 @@ public class SpiderRecordSearcherSpy implements RecordSearcher {
 			throw new AuthorizationException("User not authorized");
 		}
 		if ("aSearchId_NOT_FOUND".equals(searchId)) {
-			throw new RecordNotFoundException("Record does not exist");
+			throw RecordNotFoundException.withMessage("Record does not exist");
 		}
 		if ("aSearchId_INVALID_DATA".equals(searchId)) {
 			throw new DataException("SearchData is invalid");

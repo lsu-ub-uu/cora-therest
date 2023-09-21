@@ -36,7 +36,7 @@ public class SpiderRecordValidatorSpy implements RecordValidator {
 		}
 		// if ("recordType_NON_EXISTING".equals(recordToValidate.getNameInData())) {
 		if (throwRecordNotFoundException) {
-			throw new RecordNotFoundException("no record exist with type " + recordType);
+			throw RecordNotFoundException.withMessage("no record exist with type " + recordType);
 		}
 		DataGroup validationResult = createValidationResult(recordType);
 

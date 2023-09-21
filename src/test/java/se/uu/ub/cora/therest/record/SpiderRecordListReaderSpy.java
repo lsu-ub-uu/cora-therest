@@ -50,7 +50,7 @@ public class SpiderRecordListReaderSpy implements RecordListReader {
 
 	private void possiblyThrowException(String authToken, String type) {
 		if ("place_NOT_FOUND".equals(type)) {
-			throw new RecordNotFoundException("Record not found");
+			throw RecordNotFoundException.withMessage("Record not found");
 		}
 		if ("dummyNonAuthorizedToken".equals(authToken) || authToken == null) {
 			throw new AuthorizationException("not authorized");

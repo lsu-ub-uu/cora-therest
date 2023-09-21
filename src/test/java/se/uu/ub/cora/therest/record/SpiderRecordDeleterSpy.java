@@ -39,14 +39,14 @@ public class SpiderRecordDeleterSpy implements RecordDeleter {
 	}
 
 	private void possiblyThrowException(String authToken, String id) {
-		if("dummyNonAuthorizedToken".equals(authToken)){
+		if ("dummyNonAuthorizedToken".equals(authToken)) {
 			throw new AuthorizationException("not authorized");
 		}
 		if ("place:0001".equals(id)) {
 			throw new MisuseException("Deleting record: " + id
 					+ " is not allowed since other records are linking to it");
-		}else if ("place:0001_NOT_FOUND".equals(id)) {
-			throw new RecordNotFoundException("no record exist with id " + id);
+		} else if ("place:0001_NOT_FOUND".equals(id)) {
+			throw RecordNotFoundException.withMessage("no record exist with id " + id);
 		}
 	}
 
