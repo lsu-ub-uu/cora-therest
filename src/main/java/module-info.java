@@ -12,6 +12,7 @@ module se.uu.ub.cora.therest {
 	requires se.uu.ub.cora.data;
 	requires se.uu.ub.cora.converter;
 	requires se.uu.ub.cora.initialize;
+	requires se.uu.ub.cora.contentanalyzer;
 
 	uses se.uu.ub.cora.storage.RecordStorageProvider;
 	uses se.uu.ub.cora.storage.StreamStorageProvider;
