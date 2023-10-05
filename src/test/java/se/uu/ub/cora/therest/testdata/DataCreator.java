@@ -313,9 +313,6 @@ public final class DataCreator {
 
 	public static DataResourceLink createResourceLinkMaster() {
 		DataResourceLink master = new DataResourceLinkSpy("master");
-		master.setStreamId("aStreamId");
-		master.setFileName("aFilename");
-		master.setFileSize("1234");
 		master.setMimeType("application/tiff");
 		master.addAction(Action.READ);
 		return master;
