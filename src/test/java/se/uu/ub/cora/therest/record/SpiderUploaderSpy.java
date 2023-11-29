@@ -23,9 +23,9 @@ import java.io.InputStream;
 
 import se.uu.ub.cora.data.DataRecord;
 import se.uu.ub.cora.spider.authorization.AuthorizationException;
+import se.uu.ub.cora.spider.binary.Uploader;
 import se.uu.ub.cora.spider.data.DataMissingException;
 import se.uu.ub.cora.spider.record.MisuseException;
-import se.uu.ub.cora.spider.record.Uploader;
 import se.uu.ub.cora.storage.RecordNotFoundException;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 import se.uu.ub.cora.therest.coradata.DataRecordSpy;
@@ -42,14 +42,14 @@ public class SpiderUploaderSpy implements Uploader {
 	public String fileName;
 
 	@Override
-	public DataRecord upload(String authToken, String type, String id, InputStream inputStream, String resourceType) {
+	public DataRecord upload(String authToken, String type, String id, InputStream inputStream,
+			String represntation) {
 		MCR.addCall("authToken", authToken, "type", type, "id", id, "inputStream", inputStream,
-				"fileName", fileName);
+				"represntation", represntation);
 		this.authToken = authToken;
 		this.type = type;
 		this.id = id;
 		this.inputStream = inputStream;
-		this.fileName = fileName;
 
 		possiblyThrowException(authToken, type, id, inputStream);
 		DataRecordSpy dataRecordSpy = new DataRecordSpy(

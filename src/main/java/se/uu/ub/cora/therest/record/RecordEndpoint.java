@@ -613,7 +613,6 @@ public class RecordEndpoint {
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			@PathParam("id") String id, @FormDataParam("file") InputStream uploadedInputStream,
 			@PathParam("resourceType") String resourceType) {
-		// @FormDataParam("file") FormDataContentDisposition fileDetail) {
 		return uploadResource(APPLICATION_VND_UUB_RECORD_JSON, headerAuthToken, queryAuthToken,
 				type, id, uploadedInputStream, resourceType);
 	}
@@ -626,14 +625,12 @@ public class RecordEndpoint {
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			@PathParam("id") String id, @FormDataParam("file") InputStream uploadedInputStream,
 			@PathParam("resourceType") String resourceType) {
-		// @FormDataParam("file") FormDataContentDisposition fileDetail) {
 		return uploadResource(APPLICATION_VND_UUB_RECORD_XML, headerAuthToken, queryAuthToken, type,
 				id, uploadedInputStream, resourceType);
 	}
 
 	private Response uploadResource(String accept, String headerAuthToken, String queryAuthToken,
 			String type, String id, InputStream uploadedInputStream, String resourceType) {
-		// String fileName = fileDetail.getFileName();
 		String usedToken = getExistingTokenPreferHeader(headerAuthToken, queryAuthToken);
 		return uploadResourceUsingAuthTokenWithStream(accept, usedToken, type, id,
 				uploadedInputStream, resourceType);
@@ -645,7 +642,8 @@ public class RecordEndpoint {
 			return tryUploadResource(accept, authToken, type, id, uploadedInputStream,
 					resourceType);
 		} catch (Exception error) {
-			return handleError(authToken, error, "Some error");
+			return handleError(authToken, error,
+					"An error has ocurred while uploading a resource :" + error.getMessage());
 		}
 	}
 

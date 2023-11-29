@@ -23,9 +23,9 @@ import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 
 import se.uu.ub.cora.spider.authorization.AuthorizationException;
+import se.uu.ub.cora.spider.binary.Downloader;
 import se.uu.ub.cora.spider.data.DataMissingException;
 import se.uu.ub.cora.spider.data.ResourceInputStream;
-import se.uu.ub.cora.spider.record.Downloader;
 import se.uu.ub.cora.spider.record.MisuseException;
 import se.uu.ub.cora.storage.RecordNotFoundException;
 
@@ -34,18 +34,20 @@ public class SpiderDownloaderSpy implements Downloader {
 	public String authToken;
 	public String type;
 	public String id;
-	public String resource;
+	public String representation;
 
 	@Override
-	public ResourceInputStream download(String authToken, String type, String id, String resourceType) {
+	public ResourceInputStream download(String authToken, String type, String id,
+			String representation) {
 		this.authToken = authToken;
 		this.type = type;
 		this.id = id;
-		this.resource = resourceType;
+		this.representation = representation;
 
-		possiblyThrowException(authToken, type, id, resourceType);
+		possiblyThrowException(authToken, type, id, representation);
 
-		return ResourceInputStream.withNameSizeInputStream("someFile", 12, "application/octet-stream",
+		return ResourceInputStream.withNameSizeInputStream("someFile", 12,
+				"application/octet-stream",
 				new ByteArrayInputStream("a string out".getBytes(StandardCharsets.UTF_8)));
 	}
 
