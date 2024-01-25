@@ -54,7 +54,7 @@
 		<messaging.version>3.0-SNAPSHOT</messaging.version>
 		<testutils.version>1.11.0</testutils.version>
 		<converter.version>3.8.0</converter.version>
-		<xmlconverter.version>2.9.0</xmlconverter.version>
+		<xmlconverter.version>2.10-SNAPSHOT</xmlconverter.version>
 		<contentanalyzer.version>1.0.0</contentanalyzer.version>
 	</properties>
 	
@@ -213,7 +213,7 @@
 			<groupId>se.uu.ub.cora</groupId>
 			<artifactId>xmlconverter</artifactId>
 			<version>${xmlconverter.version}</version>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>se.uu.ub.cora</groupId>
