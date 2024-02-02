@@ -255,7 +255,7 @@ public class RecordEndpoint {
 
 		if (error instanceof RecordNotFoundException) {
 			return Response.status(Response.Status.NOT_FOUND)
-					.entity(errorFromCaller + " Not found.")
+					.entity(errorFromCaller + error.getMessage())
 					.header(HttpHeaders.CONTENT_TYPE, TEXT_PLAIN_CHARSET_UTF_8).build();
 		}
 

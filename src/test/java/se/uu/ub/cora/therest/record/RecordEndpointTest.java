@@ -319,7 +319,7 @@ public class RecordEndpointTest {
 				jsonFilter);
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
 		assertEquals(response.getEntity(),
-				"Error reading records with recordType: place_NOT_FOUND. Not found.");
+				"Error reading records with recordType: place_NOT_FOUND.Record not found");
 	}
 
 	@Test
@@ -535,7 +535,7 @@ public class RecordEndpointTest {
 				"place:0001_NOT_FOUND");
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
 		assertEquals(response.getEntity(), "Error reading record with recordType: " + PLACE
-				+ " and recordId: place:0001_NOT_FOUND. Not found.");
+				+ " and recordId: place:0001_NOT_FOUND.no record exsist with id place:0001_NOT_FOUND");
 	}
 
 	@Test
@@ -874,8 +874,9 @@ public class RecordEndpointTest {
 				PLACE_0001 + "_NOT_FOUND", defaultJson);
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
 		assertResponseContentTypeIs(TEXT_PLAIN);
-		assertEquals(response.getEntity(), "Error updating record with recordType: " + PLACE
-				+ " and recordId: " + PLACE_0001 + "_NOT_FOUND. Not found.");
+		assertEquals(response.getEntity(),
+				"Error updating record with recordType: " + PLACE + " and recordId: " + PLACE_0001
+						+ "_NOT_FOUND.no record exist with id place:0001_NOT_FOUND");
 	}
 
 	@Test
@@ -884,8 +885,9 @@ public class RecordEndpointTest {
 				PLACE_0001, defaultJson);
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
 		assertResponseContentTypeIs(TEXT_PLAIN);
-		assertEquals(response.getEntity(), "Error updating record with recordType: " + PLACE
-				+ "_NOT_FOUND and recordId: " + PLACE_0001 + ". Not found.");
+		assertEquals(response.getEntity(),
+				"Error updating record with recordType: " + PLACE + "_NOT_FOUND and recordId: "
+						+ PLACE_0001 + ".no record exist with type place_NOT_FOUND");
 	}
 
 	@Test
@@ -1518,7 +1520,7 @@ public class RecordEndpointTest {
 				defaultJson);
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
 		assertEquals(response.getEntity(),
-				"Error searching record with searchId: aSearchId_NOT_FOUND. Not found.");
+				"Error searching record with searchId: aSearchId_NOT_FOUND.Record does not exist");
 	}
 
 	@Test
