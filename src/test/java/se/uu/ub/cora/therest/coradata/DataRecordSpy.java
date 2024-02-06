@@ -130,4 +130,16 @@ public class DataRecordSpy implements DataRecord {
 		return null;
 	}
 
+	@Override
+	public void addProtocol(String protocol) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public Set<String> getProtocols() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2016, 2018, 2021, 2022 Uppsala University Library
+ * Copyright 2015, 2016, 2018, 2021, 2022, 2024 Uppsala University Library
  * Copyright 2016 Olov McKie
  *
  * This file is part of Cora.
@@ -53,6 +53,7 @@ import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import se.uu.ub.cora.converter.ConverterProvider;
+import se.uu.ub.cora.converter.ExternalUrls;
 import se.uu.ub.cora.data.Convertible;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataList;
@@ -102,6 +103,7 @@ public class RecordEndpointTest {
 	private ConverterFactorySpy converterFactorySpy;
 	private String standardBaseUrlHttp = "http://cora.epc.ub.uu.se/systemone/rest/record/";
 	private String standardBaseUrlHttps = "https://cora.epc.ub.uu.se/systemone/rest/record/";
+	private String iiifUrl = "someiiifUrl";
 
 	@BeforeMethod
 	public void beforeMethod() {
@@ -117,6 +119,7 @@ public class RecordEndpointTest {
 		jsonToDataConverterFactorySpy = new JsonToDataConverterFactorySpy();
 		JsonToDataConverterProvider.setJsonToDataConverterFactory(jsonToDataConverterFactorySpy);
 		initInfo.put("theRestPublicPathToSystem", "/systemone/rest/");
+		initInfo.put("iiifBaseUrl", iiifUrl);
 		spiderInstanceFactorySpy = new SpiderInstanceFactorySpy();
 		SpiderInstanceProvider.setSpiderInstanceFactory(spiderInstanceFactorySpy);
 		SpiderInstanceProvider.setInitInfo(initInfo);
@@ -149,8 +152,16 @@ public class RecordEndpointTest {
 		DataToJsonConverterFactorySpy converterFactory = (DataToJsonConverterFactorySpy) converterFactoryCreatorSpy.MCR
 				.getReturnValue("createFactory", 0);
 
-		converterFactory.MCR.assertParameters("factorUsingBaseUrlAndConvertible", 0,
+		assertEquals(getBaseUrlsFromFactorUsingConvertibleAndExternalUrls(converterFactory),
 				standardBaseUrlHttps);
+	}
+
+	private String getBaseUrlsFromFactorUsingConvertibleAndExternalUrls(
+			DataToJsonConverterFactorySpy converterFactory) {
+		se.uu.ub.cora.data.converter.ExternalUrls externalUrls = (se.uu.ub.cora.data.converter.ExternalUrls) converterFactory.MCR
+				.getValueForMethodNameAndCallNumberAndParameterName(
+						"factorUsingConvertibleAndExternalUrls", 0, "externalUrls");
+		return externalUrls.getBaseUrl();
 	}
 
 	@Test
@@ -164,7 +175,7 @@ public class RecordEndpointTest {
 		DataToJsonConverterFactorySpy converterFactory = (DataToJsonConverterFactorySpy) converterFactoryCreatorSpy.MCR
 				.getReturnValue("createFactory", 0);
 
-		converterFactory.MCR.assertParameters("factorUsingBaseUrlAndConvertible", 0,
+		assertEquals(getBaseUrlsFromFactorUsingConvertibleAndExternalUrls(converterFactory),
 				standardBaseUrlHttps);
 	}
 
@@ -177,7 +188,7 @@ public class RecordEndpointTest {
 		DataToJsonConverterFactorySpy converterFactory = (DataToJsonConverterFactorySpy) converterFactoryCreatorSpy.MCR
 				.getReturnValue("createFactory", 0);
 
-		converterFactory.MCR.assertParameters("factorUsingBaseUrlAndConvertible", 0,
+		assertEquals(getBaseUrlsFromFactorUsingConvertibleAndExternalUrls(converterFactory),
 				standardBaseUrlHttp);
 	}
 
@@ -484,11 +495,16 @@ public class RecordEndpointTest {
 		DataToJsonConverterFactorySpy converterFactory = (DataToJsonConverterFactorySpy) converterFactoryCreatorSpy.MCR
 				.getReturnValue("createFactory", 0);
 
-		converterFactory.MCR.assertParameters("factorUsingBaseUrlAndConvertible", 0,
-				standardBaseUrlHttp, convertible);
+		converterFactory.MCR.assertParameters("factorUsingConvertibleAndExternalUrls", 0,
+				convertible);
+		se.uu.ub.cora.data.converter.ExternalUrls externalUrls = (se.uu.ub.cora.data.converter.ExternalUrls) converterFactory.MCR
+				.getValueForMethodNameAndCallNumberAndParameterName(
+						"factorUsingConvertibleAndExternalUrls", 0, "externalUrls");
+		assertEquals(externalUrls.getBaseUrl(), standardBaseUrlHttp);
+		assertEquals(externalUrls.getIfffUrl(), iiifUrl);
 
 		DataToJsonConverterSpy converterSpy = (DataToJsonConverterSpy) converterFactory.MCR
-				.getReturnValue("factorUsingBaseUrlAndConvertible", 0);
+				.getReturnValue("factorUsingConvertibleAndExternalUrls", 0);
 
 		var entity = response.getEntity();
 		converterSpy.MCR.assertReturn("toJsonCompactFormat", 0, entity);
@@ -508,8 +524,12 @@ public class RecordEndpointTest {
 		ExternallyConvertibleToStringConverterSpy dataToXmlConverter = (ExternallyConvertibleToStringConverterSpy) converterFactorySpy.MCR
 				.getReturnValue("factorExternallyConvertableToStringConverter", 0);
 
-		dataToXmlConverter.MCR.assertParameters("convertWithLinks", 0, convertible,
-				standardBaseUrlHttp);
+		dataToXmlConverter.MCR.assertParameters("convertWithLinks", 0, convertible);
+		ExternalUrls externalUrls = (ExternalUrls) dataToXmlConverter.MCR
+				.getValueForMethodNameAndCallNumberAndParameterName("convertWithLinks", 0,
+						"externalUrls");
+		assertEquals(externalUrls.getBaseUrl(), standardBaseUrlHttp);
+		assertEquals(externalUrls.getIfffUrl(), iiifUrl);
 
 		var entity = response.getEntity();
 		dataToXmlConverter.MCR.assertReturn("convertWithLinks", 0, entity);
