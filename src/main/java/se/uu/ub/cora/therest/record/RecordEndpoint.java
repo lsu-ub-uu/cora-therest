@@ -87,7 +87,6 @@ public class RecordEndpoint {
 	private static final String APPLICATION_VND_UUB_RECORD_JSON = "application/vnd.uub.record+json";
 	private static final String URL_DELIMITER = "/";
 	private static final int AFTERHTTP = 10;
-	private String baseUrl;
 	HttpServletRequest request;
 	private Logger log = LoggerProvider.getLoggerForClass(RecordEndpoint.class);
 
@@ -97,20 +96,19 @@ public class RecordEndpoint {
 
 	public RecordEndpoint(@Context HttpServletRequest req) {
 		request = req;
-		baseUrl = getBaseURLFromURI();
+		String baseUrl = getBaseURLFromURI();
 
-		setExternalUrlsForJsonConverter();
-		setExternalUrlsForXmlConverter();
-
+		setExternalUrlsForJsonConverter(baseUrl);
+		setExternalUrlsForXmlConverter(baseUrl);
 	}
 
-	private void setExternalUrlsForJsonConverter() {
+	private void setExternalUrlsForJsonConverter(String baseUrl) {
 		externalUrlsForJson = new se.uu.ub.cora.data.converter.ExternalUrls();
 		externalUrlsForJson.setBaseUrl(baseUrl);
 		externalUrlsForJson.setIfffUrl(SpiderInstanceProvider.getInitInfo().get("iiifBaseUrl"));
 	}
 
-	private void setExternalUrlsForXmlConverter() {
+	private void setExternalUrlsForXmlConverter(String baseUrl) {
 		externalUrls = new ExternalUrls();
 		externalUrls.setBaseUrl(baseUrl);
 		externalUrls.setIfffUrl(SpiderInstanceProvider.getInitInfo().get("iiifBaseUrl"));
