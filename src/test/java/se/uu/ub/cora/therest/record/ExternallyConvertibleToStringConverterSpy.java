@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Uppsala University Library
+ * Copyright 2022, 2024 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -18,6 +18,7 @@
  */
 package se.uu.ub.cora.therest.record;
 
+import se.uu.ub.cora.converter.ExternalUrls;
 import se.uu.ub.cora.converter.ExternallyConvertibleToStringConverter;
 import se.uu.ub.cora.data.ExternallyConvertible;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
@@ -35,8 +36,9 @@ public class ExternallyConvertibleToStringConverterSpy
 	}
 
 	@Override
-	public String convertWithLinks(ExternallyConvertible externallyConvertible, String baseUrl) {
-		MCR.addCall("externallyConvertible", externallyConvertible, "baseUrl", baseUrl);
+	public String convertWithLinks(ExternallyConvertible externallyConvertible,
+			ExternalUrls externalUrls) {
+		MCR.addCall("externallyConvertible", externallyConvertible, "externalUrls", externalUrls);
 		String out = "fake string from ExternallyConvertibleToStringConverterSpy";
 		MCR.addReturned(out);
 		return out;

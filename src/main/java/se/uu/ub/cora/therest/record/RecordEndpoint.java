@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2016, 2018, 2021 Uppsala University Library
+ * Copyright 2015, 2016, 2018, 2021, 2024 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -42,6 +42,7 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import se.uu.ub.cora.converter.ConverterException;
 import se.uu.ub.cora.converter.ConverterProvider;
+import se.uu.ub.cora.converter.ExternalUrls;
 import se.uu.ub.cora.converter.ExternallyConvertibleToStringConverter;
 import se.uu.ub.cora.converter.StringToExternallyConvertibleConverter;
 import se.uu.ub.cora.data.Convertible;
@@ -86,15 +87,31 @@ public class RecordEndpoint {
 	private static final String APPLICATION_VND_UUB_RECORD_JSON = "application/vnd.uub.record+json";
 	private static final String URL_DELIMITER = "/";
 	private static final int AFTERHTTP = 10;
-	private String baseUrl;
 	HttpServletRequest request;
 	private Logger log = LoggerProvider.getLoggerForClass(RecordEndpoint.class);
 
 	private JsonParser jsonParser = new OrgJsonParser();
+	private ExternalUrls externalUrls;
+	private se.uu.ub.cora.data.converter.ExternalUrls externalUrlsForJson;
 
 	public RecordEndpoint(@Context HttpServletRequest req) {
 		request = req;
-		baseUrl = getBaseURLFromURI();
+		String baseUrl = getBaseURLFromURI();
+
+		setExternalUrlsForJsonConverter(baseUrl);
+		setExternalUrlsForXmlConverter(baseUrl);
+	}
+
+	private void setExternalUrlsForJsonConverter(String baseUrl) {
+		externalUrlsForJson = new se.uu.ub.cora.data.converter.ExternalUrls();
+		externalUrlsForJson.setBaseUrl(baseUrl);
+		externalUrlsForJson.setIfffUrl(SpiderInstanceProvider.getInitInfo().get("iiifBaseUrl"));
+	}
+
+	private void setExternalUrlsForXmlConverter(String baseUrl) {
+		externalUrls = new ExternalUrls();
+		externalUrls.setBaseUrl(baseUrl);
+		externalUrls.setIfffUrl(SpiderInstanceProvider.getInitInfo().get("iiifBaseUrl"));
 	}
 
 	private final String getBaseURLFromURI() {
@@ -234,7 +251,8 @@ public class RecordEndpoint {
 		DataToJsonConverterFactory dataToJsonConverterFactory = DataToJsonConverterProvider
 				.createImplementingFactory();
 		DataToJsonConverter converter = dataToJsonConverterFactory
-				.factorUsingBaseUrlAndConvertible(baseUrl, (Convertible) convertible);
+				.factorUsingConvertibleAndExternalUrls((Convertible) convertible,
+						externalUrlsForJson);
 		return converter.toJsonCompactFormat();
 	}
 
@@ -420,7 +438,8 @@ public class RecordEndpoint {
 	private String convertDataToXml(ExternallyConvertible convertible) {
 		ExternallyConvertibleToStringConverter convertibleToXmlConverter = ConverterProvider
 				.getExternallyConvertibleToStringConverter("xml");
-		return convertibleToXmlConverter.convertWithLinks(convertible, baseUrl);
+
+		return convertibleToXmlConverter.convertWithLinks(convertible, externalUrls);
 	}
 
 	/**
