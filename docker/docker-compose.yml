@@ -1,8 +1,0 @@
-version: '2'
-services:
-  therest-dev:
-    build: .
-    ports:
-      - "8080:8089"
-    volumes:
-      - /mnt/data/basicstorage:/mnt/data/basicstorage
