@@ -5,6 +5,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.core.Response;
 
+@Path("/")
 public class IiifEndpoint {
 
 	@GET
@@ -13,7 +14,7 @@ public class IiifEndpoint {
 			@PathParam("region") String region, @PathParam("size") String size,
 			@PathParam("rotation") String rotation, @PathParam("quality") String quality,
 			@PathParam("format") String format) {
-		return Response.status(Response.Status.OK).build();
+		return Response.status(418).build();
 	}
 
 }
