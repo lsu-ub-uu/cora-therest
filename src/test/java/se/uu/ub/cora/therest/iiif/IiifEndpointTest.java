@@ -13,7 +13,7 @@ import org.testng.annotations.Test;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.core.Response;
-import se.uu.ub.cora.spider.iiif.IiifImageReader;
+import se.uu.ub.cora.spider.binary.iiif.IiifImageReader;
 
 public class IiifEndpointTest {
 	IiifEndpoint endpoint;
