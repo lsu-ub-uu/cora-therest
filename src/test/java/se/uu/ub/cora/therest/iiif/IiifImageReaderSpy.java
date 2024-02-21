@@ -1,11 +1,11 @@
 package se.uu.ub.cora.therest.iiif;
 
-import se.uu.ub.cora.spider.binary.iiif.IiifImageReader;
+import se.uu.ub.cora.spider.binary.iiif.IiifReader;
 import se.uu.ub.cora.spider.data.ResourceInputStream;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 import se.uu.ub.cora.testutils.mrv.MethodReturnValues;
 
-public class IiifImageReaderSpy implements IiifImageReader {
+public class IiifImageReaderSpy implements IiifReader {
 
 	public MethodCallRecorder MCR = new MethodCallRecorder();
 	public MethodReturnValues MRV = new MethodReturnValues();

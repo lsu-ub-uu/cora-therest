@@ -55,7 +55,8 @@
 		<testutils.version>1.11.0</testutils.version>
 		<converter.version>4.0-SNAPSHOT</converter.version>
 		<xmlconverter.version>3.0-SNAPSHOT</xmlconverter.version>
-		<contentanalyzer.version>1.0.0</contentanalyzer.version>
+<!--		<contentanalyzer.version>1.0.0</contentanalyzer.version>-->
+		<binary.version>2.0-SNAPSHOT</binary.version>
 	</properties>
 	
 	<scm>
@@ -218,7 +219,7 @@
 		<dependency>
 			<groupId>se.uu.ub.cora</groupId>
 			<artifactId>contentanalyzer</artifactId>
-			<version>${contentanalyzer.version}</version>
+			<version>${binary.version}</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>

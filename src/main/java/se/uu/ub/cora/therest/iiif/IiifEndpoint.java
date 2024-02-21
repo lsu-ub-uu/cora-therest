@@ -45,7 +45,7 @@ public class IiifEndpoint {
 			@PathParam("region") String region, @PathParam("size") String size,
 			@PathParam("rotation") String rotation, @PathParam("quality") String quality,
 			@PathParam("format") String format) {
-
+		// SpiderInstanceProvider.getIiifReader();
 		return Response.status(418).build();
 	}
 
