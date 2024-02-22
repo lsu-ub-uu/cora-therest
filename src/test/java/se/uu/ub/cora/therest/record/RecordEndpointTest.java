@@ -52,12 +52,13 @@ import se.uu.ub.cora.data.converter.JsonToDataConverterProvider;
 import se.uu.ub.cora.json.parser.JsonValue;
 import se.uu.ub.cora.json.parser.org.OrgJsonParser;
 import se.uu.ub.cora.logger.LoggerProvider;
+import se.uu.ub.cora.logger.spies.LoggerFactorySpy;
+import se.uu.ub.cora.logger.spies.LoggerSpy;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
 import se.uu.ub.cora.therest.AnnotationTestHelper;
 import se.uu.ub.cora.therest.coradata.DataGroupSpy;
 import se.uu.ub.cora.therest.coradata.DataListSpy;
 import se.uu.ub.cora.therest.coradata.DataRecordSpy;
-import se.uu.ub.cora.therest.log.LoggerFactorySpy;
 
 public class RecordEndpointTest {
 	private static final String APPLICATION_VND_UUB_WORKORDER_XML_QS_0_9 = "application/vnd.uub.workorder+xml;qs=0.9";
@@ -85,7 +86,6 @@ public class RecordEndpointTest {
 	private HttpServletRequestSpy requestSpy;
 	private Map<String, String> initInfo = new HashMap<>();
 	private LoggerFactorySpy loggerFactorySpy;
-	private String testedClassName = "RecordEndpoint";
 
 	private String jsonToValidate = "{\"order\":{\"name\":\"validationOrder\",\"children\":[{\"name\":\"recordInfo\",\"children\":[{\"name\":\"dataDivider\",\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"system\"},{\"name\":\"linkedRecordId\",\"value\":\"testSystem\"}]}]},{\"name\":\"recordType\",\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"recordType\"},{\"name\":\"linkedRecordId\",\"value\":\"someRecordType\"}]},{\"name\":\"metadataToValidate\",\"value\":\"existing\"},{\"name\":\"validateLinks\",\"value\":\"false\"}]},\"record\":{\"name\":\"text\",\"children\":[{\"name\":\"recordInfo\",\"children\":[{\"name\":\"id\",\"value\":\"workOrderRecordIdTextVar2Text\"},{\"name\":\"dataDivider\",\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"system\"},{\"name\":\"linkedRecordId\",\"value\":\"cora\"}]}]},{\"name\":\"textPart\",\"children\":[{\"name\":\"text\",\"value\":\"Id på länkad post\"}],\"attributes\":{\"type\":\"default\",\"lang\":\"sv\"}},{\"name\":\"textPart\",\"children\":[{\"name\":\"text\",\"value\":\"Linked record id\"}],\"attributes\":{\"type\":\"alternative\",\"lang\":\"en\"}}]}}";
 	private String defaultJson = "{\"name\":\"someRecordType\",\"children\":[]}";
@@ -1032,16 +1032,19 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testCreateRecordUnexpectedError() {
-		assertEquals(loggerFactorySpy.getNoOfErrorExceptionsUsingClassName(testedClassName), 0);
 		response = recordEndpoint.createRecordJsonJson(AUTH_TOKEN, AUTH_TOKEN,
 				"place_unexpected_error", defaultJson);
+
 		assertResponseStatusIs(Response.Status.INTERNAL_SERVER_ERROR);
-		assertEquals(loggerFactorySpy.getNoOfErrorExceptionsUsingClassName(testedClassName), 1);
-		assertEquals(loggerFactorySpy.getErrorLogMessageUsingClassNameAndNo(testedClassName, 0),
+
+		LoggerSpy loggerSpy = (LoggerSpy) loggerFactorySpy.MCR.getReturnValue("factorForClass", 0);
+		loggerSpy.MCR.assertNumberOfCallsToMethod("logErrorUsingMessageAndException", 1);
+		loggerSpy.MCR.assertParameter("logErrorUsingMessageAndException", 0, "message",
 				"Error handling request: Some error");
-		Exception caughtException = loggerFactorySpy
-				.getErrorExceptionUsingClassNameAndNo(testedClassName, 0);
+		var caughtException = loggerSpy.MCR.getValueForMethodNameAndCallNumberAndParameterName(
+				"logErrorUsingMessageAndException", 0, "exception");
 		assertTrue(caughtException instanceof NullPointerException);
+
 	}
 
 	@Test

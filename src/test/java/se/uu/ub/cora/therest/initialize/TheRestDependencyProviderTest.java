@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2017, 2018, 2019, 2020 Uppsala University Library
+ * Copyright 2015, 2017, 2018, 2019, 2020, 2024 Uppsala University Library
  * Copyright 2017 Olov McKie
  *
  * This file is part of Cora.
@@ -34,6 +34,8 @@ import org.testng.annotations.Test;
 
 import se.uu.ub.cora.gatekeeperclient.authentication.AuthenticatorImp;
 import se.uu.ub.cora.logger.LoggerProvider;
+import se.uu.ub.cora.logger.spies.LoggerFactorySpy;
+import se.uu.ub.cora.logger.spies.LoggerSpy;
 import se.uu.ub.cora.search.RecordIndexer;
 import se.uu.ub.cora.search.RecordIndexerFactory;
 import se.uu.ub.cora.search.RecordSearch;
@@ -49,13 +51,11 @@ import se.uu.ub.cora.storage.RecordStorageProvider;
 import se.uu.ub.cora.storage.StreamStorageProvider;
 import se.uu.ub.cora.storage.idgenerator.RecordIdGeneratorProvider;
 import se.uu.ub.cora.storage.spies.RecordStorageInstanceProviderSpy;
-import se.uu.ub.cora.therest.log.LoggerFactorySpy;
 
 public class TheRestDependencyProviderTest {
 	private TheRestDependencyProvider dependencyProvider;
 	private Map<String, String> settings;
 	private LoggerFactorySpy loggerFactorySpy;
-	private String testedBaseClassName = "DependencyProviderAbstract";
 	private RecordStorageInstanceProviderSpy recordStorageInstanceProviderSpy = new RecordStorageInstanceProviderSpy();
 
 	@BeforeMethod
@@ -112,9 +112,10 @@ public class TheRestDependencyProviderTest {
 		assertTrue(thrownException instanceof SpiderInitializationException);
 		assertEquals(thrownException.getMessage(),
 				"InitInfo in TheRestDependencyProvider must contain: gatekeeperURL");
-		assertEquals(loggerFactorySpy.getNoOfFatalLogMessagesUsingClassName(testedBaseClassName),
-				1);
-		assertEquals(loggerFactorySpy.getFatalLogMessageUsingClassNameAndNo(testedBaseClassName, 0),
+
+		LoggerSpy loggerSpy = (LoggerSpy) loggerFactorySpy.MCR.getReturnValue("factorForClass", 1);
+		loggerSpy.MCR.assertNumberOfCallsToMethod("logFatalUsingMessage", 1);
+		loggerSpy.MCR.assertParameter("logFatalUsingMessage", 0, "message",
 				"InitInfo in TheRestDependencyProvider must contain: gatekeeperURL");
 	}
 
@@ -160,9 +161,10 @@ public class TheRestDependencyProviderTest {
 		assertTrue(thrownException instanceof SpiderInitializationException);
 		assertEquals(thrownException.getMessage(),
 				"InitInfo in TheRestDependencyProvider must contain: solrURL");
-		assertEquals(loggerFactorySpy.getNoOfFatalLogMessagesUsingClassName(testedBaseClassName),
-				1);
-		assertEquals(loggerFactorySpy.getFatalLogMessageUsingClassNameAndNo(testedBaseClassName, 0),
+
+		LoggerSpy loggerSpy = (LoggerSpy) loggerFactorySpy.MCR.getReturnValue("factorForClass", 1);
+		loggerSpy.MCR.assertNumberOfCallsToMethod("logFatalUsingMessage", 1);
+		loggerSpy.MCR.assertParameter("logFatalUsingMessage", 0, "message",
 				"InitInfo in TheRestDependencyProvider must contain: solrURL");
 	}
 
