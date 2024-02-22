@@ -78,6 +78,8 @@ import se.uu.ub.cora.storage.RecordNotFoundException;
 
 @Path("/")
 public class RecordEndpoint {
+	private static final String APPLICATION_VND_UUB_WORKORDER_JSON = "application/vnd.uub.workorder+json";
+	private static final String MULTIPART_FORM_DATA = "multipart/form-data";
 	private static final String TEXT_PLAIN_CHARSET_UTF_8 = "text/plain; charset=utf-8";
 	private static final String APPLICATION_VND_UUB_RECORD_LIST_XML = "application/vnd.uub.recordList+xml";
 	private static final String APPLICATION_VND_UUB_RECORD_LIST_XML_QS09 = "application/vnd.uub.recordList+xml;qs=0.9";
@@ -626,7 +628,7 @@ public class RecordEndpoint {
 
 	@POST
 	@Path("{type}/{id}/{resourceType}")
-	@Consumes("multipart/form-data")
+	@Consumes(MULTIPART_FORM_DATA)
 	@Produces({ APPLICATION_VND_UUB_RECORD_JSON })
 	public Response uploadResourceJson(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
@@ -638,7 +640,7 @@ public class RecordEndpoint {
 
 	@POST
 	@Path("{type}/{id}/{resourceType}")
-	@Consumes("multipart/form-data")
+	@Consumes(MULTIPART_FORM_DATA)
 	@Produces(APPLICATION_VND_UUB_RECORD_XML_QS09)
 	public Response uploadResourceXml(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
@@ -748,23 +750,23 @@ public class RecordEndpoint {
 	 */
 	@POST
 	@Path("{type}")
-	@Consumes({ "application/vnd.uub.workorder+json" })
+	@Consumes({ APPLICATION_VND_UUB_WORKORDER_JSON })
 	@Produces({ APPLICATION_VND_UUB_RECORD_JSON })
 	public Response validateRecordJsonJson(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			String jsonValidationRecord) {
-		return validateRecord("application/vnd.uub.workorder+json", APPLICATION_VND_UUB_RECORD_JSON,
+		return validateRecord(APPLICATION_VND_UUB_WORKORDER_JSON, APPLICATION_VND_UUB_RECORD_JSON,
 				headerAuthToken, queryAuthToken, jsonValidationRecord);
 	}
 
 	@POST
 	@Path("{type}")
-	@Consumes("application/vnd.uub.workorder+json")
+	@Consumes(APPLICATION_VND_UUB_WORKORDER_JSON)
 	@Produces(APPLICATION_VND_UUB_RECORD_XML_QS09)
 	public Response validateRecordJsonXml(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			String jsonValidationRecord) {
-		return validateRecord("application/vnd.uub.workorder+json", APPLICATION_VND_UUB_RECORD_XML,
+		return validateRecord(APPLICATION_VND_UUB_WORKORDER_JSON, APPLICATION_VND_UUB_RECORD_XML,
 				headerAuthToken, queryAuthToken, jsonValidationRecord);
 	}
 
