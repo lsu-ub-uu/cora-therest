@@ -21,7 +21,10 @@ package se.uu.ub.cora.therest.iiif;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import jakarta.ws.rs.core.Response;
 import se.uu.ub.cora.spider.binary.iiif.IiifReader;
+import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
+import se.uu.ub.cora.spider.spies.SpiderInstanceFactorySpy;
 import se.uu.ub.cora.spider.spies.binary.iiif.IiifReaderSpy;
 import se.uu.ub.cora.therest.AnnotationTestHelper;
 
@@ -65,10 +68,20 @@ public class IiifEndpointTest {
 	}
 
 	@Test
-	public void testReadResponseOk() throws Exception {
-		// Response response = endpoint.readBinary("someIdentifier", "someRegion", "someSize",
-		// "someRotation", "someQuality", "someformat");
-		//
+	public void testIiifReaderFetchedFromInstanceProvider() throws Exception {
+		SpiderInstanceFactorySpy spiderInstanceFactorySpy = new SpiderInstanceFactorySpy();
+		SpiderInstanceProvider.setSpiderInstanceFactory(spiderInstanceFactorySpy);
+
+		Response response = endpoint.readBinary("someIdentifier", "someRegion", "someSize",
+				"someRotation", "someQuality", "someformat");
+
+		spiderInstanceFactorySpy.MCR.assertMethodWasCalled("factorIiifReader");
+		IiifReaderSpy iiifReader = (IiifReaderSpy) spiderInstanceFactorySpy.MCR
+				.getReturnValue("factorIiifReader", 0);
+
+		iiifReader.MCR.assertMethodWasCalled("readImage");
+
 		// assertEquals(response.getStatusInfo(), Response.Status.OK);
+
 	}
 }

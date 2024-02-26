@@ -23,6 +23,8 @@ import jakarta.ws.rs.OPTIONS;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.core.Response;
+import se.uu.ub.cora.spider.binary.iiif.IiifReader;
+import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
 
 @Path("/")
 public class IiifEndpoint {
@@ -45,7 +47,9 @@ public class IiifEndpoint {
 			@PathParam("region") String region, @PathParam("size") String size,
 			@PathParam("rotation") String rotation, @PathParam("quality") String quality,
 			@PathParam("format") String format) {
-		// SpiderInstanceProvider.getIiifReader();
+		IiifReader iiifReader = SpiderInstanceProvider.getIiifReader();
+		// iiifReader.readImage(identifier, region, size, rotation, quality, format)
+		iiifReader.readImage(null, null, null, null, null, null);
 		return Response.status(418).build();
 	}
 
