@@ -18,68 +18,69 @@
  */
 package se.uu.ub.cora.therest.iiif;
 
+import java.util.List;
+
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.Request;
 import jakarta.ws.rs.core.Response;
-import se.uu.ub.cora.spider.binary.iiif.IiifReader;
+import se.uu.ub.cora.spider.binary.iiif.IiifImageReader;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
 import se.uu.ub.cora.spider.spies.SpiderInstanceFactorySpy;
-import se.uu.ub.cora.spider.spies.binary.iiif.IiifReaderSpy;
+import se.uu.ub.cora.spider.spies.binary.iiif.IiifImageReaderSpy;
 import se.uu.ub.cora.therest.AnnotationTestHelper;
+import se.uu.ub.cora.therest.spy.HttpHeadersSpy;
+import se.uu.ub.cora.therest.spy.RequestSpy;
 
 public class IiifEndpointTest {
 	IiifEndpoint endpoint;
-	IiifReader iifBinaryReader = new IiifReaderSpy();
+	IiifImageReader iifBinaryReader = new IiifImageReaderSpy();
+	private HttpHeadersSpy headers;
+	private RequestSpy request;
 
 	@BeforeMethod
 	private void beforeMethod() {
+		headers = new HttpHeadersSpy();
+		request = new RequestSpy();
+
 		endpoint = new IiifEndpoint();
 	}
 
 	@Test
 	public void testReadRequestPathAndParameters() throws Exception {
-		// Class<?>[] parameters = { String.class, String.class, String.class, String.class,
-		// InputStream.class, String.class };
-		// AnnotationTestHelper annotationHelper = AnnotationTestHelper
-		// .createAnnotationTestHelperForClassMethodNameAndParameters(
-		// recordEndpoint.getClass(), "uploadResourceXml", parameters);
-
+		Class<?>[] parameters = { HttpHeaders.class, Request.class, String.class, String.class };
 		AnnotationTestHelper annotationHelper = AnnotationTestHelper
-				.createAnnotationTestHelperForClassMethodNameAndNumOfParameters(endpoint.getClass(),
-						"readBinary", 6);
+				.createAnnotationTestHelperForClassMethodNameAndParameters(endpoint.getClass(),
+						"readIiif", parameters);
 
-		annotationHelper.assertHttpMethodAndPathAnnotation("GET",
-				"{identifier}/{region}/{size}/{rotation}/{quality}.{format}");
-		// annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORD_JSON);
-		// annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_LIST_XML_QS09);
-		// annotationHelper.assertAnnotationForAuthTokenParameters();
-		// annotationHelper.assertAnnotationForAuthTokensAndTypeParameters();
-		// annotationHelper.assertAnnotationForAuthTokenAndTypeAndIdParameters();
-		// annotationHelper.assertFormDataParamAnnotationByNameAndPositionAndType("file", 4);
-		// annotationHelper.assertPathParamAnnotationByNameAndPosition("searchId", 2);
-		// annotationHelper.assertQueryParamAnnotationByNameAndPosition("filter", 3);
-		annotationHelper.assertPathParamAnnotationByNameAndPosition("identifier", 0);
-		annotationHelper.assertPathParamAnnotationByNameAndPosition("region", 1);
-		annotationHelper.assertPathParamAnnotationByNameAndPosition("size", 2);
-		annotationHelper.assertPathParamAnnotationByNameAndPosition("rotation", 3);
-		annotationHelper.assertPathParamAnnotationByNameAndPosition("quality", 4);
-		annotationHelper.assertPathParamAnnotationByNameAndPosition("format", 5);
+		annotationHelper.assertHttpMethodAndPathAnnotation("GET", "{identifier}/{requestedUri:.*}");
+		annotationHelper.assertContextAnnotationForPosition(0);
+		annotationHelper.assertContextAnnotationForPosition(1);
+		annotationHelper.assertPathParamAnnotationByNameAndPosition("identifier", 2);
+		annotationHelper.assertPathParamAnnotationByNameAndPosition("requestedUri", 3);
 	}
 
 	@Test
 	public void testIiifReaderFetchedFromInstanceProvider() throws Exception {
 		SpiderInstanceFactorySpy spiderInstanceFactorySpy = new SpiderInstanceFactorySpy();
 		SpiderInstanceProvider.setSpiderInstanceFactory(spiderInstanceFactorySpy);
+		request.MRV.setDefaultReturnValuesSupplier("getMethod", () -> "someMethod");
+		MultivaluedHashMap<Object, Object> requestHeaders = new MultivaluedHashMap<>();
+		requestHeaders.put("aHeaderKey", List.of("aHeaderValue"));
+		headers.MRV.setDefaultReturnValuesSupplier("getRequestHeaders", () -> requestHeaders);
 
-		Response response = endpoint.readBinary("someIdentifier", "someRegion", "someSize",
-				"someRotation", "someQuality", "someformat");
+		Response readIiif = endpoint.readIiif(headers, request, "someIdentifier",
+				"some/requested/Uri");
 
 		spiderInstanceFactorySpy.MCR.assertMethodWasCalled("factorIiifReader");
-		IiifReaderSpy iiifReader = (IiifReaderSpy) spiderInstanceFactorySpy.MCR
+		IiifImageReaderSpy iiifReader = (IiifImageReaderSpy) spiderInstanceFactorySpy.MCR
 				.getReturnValue("factorIiifReader", 0);
 
-		iiifReader.MCR.assertMethodWasCalled("readImage");
+		iiifReader.MCR.assertParameters("readIiif", 0, "someIdentifier", "some/requested/Uri",
+				"someMethod");
 
 		// assertEquals(response.getStatusInfo(), Response.Status.OK);
 

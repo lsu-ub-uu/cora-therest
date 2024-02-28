@@ -24,8 +24,8 @@ import java.nio.charset.StandardCharsets;
 
 import se.uu.ub.cora.spider.authorization.AuthorizationException;
 import se.uu.ub.cora.spider.binary.Downloader;
+import se.uu.ub.cora.spider.binary.ResourceInputStream;
 import se.uu.ub.cora.spider.data.DataMissingException;
-import se.uu.ub.cora.spider.data.ResourceInputStream;
 import se.uu.ub.cora.spider.record.MisuseException;
 import se.uu.ub.cora.storage.RecordNotFoundException;
 

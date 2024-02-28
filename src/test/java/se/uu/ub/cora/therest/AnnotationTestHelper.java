@@ -33,7 +33,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
-import se.uu.ub.cora.therest.record.RecordEndpoint;
+import jakarta.ws.rs.core.Context;
 
 public class AnnotationTestHelper {
 
@@ -56,7 +56,7 @@ public class AnnotationTestHelper {
 	}
 
 	public static AnnotationTestHelper createAnnotationTestHelperForClassMethodNameAndParameters(
-			Class<? extends RecordEndpoint> class1, String methodName, Class<?>[] parameters)
+			Class<?> class1, String methodName, Class<?>[] parameters)
 			throws NoSuchMethodException {
 		return new AnnotationTestHelper(class1, methodName, parameters);
 	}
@@ -109,6 +109,11 @@ public class AnnotationTestHelper {
 	public void assertPathParamAnnotationByNameAndPosition(String name, int startPosition) {
 		PathParam parameter = (PathParam) parameterAnnotations[startPosition][0];
 		assertEquals(parameter.value(), name);
+	}
+
+	public void assertContextAnnotationForPosition(int startPosition) {
+		var parameter = parameterAnnotations[startPosition][0];
+		assertEquals(parameter.annotationType(), Context.class);
 	}
 
 	public void assertFormDataParamAnnotationByNameAndPositionAndType(String name,
