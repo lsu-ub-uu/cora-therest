@@ -154,8 +154,8 @@ public class IiifEndpoint {
 	}
 
 	private void addHeadersToBuilderFromIiifHeaders(ResponseBuilder responseBuilder,
-			Map<String, Object> headers) {
-		for (Entry<String, Object> header : headers.entrySet()) {
+			Map<String, String> headers) {
+		for (Entry<String, String> header : headers.entrySet()) {
 			responseBuilder.header(header.getKey(), header.getValue());
 		}
 	}
