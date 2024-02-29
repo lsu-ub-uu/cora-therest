@@ -18,15 +18,25 @@
  */
 package se.uu.ub.cora.therest.iiif;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.Request;
 import jakarta.ws.rs.core.Response;
-import se.uu.ub.cora.spider.binary.iiif.IiifImageReader;
+import jakarta.ws.rs.core.Response.ResponseBuilder;
+import se.uu.ub.cora.spider.authorization.AuthorizationException;
+import se.uu.ub.cora.spider.binary.iiif.IiifReader;
+import se.uu.ub.cora.spider.binary.iiif.IiifResponse;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
+import se.uu.ub.cora.spider.record.RecordNotFoundException;
 
 @Path("/")
 public class IiifEndpoint {
@@ -61,43 +71,80 @@ public class IiifEndpoint {
 			@PathParam("identifier") String identifier,
 			@PathParam("requestedUri") String requestedUri) {
 
-		IiifImageReader iiifReader = SpiderInstanceProvider.getIiifReader();
-		iiifReader.readIiif(identifier, requestedUri, request.getMethod(), null);
-
 		// System.out.println("id: " + identifier);
 		// System.out.println("path: " + requestedUri);
 		// System.out.println("headers: " + headers.getRequestHeaders());
 		// System.out.println("Method: " + request.getMethod());
-		// String json = """
-		// {
-		// "@context" : "http://iiif.io/api/image/3/context.json",
-		// "protocol" : "http://iiif.io/api/image",
-		// "width" : 2653,
-		// "height" : 3419,
-		// "sizes" : [
-		// { "width" : 165, "height" : 213 },
-		// { "width" : 331, "height" : 427 },
-		// { "width" : 663, "height" : 854 },
-		// { "width" : 1326, "height" : 1709 }
-		// ],
-		// "tiles" : [
-		// { "width" : 256, "height" : 256, "scaleFactors" : [ 1, 2, 4, 8, 16 ] }
-		// ],
-		// "id" : "http://localhost:39080Kalle/iiif/systemOne/binary:binary:3219013273077247",
-		// "type": "ImageService3",
-		// "profile" : "level2",
-		// "maxWidth" : 5000,
-		// "maxHeight" : 5000,
-		// "extraQualities": ["color","gray","bitonal"],
-		// "extraFormats": ["webp"],
-		// "extraFeatures":
-		// ["regionByPct","sizeByForcedWh","sizeByWh","sizeAboveFull","sizeUpscaling","rotationBy90s","mirroring"]
-		// }
-		// """;
+
+		try {
+			return tryToReadIiif(headers, request, identifier, requestedUri);
+
+		} catch (AuthorizationException e) {
+			return Response.status(Response.Status.UNAUTHORIZED).build();
+		} catch (RecordNotFoundException e) {
+			return Response.status(Response.Status.NOT_FOUND).build();
+		} catch (Exception e) {
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+		}
 
 		// return Response.status(418).build(json);
 		// return Response.status(Response.Status.OK).header(HttpHeaders.CONTENT_TYPE, accept)
 		// .entity(convertedDataRecord).build();
-		return Response.status(Response.Status.OK).build();
+	}
+
+	String json = """
+			{
+			"@context" : "http://iiif.io/api/image/3/context.json",
+			"protocol" : "http://iiif.io/api/image",
+			"width" : 2653,
+			"height" : 3419,
+			"sizes" : [
+			{ "width" : 165, "height" : 213 },
+			{ "width" : 331, "height" : 427 },
+			{ "width" : 663, "height" : 854 },
+			{ "width" : 1326, "height" : 1709 }
+			],
+			"tiles" : [
+			{ "width" : 256, "height" : 256, "scaleFactors" : [ 1, 2, 4, 8, 16 ] }
+			],
+			"id" : "http://localhost:39080Kalle/iiif/systemOne/binary:binary:3219013273077247",
+			"type": "ImageService3",
+			"profile" : "level2",
+			"maxWidth" : 5000,
+			"maxHeight" : 5000,
+			"extraQualities": ["color","gray","bitonal"],
+			"extraFormats": ["webp"],
+			"extraFeatures":
+			["regionByPct","sizeByForcedWh","sizeByWh","sizeAboveFull","sizeUpscaling","rotationBy90s","mirroring"]
+			}
+			""";
+
+	private Response tryToReadIiif(HttpHeaders headers, Request request, String identifier,
+			String requestedUri) {
+		Map<String, String> headersMap = getHeadersAsMapWithCombinedValues(headers);
+		IiifReader iiifReader = SpiderInstanceProvider.getIiifReader();
+		IiifResponse iiifResponse = iiifReader.readIiif(identifier, requestedUri,
+				request.getMethod(), headersMap);
+
+		ResponseBuilder responseBuilder = Response.status(iiifResponse.status());
+		for (Entry<String, Object> header : iiifResponse.headers().entrySet()) {
+
+			responseBuilder.header(header.getKey(), header.getValue());
+		}
+
+		return responseBuilder.entity(iiifResponse.body()).build();
+		// ByteArrayInputStream jsonStream = new ByteArrayInputStream(json.getBytes());
+		// return Response.status(Response.Status.OK).header(HttpHeaders.CONTENT_TYPE, "text/plain")
+		// .entity(jsonStream).build();
+	}
+
+	private Map<String, String> getHeadersAsMapWithCombinedValues(HttpHeaders headers) {
+		MultivaluedMap<String, String> requestHeaders = headers.getRequestHeaders();
+		Map<String, String> headersMap = new HashMap<>();
+		for (Entry<String, List<String>> entry : requestHeaders.entrySet()) {
+			String compoundValues = String.join(", ", entry.getValue());
+			headersMap.put(entry.getKey(), compoundValues);
+		}
+		return headersMap;
 	}
 }
