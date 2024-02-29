@@ -156,6 +156,7 @@ public class IiifEndpointTest {
 		assertEquals(response.getHeaders().size(), 2);
 		assertEquals(response.getHeaders().get("content-type"), List.of("plain/text"));
 		assertEquals(response.getHeaders().get("someOtherHeader"), List.of("aHeaderValue"));
+		assertEquals(response.getEntity(), "body");
 
 	}
 }
