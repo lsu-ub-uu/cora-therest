@@ -56,6 +56,7 @@ import se.uu.ub.cora.data.converter.DataToJsonConverterFactory;
 import se.uu.ub.cora.data.converter.DataToJsonConverterProvider;
 import se.uu.ub.cora.data.converter.JsonToDataConverter;
 import se.uu.ub.cora.data.converter.JsonToDataConverterProvider;
+import se.uu.ub.cora.initialize.SettingsProvider;
 import se.uu.ub.cora.json.parser.JsonObject;
 import se.uu.ub.cora.json.parser.JsonParseException;
 import se.uu.ub.cora.json.parser.JsonParser;
@@ -107,13 +108,13 @@ public class RecordEndpoint {
 	private void setExternalUrlsForJsonConverter(String baseUrl) {
 		externalUrlsForJson = new se.uu.ub.cora.data.converter.ExternalUrls();
 		externalUrlsForJson.setBaseUrl(baseUrl);
-		externalUrlsForJson.setIfffUrl(SpiderInstanceProvider.getInitInfo().get("iiifBaseUrl"));
+		externalUrlsForJson.setIfffUrl(SettingsProvider.getSetting("iiifBaseUrl"));
 	}
 
 	private void setExternalUrlsForXmlConverter(String baseUrl) {
 		externalUrls = new ExternalUrls();
 		externalUrls.setBaseUrl(baseUrl);
-		externalUrls.setIfffUrl(SpiderInstanceProvider.getInitInfo().get("iiifBaseUrl"));
+		externalUrls.setIfffUrl(SettingsProvider.getSetting("iiifBaseUrl"));
 	}
 
 	private final String getBaseURLFromURI() {
@@ -125,7 +126,7 @@ public class RecordEndpoint {
 		String tempUrl = request.getRequestURL().toString();
 		int indexOfFirstSlashAfterHttp = tempUrl.indexOf('/', AFTERHTTP);
 		String baseURL = tempUrl.substring(0, indexOfFirstSlashAfterHttp);
-		baseURL += SpiderInstanceProvider.getInitInfo().get("theRestPublicPathToSystem");
+		baseURL += SettingsProvider.getSetting("theRestPublicPathToSystem");
 		baseURL += "record/";
 		return baseURL;
 	}

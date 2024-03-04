@@ -33,9 +33,9 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.gatekeeperclient.authentication.AuthenticatorImp;
+import se.uu.ub.cora.initialize.SettingsProvider;
 import se.uu.ub.cora.logger.LoggerProvider;
 import se.uu.ub.cora.logger.spies.LoggerFactorySpy;
-import se.uu.ub.cora.logger.spies.LoggerSpy;
 import se.uu.ub.cora.search.RecordIndexer;
 import se.uu.ub.cora.search.RecordIndexerFactory;
 import se.uu.ub.cora.search.RecordSearch;
@@ -46,7 +46,6 @@ import se.uu.ub.cora.solrindex.SolrRecordIndexer;
 import se.uu.ub.cora.solrindex.SolrRecordIndexerFactory;
 import se.uu.ub.cora.solrsearch.SolrRecordSearch;
 import se.uu.ub.cora.spider.authorization.PermissionRuleCalculator;
-import se.uu.ub.cora.spider.dependency.SpiderInitializationException;
 import se.uu.ub.cora.storage.RecordStorageProvider;
 import se.uu.ub.cora.storage.StreamStorageProvider;
 import se.uu.ub.cora.storage.idgenerator.RecordIdGeneratorProvider;
@@ -65,7 +64,10 @@ public class TheRestDependencyProviderTest {
 		settings = new HashMap<>();
 		settings.put("gatekeeperURL", "http://localhost:8080/gatekeeper/");
 		settings.put("solrURL", "http://localhost:8983/solr/stuff");
-		dependencyProvider = new TheRestDependencyProvider(settings);
+
+		SettingsProvider.setSettings(settings);
+
+		dependencyProvider = new TheRestDependencyProvider();
 		setPluggedInStorageNormallySetByTheRestModuleStarterImp();
 	}
 
@@ -84,16 +86,6 @@ public class TheRestDependencyProviderTest {
 		assertTrue(dependencyProvider.getRecordIndexer() instanceof SolrRecordIndexer);
 	}
 
-	private Exception callSystemOneDependencyProviderAndReturnResultingError() {
-		Exception thrownException = null;
-		try {
-			dependencyProvider = new TheRestDependencyProvider(settings);
-		} catch (Exception e) {
-			thrownException = e;
-		}
-		return thrownException;
-	}
-
 	@Test
 	public void testGetPermissionRuleCalculator() {
 		PermissionRuleCalculator permissionRuleCalculator = dependencyProvider
@@ -101,22 +93,6 @@ public class TheRestDependencyProviderTest {
 		PermissionRuleCalculator permissionRuleCalculator2 = dependencyProvider
 				.getPermissionRuleCalculator();
 		assertNotEquals(permissionRuleCalculator, permissionRuleCalculator2);
-	}
-
-	@Test
-	public void testMissingGatekeeperUrlInInitInfo() {
-		settings.remove("gatekeeperURL");
-
-		Exception thrownException = callSystemOneDependencyProviderAndReturnResultingError();
-
-		assertTrue(thrownException instanceof SpiderInitializationException);
-		assertEquals(thrownException.getMessage(),
-				"InitInfo in TheRestDependencyProvider must contain: gatekeeperURL");
-
-		LoggerSpy loggerSpy = (LoggerSpy) loggerFactorySpy.MCR.getReturnValue("factorForClass", 1);
-		loggerSpy.MCR.assertNumberOfCallsToMethod("logFatalUsingMessage", 1);
-		loggerSpy.MCR.assertParameter("logFatalUsingMessage", 0, "message",
-				"InitInfo in TheRestDependencyProvider must contain: gatekeeperURL");
 	}
 
 	@Test
@@ -147,25 +123,10 @@ public class TheRestDependencyProviderTest {
 	@Test
 	public void testGetRecordIndexerUsesSolrUrlWhenCreatingSolrClientProvider() {
 		SolrRecordIndexer recordIndexer = (SolrRecordIndexer) dependencyProvider.getRecordIndexer();
+
 		SolrClientProviderImp solrClientProviderImp = (SolrClientProviderImp) recordIndexer
 				.getSolrClientProvider();
 		assertEquals(solrClientProviderImp.getBaseURL(), "http://localhost:8983/solr/stuff");
-	}
-
-	@Test
-	public void testMissingSolrUrlInInitInfo() {
-		settings.remove("solrURL");
-
-		Exception thrownException = callSystemOneDependencyProviderAndReturnResultingError();
-
-		assertTrue(thrownException instanceof SpiderInitializationException);
-		assertEquals(thrownException.getMessage(),
-				"InitInfo in TheRestDependencyProvider must contain: solrURL");
-
-		LoggerSpy loggerSpy = (LoggerSpy) loggerFactorySpy.MCR.getReturnValue("factorForClass", 1);
-		loggerSpy.MCR.assertNumberOfCallsToMethod("logFatalUsingMessage", 1);
-		loggerSpy.MCR.assertParameter("logFatalUsingMessage", 0, "message",
-				"InitInfo in TheRestDependencyProvider must contain: solrURL");
 	}
 
 	@Test

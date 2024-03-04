@@ -19,7 +19,9 @@
 package se.uu.ub.cora.therest.iiif;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -41,6 +43,11 @@ import se.uu.ub.cora.therest.spy.HttpHeadersSpy;
 import se.uu.ub.cora.therest.spy.RequestSpy;
 
 public class IiifEndpointTest {
+	private static final List<String> restrictedHeaders = List.of("access-control-request-headers",
+			"access-control-request-method", "connection", "content-length",
+			"content-transfer-encoding", "host", "keep-alive", "origin", "trailer",
+			"transfer-encoding", "upgrade", "via");
+
 	IiifEndpoint endpoint;
 	private IiifReaderSpy iiifReader;
 	private HttpHeadersSpy headers;
@@ -157,6 +164,59 @@ public class IiifEndpointTest {
 		assertEquals(response.getHeaders().get("content-type"), List.of("plain/text"));
 		assertEquals(response.getHeaders().get("someOtherHeader"), List.of("aHeaderValue"));
 		assertEquals(response.getEntity(), "body");
+	}
 
+	@Test
+	public void testCallReadIfffUsingRestrictedHeaders_IN() throws Exception {
+		headers.MRV.setDefaultReturnValuesSupplier("getRequestHeaders",
+				() -> createInHeadersUsingRestrictedHeadersInUpperCase());
+
+		endpoint.readIiif(headers, request, "someIdentifier", "some/requested/Uri");
+
+		Map<String, String> nonRestrictedHeaders = (Map<String, String>) iiifReader.MCR
+				.getValueForMethodNameAndCallNumberAndParameterName("readIiif", 0, "headers");
+
+		assertEquals(nonRestrictedHeaders.size(), 1);
+		assertTrue(nonRestrictedHeaders.containsKey("aHeaderKey"));
+	}
+
+	private MultivaluedHashMap<Object, Object> createInHeadersUsingRestrictedHeadersInUpperCase() {
+		MultivaluedHashMap<Object, Object> requestHeaders = new MultivaluedHashMap<>();
+
+		requestHeaders.put("aHeaderKey", List.of("oneHeaderValue"));
+
+		for (String restrictedHeader : restrictedHeaders) {
+			String headerInUpperCase = restrictedHeader.toUpperCase();
+			requestHeaders.put(headerInUpperCase, List.of(restrictedHeader + "Value"));
+		}
+		return requestHeaders;
+	}
+
+	@Test
+	public void testCallReadIfffUsingRestrictedHeaders_OUT() throws Exception {
+		IiifResponse responseWithRestrictedHeaders = new IiifResponse(200,
+				createOutHeadersUsingRestrictedHeadersInUpperCase(), "aBody");
+
+		iiifReader.MRV.setDefaultReturnValuesSupplier("readIiif",
+				() -> responseWithRestrictedHeaders);
+
+		Response response = endpoint.readIiif(headers, request, "someIdentifier",
+				"some/requested/Uri");
+
+		assertEquals(response.getHeaders().size(), 1);
+		assertTrue(response.getHeaders().containsKey("aHeaderKey"));
+
+	}
+
+	private Map<String, String> createOutHeadersUsingRestrictedHeadersInUpperCase() {
+		Map<String, String> requestHeaders = new HashMap<>();
+
+		requestHeaders.put("aHeaderKey", "oneHeaderValue");
+
+		for (String restrictedHeader : restrictedHeaders) {
+			String headerInUpperCase = restrictedHeader.toUpperCase();
+			requestHeaders.put(headerInUpperCase, restrictedHeader + "Value");
+		}
+		return requestHeaders;
 	}
 }

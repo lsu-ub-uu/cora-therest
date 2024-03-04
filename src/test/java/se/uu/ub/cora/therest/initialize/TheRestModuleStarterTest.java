@@ -74,12 +74,6 @@ public class TheRestModuleStarterTest {
 	}
 
 	@Test
-	public void testInitInfoSetInSpiderInstanceProvider() throws Exception {
-		startTheRestModuleStarter();
-		assertSame(SpiderInstanceProvider.getInitInfo(), initInfo);
-	}
-
-	@Test
 	public void testDependencyProviderStartedAndAddedToSpiderInstanceProvider() throws Exception {
 		startTheRestModuleStarter();
 		String dependencyProviderClassName = SpiderInstanceProvider

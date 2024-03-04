@@ -40,41 +40,16 @@ import se.uu.ub.cora.spider.record.RecordNotFoundException;
 
 @Path("/")
 public class IiifEndpoint {
-
-	// @OPTIONS
-	// @Path("{identifier}/info.json")
-	// public Response readOptions(@PathParam("identifier") String identifier) {
-	// return Response.status(418).build();
-	// }
-	//
-	// @GET
-	// @Path("{identifier}/info.json")
-	// public Response readInformation(@PathParam("identifier") String identifier) {
-	// return Response.status(418).build();
-	// }
-	//
-	// @GET
-	// @Path("{identifier}/{region}/{size}/{rotation}/{quality}.{format}")
-	// public Response readBinary(@PathParam("identifier") String identifier,
-	// @PathParam("region") String region, @PathParam("size") String size,
-	// @PathParam("rotation") String rotation, @PathParam("quality") String quality,
-	// @PathParam("format") String format) {
-	// IiifReader iiifReader = SpiderInstanceProvider.getIiifReader();
-	// // iiifReader.readImage(identifier, region, size, rotation, quality, format)
-	// iiifReader.readImage(null, null, null, null, null, null);
-	// return Response.status(418).build();
-	// }
+	private static final List<String> restrictedHeaders = List.of("access-control-request-headers",
+			"access-control-request-method", "connection", "content-length",
+			"content-transfer-encoding", "host", "keep-alive", "origin", "trailer",
+			"transfer-encoding", "upgrade", "via");
 
 	@GET
 	@Path("{identifier}/{requestedUri:.*}")
 	public Response readIiif(@Context HttpHeaders headers, @Context Request request,
 			@PathParam("identifier") String identifier,
 			@PathParam("requestedUri") String requestedUri) {
-
-		// System.out.println("id: " + identifier);
-		// System.out.println("path: " + requestedUri);
-		// System.out.println("headers: " + headers.getRequestHeaders());
-		// System.out.println("Method: " + request.getMethod());
 
 		try {
 			return tryToReadIiif(headers, request, identifier, requestedUri);
@@ -85,38 +60,7 @@ public class IiifEndpoint {
 		} catch (Exception e) {
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
 		}
-
-		// return Response.status(418).build(json);
-		// return Response.status(Response.Status.OK).header(HttpHeaders.CONTENT_TYPE, accept)
-		// .entity(convertedDataRecord).build();
 	}
-
-	// String json = """
-	// {
-	// "@context" : "http://iiif.io/api/image/3/context.json",
-	// "protocol" : "http://iiif.io/api/image",
-	// "width" : 2653,
-	// "height" : 3419,
-	// "sizes" : [
-	// { "width" : 165, "height" : 213 },
-	// { "width" : 331, "height" : 427 },
-	// { "width" : 663, "height" : 854 },
-	// { "width" : 1326, "height" : 1709 }
-	// ],
-	// "tiles" : [
-	// { "width" : 256, "height" : 256, "scaleFactors" : [ 1, 2, 4, 8, 16 ] }
-	// ],
-	// "id" : "http://localhost:39080Kalle/iiif/systemOne/binary:binary:3219013273077247",
-	// "type": "ImageService3",
-	// "profile" : "level2",
-	// "maxWidth" : 5000,
-	// "maxHeight" : 5000,
-	// "extraQualities": ["color","gray","bitonal"],
-	// "extraFormats": ["webp"],
-	// "extraFeatures":
-	// ["regionByPct","sizeByForcedWh","sizeByWh","sizeAboveFull","sizeUpscaling","rotationBy90s","mirroring"]
-	// }
-	// """;
 
 	private Response tryToReadIiif(HttpHeaders headers, Request request, String identifier,
 			String requestedUri) {
@@ -135,11 +79,22 @@ public class IiifEndpoint {
 	private Map<String, String> getHeadersAsMapWithCombinedValues(HttpHeaders headers) {
 		MultivaluedMap<String, String> requestHeaders = headers.getRequestHeaders();
 		Map<String, String> headersMap = new HashMap<>();
-		for (Entry<String, List<String>> entry : requestHeaders.entrySet()) {
-			String compoundValues = String.join(", ", entry.getValue());
-			headersMap.put(entry.getKey(), compoundValues);
+		for (Entry<String, List<String>> header : requestHeaders.entrySet()) {
+			possiblyTransformAndAddHeaderToCompoundValuesIfHeaderIsAllowed(headersMap, header);
 		}
 		return headersMap;
+	}
+
+	private void possiblyTransformAndAddHeaderToCompoundValuesIfHeaderIsAllowed(Map<String, String> headersMap,
+			Entry<String, List<String>> header) {
+		if (headerAllowed(header.getKey())) {
+			String compoundValues = String.join(", ", header.getValue());
+			headersMap.put(header.getKey(), compoundValues);
+		}
+	}
+
+	private boolean headerAllowed(String headerName) {
+		return !(restrictedHeaders.contains(headerName.toLowerCase()));
 	}
 
 	private Response createJakartaResponseFromIiifResponse(IiifResponse iiifResponse) {
@@ -156,6 +111,13 @@ public class IiifEndpoint {
 	private void addHeadersToBuilderFromIiifHeaders(ResponseBuilder responseBuilder,
 			Map<String, String> headers) {
 		for (Entry<String, String> header : headers.entrySet()) {
+			possiblyAddHeaderIfAllowedToResponseBuilder(responseBuilder, header);
+		}
+	}
+
+	private void possiblyAddHeaderIfAllowedToResponseBuilder(ResponseBuilder responseBuilder,
+			Entry<String, String> header) {
+		if (headerAllowed(header.getKey())) {
 			responseBuilder.header(header.getKey(), header.getValue());
 		}
 	}

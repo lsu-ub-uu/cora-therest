@@ -45,7 +45,7 @@
 		<httphandler.version>2.11.0</httphandler.version>
 		<storage.version>9.0.0</storage.version>
 		<storage-spies.version>1.6.0</storage-spies.version>
-		<initialize.version>1.5.0</initialize.version>
+		<initialize.version>1.6-SNAPSHOT</initialize.version>
 		<search.version>5.6.0</search.version>
 		<searchstorage.version>3.21.0</searchstorage.version>
 		<logger.version>2.10.0</logger.version>
