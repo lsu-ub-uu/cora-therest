@@ -96,7 +96,9 @@ public class RecordEndpointTest {
 	private ConverterFactorySpy converterFactorySpy;
 	private String standardBaseUrlHttp = "http://cora.epc.ub.uu.se/systemone/rest/record/";
 	private String standardBaseUrlHttps = "https://cora.epc.ub.uu.se/systemone/rest/record/";
-	private String iiifUrl = "someiiifUrl";
+	private String standardIffUrlHttp = "http://cora.epc.ub.uu.se/systemone/iiif/";
+	private String standardIffUrlHttps = "https://cora.epc.ub.uu.se/systemone/iiif/";
+	// private String ii ifUrl = "someiiifUrl";
 
 	@BeforeMethod
 	public void beforeMethod() {
@@ -116,7 +118,7 @@ public class RecordEndpointTest {
 
 		Map<String, String> settings = new HashMap<>();
 		settings.put("theRestPublicPathToSystem", "/systemone/rest/");
-		settings.put("iiifBaseUrl", iiifUrl);
+		settings.put("iiifPublicPathToSystem", "/systemone/iiif/");
 		SettingsProvider.setSettings(settings);
 
 		requestSpy = new HttpServletRequestSpy();
@@ -149,6 +151,8 @@ public class RecordEndpointTest {
 
 		assertEquals(getBaseUrlsFromFactorUsingConvertibleAndExternalUrls(converterFactory),
 				standardBaseUrlHttps);
+		assertEquals(getIiifUrlFromFactorUsingConvertibleAndExternalUrls(converterFactory),
+				standardIffUrlHttps);
 	}
 
 	private String getBaseUrlsFromFactorUsingConvertibleAndExternalUrls(
@@ -157,6 +161,14 @@ public class RecordEndpointTest {
 				.getValueForMethodNameAndCallNumberAndParameterName(
 						"factorUsingConvertibleAndExternalUrls", 0, "externalUrls");
 		return externalUrls.getBaseUrl();
+	}
+
+	private String getIiifUrlFromFactorUsingConvertibleAndExternalUrls(
+			DataToJsonConverterFactorySpy converterFactory) {
+		se.uu.ub.cora.data.converter.ExternalUrls externalUrls = (se.uu.ub.cora.data.converter.ExternalUrls) converterFactory.MCR
+				.getValueForMethodNameAndCallNumberAndParameterName(
+						"factorUsingConvertibleAndExternalUrls", 0, "externalUrls");
+		return externalUrls.getIfffUrl();
 	}
 
 	@Test
@@ -172,6 +184,8 @@ public class RecordEndpointTest {
 
 		assertEquals(getBaseUrlsFromFactorUsingConvertibleAndExternalUrls(converterFactory),
 				standardBaseUrlHttps);
+		assertEquals(getIiifUrlFromFactorUsingConvertibleAndExternalUrls(converterFactory),
+				standardIffUrlHttps);
 	}
 
 	@Test
@@ -415,7 +429,8 @@ public class RecordEndpointTest {
 				.getValueForMethodNameAndCallNumberAndParameterName(
 						"factorUsingConvertibleAndExternalUrls", 0, "externalUrls");
 		assertEquals(externalUrls.getBaseUrl(), standardBaseUrlHttp);
-		assertEquals(externalUrls.getIfffUrl(), iiifUrl);
+		// assertEquals(externalUrls.getIfffUrl(), iiifUrl);
+		assertEquals(externalUrls.getIfffUrl(), standardIffUrlHttp);
 
 		DataToJsonConverterSpy converterSpy = (DataToJsonConverterSpy) converterFactory.MCR
 				.getReturnValue("factorUsingConvertibleAndExternalUrls", 0);
@@ -443,7 +458,8 @@ public class RecordEndpointTest {
 				.getValueForMethodNameAndCallNumberAndParameterName("convertWithLinks", 0,
 						"externalUrls");
 		assertEquals(externalUrls.getBaseUrl(), standardBaseUrlHttp);
-		assertEquals(externalUrls.getIfffUrl(), iiifUrl);
+		// assertEquals(externalUrls.getIfffUrl(), iiifUrl);
+		assertEquals(externalUrls.getIfffUrl(), standardIffUrlHttp);
 
 		var entity = response.getEntity();
 		dataToXmlConverter.MCR.assertReturn("convertWithLinks", 0, entity);

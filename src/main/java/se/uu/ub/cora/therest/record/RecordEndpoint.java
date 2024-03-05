@@ -100,35 +100,41 @@ public class RecordEndpoint {
 	public RecordEndpoint(@Context HttpServletRequest req) {
 		request = req;
 		String baseUrl = getBaseURLFromURI();
+		String iiifUrl = getIiifURLFromURI();
 
-		setExternalUrlsForJsonConverter(baseUrl);
-		setExternalUrlsForXmlConverter(baseUrl);
+		setExternalUrlsForJsonConverter(baseUrl, iiifUrl);
+		setExternalUrlsForXmlConverter(baseUrl, iiifUrl);
 	}
 
-	private void setExternalUrlsForJsonConverter(String baseUrl) {
+	private void setExternalUrlsForJsonConverter(String baseUrl, String iiifUrl) {
 		externalUrlsForJson = new se.uu.ub.cora.data.converter.ExternalUrls();
 		externalUrlsForJson.setBaseUrl(baseUrl);
-		externalUrlsForJson.setIfffUrl(SettingsProvider.getSetting("iiifBaseUrl"));
+		externalUrlsForJson.setIfffUrl(iiifUrl);
 	}
 
-	private void setExternalUrlsForXmlConverter(String baseUrl) {
+	private void setExternalUrlsForXmlConverter(String baseUrl, String iiifUrl) {
 		externalUrls = new ExternalUrls();
 		externalUrls.setBaseUrl(baseUrl);
-		externalUrls.setIfffUrl(SettingsProvider.getSetting("iiifBaseUrl"));
+		externalUrls.setIfffUrl(iiifUrl);
 	}
 
 	private final String getBaseURLFromURI() {
 		String baseURL = getBaseURLFromRequest();
+		baseURL += SettingsProvider.getSetting("theRestPublicPathToSystem");
+		baseURL += "record/";
+		return changeHttpToHttpsIfHeaderSaysSo(baseURL);
+	}
+
+	private final String getIiifURLFromURI() {
+		String baseURL = getBaseURLFromRequest();
+		baseURL += SettingsProvider.getSetting("iiifPublicPathToSystem");
 		return changeHttpToHttpsIfHeaderSaysSo(baseURL);
 	}
 
 	private final String getBaseURLFromRequest() {
 		String tempUrl = request.getRequestURL().toString();
 		int indexOfFirstSlashAfterHttp = tempUrl.indexOf('/', AFTERHTTP);
-		String baseURL = tempUrl.substring(0, indexOfFirstSlashAfterHttp);
-		baseURL += SettingsProvider.getSetting("theRestPublicPathToSystem");
-		baseURL += "record/";
-		return baseURL;
+		return tempUrl.substring(0, indexOfFirstSlashAfterHttp);
 	}
 
 	private String changeHttpToHttpsIfHeaderSaysSo(String baseURI) {
