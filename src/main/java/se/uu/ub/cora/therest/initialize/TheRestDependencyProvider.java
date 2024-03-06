@@ -19,12 +19,10 @@
 
 package se.uu.ub.cora.therest.initialize;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.Map;
-
 import se.uu.ub.cora.gatekeeperclient.authentication.AuthenticatorImp;
 import se.uu.ub.cora.httphandler.HttpHandlerFactory;
 import se.uu.ub.cora.httphandler.HttpHandlerFactoryImp;
+import se.uu.ub.cora.initialize.SettingsProvider;
 import se.uu.ub.cora.search.RecordIndexer;
 import se.uu.ub.cora.search.RecordIndexerFactory;
 import se.uu.ub.cora.search.RecordSearch;
@@ -45,8 +43,8 @@ public class TheRestDependencyProvider extends DependencyProviderAbstract {
 	private SolrClientProviderImp solrClientProvider;
 	private SolrRecordIndexerFactory solrRecordIndexerFactory;
 
-	public TheRestDependencyProvider(Map<String, String> settings) {
-		super(settings);
+	public TheRestDependencyProvider() {
+		super();
 	}
 
 	@Override
@@ -56,18 +54,15 @@ public class TheRestDependencyProvider extends DependencyProviderAbstract {
 	}
 
 	private void tryToSetGatekeeperUrl() {
-		ensureKeyExistsInInitInfo("gatekeeperURL");
-		gatekeeperUrl = initInfo.get("gatekeeperURL");
+		gatekeeperUrl = SettingsProvider.getSetting("gatekeeperURL");
 	}
 
 	private void tryToSetSolrUrl() {
-		ensureKeyExistsInInitInfo("solrURL");
-		solrUrl = initInfo.get("solrURL");
+		solrUrl = SettingsProvider.getSetting("solrURL");
 	}
 
 	@Override
-	protected void tryToInitialize() throws NoSuchMethodException, ClassNotFoundException,
-			IllegalAccessException, InvocationTargetException {
+	protected void tryToInitialize() {
 		solrRecordIndexerFactory = new SolrRecordIndexerFactory();
 		solrClientProvider = SolrClientProviderImp.usingBaseUrl(solrUrl);
 	}

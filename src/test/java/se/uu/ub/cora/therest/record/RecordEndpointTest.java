@@ -30,25 +30,14 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
-import org.glassfish.jersey.media.multipart.FormDataContentDisposition.FormDataContentDispositionBuilder;
-import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.HeaderParam;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
@@ -60,16 +49,22 @@ import se.uu.ub.cora.data.DataList;
 import se.uu.ub.cora.data.DataRecord;
 import se.uu.ub.cora.data.converter.DataToJsonConverterProvider;
 import se.uu.ub.cora.data.converter.JsonToDataConverterProvider;
+import se.uu.ub.cora.initialize.SettingsProvider;
 import se.uu.ub.cora.json.parser.JsonValue;
 import se.uu.ub.cora.json.parser.org.OrgJsonParser;
 import se.uu.ub.cora.logger.LoggerProvider;
+import se.uu.ub.cora.logger.spies.LoggerFactorySpy;
+import se.uu.ub.cora.logger.spies.LoggerSpy;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
+import se.uu.ub.cora.therest.AnnotationTestHelper;
 import se.uu.ub.cora.therest.coradata.DataGroupSpy;
 import se.uu.ub.cora.therest.coradata.DataListSpy;
 import se.uu.ub.cora.therest.coradata.DataRecordSpy;
-import se.uu.ub.cora.therest.log.LoggerFactorySpy;
 
 public class RecordEndpointTest {
+	private static final String APPLICATION_VND_UUB_WORKORDER_XML_QS_0_9 = "application/vnd.uub.workorder+xml;qs=0.9";
+	private static final String APPLICATION_VND_UUB_WORKORDER_JSON = "application/vnd.uub.workorder+json";
+	private static final String MULTIPART_FORM_DATA = "multipart/form-data";
 	private static final String TEXT_PLAIN = "text/plain; charset=utf-8";
 	private static final String APPLICATION_VND_UUB_RECORD_LIST_XML = "application/vnd.uub.recordList+xml";
 	private static final String APPLICATION_VND_UUB_RECORD_LIST_XML_QS09 = "application/vnd.uub.recordList+xml;qs=0.9";
@@ -90,9 +85,7 @@ public class RecordEndpointTest {
 	private SpiderInstanceFactorySpy spiderInstanceFactorySpy;
 	private Response response;
 	private HttpServletRequestSpy requestSpy;
-	private Map<String, String> initInfo = new HashMap<>();
 	private LoggerFactorySpy loggerFactorySpy;
-	private String testedClassName = "RecordEndpoint";
 
 	private String jsonToValidate = "{\"order\":{\"name\":\"validationOrder\",\"children\":[{\"name\":\"recordInfo\",\"children\":[{\"name\":\"dataDivider\",\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"system\"},{\"name\":\"linkedRecordId\",\"value\":\"testSystem\"}]}]},{\"name\":\"recordType\",\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"recordType\"},{\"name\":\"linkedRecordId\",\"value\":\"someRecordType\"}]},{\"name\":\"metadataToValidate\",\"value\":\"existing\"},{\"name\":\"validateLinks\",\"value\":\"false\"}]},\"record\":{\"name\":\"text\",\"children\":[{\"name\":\"recordInfo\",\"children\":[{\"name\":\"id\",\"value\":\"workOrderRecordIdTextVar2Text\"},{\"name\":\"dataDivider\",\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"system\"},{\"name\":\"linkedRecordId\",\"value\":\"cora\"}]}]},{\"name\":\"textPart\",\"children\":[{\"name\":\"text\",\"value\":\"Id på länkad post\"}],\"attributes\":{\"type\":\"default\",\"lang\":\"sv\"}},{\"name\":\"textPart\",\"children\":[{\"name\":\"text\",\"value\":\"Linked record id\"}],\"attributes\":{\"type\":\"alternative\",\"lang\":\"en\"}}]}}";
 	private String defaultJson = "{\"name\":\"someRecordType\",\"children\":[]}";
@@ -103,7 +96,9 @@ public class RecordEndpointTest {
 	private ConverterFactorySpy converterFactorySpy;
 	private String standardBaseUrlHttp = "http://cora.epc.ub.uu.se/systemone/rest/record/";
 	private String standardBaseUrlHttps = "https://cora.epc.ub.uu.se/systemone/rest/record/";
-	private String iiifUrl = "someiiifUrl";
+	private String standardIffUrlHttp = "http://cora.epc.ub.uu.se/systemone/iiif/";
+	private String standardIffUrlHttps = "https://cora.epc.ub.uu.se/systemone/iiif/";
+	// private String ii ifUrl = "someiiifUrl";
 
 	@BeforeMethod
 	public void beforeMethod() {
@@ -118,11 +113,13 @@ public class RecordEndpointTest {
 
 		jsonToDataConverterFactorySpy = new JsonToDataConverterFactorySpy();
 		JsonToDataConverterProvider.setJsonToDataConverterFactory(jsonToDataConverterFactorySpy);
-		initInfo.put("theRestPublicPathToSystem", "/systemone/rest/");
-		initInfo.put("iiifBaseUrl", iiifUrl);
 		spiderInstanceFactorySpy = new SpiderInstanceFactorySpy();
 		SpiderInstanceProvider.setSpiderInstanceFactory(spiderInstanceFactorySpy);
-		SpiderInstanceProvider.setInitInfo(initInfo);
+
+		Map<String, String> settings = new HashMap<>();
+		settings.put("theRestPublicPathToSystem", "/systemone/rest/");
+		settings.put("iiifPublicPathToSystem", "/systemone/iiif/");
+		SettingsProvider.setSettings(settings);
 
 		requestSpy = new HttpServletRequestSpy();
 		recordEndpoint = new RecordEndpoint(requestSpy);
@@ -154,6 +151,8 @@ public class RecordEndpointTest {
 
 		assertEquals(getBaseUrlsFromFactorUsingConvertibleAndExternalUrls(converterFactory),
 				standardBaseUrlHttps);
+		assertEquals(getIiifUrlFromFactorUsingConvertibleAndExternalUrls(converterFactory),
+				standardIffUrlHttps);
 	}
 
 	private String getBaseUrlsFromFactorUsingConvertibleAndExternalUrls(
@@ -162,6 +161,14 @@ public class RecordEndpointTest {
 				.getValueForMethodNameAndCallNumberAndParameterName(
 						"factorUsingConvertibleAndExternalUrls", 0, "externalUrls");
 		return externalUrls.getBaseUrl();
+	}
+
+	private String getIiifUrlFromFactorUsingConvertibleAndExternalUrls(
+			DataToJsonConverterFactorySpy converterFactory) {
+		se.uu.ub.cora.data.converter.ExternalUrls externalUrls = (se.uu.ub.cora.data.converter.ExternalUrls) converterFactory.MCR
+				.getValueForMethodNameAndCallNumberAndParameterName(
+						"factorUsingConvertibleAndExternalUrls", 0, "externalUrls");
+		return externalUrls.getIfffUrl();
 	}
 
 	@Test
@@ -177,6 +184,8 @@ public class RecordEndpointTest {
 
 		assertEquals(getBaseUrlsFromFactorUsingConvertibleAndExternalUrls(converterFactory),
 				standardBaseUrlHttps);
+		assertEquals(getIiifUrlFromFactorUsingConvertibleAndExternalUrls(converterFactory),
+				standardIffUrlHttps);
 	}
 
 	@Test
@@ -293,34 +302,26 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testAnnotationsForReadRecordListJson() throws Exception {
-		Method method = getMethodWithMethodName("readRecordListJson", 4);
-		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+		AnnotationTestHelper annotationHelper = AnnotationTestHelper
+				.createAnnotationTestHelperForClassMethodNameAndNumOfParameters(
+						recordEndpoint.getClass(), "readRecordListJson", 4);
 
-		assertHttpMethodAndPathAnnotation(method, "GET", "{type}/");
-		assertProducesAnnotation(method, APPLICATION_VND_UUB_RECORD_LIST_JSON);
-		assertAuthTokenAnnotation(parameterAnnotations, 0);
-
-		PathParam typeParameter = (PathParam) parameterAnnotations[2][0];
-		assertEquals(typeParameter.value(), "type");
-
-		QueryParam filterParameter = (QueryParam) parameterAnnotations[3][0];
-		assertEquals(filterParameter.value(), "filter");
+		annotationHelper.assertHttpMethodAndPathAnnotation("GET", "{type}/");
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_LIST_JSON);
+		annotationHelper.assertAnnotationForAuthTokensAndTypeParameters();
+		annotationHelper.assertQueryParamAnnotationByNameAndPosition("filter", 3);
 	}
 
 	@Test
 	public void testAnnotationsForReadRecordListXml() throws Exception {
-		Method method = getMethodWithMethodName("readRecordListXml", 4);
-		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+		AnnotationTestHelper annotationHelper = AnnotationTestHelper
+				.createAnnotationTestHelperForClassMethodNameAndNumOfParameters(
+						recordEndpoint.getClass(), "readRecordListXml", 4);
 
-		assertHttpMethodAndPathAnnotation(method, "GET", "{type}/");
-		assertProducesAnnotation(method, APPLICATION_VND_UUB_RECORD_LIST_XML_QS09);
-		assertAuthTokenAnnotation(parameterAnnotations, 0);
-
-		PathParam typeParameter = (PathParam) parameterAnnotations[2][0];
-		assertEquals(typeParameter.value(), "type");
-
-		QueryParam filterParameter = (QueryParam) parameterAnnotations[3][0];
-		assertEquals(filterParameter.value(), "filter");
+		annotationHelper.assertHttpMethodAndPathAnnotation("GET", "{type}/");
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_LIST_XML_QS09);
+		annotationHelper.assertAnnotationForAuthTokensAndTypeParameters();
+		annotationHelper.assertQueryParamAnnotationByNameAndPosition("filter", 3);
 	}
 
 	@Test
@@ -350,97 +351,24 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testAnnotationsForReadJson() throws Exception {
-		Method method = getMethodWithMethodName("readRecordJson", 4);
+		AnnotationTestHelper annotationHelper = AnnotationTestHelper
+				.createAnnotationTestHelperForClassMethodNameAndNumOfParameters(
+						recordEndpoint.getClass(), "readRecordJson", 4);
 
-		assertHttpMethodAndPathAnnotation(method, "GET", "{type}/{id}");
-		assertProducesAnnotation(method, APPLICATION_VND_UUB_RECORD_JSON);
-		assertAnnotationForReadRecordParameters(method);
+		annotationHelper.assertHttpMethodAndPathAnnotation("GET", "{type}/{id}");
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_JSON);
+		annotationHelper.assertAnnotationForAuthTokensAndTypeAndIdParameters();
 	}
 
 	@Test
 	public void testAnnotationsForReadXml() throws Exception {
-		Method method = getMethodWithMethodName("readRecordXml", 4);
+		AnnotationTestHelper annotationHelper = AnnotationTestHelper
+				.createAnnotationTestHelperForClassMethodNameAndNumOfParameters(
+						recordEndpoint.getClass(), "readRecordXml", 4);
 
-		assertHttpMethodAndPathAnnotation(method, "GET", "{type}/{id}");
-		assertProducesAnnotation(method, APPLICATION_VND_UUB_RECORD_XML_QS09);
-		assertAnnotationForReadRecordParameters(method);
-	}
-
-	private void assertHttpMethodAndPathAnnotation(Method method, String httpMethod,
-			String expectedPath) {
-		assertHttpMethodAnnotation(method, httpMethod);
-		assertPathAnnotation(method, expectedPath);
-	}
-
-	private void assertHttpMethodAnnotation(Method method, String httpMethod) {
-		Annotation[] annotations = method.getAnnotations();
-		Class<? extends Annotation> httpMethodAnnotation = annotations[0].annotationType();
-		String httpMethodAnnotationClassName = httpMethodAnnotation.toString();
-		assertTrue(httpMethodAnnotationClassName.endsWith(httpMethod));
-	}
-
-	private void assertPathAnnotation(Method method, String expectedPath) {
-		Path pathAnnotation = method.getAnnotation(Path.class);
-		assertNotNull(pathAnnotation);
-		assertEquals(pathAnnotation.value(), expectedPath);
-	}
-
-	private void assertAnnotationForReadRecordParameters(Method method) {
-		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
-		assertAuthTokenAnnotation(parameterAnnotations, 0);
-		assertTypeAndIdAnnotation(parameterAnnotations, 2);
-	}
-
-	private void assertTypeAndIdAnnotation(Annotation[][] parameterAnnotations, int startPosition) {
-		PathParam typeParameter = (PathParam) parameterAnnotations[startPosition][0];
-		assertEquals(typeParameter.value(), "type");
-
-		PathParam idParameter = (PathParam) parameterAnnotations[startPosition + 1][0];
-		assertEquals(idParameter.value(), "id");
-	}
-
-	private void assertProducesAnnotation(Method method, String... accept) {
-		Produces producesAnnotation = method.getAnnotation(Produces.class);
-		assertNotNull(producesAnnotation);
-		assertProducesValues(producesAnnotation, accept);
-		assertEquals(producesAnnotation.value().length, accept.length);
-	}
-
-	private void assertConsumesAnnotation(Method method, String... accept) {
-		Consumes consumesAnnotation = method.getAnnotation(Consumes.class);
-		assertNotNull(consumesAnnotation);
-		assertConsumesValues(consumesAnnotation, accept);
-		assertEquals(consumesAnnotation.value().length, accept.length);
-	}
-
-	private void assertConsumesValues(Consumes consumesAnnotation, String... accept) {
-		for (int i = 0; i < accept.length; i++) {
-			assertEquals(consumesAnnotation.value()[i], accept[i]);
-		}
-	}
-
-	private void assertProducesValues(Produces producesAnnotation, String... accept) {
-		for (int i = 0; i < accept.length; i++) {
-			assertEquals(producesAnnotation.value()[i], accept[i]);
-		}
-	}
-
-	private Method getMethodWithMethodName(String methodName, int numOfParameters)
-			throws NoSuchMethodException {
-		Class<? extends RecordEndpoint> endpointClass = recordEndpoint.getClass();
-
-		var parameters = generateParameters(numOfParameters);
-
-		return endpointClass.getMethod(methodName, parameters);
-	}
-
-	private Class<?>[] generateParameters(int numOfParameters) {
-		Class<?>[] parameters = new Class<?>[numOfParameters];
-
-		for (int i = 0; i < numOfParameters; i++) {
-			parameters[i] = String.class;
-		}
-		return parameters;
+		annotationHelper.assertHttpMethodAndPathAnnotation("GET", "{type}/{id}");
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_XML_QS09);
+		annotationHelper.assertAnnotationForAuthTokensAndTypeAndIdParameters();
 	}
 
 	@Test
@@ -501,7 +429,8 @@ public class RecordEndpointTest {
 				.getValueForMethodNameAndCallNumberAndParameterName(
 						"factorUsingConvertibleAndExternalUrls", 0, "externalUrls");
 		assertEquals(externalUrls.getBaseUrl(), standardBaseUrlHttp);
-		assertEquals(externalUrls.getIfffUrl(), iiifUrl);
+		// assertEquals(externalUrls.getIfffUrl(), iiifUrl);
+		assertEquals(externalUrls.getIfffUrl(), standardIffUrlHttp);
 
 		DataToJsonConverterSpy converterSpy = (DataToJsonConverterSpy) converterFactory.MCR
 				.getReturnValue("factorUsingConvertibleAndExternalUrls", 0);
@@ -529,7 +458,8 @@ public class RecordEndpointTest {
 				.getValueForMethodNameAndCallNumberAndParameterName("convertWithLinks", 0,
 						"externalUrls");
 		assertEquals(externalUrls.getBaseUrl(), standardBaseUrlHttp);
-		assertEquals(externalUrls.getIfffUrl(), iiifUrl);
+		// assertEquals(externalUrls.getIfffUrl(), iiifUrl);
+		assertEquals(externalUrls.getIfffUrl(), standardIffUrlHttp);
 
 		var entity = response.getEntity();
 		dataToXmlConverter.MCR.assertReturn("convertWithLinks", 0, entity);
@@ -610,40 +540,24 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testAnnotationsForReadIncomingRecordLinksJson() throws Exception {
-		String methodName = "readIncomingRecordLinksJson";
-		Method method = getMethodWithMethodName(methodName, 4);
+		AnnotationTestHelper annotationHelper = AnnotationTestHelper
+				.createAnnotationTestHelperForClassMethodNameAndNumOfParameters(
+						recordEndpoint.getClass(), "readIncomingRecordLinksJson", 4);
 
-		assertHttpMethodAndPathAnnotation(method, "GET", "{type}/{id}/incomingLinks");
-		assertProducesAnnotation(method, APPLICATION_VND_UUB_RECORD_LIST_JSON);
-		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
-		assertAuthTokenAnnotation(parameterAnnotations, 0);
-		assertTypeAndIdAnnotation(parameterAnnotations, 2);
+		annotationHelper.assertHttpMethodAndPathAnnotation("GET", "{type}/{id}/incomingLinks");
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_LIST_JSON);
+		annotationHelper.assertAnnotationForAuthTokensAndTypeAndIdParameters();
 	}
 
 	@Test
 	public void testAnnotationsForReadIncomingRecordLinksXml() throws Exception {
-		String methodName = "readIncomingRecordLinksXml";
-		Method method = getMethodWithMethodName(methodName, 4);
+		AnnotationTestHelper annotationHelper = AnnotationTestHelper
+				.createAnnotationTestHelperForClassMethodNameAndNumOfParameters(
+						recordEndpoint.getClass(), "readIncomingRecordLinksXml", 4);
 
-		assertHttpMethodAndPathAnnotation(method, "GET", "{type}/{id}/incomingLinks");
-		assertProducesAnnotation(method, APPLICATION_VND_UUB_RECORD_LIST_XML_QS09);
-		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
-		assertAuthTokenAnnotation(parameterAnnotations, 0);
-		assertTypeAndIdAnnotation(parameterAnnotations, 2);
-	}
-
-	// private void assertAcceptAndAuthTokenAnnotation(Annotation[][] parameterAnnotations) {
-	// HeaderParam acceptParameter = (HeaderParam) parameterAnnotations[0][0];
-	// assertEquals(acceptParameter.value(), "Accept");
-	// assertAuthTokenAnnotation(parameterAnnotations, 1);
-	// }
-
-	private void assertAuthTokenAnnotation(Annotation[][] parameterAnnotations, int startPosition) {
-		HeaderParam headerAuthTokenParameter = (HeaderParam) parameterAnnotations[startPosition][0];
-		assertEquals(headerAuthTokenParameter.value(), "authToken");
-		QueryParam queryAuthTokenParameter = (QueryParam) parameterAnnotations[startPosition
-				+ 1][0];
-		assertEquals(queryAuthTokenParameter.value(), "authToken");
+		annotationHelper.assertHttpMethodAndPathAnnotation("GET", "{type}/{id}/incomingLinks");
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_LIST_XML_QS09);
+		annotationHelper.assertAnnotationForAuthTokensAndTypeAndIdParameters();
 	}
 
 	@Test
@@ -714,15 +628,12 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testAnnotationsForDeletRecord() throws Exception {
-		String methodName = "deleteRecord";
-		Method method = getMethodWithMethodName(methodName, 4);
+		AnnotationTestHelper annotationHelper = AnnotationTestHelper
+				.createAnnotationTestHelperForClassMethodNameAndNumOfParameters(
+						recordEndpoint.getClass(), "deleteRecord", 4);
 
-		assertHttpMethodAndPathAnnotation(method, "DELETE", "{type}/{id}");
-
-		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
-
-		assertAuthTokenAnnotation(parameterAnnotations, 0);
-		assertTypeAndIdAnnotation(parameterAnnotations, 2);
+		annotationHelper.assertHttpMethodAndPathAnnotation("DELETE", "{type}/{id}");
+		annotationHelper.assertAnnotationForAuthTokensAndTypeAndIdParameters();
 	}
 
 	@Test
@@ -833,50 +744,50 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testAnnotationsForUpdateRecordJsonJson() throws Exception {
-		Method method = getMethodWithMethodName("updateRecordJsonJson", 5);
-		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+		AnnotationTestHelper annotationHelper = AnnotationTestHelper
+				.createAnnotationTestHelperForClassMethodNameAndNumOfParameters(
+						recordEndpoint.getClass(), "updateRecordJsonJson", 5);
 
-		assertHttpMethodAndPathAnnotation(method, "POST", "{type}/{id}");
-		assertConsumesAnnotation(method, APPLICATION_VND_UUB_RECORD_JSON);
-		assertProducesAnnotation(method, APPLICATION_VND_UUB_RECORD_JSON);
-		assertAuthTokenAnnotation(parameterAnnotations, 0);
-		assertTypeAndIdAnnotation(parameterAnnotations, 2);
+		annotationHelper.assertHttpMethodAndPathAnnotation("POST", "{type}/{id}");
+		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORD_JSON);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_JSON);
+		annotationHelper.assertAnnotationForAuthTokensAndTypeAndIdParameters();
 	}
 
 	@Test
 	public void testAnnotationsForUpdateRecordJsonXml() throws Exception {
-		Method method = getMethodWithMethodName("updateRecordJsonXml", 5);
-		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+		AnnotationTestHelper annotationHelper = AnnotationTestHelper
+				.createAnnotationTestHelperForClassMethodNameAndNumOfParameters(
+						recordEndpoint.getClass(), "updateRecordJsonXml", 5);
 
-		assertHttpMethodAndPathAnnotation(method, "POST", "{type}/{id}");
-		assertConsumesAnnotation(method, APPLICATION_VND_UUB_RECORD_JSON);
-		assertProducesAnnotation(method, APPLICATION_VND_UUB_RECORD_XML_QS09);
-		assertAuthTokenAnnotation(parameterAnnotations, 0);
-		assertTypeAndIdAnnotation(parameterAnnotations, 2);
+		annotationHelper.assertHttpMethodAndPathAnnotation("POST", "{type}/{id}");
+		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORD_JSON);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_XML_QS09);
+		annotationHelper.assertAnnotationForAuthTokensAndTypeAndIdParameters();
 	}
 
 	@Test
 	public void testAnnotationsForUpdateRecordXmlJson() throws Exception {
-		Method method = getMethodWithMethodName("updateRecordXmlJson", 5);
-		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+		AnnotationTestHelper annotationHelper = AnnotationTestHelper
+				.createAnnotationTestHelperForClassMethodNameAndNumOfParameters(
+						recordEndpoint.getClass(), "updateRecordXmlJson", 5);
 
-		assertHttpMethodAndPathAnnotation(method, "POST", "{type}/{id}");
-		assertConsumesAnnotation(method, APPLICATION_VND_UUB_RECORD_XML_QS09);
-		assertProducesAnnotation(method, APPLICATION_VND_UUB_RECORD_JSON);
-		assertAuthTokenAnnotation(parameterAnnotations, 0);
-		assertTypeAndIdAnnotation(parameterAnnotations, 2);
+		annotationHelper.assertHttpMethodAndPathAnnotation("POST", "{type}/{id}");
+		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORD_XML_QS09);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_JSON);
+		annotationHelper.assertAnnotationForAuthTokensAndTypeAndIdParameters();
 	}
 
 	@Test
 	public void testAnnotationsForUpdateRecordXmlXml() throws Exception {
-		Method method = getMethodWithMethodName("updateRecordXmlXml", 5);
-		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+		AnnotationTestHelper annotationHelper = AnnotationTestHelper
+				.createAnnotationTestHelperForClassMethodNameAndNumOfParameters(
+						recordEndpoint.getClass(), "updateRecordXmlXml", 5);
 
-		assertHttpMethodAndPathAnnotation(method, "POST", "{type}/{id}");
-		assertConsumesAnnotation(method, APPLICATION_VND_UUB_RECORD_XML_QS09);
-		assertProducesAnnotation(method, APPLICATION_VND_UUB_RECORD_XML_QS09);
-		assertAuthTokenAnnotation(parameterAnnotations, 0);
-		assertTypeAndIdAnnotation(parameterAnnotations, 2);
+		annotationHelper.assertHttpMethodAndPathAnnotation("POST", "{type}/{id}");
+		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORD_XML_QS09);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_XML_QS09);
+		annotationHelper.assertAnnotationForAuthTokensAndTypeAndIdParameters();
 	}
 
 	@Test
@@ -1025,54 +936,50 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testAnnotationsForCreateRecordJsonJson() throws Exception {
-		Method method = getMethodWithMethodName("createRecordJsonJson", 4);
-		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+		AnnotationTestHelper annotationHelper = AnnotationTestHelper
+				.createAnnotationTestHelperForClassMethodNameAndNumOfParameters(
+						recordEndpoint.getClass(), "createRecordJsonJson", 4);
 
-		assertHttpMethodAndPathAnnotation(method, "POST", "{type}");
-		assertConsumesAnnotation(method, APPLICATION_VND_UUB_RECORD_JSON);
-		assertProducesAnnotation(method, APPLICATION_VND_UUB_RECORD_JSON);
-		assertAuthTokenAnnotation(parameterAnnotations, 0);
-		PathParam typeParameter = (PathParam) parameterAnnotations[2][0];
-		assertEquals(typeParameter.value(), "type");
+		annotationHelper.assertHttpMethodAndPathAnnotation("POST", "{type}");
+		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORD_JSON);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_JSON);
+		annotationHelper.assertAnnotationForAuthTokensAndTypeParameters();
 	}
 
 	@Test
 	public void testAnnotationsForCreateRecordJsonXml() throws Exception {
-		Method method = getMethodWithMethodName("createRecordJsonXml", 4);
-		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+		AnnotationTestHelper annotationHelper = AnnotationTestHelper
+				.createAnnotationTestHelperForClassMethodNameAndNumOfParameters(
+						recordEndpoint.getClass(), "createRecordJsonXml", 4);
 
-		assertHttpMethodAndPathAnnotation(method, "POST", "{type}");
-		assertConsumesAnnotation(method, APPLICATION_VND_UUB_RECORD_JSON);
-		assertProducesAnnotation(method, APPLICATION_VND_UUB_RECORD_XML_QS09);
-		assertAuthTokenAnnotation(parameterAnnotations, 0);
-		PathParam typeParameter = (PathParam) parameterAnnotations[2][0];
-		assertEquals(typeParameter.value(), "type");
+		annotationHelper.assertHttpMethodAndPathAnnotation("POST", "{type}");
+		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORD_JSON);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_XML_QS09);
+		annotationHelper.assertAnnotationForAuthTokensAndTypeParameters();
 	}
 
 	@Test
 	public void testAnnotationsForCreateRecordXmlJson() throws Exception {
-		Method method = getMethodWithMethodName("createRecordXmlJson", 4);
-		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+		AnnotationTestHelper annotationHelper = AnnotationTestHelper
+				.createAnnotationTestHelperForClassMethodNameAndNumOfParameters(
+						recordEndpoint.getClass(), "createRecordXmlJson", 4);
 
-		assertHttpMethodAndPathAnnotation(method, "POST", "{type}");
-		assertConsumesAnnotation(method, APPLICATION_VND_UUB_RECORD_XML_QS09);
-		assertProducesAnnotation(method, APPLICATION_VND_UUB_RECORD_JSON);
-		assertAuthTokenAnnotation(parameterAnnotations, 0);
-		PathParam typeParameter = (PathParam) parameterAnnotations[2][0];
-		assertEquals(typeParameter.value(), "type");
+		annotationHelper.assertHttpMethodAndPathAnnotation("POST", "{type}");
+		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORD_XML_QS09);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_JSON);
+		annotationHelper.assertAnnotationForAuthTokensAndTypeParameters();
 	}
 
 	@Test
 	public void testAnnotationsForCreateRecordXmlXml() throws Exception {
-		Method method = getMethodWithMethodName("createRecordXmlXml", 4);
-		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+		AnnotationTestHelper annotationHelper = AnnotationTestHelper
+				.createAnnotationTestHelperForClassMethodNameAndNumOfParameters(
+						recordEndpoint.getClass(), "createRecordXmlXml", 4);
 
-		assertHttpMethodAndPathAnnotation(method, "POST", "{type}");
-		assertConsumesAnnotation(method, APPLICATION_VND_UUB_RECORD_XML_QS09);
-		assertProducesAnnotation(method, APPLICATION_VND_UUB_RECORD_XML_QS09);
-		assertAuthTokenAnnotation(parameterAnnotations, 0);
-		PathParam typeParameter = (PathParam) parameterAnnotations[2][0];
-		assertEquals(typeParameter.value(), "type");
+		annotationHelper.assertHttpMethodAndPathAnnotation("POST", "{type}");
+		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORD_XML_QS09);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_XML_QS09);
+		annotationHelper.assertAnnotationForAuthTokensAndTypeParameters();
 	}
 
 	@Test
@@ -1143,16 +1050,19 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testCreateRecordUnexpectedError() {
-		assertEquals(loggerFactorySpy.getNoOfErrorExceptionsUsingClassName(testedClassName), 0);
 		response = recordEndpoint.createRecordJsonJson(AUTH_TOKEN, AUTH_TOKEN,
 				"place_unexpected_error", defaultJson);
+
 		assertResponseStatusIs(Response.Status.INTERNAL_SERVER_ERROR);
-		assertEquals(loggerFactorySpy.getNoOfErrorExceptionsUsingClassName(testedClassName), 1);
-		assertEquals(loggerFactorySpy.getErrorLogMessageUsingClassNameAndNo(testedClassName, 0),
+
+		LoggerSpy loggerSpy = (LoggerSpy) loggerFactorySpy.MCR.getReturnValue("factorForClass", 0);
+		loggerSpy.MCR.assertNumberOfCallsToMethod("logErrorUsingMessageAndException", 1);
+		loggerSpy.MCR.assertParameter("logErrorUsingMessageAndException", 0, "message",
 				"Error handling request: Some error");
-		Exception caughtException = loggerFactorySpy
-				.getErrorExceptionUsingClassNameAndNo(testedClassName, 0);
+		var caughtException = loggerSpy.MCR.getValueForMethodNameAndCallNumberAndParameterName(
+				"logErrorUsingMessageAndException", 0, "exception");
 		assertTrue(caughtException instanceof NullPointerException);
+
 	}
 
 	@Test
@@ -1166,7 +1076,6 @@ public class RecordEndpointTest {
 	private void expectTokenForUploadToPreferablyBeHeaderThanQuery(String headerAuthToken,
 			String queryAuthToken, String authTokenExpected) {
 		InputStream stream = createUplodedInputStream();
-		FormDataContentDisposition formDataContentDisposition = createformDataContent();
 
 		response = recordEndpoint.uploadResourceJson(headerAuthToken, queryAuthToken, "image",
 				"image:123456789", stream, SOME_RESOUTCE_TYPE);
@@ -1179,18 +1088,9 @@ public class RecordEndpointTest {
 		return new ByteArrayInputStream("a string".getBytes(StandardCharsets.UTF_8));
 	}
 
-	private FormDataContentDisposition createformDataContent() {
-		FormDataContentDispositionBuilder builder = FormDataContentDisposition
-				.name("multipart;form-data");
-		builder.fileName("adele1.png");
-		FormDataContentDisposition formDataContentDisposition = builder.build();
-		return formDataContentDisposition;
-	}
-
 	@Test
 	public void testUploadFileForJson() throws ParseException {
 		InputStream stream = createUplodedInputStream();
-		FormDataContentDisposition formDataContentDisposition = createformDataContent();
 
 		response = recordEndpoint.uploadResourceJson(AUTH_TOKEN, AUTH_TOKEN, "image",
 				"image:123456789", stream, SOME_RESOUTCE_TYPE);
@@ -1201,11 +1101,9 @@ public class RecordEndpointTest {
 	@Test
 	public void testUploadFileForXml() {
 		InputStream stream = createUplodedInputStream();
-		// FormDataContentDisposition formDataContentDisposition = createformDataContent();
 
 		response = recordEndpoint.uploadResourceXml(AUTH_TOKEN, AUTH_TOKEN, "image",
 				"image:123456789", stream, SOME_RESOUTCE_TYPE);
-		// stream, formDataContentDisposition);
 		DataRecord uploadedFile = (DataRecord) spiderInstanceFactorySpy.spiderUploaderSpy.MCR
 				.getReturnValue("upload", 0);
 
@@ -1219,47 +1117,32 @@ public class RecordEndpointTest {
 	public void testAnnotationsForUploadResourceJson() throws Exception {
 		Class<?>[] parameters = { String.class, String.class, String.class, String.class,
 				InputStream.class, String.class };
-		Method method = getMethodWithMethodName("uploadResourceJson", parameters);
-		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+		AnnotationTestHelper annotationHelper = AnnotationTestHelper
+				.createAnnotationTestHelperForClassMethodNameAndParameters(
+						recordEndpoint.getClass(), "uploadResourceJson", parameters);
 
-		assertHttpMethodAndPathAnnotation(method, "POST", "{type}/{id}/{resourceType}");
-		assertProducesAnnotation(method, APPLICATION_VND_UUB_RECORD_JSON);
-		assertAuthTokenAnnotation(parameterAnnotations, 0);
-		assertTypeAndIdAnnotation(parameterAnnotations, 2);
-
-		FormDataParam uploadedInputStreamParameter = (FormDataParam) parameterAnnotations[4][0];
-		assertEquals(uploadedInputStreamParameter.value(), "file");
-		PathParam typeParameter = (PathParam) parameterAnnotations[5][0];
-		assertEquals(typeParameter.value(), "resourceType");
-		// FormDataParam fileDetailParameter = (FormDataParam) parameterAnnotations[5][0];
-		// assertEquals(fileDetailParameter.value(), "file");
+		annotationHelper.assertHttpMethodAndPathAnnotation("POST", "{type}/{id}/{resourceType}");
+		annotationHelper.assertConsumesAnnotation(MULTIPART_FORM_DATA);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_JSON);
+		annotationHelper.assertAnnotationForAuthTokensAndTypeAndIdParameters();
+		annotationHelper.assertFormDataParamAnnotationByNameAndPositionAndType("file", 4);
+		annotationHelper.assertPathParamAnnotationByNameAndPosition("resourceType", 5);
 	}
 
 	@Test
 	public void testAnnotationsForUploadResourceXml() throws Exception {
 		Class<?>[] parameters = { String.class, String.class, String.class, String.class,
 				InputStream.class, String.class };
-		Method method = getMethodWithMethodName("uploadResourceXml", parameters);
-		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+		AnnotationTestHelper annotationHelper = AnnotationTestHelper
+				.createAnnotationTestHelperForClassMethodNameAndParameters(
+						recordEndpoint.getClass(), "uploadResourceXml", parameters);
 
-		assertHttpMethodAndPathAnnotation(method, "POST", "{type}/{id}/{resourceType}");
-		assertProducesAnnotation(method, APPLICATION_VND_UUB_RECORD_XML_QS09);
-		assertAuthTokenAnnotation(parameterAnnotations, 0);
-		assertTypeAndIdAnnotation(parameterAnnotations, 2);
-
-		FormDataParam uploadedInputStreamParameter = (FormDataParam) parameterAnnotations[4][0];
-		assertEquals(uploadedInputStreamParameter.value(), "file");
-		PathParam typeParameter = (PathParam) parameterAnnotations[5][0];
-		assertEquals(typeParameter.value(), "resourceType");
-		// FormDataParam fileDetailParameter = (FormDataParam) parameterAnnotations[5][0];
-		// assertEquals(fileDetailParameter.value(), "file");
-	}
-
-	private Method getMethodWithMethodName(String methodName, Class<?>[] parameters)
-			throws NoSuchMethodException {
-		Class<? extends RecordEndpoint> endpointClass = recordEndpoint.getClass();
-		Method method = endpointClass.getMethod(methodName, parameters);
-		return method;
+		annotationHelper.assertHttpMethodAndPathAnnotation("POST", "{type}/{id}/{resourceType}");
+		annotationHelper.assertConsumesAnnotation(MULTIPART_FORM_DATA);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_XML_QS09);
+		annotationHelper.assertAnnotationForAuthTokensAndTypeAndIdParameters();
+		annotationHelper.assertFormDataParamAnnotationByNameAndPositionAndType("file", 4);
+		annotationHelper.assertPathParamAnnotationByNameAndPosition("resourceType", 5);
 	}
 
 	@Test
@@ -1277,8 +1160,6 @@ public class RecordEndpointTest {
 	public void testUploadNotFound() {
 		InputStream stream = createUplodedInputStream();
 
-		FormDataContentDisposition formDataContentDisposition = createformDataContent();
-
 		response = recordEndpoint.uploadResourceJson(AUTH_TOKEN, AUTH_TOKEN, "image",
 				"image:123456789_NOT_FOUND", stream, SOME_RESOUTCE_TYPE);
 
@@ -1289,8 +1170,6 @@ public class RecordEndpointTest {
 	public void testUploadNotAChildOfBinary() {
 		InputStream stream = createUplodedInputStream();
 
-		FormDataContentDisposition formDataContentDisposition = createformDataContent();
-
 		response = recordEndpoint.uploadResourceJson(AUTH_TOKEN, AUTH_TOKEN,
 				"not_child_of_binary_type", "image:123456789", stream, SOME_RESOUTCE_TYPE);
 
@@ -1300,11 +1179,6 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testUploadStreamMissing() {
-		FormDataContentDispositionBuilder builder = FormDataContentDisposition
-				.name("multipart;form-data");
-		builder.fileName("adele1.png");
-		FormDataContentDisposition formDataContentDisposition = builder.build();
-
 		response = recordEndpoint.uploadResourceJson(AUTH_TOKEN, AUTH_TOKEN, "image",
 				"image:123456789", null, SOME_RESOUTCE_TYPE);
 
@@ -1370,20 +1244,13 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testAnnotationsForDownloadResource() throws Exception {
-		Method method = getMethodWithMethodName("downloadResource", 5);
-		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+		AnnotationTestHelper annotationHelper = AnnotationTestHelper
+				.createAnnotationTestHelperForClassMethodNameAndNumOfParameters(
+						recordEndpoint.getClass(), "downloadResource", 5);
 
-		assertHttpMethodAndPathAnnotation(method, "GET", "{type}/{id}/{resourceType}");
-
-		assertAuthTokenAnnotation(parameterAnnotations, 0);
-		assertTypeAndIdAnnotation(parameterAnnotations, 2);
-		assertStreamIdAnnotation(parameterAnnotations);
-
-	}
-
-	private void assertStreamIdAnnotation(Annotation[][] parameterAnnotations) {
-		PathParam streamIdParameter = (PathParam) parameterAnnotations[4][0];
-		assertEquals(streamIdParameter.value(), "resourceType");
+		annotationHelper.assertHttpMethodAndPathAnnotation("GET", "{type}/{id}/{resourceType}");
+		annotationHelper.assertAnnotationForAuthTokensAndTypeAndIdParameters();
+		annotationHelper.assertPathParamAnnotationByNameAndPosition("resourceType", 4);
 	}
 
 	@Test
@@ -1504,34 +1371,28 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testAnnotationsForSearchRecordJson() throws Exception {
-		Method method = getMethodWithMethodName("searchRecordJson", 4);
-		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+		AnnotationTestHelper annotationHelper = AnnotationTestHelper
+				.createAnnotationTestHelperForClassMethodNameAndNumOfParameters(
+						recordEndpoint.getClass(), "searchRecordJson", 4);
 
-		assertHttpMethodAndPathAnnotation(method, "GET", "searchResult/{searchId}");
-		assertProducesAnnotation(method, APPLICATION_VND_UUB_RECORD_LIST_JSON);
-		assertAuthTokenAnnotation(parameterAnnotations, 0);
-
-		PathParam searchIdParameter = (PathParam) parameterAnnotations[2][0];
-		assertEquals(searchIdParameter.value(), "searchId");
-
-		QueryParam searchDataAsQueryParameter = (QueryParam) parameterAnnotations[3][0];
-		assertEquals(searchDataAsQueryParameter.value(), "searchData");
+		annotationHelper.assertHttpMethodAndPathAnnotation("GET", "searchResult/{searchId}");
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_LIST_JSON);
+		annotationHelper.assertAnnotationForAuthTokenParameters();
+		annotationHelper.assertPathParamAnnotationByNameAndPosition("searchId", 2);
+		annotationHelper.assertQueryParamAnnotationByNameAndPosition("searchData", 3);
 	}
 
 	@Test
 	public void testAnnotationsForSearchRecordXml() throws Exception {
-		Method method = getMethodWithMethodName("searchRecordXml", 4);
-		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+		AnnotationTestHelper annotationHelper = AnnotationTestHelper
+				.createAnnotationTestHelperForClassMethodNameAndNumOfParameters(
+						recordEndpoint.getClass(), "searchRecordXml", 4);
 
-		assertHttpMethodAndPathAnnotation(method, "GET", "searchResult/{searchId}");
-		assertProducesAnnotation(method, APPLICATION_VND_UUB_RECORD_LIST_XML_QS09);
-		assertAuthTokenAnnotation(parameterAnnotations, 0);
-
-		PathParam searchIdParameter = (PathParam) parameterAnnotations[2][0];
-		assertEquals(searchIdParameter.value(), "searchId");
-
-		QueryParam searchDataAsQueryParameter = (QueryParam) parameterAnnotations[3][0];
-		assertEquals(searchDataAsQueryParameter.value(), "searchData");
+		annotationHelper.assertHttpMethodAndPathAnnotation("GET", "searchResult/{searchId}");
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_LIST_XML_QS09);
+		annotationHelper.assertAnnotationForAuthTokenParameters();
+		annotationHelper.assertPathParamAnnotationByNameAndPosition("searchId", 2);
+		annotationHelper.assertQueryParamAnnotationByNameAndPosition("searchData", 3);
 	}
 
 	@Test
@@ -1715,58 +1576,50 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testAnnotationsForValidateRecordJsonJson() throws Exception {
-		Method method = getMethodWithMethodName("validateRecordJsonJson", 4);
-		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+		AnnotationTestHelper annotationHelper = AnnotationTestHelper
+				.createAnnotationTestHelperForClassMethodNameAndNumOfParameters(
+						recordEndpoint.getClass(), "validateRecordJsonJson", 4);
 
-		assertHttpMethodAndPathAnnotation(method, "POST", "{type}");
-		assertConsumesAnnotation(method, "application/vnd.uub.workorder+json");
-		assertProducesAnnotation(method, APPLICATION_VND_UUB_RECORD_JSON);
-		assertAuthTokenAnnotation(parameterAnnotations, 0);
-
-		PathParam typeParameter = (PathParam) parameterAnnotations[2][0];
-		assertEquals(typeParameter.value(), "type");
+		annotationHelper.assertHttpMethodAndPathAnnotation("POST", "{type}");
+		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_WORKORDER_JSON);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_JSON);
+		annotationHelper.assertAnnotationForAuthTokensAndTypeParameters();
 	}
 
 	@Test
 	public void testAnnotationsForValidateRecordJsonXml() throws Exception {
-		Method method = getMethodWithMethodName("validateRecordJsonXml", 4);
-		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+		AnnotationTestHelper annotationHelper = AnnotationTestHelper
+				.createAnnotationTestHelperForClassMethodNameAndNumOfParameters(
+						recordEndpoint.getClass(), "validateRecordJsonXml", 4);
 
-		assertHttpMethodAndPathAnnotation(method, "POST", "{type}");
-		assertConsumesAnnotation(method, "application/vnd.uub.workorder+json");
-		assertProducesAnnotation(method, APPLICATION_VND_UUB_RECORD_XML_QS09);
-		assertAuthTokenAnnotation(parameterAnnotations, 0);
-
-		PathParam typeParameter = (PathParam) parameterAnnotations[2][0];
-		assertEquals(typeParameter.value(), "type");
+		annotationHelper.assertHttpMethodAndPathAnnotation("POST", "{type}");
+		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_WORKORDER_JSON);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_XML_QS09);
+		annotationHelper.assertAnnotationForAuthTokensAndTypeParameters();
 	}
 
 	@Test
 	public void testAnnotationsForValidateRecordXmlJson() throws Exception {
-		Method method = getMethodWithMethodName("validateRecordXmlJson", 4);
-		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+		AnnotationTestHelper annotationHelper = AnnotationTestHelper
+				.createAnnotationTestHelperForClassMethodNameAndNumOfParameters(
+						recordEndpoint.getClass(), "validateRecordXmlJson", 4);
 
-		assertHttpMethodAndPathAnnotation(method, "POST", "{type}");
-		assertConsumesAnnotation(method, "application/vnd.uub.workorder+xml" + ";qs=0.9");
-		assertProducesAnnotation(method, APPLICATION_VND_UUB_RECORD_JSON);
-		assertAuthTokenAnnotation(parameterAnnotations, 0);
-
-		PathParam typeParameter = (PathParam) parameterAnnotations[2][0];
-		assertEquals(typeParameter.value(), "type");
+		annotationHelper.assertHttpMethodAndPathAnnotation("POST", "{type}");
+		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_WORKORDER_XML_QS_0_9);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_JSON);
+		annotationHelper.assertAnnotationForAuthTokensAndTypeParameters();
 	}
 
 	@Test
 	public void testAnnotationsForValidateRecordXmlXml() throws Exception {
-		Method method = getMethodWithMethodName("validateRecordXmlXml", 4);
-		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+		AnnotationTestHelper annotationHelper = AnnotationTestHelper
+				.createAnnotationTestHelperForClassMethodNameAndNumOfParameters(
+						recordEndpoint.getClass(), "validateRecordXmlXml", 4);
 
-		assertHttpMethodAndPathAnnotation(method, "POST", "{type}");
-		assertConsumesAnnotation(method, "application/vnd.uub.workorder+xml" + ";qs=0.9");
-		assertProducesAnnotation(method, APPLICATION_VND_UUB_RECORD_XML_QS09);
-		assertAuthTokenAnnotation(parameterAnnotations, 0);
-
-		PathParam typeParameter = (PathParam) parameterAnnotations[2][0];
-		assertEquals(typeParameter.value(), "type");
+		annotationHelper.assertHttpMethodAndPathAnnotation("POST", "{type}");
+		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_WORKORDER_XML_QS_0_9);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_XML_QS09);
+		annotationHelper.assertAnnotationForAuthTokensAndTypeParameters();
 	}
 
 	@Test
@@ -1936,58 +1789,50 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testAnnotationsForIndexRecordListJsonJson() throws Exception {
-		Method method = getMethodWithMethodName("batchIndexJsonJson", 4);
-		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+		AnnotationTestHelper annotationHelper = AnnotationTestHelper
+				.createAnnotationTestHelperForClassMethodNameAndNumOfParameters(
+						recordEndpoint.getClass(), "batchIndexJsonJson", 4);
 
-		assertHttpMethodAndPathAnnotation(method, "POST", "index/{type}");
-		assertConsumesAnnotation(method, APPLICATION_VND_UUB_RECORD_JSON);
-		assertProducesAnnotation(method, APPLICATION_VND_UUB_RECORD_JSON);
-		assertAuthTokenAnnotation(parameterAnnotations, 0);
-
-		PathParam typeParameter = (PathParam) parameterAnnotations[2][0];
-		assertEquals(typeParameter.value(), "type");
+		annotationHelper.assertHttpMethodAndPathAnnotation("POST", "index/{type}");
+		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORD_JSON);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_JSON);
+		annotationHelper.assertAnnotationForAuthTokensAndTypeParameters();
 	}
 
 	@Test
 	public void testAnnotationsForIndexRecordListJsonXml() throws Exception {
-		Method method = getMethodWithMethodName("batchIndexJsonXml", 4);
-		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+		AnnotationTestHelper annotationHelper = AnnotationTestHelper
+				.createAnnotationTestHelperForClassMethodNameAndNumOfParameters(
+						recordEndpoint.getClass(), "batchIndexJsonXml", 4);
 
-		assertHttpMethodAndPathAnnotation(method, "POST", "index/{type}");
-		assertConsumesAnnotation(method, APPLICATION_VND_UUB_RECORD_JSON);
-		assertProducesAnnotation(method, APPLICATION_VND_UUB_RECORD_XML_QS09);
-		assertAuthTokenAnnotation(parameterAnnotations, 0);
-
-		PathParam typeParameter = (PathParam) parameterAnnotations[2][0];
-		assertEquals(typeParameter.value(), "type");
+		annotationHelper.assertHttpMethodAndPathAnnotation("POST", "index/{type}");
+		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORD_JSON);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_XML_QS09);
+		annotationHelper.assertAnnotationForAuthTokensAndTypeParameters();
 	}
 
 	@Test
 	public void testAnnotationsForIndexRecordListXmlJson() throws Exception {
-		Method method = getMethodWithMethodName("batchIndexXmlJson", 4);
-		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+		AnnotationTestHelper annotationHelper = AnnotationTestHelper
+				.createAnnotationTestHelperForClassMethodNameAndNumOfParameters(
+						recordEndpoint.getClass(), "batchIndexXmlJson", 4);
 
-		assertHttpMethodAndPathAnnotation(method, "POST", "index/{type}");
-		assertConsumesAnnotation(method, APPLICATION_VND_UUB_RECORD_XML_QS09);
-		assertProducesAnnotation(method, APPLICATION_VND_UUB_RECORD_JSON);
-		assertAuthTokenAnnotation(parameterAnnotations, 0);
-
-		PathParam typeParameter = (PathParam) parameterAnnotations[2][0];
-		assertEquals(typeParameter.value(), "type");
+		annotationHelper.assertHttpMethodAndPathAnnotation("POST", "index/{type}");
+		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORD_XML_QS09);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_JSON);
+		annotationHelper.assertAnnotationForAuthTokensAndTypeParameters();
 	}
 
 	@Test
 	public void testAnnotationsForIndexRecordListXmlXml() throws Exception {
-		Method method = getMethodWithMethodName("batchIndexXmlXml", 4);
-		Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+		AnnotationTestHelper annotationHelper = AnnotationTestHelper
+				.createAnnotationTestHelperForClassMethodNameAndNumOfParameters(
+						recordEndpoint.getClass(), "batchIndexXmlXml", 4);
 
-		assertHttpMethodAndPathAnnotation(method, "POST", "index/{type}");
-		assertConsumesAnnotation(method, APPLICATION_VND_UUB_RECORD_XML_QS09);
-		assertProducesAnnotation(method, APPLICATION_VND_UUB_RECORD_XML_QS09);
-		assertAuthTokenAnnotation(parameterAnnotations, 0);
-
-		PathParam typeParameter = (PathParam) parameterAnnotations[2][0];
-		assertEquals(typeParameter.value(), "type");
+		annotationHelper.assertHttpMethodAndPathAnnotation("POST", "index/{type}");
+		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORD_XML_QS09);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_XML_QS09);
+		annotationHelper.assertAnnotationForAuthTokensAndTypeParameters();
 	}
 
 	@Test

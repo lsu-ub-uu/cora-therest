@@ -21,6 +21,7 @@ package se.uu.ub.cora.therest.record;
 
 import se.uu.ub.cora.spider.binary.Downloader;
 import se.uu.ub.cora.spider.binary.Uploader;
+import se.uu.ub.cora.spider.binary.iiif.IiifReader;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceFactory;
 import se.uu.ub.cora.spider.record.IncomingLinksReader;
 import se.uu.ub.cora.spider.record.RecordCreator;
@@ -121,6 +122,12 @@ public class SpiderInstanceFactorySpy implements SpiderInstanceFactory {
 	public RecordListIndexer factorRecordListIndexer() {
 		spiderRecordListIndexerSpy = new IndexBatchJobCreatorSpy();
 		return spiderRecordListIndexerSpy;
+	}
+
+	@Override
+	public IiifReader factorIiifReader() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

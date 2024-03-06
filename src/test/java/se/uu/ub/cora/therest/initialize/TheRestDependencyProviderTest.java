@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2017, 2018, 2019, 2020 Uppsala University Library
+ * Copyright 2015, 2017, 2018, 2019, 2020, 2024 Uppsala University Library
  * Copyright 2017 Olov McKie
  *
  * This file is part of Cora.
@@ -33,7 +33,9 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.gatekeeperclient.authentication.AuthenticatorImp;
+import se.uu.ub.cora.initialize.SettingsProvider;
 import se.uu.ub.cora.logger.LoggerProvider;
+import se.uu.ub.cora.logger.spies.LoggerFactorySpy;
 import se.uu.ub.cora.search.RecordIndexer;
 import se.uu.ub.cora.search.RecordIndexerFactory;
 import se.uu.ub.cora.search.RecordSearch;
@@ -44,18 +46,15 @@ import se.uu.ub.cora.solrindex.SolrRecordIndexer;
 import se.uu.ub.cora.solrindex.SolrRecordIndexerFactory;
 import se.uu.ub.cora.solrsearch.SolrRecordSearch;
 import se.uu.ub.cora.spider.authorization.PermissionRuleCalculator;
-import se.uu.ub.cora.spider.dependency.SpiderInitializationException;
 import se.uu.ub.cora.storage.RecordStorageProvider;
 import se.uu.ub.cora.storage.StreamStorageProvider;
 import se.uu.ub.cora.storage.idgenerator.RecordIdGeneratorProvider;
 import se.uu.ub.cora.storage.spies.RecordStorageInstanceProviderSpy;
-import se.uu.ub.cora.therest.log.LoggerFactorySpy;
 
 public class TheRestDependencyProviderTest {
 	private TheRestDependencyProvider dependencyProvider;
 	private Map<String, String> settings;
 	private LoggerFactorySpy loggerFactorySpy;
-	private String testedBaseClassName = "DependencyProviderAbstract";
 	private RecordStorageInstanceProviderSpy recordStorageInstanceProviderSpy = new RecordStorageInstanceProviderSpy();
 
 	@BeforeMethod
@@ -65,7 +64,10 @@ public class TheRestDependencyProviderTest {
 		settings = new HashMap<>();
 		settings.put("gatekeeperURL", "http://localhost:8080/gatekeeper/");
 		settings.put("solrURL", "http://localhost:8983/solr/stuff");
-		dependencyProvider = new TheRestDependencyProvider(settings);
+
+		SettingsProvider.setSettings(settings);
+
+		dependencyProvider = new TheRestDependencyProvider();
 		setPluggedInStorageNormallySetByTheRestModuleStarterImp();
 	}
 
@@ -84,16 +86,6 @@ public class TheRestDependencyProviderTest {
 		assertTrue(dependencyProvider.getRecordIndexer() instanceof SolrRecordIndexer);
 	}
 
-	private Exception callSystemOneDependencyProviderAndReturnResultingError() {
-		Exception thrownException = null;
-		try {
-			dependencyProvider = new TheRestDependencyProvider(settings);
-		} catch (Exception e) {
-			thrownException = e;
-		}
-		return thrownException;
-	}
-
 	@Test
 	public void testGetPermissionRuleCalculator() {
 		PermissionRuleCalculator permissionRuleCalculator = dependencyProvider
@@ -101,21 +93,6 @@ public class TheRestDependencyProviderTest {
 		PermissionRuleCalculator permissionRuleCalculator2 = dependencyProvider
 				.getPermissionRuleCalculator();
 		assertNotEquals(permissionRuleCalculator, permissionRuleCalculator2);
-	}
-
-	@Test
-	public void testMissingGatekeeperUrlInInitInfo() {
-		settings.remove("gatekeeperURL");
-
-		Exception thrownException = callSystemOneDependencyProviderAndReturnResultingError();
-
-		assertTrue(thrownException instanceof SpiderInitializationException);
-		assertEquals(thrownException.getMessage(),
-				"InitInfo in TheRestDependencyProvider must contain: gatekeeperURL");
-		assertEquals(loggerFactorySpy.getNoOfFatalLogMessagesUsingClassName(testedBaseClassName),
-				1);
-		assertEquals(loggerFactorySpy.getFatalLogMessageUsingClassNameAndNo(testedBaseClassName, 0),
-				"InitInfo in TheRestDependencyProvider must contain: gatekeeperURL");
 	}
 
 	@Test
@@ -146,24 +123,10 @@ public class TheRestDependencyProviderTest {
 	@Test
 	public void testGetRecordIndexerUsesSolrUrlWhenCreatingSolrClientProvider() {
 		SolrRecordIndexer recordIndexer = (SolrRecordIndexer) dependencyProvider.getRecordIndexer();
+
 		SolrClientProviderImp solrClientProviderImp = (SolrClientProviderImp) recordIndexer
 				.getSolrClientProvider();
 		assertEquals(solrClientProviderImp.getBaseURL(), "http://localhost:8983/solr/stuff");
-	}
-
-	@Test
-	public void testMissingSolrUrlInInitInfo() {
-		settings.remove("solrURL");
-
-		Exception thrownException = callSystemOneDependencyProviderAndReturnResultingError();
-
-		assertTrue(thrownException instanceof SpiderInitializationException);
-		assertEquals(thrownException.getMessage(),
-				"InitInfo in TheRestDependencyProvider must contain: solrURL");
-		assertEquals(loggerFactorySpy.getNoOfFatalLogMessagesUsingClassName(testedBaseClassName),
-				1);
-		assertEquals(loggerFactorySpy.getFatalLogMessageUsingClassNameAndNo(testedBaseClassName, 0),
-				"InitInfo in TheRestDependencyProvider must contain: solrURL");
 	}
 
 	@Test

@@ -128,8 +128,6 @@ public class DataGroupSpy implements DataGroup {
 
 	@Override
 	public void addAttributeByIdWithValue(String id, String value) {
-		MCR.addCall("id", id, "value", value);
-		attributes.add(new DataAttributeSpy(id, value));
 	}
 
 	@Override

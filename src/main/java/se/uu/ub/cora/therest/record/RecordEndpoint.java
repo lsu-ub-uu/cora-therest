@@ -56,6 +56,7 @@ import se.uu.ub.cora.data.converter.DataToJsonConverterFactory;
 import se.uu.ub.cora.data.converter.DataToJsonConverterProvider;
 import se.uu.ub.cora.data.converter.JsonToDataConverter;
 import se.uu.ub.cora.data.converter.JsonToDataConverterProvider;
+import se.uu.ub.cora.initialize.SettingsProvider;
 import se.uu.ub.cora.json.parser.JsonObject;
 import se.uu.ub.cora.json.parser.JsonParseException;
 import se.uu.ub.cora.json.parser.JsonParser;
@@ -65,8 +66,8 @@ import se.uu.ub.cora.logger.Logger;
 import se.uu.ub.cora.logger.LoggerProvider;
 import se.uu.ub.cora.spider.authentication.AuthenticationException;
 import se.uu.ub.cora.spider.authorization.AuthorizationException;
+import se.uu.ub.cora.spider.binary.ResourceInputStream;
 import se.uu.ub.cora.spider.data.DataMissingException;
-import se.uu.ub.cora.spider.data.ResourceInputStream;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
 import se.uu.ub.cora.spider.record.ConflictException;
 import se.uu.ub.cora.spider.record.DataException;
@@ -78,6 +79,8 @@ import se.uu.ub.cora.storage.RecordNotFoundException;
 
 @Path("/")
 public class RecordEndpoint {
+	private static final String APPLICATION_VND_UUB_WORKORDER_JSON = "application/vnd.uub.workorder+json";
+	private static final String MULTIPART_FORM_DATA = "multipart/form-data";
 	private static final String TEXT_PLAIN_CHARSET_UTF_8 = "text/plain; charset=utf-8";
 	private static final String APPLICATION_VND_UUB_RECORD_LIST_XML = "application/vnd.uub.recordList+xml";
 	private static final String APPLICATION_VND_UUB_RECORD_LIST_XML_QS09 = "application/vnd.uub.recordList+xml;qs=0.9";
@@ -97,35 +100,41 @@ public class RecordEndpoint {
 	public RecordEndpoint(@Context HttpServletRequest req) {
 		request = req;
 		String baseUrl = getBaseURLFromURI();
+		String iiifUrl = getIiifURLFromURI();
 
-		setExternalUrlsForJsonConverter(baseUrl);
-		setExternalUrlsForXmlConverter(baseUrl);
+		setExternalUrlsForJsonConverter(baseUrl, iiifUrl);
+		setExternalUrlsForXmlConverter(baseUrl, iiifUrl);
 	}
 
-	private void setExternalUrlsForJsonConverter(String baseUrl) {
+	private void setExternalUrlsForJsonConverter(String baseUrl, String iiifUrl) {
 		externalUrlsForJson = new se.uu.ub.cora.data.converter.ExternalUrls();
 		externalUrlsForJson.setBaseUrl(baseUrl);
-		externalUrlsForJson.setIfffUrl(SpiderInstanceProvider.getInitInfo().get("iiifBaseUrl"));
+		externalUrlsForJson.setIfffUrl(iiifUrl);
 	}
 
-	private void setExternalUrlsForXmlConverter(String baseUrl) {
+	private void setExternalUrlsForXmlConverter(String baseUrl, String iiifUrl) {
 		externalUrls = new ExternalUrls();
 		externalUrls.setBaseUrl(baseUrl);
-		externalUrls.setIfffUrl(SpiderInstanceProvider.getInitInfo().get("iiifBaseUrl"));
+		externalUrls.setIfffUrl(iiifUrl);
 	}
 
 	private final String getBaseURLFromURI() {
 		String baseURL = getBaseURLFromRequest();
+		baseURL += SettingsProvider.getSetting("theRestPublicPathToSystem");
+		baseURL += "record/";
+		return changeHttpToHttpsIfHeaderSaysSo(baseURL);
+	}
+
+	private final String getIiifURLFromURI() {
+		String baseURL = getBaseURLFromRequest();
+		baseURL += SettingsProvider.getSetting("iiifPublicPathToSystem");
 		return changeHttpToHttpsIfHeaderSaysSo(baseURL);
 	}
 
 	private final String getBaseURLFromRequest() {
 		String tempUrl = request.getRequestURL().toString();
 		int indexOfFirstSlashAfterHttp = tempUrl.indexOf('/', AFTERHTTP);
-		String baseURL = tempUrl.substring(0, indexOfFirstSlashAfterHttp);
-		baseURL += SpiderInstanceProvider.getInitInfo().get("theRestPublicPathToSystem");
-		baseURL += "record/";
-		return baseURL;
+		return tempUrl.substring(0, indexOfFirstSlashAfterHttp);
 	}
 
 	private String changeHttpToHttpsIfHeaderSaysSo(String baseURI) {
@@ -626,7 +635,7 @@ public class RecordEndpoint {
 
 	@POST
 	@Path("{type}/{id}/{resourceType}")
-	@Consumes("multipart/form-data")
+	@Consumes(MULTIPART_FORM_DATA)
 	@Produces({ APPLICATION_VND_UUB_RECORD_JSON })
 	public Response uploadResourceJson(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
@@ -638,7 +647,7 @@ public class RecordEndpoint {
 
 	@POST
 	@Path("{type}/{id}/{resourceType}")
-	@Consumes("multipart/form-data")
+	@Consumes(MULTIPART_FORM_DATA)
 	@Produces(APPLICATION_VND_UUB_RECORD_XML_QS09)
 	public Response uploadResourceXml(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
@@ -748,23 +757,23 @@ public class RecordEndpoint {
 	 */
 	@POST
 	@Path("{type}")
-	@Consumes({ "application/vnd.uub.workorder+json" })
+	@Consumes({ APPLICATION_VND_UUB_WORKORDER_JSON })
 	@Produces({ APPLICATION_VND_UUB_RECORD_JSON })
 	public Response validateRecordJsonJson(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			String jsonValidationRecord) {
-		return validateRecord("application/vnd.uub.workorder+json", APPLICATION_VND_UUB_RECORD_JSON,
+		return validateRecord(APPLICATION_VND_UUB_WORKORDER_JSON, APPLICATION_VND_UUB_RECORD_JSON,
 				headerAuthToken, queryAuthToken, jsonValidationRecord);
 	}
 
 	@POST
 	@Path("{type}")
-	@Consumes("application/vnd.uub.workorder+json")
+	@Consumes(APPLICATION_VND_UUB_WORKORDER_JSON)
 	@Produces(APPLICATION_VND_UUB_RECORD_XML_QS09)
 	public Response validateRecordJsonXml(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			String jsonValidationRecord) {
-		return validateRecord("application/vnd.uub.workorder+json", APPLICATION_VND_UUB_RECORD_XML,
+		return validateRecord(APPLICATION_VND_UUB_WORKORDER_JSON, APPLICATION_VND_UUB_RECORD_XML,
 				headerAuthToken, queryAuthToken, jsonValidationRecord);
 	}
 

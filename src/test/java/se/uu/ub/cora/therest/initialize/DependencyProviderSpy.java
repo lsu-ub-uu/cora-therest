@@ -19,8 +19,6 @@
 
 package se.uu.ub.cora.therest.initialize;
 
-import java.util.Map;
-
 import se.uu.ub.cora.bookkeeper.linkcollector.DataRecordLinkCollector;
 import se.uu.ub.cora.bookkeeper.termcollector.DataGroupTermCollector;
 import se.uu.ub.cora.bookkeeper.validator.DataValidator;
@@ -38,8 +36,8 @@ public class DependencyProviderSpy extends DependencyProviderAbstract {
 
 	public boolean initializeExtendedFunctionalityHasBeenCalled = false;
 
-	public DependencyProviderSpy(Map<String, String> initInfo) {
-		super(initInfo);
+	public DependencyProviderSpy() {
+		super();
 	}
 
 	@Override
@@ -70,10 +68,6 @@ public class DependencyProviderSpy extends DependencyProviderAbstract {
 	public Authenticator getAuthenticator() {
 		// TODO Auto-generated method stub
 		throw new RuntimeException("Throwing exception from DependencyProviderSpy");
-	}
-
-	public Map<String, String> getInitInfo() {
-		return initInfo;
 	}
 
 	@Override

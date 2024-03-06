@@ -1,6 +1,6 @@
 /*
  * Copyright 2019 Olov McKie
- * Copyright 2019 Uppsala University Library
+ * Copyright 2019, 2024 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -32,17 +32,17 @@ import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletContextEvent;
 import se.uu.ub.cora.initialize.SettingsProvider;
 import se.uu.ub.cora.logger.LoggerProvider;
+import se.uu.ub.cora.logger.spies.LoggerFactorySpy;
+import se.uu.ub.cora.logger.spies.LoggerSpy;
 import se.uu.ub.cora.storage.StreamStorageProvider;
 import se.uu.ub.cora.storage.archive.RecordArchiveProvider;
 import se.uu.ub.cora.storage.idgenerator.RecordIdGeneratorProvider;
-import se.uu.ub.cora.therest.log.LoggerFactorySpy;
 
 public class TheRestModuleInitializerTest {
 	private ServletContext source;
 	private ServletContextEvent context;
 	private TheRestModuleInitializer initializer;
 	private LoggerFactorySpy loggerFactorySpy;
-	private String testedClassName = "TheRestModuleInitializer";
 
 	@BeforeMethod
 	public void beforeMethod() {
@@ -74,13 +74,16 @@ public class TheRestModuleInitializerTest {
 	@Test
 	public void testLogMessagesOnStartup() throws Exception {
 		startTheRestModuleInitializerWithStarterSpy();
-		assertEquals(loggerFactorySpy.getInfoLogMessageUsingClassNameAndNo(testedClassName, 0),
+		LoggerSpy loggerSpy = (LoggerSpy) loggerFactorySpy.MCR.getReturnValue("factorForClass", 1);
+		loggerSpy.MCR.assertNumberOfCallsToMethod("logInfoUsingMessage", 4);
+		loggerSpy.MCR.assertParameter("logInfoUsingMessage", 0, "message",
 				"TheRestModuleInitializer starting...");
-		assertEquals(loggerFactorySpy.getInfoLogMessageUsingClassNameAndNo(testedClassName, 1),
+		loggerSpy.MCR.assertParameter("logInfoUsingMessage", 1, "message",
 				"Found /therest/rest/ as theRestPublicPathToSystem");
-		assertEquals(loggerFactorySpy.getInfoLogMessageUsingClassNameAndNo(testedClassName, 2),
-				"Found se.uu.ub.cora.therest.initialize.DependencyProviderSpy as dependencyProviderClassName");
-		assertEquals(loggerFactorySpy.getInfoLogMessageUsingClassNameAndNo(testedClassName, 3),
+		loggerSpy.MCR.assertParameter("logInfoUsingMessage", 2, "message",
+				"Found se.uu.ub.cora.therest.initialize.DependencyProviderSpy as "
+						+ "dependencyProviderClassName");
+		loggerSpy.MCR.assertParameter("logInfoUsingMessage", 3, "message",
 				"TheRestModuleInitializer started");
 	}
 
@@ -101,7 +104,10 @@ public class TheRestModuleInitializerTest {
 		} catch (Exception e) {
 
 		}
-		assertEquals(loggerFactorySpy.getFatalLogMessageUsingClassNameAndNo(testedClassName, 0),
+
+		LoggerSpy loggerSpy = (LoggerSpy) loggerFactorySpy.MCR.getReturnValue("factorForClass", 1);
+		loggerSpy.MCR.assertNumberOfCallsToMethod("logFatalUsingMessage", 1);
+		loggerSpy.MCR.assertParameter("logFatalUsingMessage", 0, "message",
 				"InitInfo must contain theRestPublicPathToSystem");
 	}
 
@@ -124,7 +130,10 @@ public class TheRestModuleInitializerTest {
 		} catch (Exception e) {
 
 		}
-		assertEquals(loggerFactorySpy.getFatalLogMessageUsingClassNameAndNo(testedClassName, 0),
+
+		LoggerSpy loggerSpy = (LoggerSpy) loggerFactorySpy.MCR.getReturnValue("factorForClass", 1);
+		loggerSpy.MCR.assertNumberOfCallsToMethod("logFatalUsingMessage", 1);
+		loggerSpy.MCR.assertParameter("logFatalUsingMessage", 0, "message",
 				"InitInfo must contain dependencyProviderClassName");
 	}
 
@@ -144,7 +153,6 @@ public class TheRestModuleInitializerTest {
 		TheRestModuleStarterSpy starter = startTheRestModuleInitializerWithStarterSpy();
 		Map<String, String> initInfo = getInitInfoFromStarterSpy(starter);
 
-		// Map<String, String> initInfo = starter.initInfo;
 		assertEquals(initInfo.size(), 4);
 		assertEquals(initInfo.get("theRestPublicPathToSystem"), "/therest/rest/");
 		assertEquals(initInfo.get("dependencyProviderClassName"),
@@ -196,20 +204,8 @@ public class TheRestModuleInitializerTest {
 		assertTrue(provider instanceof ServiceLoader);
 	}
 
-	// @Test
-	// public void testMetadataStorageProviderImplementationsArePassedOnToStarter() {
-	// TheRestModuleStarterSpy starter = startTheRestModuleInitializerWithStarterSpy();
-	//
-	// Providers providers = getProviders(starter);
-	// Iterable<MetadataStorageProvider> provider =
-	// providers.metadataStorageProviderImplementations;
-	//
-	// assertTrue(provider instanceof ServiceLoader);
-	// }
-
 	@Test
 	public void testInitUsesDefaultTheRestModuleStarter() throws Exception {
-		// makeSureErrorIsThrownAsNoImplementationsExistInThisModule();
 		TheRestModuleStarterImp starter = (TheRestModuleStarterImp) initializer
 				.onlyForTestGetStarter();
 		assertStarterIsTheRestModuleStarter(starter);

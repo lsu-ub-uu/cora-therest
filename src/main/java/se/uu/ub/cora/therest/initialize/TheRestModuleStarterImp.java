@@ -51,7 +51,9 @@ public class TheRestModuleStarterImp implements TheRestModuleStarter {
 
 	public void start() {
 
-		SpiderInstanceProvider.setInitInfo(initInfo);
+		// SpiderInstanceProvider.setInitInfo(initInfo);
+		// SettingsProvider.setSettings(initInfo);
+		// System.out.println(initInfo);
 		try {
 			createInstanceOfDependencyProviderClass();
 		} catch (Exception e) {
@@ -86,9 +88,8 @@ public class TheRestModuleStarterImp implements TheRestModuleStarter {
 			throws InstantiationException, IllegalAccessException, ClassNotFoundException,
 			InvocationTargetException, NoSuchMethodException {
 		String dependencyProviderString = initInfo.get("dependencyProviderClassName");
-		Constructor<?> constructor = Class.forName(dependencyProviderString)
-				.getConstructor(Map.class);
-		dependencyProvider = (DependencyProviderAbstract) constructor.newInstance(initInfo);
+		Constructor<?> constructor = Class.forName(dependencyProviderString).getConstructor();
+		dependencyProvider = (DependencyProviderAbstract) constructor.newInstance();
 	}
 
 	private void createAndSetFactoryInSpiderInstanceProvider() {
