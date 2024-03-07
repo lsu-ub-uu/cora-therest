@@ -32,32 +32,32 @@
 	<name>The Rest</name>
 	
 	<properties>
-		<json.version>3.9.0</json.version>
-		<spider.version>8.2-SNAPSHOT</spider.version>
-		<spider-spies.version>1.8-SNAPSHOT</spider-spies.version>
+		<json.version>3.10.0</json.version>
+		<spider.version>8.2.0</spider.version>
+		<spider-spies.version>1.8.0</spider-spies.version>
 		<jaxb-api.version>2.3.1</jaxb-api.version>
 		<servlet-api.version>5.0.0</servlet-api.version>
-		<jersey.version>3.1.3</jersey.version>
-		<bookkeeper.version>9.2.0</bookkeeper.version>
-		<gatekeeperclient.version>4.8.0</gatekeeperclient.version>
+		<jersey.version>3.1.5</jersey.version>
+		<bookkeeper.version>9.3.0</bookkeeper.version>
+		<gatekeeperclient.version>4.9.0</gatekeeperclient.version>
 		<beefeater.version>3.13.0</beefeater.version>
-		<solrsearch.version>5.5.0</solrsearch.version>
-		<httphandler.version>2.11.0</httphandler.version>
-		<storage.version>9.0.0</storage.version>
-		<storage-spies.version>1.6.0</storage-spies.version>
-		<initialize.version>1.6-SNAPSHOT</initialize.version>
-		<search.version>5.6.0</search.version>
-		<searchstorage.version>3.21.0</searchstorage.version>
+		<solrsearch.version>5.6.0</solrsearch.version>
+		<httphandler.version>2.16.0</httphandler.version>
+		<storage.version>9.1.0</storage.version>
+		<storage-spies.version>1.7.0</storage-spies.version>
+		<initialize.version>1.6.0</initialize.version>
+		<search.version>5.7.0</search.version>
+		<searchstorage.version>3.22.0</searchstorage.version>
 		<logger.version>2.10.0</logger.version>
 		<logger-spies.version>1.5.0</logger-spies.version>
 		<coralog4j.version>2.1.0</coralog4j.version>
-		<coradata.version>9.0-SNAPSHOT</coradata.version>
-		<messaging.version>3.0-SNAPSHOT</messaging.version>
+		<coradata.version>9.0.0</coradata.version>
+		<messaging.version>3.0.0</messaging.version>
 		<testutils.version>1.11.0</testutils.version>
-		<converter.version>4.0-SNAPSHOT</converter.version>
-		<xmlconverter.version>3.0-SNAPSHOT</xmlconverter.version>
+		<converter.version>4.0.0</converter.version>
+		<xmlconverter.version>3.0.0</xmlconverter.version>
 <!--		<contentanalyzer.version>1.0.0</contentanalyzer.version>-->
-		<binary.version>2.0-SNAPSHOT</binary.version>
+		<binary.version>2.0.0</binary.version>
 	</properties>
 	
 	<scm>
