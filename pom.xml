@@ -41,7 +41,7 @@
 		<bookkeeper.version>9.3.0</bookkeeper.version>
 		<gatekeeperclient.version>4.9.0</gatekeeperclient.version>
 		<beefeater.version>3.13.0</beefeater.version>
-		<solrsearch.version>5.6.0</solrsearch.version>
+		<solrsearch.version>5.7.0</solrsearch.version>
 		<httphandler.version>2.16.0</httphandler.version>
 		<storage.version>9.1.0</storage.version>
 		<storage-spies.version>1.7.0</storage-spies.version>
