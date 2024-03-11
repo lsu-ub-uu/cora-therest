@@ -24,11 +24,10 @@ import se.uu.ub.cora.httphandler.HttpHandlerFactory;
 import se.uu.ub.cora.httphandler.HttpHandlerFactoryImp;
 import se.uu.ub.cora.initialize.SettingsProvider;
 import se.uu.ub.cora.search.RecordIndexer;
-import se.uu.ub.cora.search.RecordIndexerFactory;
 import se.uu.ub.cora.search.RecordSearch;
 import se.uu.ub.cora.searchstorage.SearchStorageProvider;
 import se.uu.ub.cora.solr.SolrClientProviderImp;
-import se.uu.ub.cora.solrindex.SolrRecordIndexerFactory;
+import se.uu.ub.cora.solrindex.SolrRecordIndexer;
 import se.uu.ub.cora.solrsearch.SolrRecordSearch;
 import se.uu.ub.cora.spider.authentication.Authenticator;
 import se.uu.ub.cora.spider.dependency.DependencyProviderAbstract;
@@ -41,7 +40,7 @@ public class TheRestDependencyProvider extends DependencyProviderAbstract {
 	private String gatekeeperUrl;
 	private String solrUrl;
 	private SolrClientProviderImp solrClientProvider;
-	private SolrRecordIndexerFactory solrRecordIndexerFactory;
+	// private SolrRecordIndexerFactory solrRecordIndexerFactory;
 
 	public TheRestDependencyProvider() {
 		super();
@@ -63,7 +62,6 @@ public class TheRestDependencyProvider extends DependencyProviderAbstract {
 
 	@Override
 	protected void tryToInitialize() {
-		solrRecordIndexerFactory = new SolrRecordIndexerFactory();
 		solrClientProvider = SolrClientProviderImp.usingBaseUrl(solrUrl);
 	}
 
@@ -82,11 +80,6 @@ public class TheRestDependencyProvider extends DependencyProviderAbstract {
 
 	@Override
 	public RecordIndexer getRecordIndexer() {
-		return solrRecordIndexerFactory.factor(solrUrl);
+		return SolrRecordIndexer.createSolrRecordIndexerUsingSolrClientProvider(solrClientProvider);
 	}
-
-	RecordIndexerFactory getRecordIndexerFactory() {
-		return solrRecordIndexerFactory;
-	}
-
 }

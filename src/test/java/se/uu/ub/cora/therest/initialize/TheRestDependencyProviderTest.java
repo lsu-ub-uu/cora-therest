@@ -37,13 +37,11 @@ import se.uu.ub.cora.initialize.SettingsProvider;
 import se.uu.ub.cora.logger.LoggerProvider;
 import se.uu.ub.cora.logger.spies.LoggerFactorySpy;
 import se.uu.ub.cora.search.RecordIndexer;
-import se.uu.ub.cora.search.RecordIndexerFactory;
 import se.uu.ub.cora.search.RecordSearch;
 import se.uu.ub.cora.searchstorage.SearchStorageProvider;
 import se.uu.ub.cora.searchstorage.SearchStorageView;
 import se.uu.ub.cora.solr.SolrClientProviderImp;
 import se.uu.ub.cora.solrindex.SolrRecordIndexer;
-import se.uu.ub.cora.solrindex.SolrRecordIndexerFactory;
 import se.uu.ub.cora.solrsearch.SolrRecordSearch;
 import se.uu.ub.cora.spider.authorization.PermissionRuleCalculator;
 import se.uu.ub.cora.storage.RecordStorageProvider;
@@ -105,12 +103,6 @@ public class TheRestDependencyProviderTest {
 	@Test
 	public void testGetRecordSearch() {
 		assertNotNull(dependencyProvider.getRecordSearch());
-	}
-
-	@Test
-	public void testRecordIndexerFactory() {
-		RecordIndexerFactory recordIndexerFactory = dependencyProvider.getRecordIndexerFactory();
-		assertTrue(recordIndexerFactory instanceof SolrRecordIndexerFactory);
 	}
 
 	@Test
