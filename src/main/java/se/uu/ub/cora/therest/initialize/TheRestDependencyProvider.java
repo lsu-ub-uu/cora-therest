@@ -40,7 +40,6 @@ public class TheRestDependencyProvider extends DependencyProviderAbstract {
 	private String gatekeeperUrl;
 	private String solrUrl;
 	private SolrClientProviderImp solrClientProvider;
-	// private SolrRecordIndexerFactory solrRecordIndexerFactory;
 
 	public TheRestDependencyProvider() {
 		super();
