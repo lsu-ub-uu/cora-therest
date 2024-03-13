@@ -50,10 +50,6 @@ public class TheRestModuleStarterImp implements TheRestModuleStarter {
 	}
 
 	public void start() {
-
-		// SpiderInstanceProvider.setInitInfo(initInfo);
-		// SettingsProvider.setSettings(initInfo);
-		// System.out.println(initInfo);
 		try {
 			createInstanceOfDependencyProviderClass();
 		} catch (Exception e) {
@@ -110,7 +106,8 @@ public class TheRestModuleStarterImp implements TheRestModuleStarter {
 	private <T extends SelectOrder> T findAndLogPreferedImplementation(Iterable<T> implementations,
 			String interfaceClassName) {
 		T implementation = null;
-		int preferenceLevel = -99999;
+		final int LOWEST_IMPLEMENTATION_ORDER = -99999;
+		int preferenceLevel = LOWEST_IMPLEMENTATION_ORDER;
 		for (T currentImplementation : implementations) {
 			if (preferenceLevel < currentImplementation.getOrderToSelectImplementionsBy()) {
 				preferenceLevel = currentImplementation.getOrderToSelectImplementionsBy();
