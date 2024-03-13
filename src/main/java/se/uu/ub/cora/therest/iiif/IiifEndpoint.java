@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -40,7 +41,7 @@ import se.uu.ub.cora.spider.record.RecordNotFoundException;
 
 @Path("/")
 public class IiifEndpoint {
-	private static final List<String> restrictedHeaders = List.of("access-control-request-headers",
+	private static final Set<String> restrictedHeaders = Set.of("access-control-request-headers",
 			"access-control-request-method", "connection", "content-length",
 			"content-transfer-encoding", "host", "keep-alive", "origin", "trailer",
 			"transfer-encoding", "upgrade", "via");
@@ -85,8 +86,8 @@ public class IiifEndpoint {
 		return headersMap;
 	}
 
-	private void possiblyTransformAndAddHeaderToCompoundValuesIfHeaderIsAllowed(Map<String, String> headersMap,
-			Entry<String, List<String>> header) {
+	private void possiblyTransformAndAddHeaderToCompoundValuesIfHeaderIsAllowed(
+			Map<String, String> headersMap, Entry<String, List<String>> header) {
 		if (headerAllowed(header.getKey())) {
 			String compoundValues = String.join(", ", header.getValue());
 			headersMap.put(header.getKey(), compoundValues);
