@@ -33,7 +33,7 @@ import se.uu.ub.cora.spider.record.RecordSearcher;
 import se.uu.ub.cora.spider.record.RecordUpdater;
 import se.uu.ub.cora.spider.record.RecordValidator;
 
-public class SpiderInstanceFactorySpy implements SpiderInstanceFactory {
+public class OldSpiderInstanceFactorySpy implements SpiderInstanceFactory {
 
 	public SpiderDownloaderSpy spiderDownloaderSpy;
 	public SpiderUploaderSpy spiderUploaderSpy;

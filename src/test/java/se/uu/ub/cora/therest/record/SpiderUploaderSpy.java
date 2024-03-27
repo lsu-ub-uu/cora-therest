@@ -73,7 +73,6 @@ public class SpiderUploaderSpy implements Uploader {
 			throw new MisuseException(
 					"It is only possible to upload files to recordTypes that are children of binary");
 		}
-
 		if (inputStream == null) {
 			throw new DataMissingException("No stream to store");
 		}

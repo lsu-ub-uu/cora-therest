@@ -28,6 +28,7 @@ import se.uu.ub.cora.spider.binary.ResourceInputStream;
 import se.uu.ub.cora.spider.data.DataMissingException;
 import se.uu.ub.cora.spider.record.MisuseException;
 import se.uu.ub.cora.storage.RecordNotFoundException;
+import se.uu.ub.cora.storage.ResourceNotFoundException;
 
 public class SpiderDownloaderSpy implements Downloader {
 
@@ -58,6 +59,9 @@ public class SpiderDownloaderSpy implements Downloader {
 
 		if ("image:123456789_NOT_FOUND".equals(id)) {
 			throw RecordNotFoundException.withMessage("No record exists with recordId: " + id);
+		}
+		if ("image:123456789_NOT_FOUND".equals(id)) {
+			throw ResourceNotFoundException.withMessage("No record exists with recordId: " + id);
 		}
 
 		if ("not_child_of_binary_type".equals(type)) {

@@ -55,11 +55,17 @@ import se.uu.ub.cora.json.parser.org.OrgJsonParser;
 import se.uu.ub.cora.logger.LoggerProvider;
 import se.uu.ub.cora.logger.spies.LoggerFactorySpy;
 import se.uu.ub.cora.logger.spies.LoggerSpy;
+import se.uu.ub.cora.spider.binary.ArchiveDataIntergrityException;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
+import se.uu.ub.cora.spider.record.RecordNotFoundException;
+import se.uu.ub.cora.spider.record.ResourceNotFoundException;
+import se.uu.ub.cora.spider.spies.DownloaderSpy;
+import se.uu.ub.cora.spider.spies.SpiderInstanceFactorySpy;
 import se.uu.ub.cora.therest.AnnotationTestHelper;
 import se.uu.ub.cora.therest.coradata.DataGroupSpy;
 import se.uu.ub.cora.therest.coradata.DataListSpy;
 import se.uu.ub.cora.therest.coradata.DataRecordSpy;
+import se.uu.ub.cora.therest.spy.InputStreamSpy;
 
 public class RecordEndpointTest {
 	private static final String APPLICATION_VND_UUB_WORKORDER_XML_QS_0_9 = "application/vnd.uub.workorder+xml;qs=0.9";
@@ -82,7 +88,7 @@ public class RecordEndpointTest {
 	private JsonToDataConverterFactorySpy jsonToDataConverterFactorySpy = new JsonToDataConverterFactorySpy();
 
 	private RecordEndpoint recordEndpoint;
-	private SpiderInstanceFactorySpy spiderInstanceFactorySpy;
+	private OldSpiderInstanceFactorySpy spiderInstanceFactorySpy;
 	private Response response;
 	private HttpServletRequestSpy requestSpy;
 	private LoggerFactorySpy loggerFactorySpy;
@@ -98,7 +104,7 @@ public class RecordEndpointTest {
 	private String standardBaseUrlHttps = "https://cora.epc.ub.uu.se/systemone/rest/record/";
 	private String standardIffUrlHttp = "http://cora.epc.ub.uu.se/systemone/iiif/";
 	private String standardIffUrlHttps = "https://cora.epc.ub.uu.se/systemone/iiif/";
-	// private String ii ifUrl = "someiiifUrl";
+	private InputStreamSpy inputStreamSpy;
 
 	@BeforeMethod
 	public void beforeMethod() {
@@ -113,8 +119,10 @@ public class RecordEndpointTest {
 
 		jsonToDataConverterFactorySpy = new JsonToDataConverterFactorySpy();
 		JsonToDataConverterProvider.setJsonToDataConverterFactory(jsonToDataConverterFactorySpy);
-		spiderInstanceFactorySpy = new SpiderInstanceFactorySpy();
+		spiderInstanceFactorySpy = new OldSpiderInstanceFactorySpy();
 		SpiderInstanceProvider.setSpiderInstanceFactory(spiderInstanceFactorySpy);
+
+		inputStreamSpy = new InputStreamSpy();
 
 		Map<String, String> settings = new HashMap<>();
 		settings.put("theRestPublicPathToSystem", "/systemone/rest/");
@@ -1187,6 +1195,19 @@ public class RecordEndpointTest {
 	}
 
 	@Test
+	public void testUploadHandleArchiveDataIntegrityException() throws Exception {
+		var uploader = new se.uu.ub.cora.spider.spies.UploaderSpy();
+		uploader.MRV.setAlwaysThrowException("upload",
+				ArchiveDataIntergrityException.withMessage("someException"));
+		setUpSpiderInstanceProvider("factorUploader", uploader);
+
+		response = recordEndpoint.uploadResourceJson(AUTH_TOKEN, AUTH_TOKEN, "someType", "someId",
+				inputStreamSpy, "someRepresentation");
+		assertResponseStatusIs(Response.Status.BAD_REQUEST);
+		assertResponseContentTypeIs(TEXT_PLAIN);
+	}
+
+	@Test
 	public void testPreferredTokenForDownload() throws IOException {
 		expectTokenForDownloadToPreferablyBeHeaderThanQuery(AUTH_TOKEN, "authToken2", AUTH_TOKEN);
 		expectTokenForDownloadToPreferablyBeHeaderThanQuery(null, AUTH_TOKEN, AUTH_TOKEN);
@@ -1254,10 +1275,33 @@ public class RecordEndpointTest {
 	}
 
 	@Test
-	public void testDownloadNotFound() throws IOException {
-		response = recordEndpoint.downloadResource(AUTH_TOKEN, AUTH_TOKEN, "image",
-				"image:123456789_NOT_FOUND", "master");
+	public void testDownloadWhenResourceNotFound() throws IOException {
+		DownloaderSpy downloader = new DownloaderSpy();
+		downloader.MRV.setAlwaysThrowException("download",
+				ResourceNotFoundException.withMessage("someException"));
+		setUpSpiderInstanceProvider("factorDownloader", downloader);
+
+		response = recordEndpoint.downloadResource(AUTH_TOKEN, AUTH_TOKEN, "someType", "someId",
+				"someRepresentation");
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
+	}
+
+	@Test
+	public void testDownloadWhenRecordNotFound() throws IOException {
+		DownloaderSpy downloader = new DownloaderSpy();
+		downloader.MRV.setAlwaysThrowException("download",
+				RecordNotFoundException.withMessage("someException"));
+		setUpSpiderInstanceProvider("factorDownloader", downloader);
+
+		response = recordEndpoint.downloadResource(AUTH_TOKEN, AUTH_TOKEN, "someType", "someId",
+				"someRepresentation");
+		assertResponseStatusIs(Response.Status.NOT_FOUND);
+	}
+
+	private void setUpSpiderInstanceProvider(String method, Object supplier) {
+		SpiderInstanceFactorySpy spiderInstanceFactorySpy = new SpiderInstanceFactorySpy();
+		spiderInstanceFactorySpy.MRV.setDefaultReturnValuesSupplier(method, () -> supplier);
+		SpiderInstanceProvider.setSpiderInstanceFactory(spiderInstanceFactorySpy);
 	}
 
 	@Test
