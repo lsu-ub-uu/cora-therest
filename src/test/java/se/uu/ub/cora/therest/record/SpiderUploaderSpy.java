@@ -22,15 +22,10 @@ package se.uu.ub.cora.therest.record;
 import java.io.InputStream;
 
 import se.uu.ub.cora.data.DataRecord;
-import se.uu.ub.cora.spider.authorization.AuthorizationException;
 import se.uu.ub.cora.spider.binary.Uploader;
-import se.uu.ub.cora.spider.data.DataMissingException;
-import se.uu.ub.cora.spider.record.MisuseException;
-import se.uu.ub.cora.storage.RecordNotFoundException;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
-import se.uu.ub.cora.therest.coradata.DataRecordSpy;
-import se.uu.ub.cora.therest.testdata.DataCreator;
 
+@Deprecated
 public class SpiderUploaderSpy implements Uploader {
 
 	MethodCallRecorder MCR = new MethodCallRecorder();
@@ -44,38 +39,6 @@ public class SpiderUploaderSpy implements Uploader {
 	@Override
 	public DataRecord upload(String authToken, String type, String id, InputStream inputStream,
 			String represntation) {
-		MCR.addCall("authToken", authToken, "type", type, "id", id, "inputStream", inputStream,
-				"represntation", represntation);
-		this.authToken = authToken;
-		this.type = type;
-		this.id = id;
-		this.inputStream = inputStream;
-
-		possiblyThrowException(authToken, type, id, inputStream);
-		DataRecordSpy dataRecordSpy = new DataRecordSpy(
-				DataCreator.createRecordWithNameInDataAndIdAndTypeAndLinkedRecordId("nameInData",
-						"someId", type, "linkedRecordId"));
-
-		MCR.addReturned(dataRecordSpy);
-		return dataRecordSpy;
+		return null;
 	}
-
-	private void possiblyThrowException(String authToken, String type, String id,
-			InputStream inputStream) {
-		if ("dummyNonAuthorizedToken".equals(authToken)) {
-			throw new AuthorizationException("not authorized");
-		}
-		if ("image:123456789_NOT_FOUND".equals(id)) {
-			throw RecordNotFoundException.withMessage("No record exists with recordId: " + id);
-		}
-
-		if ("not_child_of_binary_type".equals(type)) {
-			throw new MisuseException(
-					"It is only possible to upload files to recordTypes that are children of binary");
-		}
-		if (inputStream == null) {
-			throw new DataMissingException("No stream to store");
-		}
-	}
-
 }

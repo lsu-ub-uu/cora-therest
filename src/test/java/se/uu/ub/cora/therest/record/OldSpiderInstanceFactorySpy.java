@@ -83,14 +83,12 @@ public class OldSpiderInstanceFactorySpy implements SpiderInstanceFactory {
 
 	@Override
 	public Uploader factorUploader() {
-		spiderUploaderSpy = new SpiderUploaderSpy();
-		return spiderUploaderSpy;
+		return null;
 	}
 
 	@Override
 	public Downloader factorDownloader() {
-		spiderDownloaderSpy = new SpiderDownloaderSpy();
-		return spiderDownloaderSpy;
+		return null;
 	}
 
 	@Override
