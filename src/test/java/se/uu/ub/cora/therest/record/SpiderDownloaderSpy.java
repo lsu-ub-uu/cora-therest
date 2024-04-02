@@ -19,16 +19,10 @@
 
 package se.uu.ub.cora.therest.record;
 
-import java.io.ByteArrayInputStream;
-import java.nio.charset.StandardCharsets;
-
-import se.uu.ub.cora.spider.authorization.AuthorizationException;
 import se.uu.ub.cora.spider.binary.Downloader;
 import se.uu.ub.cora.spider.binary.ResourceInputStream;
-import se.uu.ub.cora.spider.data.DataMissingException;
-import se.uu.ub.cora.spider.record.MisuseException;
-import se.uu.ub.cora.storage.RecordNotFoundException;
 
+@Deprecated
 public class SpiderDownloaderSpy implements Downloader {
 
 	public String authToken;
@@ -39,35 +33,6 @@ public class SpiderDownloaderSpy implements Downloader {
 	@Override
 	public ResourceInputStream download(String authToken, String type, String id,
 			String representation) {
-		this.authToken = authToken;
-		this.type = type;
-		this.id = id;
-		this.representation = representation;
-
-		possiblyThrowException(authToken, type, id, representation);
-
-		return ResourceInputStream.withNameSizeInputStream("someFile", 12,
-				"application/octet-stream",
-				new ByteArrayInputStream("a string out".getBytes(StandardCharsets.UTF_8)));
+		return null;
 	}
-
-	private void possiblyThrowException(String authToken, String type, String id, String resource) {
-		if ("dummyNonAuthorizedToken".equals(authToken)) {
-			throw new AuthorizationException("not authorized");
-		}
-
-		if ("image:123456789_NOT_FOUND".equals(id)) {
-			throw RecordNotFoundException.withMessage("No record exists with recordId: " + id);
-		}
-
-		if ("not_child_of_binary_type".equals(type)) {
-			throw new MisuseException(
-					"It is only possible to download files to recordTypes that are children of binary");
-		}
-
-		if ("".equals(resource)) {
-			throw new DataMissingException("No stream to store");
-		}
-	}
-
 }

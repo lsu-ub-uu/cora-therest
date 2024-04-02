@@ -27,9 +27,9 @@ import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.util.HashMap;
@@ -55,11 +55,22 @@ import se.uu.ub.cora.json.parser.org.OrgJsonParser;
 import se.uu.ub.cora.logger.LoggerProvider;
 import se.uu.ub.cora.logger.spies.LoggerFactorySpy;
 import se.uu.ub.cora.logger.spies.LoggerSpy;
+import se.uu.ub.cora.spider.authorization.AuthorizationException;
+import se.uu.ub.cora.spider.binary.ArchiveDataIntergrityException;
+import se.uu.ub.cora.spider.binary.ResourceInputStream;
+import se.uu.ub.cora.spider.data.DataMissingException;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
+import se.uu.ub.cora.spider.record.MisuseException;
+import se.uu.ub.cora.spider.record.RecordNotFoundException;
+import se.uu.ub.cora.spider.record.ResourceNotFoundException;
+import se.uu.ub.cora.spider.spies.DownloaderSpy;
+import se.uu.ub.cora.spider.spies.SpiderInstanceFactorySpy;
+import se.uu.ub.cora.spider.spies.UploaderSpy;
 import se.uu.ub.cora.therest.AnnotationTestHelper;
 import se.uu.ub.cora.therest.coradata.DataGroupSpy;
 import se.uu.ub.cora.therest.coradata.DataListSpy;
 import se.uu.ub.cora.therest.coradata.DataRecordSpy;
+import se.uu.ub.cora.therest.spy.InputStreamSpy;
 
 public class RecordEndpointTest {
 	private static final String APPLICATION_VND_UUB_WORKORDER_XML_QS_0_9 = "application/vnd.uub.workorder+xml;qs=0.9";
@@ -76,13 +87,15 @@ public class RecordEndpointTest {
 	private static final String PLACE_0001 = "place:0001";
 	private static final String PLACE = "place";
 	private static final String AUTH_TOKEN = "authToken";
-	private static final String SOME_RESOUTCE_TYPE = "someResourceType";
+	private static final String SOME_RESOURCE_TYPE = "someResourceType";
+	private static final String SOME_ID = "someId";
+	private static final String SOME_TYPE = "someType";
 	private JsonParserSpy jsonParser;
 
 	private JsonToDataConverterFactorySpy jsonToDataConverterFactorySpy = new JsonToDataConverterFactorySpy();
 
 	private RecordEndpoint recordEndpoint;
-	private SpiderInstanceFactorySpy spiderInstanceFactorySpy;
+	private OldSpiderInstanceFactorySpy spiderInstanceFactorySpy;
 	private Response response;
 	private HttpServletRequestSpy requestSpy;
 	private LoggerFactorySpy loggerFactorySpy;
@@ -98,7 +111,9 @@ public class RecordEndpointTest {
 	private String standardBaseUrlHttps = "https://cora.epc.ub.uu.se/systemone/rest/record/";
 	private String standardIffUrlHttp = "http://cora.epc.ub.uu.se/systemone/iiif/";
 	private String standardIffUrlHttps = "https://cora.epc.ub.uu.se/systemone/iiif/";
-	// private String ii ifUrl = "someiiifUrl";
+	private InputStreamSpy inputStreamSpy;
+	private DownloaderSpy downloaderSpy;
+	private UploaderSpy uploaderSpy;
 
 	@BeforeMethod
 	public void beforeMethod() {
@@ -113,8 +128,12 @@ public class RecordEndpointTest {
 
 		jsonToDataConverterFactorySpy = new JsonToDataConverterFactorySpy();
 		JsonToDataConverterProvider.setJsonToDataConverterFactory(jsonToDataConverterFactorySpy);
-		spiderInstanceFactorySpy = new SpiderInstanceFactorySpy();
+		spiderInstanceFactorySpy = new OldSpiderInstanceFactorySpy();
 		SpiderInstanceProvider.setSpiderInstanceFactory(spiderInstanceFactorySpy);
+
+		inputStreamSpy = new InputStreamSpy();
+		downloaderSpy = new DownloaderSpy();
+		uploaderSpy = new UploaderSpy();
 
 		Map<String, String> settings = new HashMap<>();
 		settings.put("theRestPublicPathToSystem", "/systemone/rest/");
@@ -203,7 +222,6 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testPreferredTokenForReadList() throws IOException {
-		expectTokenForReadListToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, "authToken2", AUTH_TOKEN);
 		expectTokenForReadListToPrefereblyBeHeaderThanQuery(null, AUTH_TOKEN, AUTH_TOKEN);
 		expectTokenForReadListToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, null, AUTH_TOKEN);
 		expectTokenForReadListToPrefereblyBeHeaderThanQuery(null, null, null);
@@ -441,7 +459,6 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testReadRecordUsesXmlConverterForAcceptXml() {
-
 		response = recordEndpoint.readRecordXml(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001);
 
 		DataRecord recordReturnedFromReader = spiderInstanceFactorySpy.spiderRecordReaderSpy.dataRecord;
@@ -1066,46 +1083,53 @@ public class RecordEndpointTest {
 	}
 
 	@Test
-	public void testPreferredTokenForUpload() throws IOException {
+	public void testPreferredTokenForUpload_1() throws IOException {
 		expectTokenForUploadToPreferablyBeHeaderThanQuery(AUTH_TOKEN, "authToken2", AUTH_TOKEN);
+	}
+
+	@Test
+	public void testPreferredTokenForUpload_2() throws IOException {
 		expectTokenForUploadToPreferablyBeHeaderThanQuery(null, AUTH_TOKEN, AUTH_TOKEN);
+	}
+
+	@Test
+	public void testPreferredTokenForUpload_3() throws IOException {
 		expectTokenForUploadToPreferablyBeHeaderThanQuery(AUTH_TOKEN, null, AUTH_TOKEN);
+	}
+
+	@Test
+	public void testPreferredTokenForUpload_4() throws IOException {
 		expectTokenForUploadToPreferablyBeHeaderThanQuery(null, null, null);
 	}
 
 	private void expectTokenForUploadToPreferablyBeHeaderThanQuery(String headerAuthToken,
 			String queryAuthToken, String authTokenExpected) {
-		InputStream stream = createUplodedInputStream();
+		setUpSpiderInstanceProvider("factorUploader", uploaderSpy);
 
-		response = recordEndpoint.uploadResourceJson(headerAuthToken, queryAuthToken, "image",
-				"image:123456789", stream, SOME_RESOUTCE_TYPE);
+		response = recordEndpoint.uploadResourceJson(headerAuthToken, queryAuthToken, SOME_TYPE,
+				SOME_ID, inputStreamSpy, SOME_RESOURCE_TYPE);
 
-		SpiderUploaderSpy spiderUploaderSpy = spiderInstanceFactorySpy.spiderUploaderSpy;
-		assertEquals(spiderUploaderSpy.authToken, authTokenExpected);
-	}
-
-	private ByteArrayInputStream createUplodedInputStream() {
-		return new ByteArrayInputStream("a string".getBytes(StandardCharsets.UTF_8));
+		uploaderSpy.MCR.assertParameter("upload", 0, "authToken", authTokenExpected);
 	}
 
 	@Test
 	public void testUploadFileForJson() throws ParseException {
-		InputStream stream = createUplodedInputStream();
+		setUpSpiderInstanceProvider("factorUploader", uploaderSpy);
 
-		response = recordEndpoint.uploadResourceJson(AUTH_TOKEN, AUTH_TOKEN, "image",
-				"image:123456789", stream, SOME_RESOUTCE_TYPE);
+		response = recordEndpoint.uploadResourceJson(AUTH_TOKEN, AUTH_TOKEN, SOME_TYPE, SOME_ID,
+				inputStreamSpy, SOME_RESOURCE_TYPE);
 
 		assertResponseStatusIs(Response.Status.OK);
 	}
 
 	@Test
 	public void testUploadFileForXml() {
-		InputStream stream = createUplodedInputStream();
+		setUpSpiderInstanceProvider("factorUploader", uploaderSpy);
 
-		response = recordEndpoint.uploadResourceXml(AUTH_TOKEN, AUTH_TOKEN, "image",
-				"image:123456789", stream, SOME_RESOUTCE_TYPE);
-		DataRecord uploadedFile = (DataRecord) spiderInstanceFactorySpy.spiderUploaderSpy.MCR
-				.getReturnValue("upload", 0);
+		response = recordEndpoint.uploadResourceXml(AUTH_TOKEN, AUTH_TOKEN, SOME_TYPE, SOME_ID,
+				inputStreamSpy, SOME_RESOURCE_TYPE);
+
+		DataRecord uploadedFile = (DataRecord) uploaderSpy.MCR.getReturnValue("upload", 0);
 
 		assertXmlConvertionOfResponse(uploadedFile);
 		assertEntityExists();
@@ -1147,31 +1171,37 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testUploadUnauthorized() {
-		InputStream stream = createUplodedInputStream();
+		uploaderSpy.MRV.setAlwaysThrowException("upload",
+				new AuthorizationException("not authorized"));
+		setUpSpiderInstanceProvider("factorUploader", uploaderSpy);
 
 		response = recordEndpoint.uploadResourceUsingAuthTokenWithStream(
-				APPLICATION_VND_UUB_RECORD_JSON, DUMMY_NON_AUTHORIZED_TOKEN, "image",
-				"image:123456789", stream, SOME_RESOUTCE_TYPE);
+				APPLICATION_VND_UUB_RECORD_JSON, DUMMY_NON_AUTHORIZED_TOKEN, SOME_TYPE, SOME_ID,
+				inputStreamSpy, SOME_RESOURCE_TYPE);
 
 		assertResponseStatusIs(Response.Status.FORBIDDEN);
 	}
 
 	@Test
 	public void testUploadNotFound() {
-		InputStream stream = createUplodedInputStream();
+		uploaderSpy.MRV.setAlwaysThrowException("upload",
+				RecordNotFoundException.withMessage("No record exists with recordId: " + SOME_ID));
+		setUpSpiderInstanceProvider("factorUploader", uploaderSpy);
 
-		response = recordEndpoint.uploadResourceJson(AUTH_TOKEN, AUTH_TOKEN, "image",
-				"image:123456789_NOT_FOUND", stream, SOME_RESOUTCE_TYPE);
+		response = recordEndpoint.uploadResourceJson(AUTH_TOKEN, AUTH_TOKEN, SOME_TYPE, SOME_ID,
+				inputStreamSpy, SOME_RESOURCE_TYPE);
 
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
 	}
 
 	@Test
 	public void testUploadNotAChildOfBinary() {
-		InputStream stream = createUplodedInputStream();
+		uploaderSpy.MRV.setAlwaysThrowException("upload", new MisuseException(
+				"It is only possible to upload files to recordTypes that are children of binary"));
+		setUpSpiderInstanceProvider("factorUploader", uploaderSpy);
 
-		response = recordEndpoint.uploadResourceJson(AUTH_TOKEN, AUTH_TOKEN,
-				"not_child_of_binary_type", "image:123456789", stream, SOME_RESOUTCE_TYPE);
+		response = recordEndpoint.uploadResourceJson(AUTH_TOKEN, AUTH_TOKEN, SOME_TYPE, SOME_ID,
+				inputStreamSpy, SOME_RESOURCE_TYPE);
 
 		assertResponseStatusIs(Response.Status.METHOD_NOT_ALLOWED);
 		assertResponseContentTypeIs(TEXT_PLAIN);
@@ -1179,67 +1209,108 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testUploadStreamMissing() {
-		response = recordEndpoint.uploadResourceJson(AUTH_TOKEN, AUTH_TOKEN, "image",
-				"image:123456789", null, SOME_RESOUTCE_TYPE);
+		uploaderSpy.MRV.setAlwaysThrowException("upload",
+				new DataMissingException("No stream to store"));
+		setUpSpiderInstanceProvider("factorUploader", uploaderSpy);
+
+		response = recordEndpoint.uploadResourceJson(AUTH_TOKEN, AUTH_TOKEN, SOME_RESOURCE_TYPE,
+				SOME_ID, null, SOME_RESOURCE_TYPE);
 
 		assertResponseStatusIs(Response.Status.BAD_REQUEST);
 		assertResponseContentTypeIs(TEXT_PLAIN);
 	}
 
 	@Test
-	public void testPreferredTokenForDownload() throws IOException {
+	public void testUploadHandleArchiveDataIntegrityException() throws Exception {
+		uploaderSpy.MRV.setAlwaysThrowException("upload",
+				ArchiveDataIntergrityException.withMessage("someException"));
+		setUpSpiderInstanceProvider("factorUploader", uploaderSpy);
+
+		response = recordEndpoint.uploadResourceJson(AUTH_TOKEN, AUTH_TOKEN, SOME_TYPE, SOME_ID,
+				inputStreamSpy, "someRepresentation");
+		assertResponseStatusIs(Response.Status.BAD_REQUEST);
+		assertResponseContentTypeIs(TEXT_PLAIN);
+	}
+
+	@Test
+	public void testPreferredTokenForDownload_1() throws IOException {
 		expectTokenForDownloadToPreferablyBeHeaderThanQuery(AUTH_TOKEN, "authToken2", AUTH_TOKEN);
+	}
+
+	@Test
+	public void testPreferredTokenForDownload_2() throws IOException {
 		expectTokenForDownloadToPreferablyBeHeaderThanQuery(null, AUTH_TOKEN, AUTH_TOKEN);
+	}
+
+	@Test
+	public void testPreferredTokenForDownload_3() throws IOException {
 		expectTokenForDownloadToPreferablyBeHeaderThanQuery(AUTH_TOKEN, null, AUTH_TOKEN);
+	}
+
+	@Test
+	public void testPreferredTokenForDownload_4() throws IOException {
 		expectTokenForDownloadToPreferablyBeHeaderThanQuery(null, null, null);
 	}
 
 	private void expectTokenForDownloadToPreferablyBeHeaderThanQuery(String headerAuthToken,
 			String queryAuthToken, String authTokenExpected) {
+		setUpSpiderInstanceProvider("factorDownloader", downloaderSpy);
 
-		response = recordEndpoint.downloadResource(headerAuthToken, queryAuthToken, "image",
-				"image:123456789", "master");
+		response = recordEndpoint.downloadResource(headerAuthToken, queryAuthToken, "someType",
+				"someId", "someRepresentation");
 
-		SpiderDownloaderSpy spiderDownloaderSpy = spiderInstanceFactorySpy.spiderDownloaderSpy;
-		assertEquals(spiderDownloaderSpy.authToken, authTokenExpected);
+		downloaderSpy.MCR.assertParameter("download", 0, "authToken", authTokenExpected);
 	}
 
 	@Test
 	public void testDownloadUnauthorized() throws IOException {
+		downloaderSpy.MRV.setAlwaysThrowException("download",
+				new AuthorizationException("not authorized"));
+		setUpSpiderInstanceProvider("factorDownloader", downloaderSpy);
+
 		response = recordEndpoint.downloadResourceUsingAuthTokenWithStream(
-				DUMMY_NON_AUTHORIZED_TOKEN, "image", "image:123456789", SOME_RESOUTCE_TYPE);
+				DUMMY_NON_AUTHORIZED_TOKEN, SOME_RESOURCE_TYPE, SOME_ID, SOME_RESOURCE_TYPE);
 		assertResponseStatusIs(Response.Status.FORBIDDEN);
 	}
 
 	@Test
 	public void testDownload() throws IOException {
-		response = recordEndpoint.downloadResource(AUTH_TOKEN, AUTH_TOKEN, "image",
-				"image:123456789", "master");
-		String contentType = response.getHeaderString("Content-Type");
-		/*
-		 * when we detect and store type of file in spider check it like this
-		 * assertEquals(contentType, "application/octet-stream");
-		 */
-		assertEquals(contentType, "application/octet-stream");
-		InputStream stream = (InputStream) response.getEntity();
-		assertNotNull(stream);
+		downloaderSpy.MRV.setDefaultReturnValuesSupplier("download", () -> createDownloadStream());
 
-		ByteArrayOutputStream result = new ByteArrayOutputStream();
-		byte[] buffer = new byte[1024];
-		int length;
-		while ((length = stream.read(buffer)) != -1) {
-			result.write(buffer, 0, length);
-		}
-		String stringFromStream = result.toString("UTF-8");
+		setUpSpiderInstanceProvider("factorDownloader", downloaderSpy);
 
-		assertEquals(stringFromStream, "a string out");
+		response = recordEndpoint.downloadResource(AUTH_TOKEN, AUTH_TOKEN, SOME_RESOURCE_TYPE,
+				SOME_ID, "master");
+		assertDownloadStreamResponse();
 		assertResponseStatusIs(Response.Status.OK);
+	}
+
+	private ResourceInputStream createDownloadStream() {
+		ResourceInputStream downloadStream = ResourceInputStream.withNameSizeInputStream("someFile",
+				12, "application/octet-stream",
+				new ByteArrayInputStream("a string out".getBytes(StandardCharsets.UTF_8)));
+		return downloadStream;
+	}
+
+	private void assertDownloadStreamResponse() throws IOException, UnsupportedEncodingException {
+		String contentType = response.getHeaderString("Content-Type");
+		assertEquals(contentType, "application/octet-stream");
+
+		InputStream downloadStream = (InputStream) response.getEntity();
+		assertNotNull(downloadStream);
+
+		String stringFromStream = readStream(downloadStream);
+		assertEquals(stringFromStream, "a string out");
 
 		String contentLength = response.getHeaderString("Content-Length");
 		assertEquals(contentLength, "12");
 
 		String contentDisposition = response.getHeaderString("Content-Disposition");
 		assertEquals(contentDisposition, "attachment; filename=someFile");
+	}
+
+	private String readStream(InputStream stream) throws IOException, UnsupportedEncodingException {
+		return new String(stream.readAllBytes(), StandardCharsets.UTF_8);
 	}
 
 	@Test
@@ -1254,23 +1325,51 @@ public class RecordEndpointTest {
 	}
 
 	@Test
-	public void testDownloadNotFound() throws IOException {
-		response = recordEndpoint.downloadResource(AUTH_TOKEN, AUTH_TOKEN, "image",
-				"image:123456789_NOT_FOUND", "master");
+	public void testDownloadWhenResourceNotFound() throws IOException {
+		downloaderSpy.MRV.setAlwaysThrowException("download",
+				ResourceNotFoundException.withMessage("someException"));
+		setUpSpiderInstanceProvider("factorDownloader", downloaderSpy);
+
+		response = recordEndpoint.downloadResource(AUTH_TOKEN, AUTH_TOKEN, SOME_TYPE, SOME_ID,
+				"someRepresentation");
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
 	}
 
 	@Test
+	public void testDownloadWhenRecordNotFound() throws IOException {
+		downloaderSpy.MRV.setAlwaysThrowException("download",
+				RecordNotFoundException.withMessage("someException"));
+		setUpSpiderInstanceProvider("factorDownloader", downloaderSpy);
+
+		response = recordEndpoint.downloadResource(AUTH_TOKEN, AUTH_TOKEN, SOME_TYPE, SOME_ID,
+				"someRepresentation");
+		assertResponseStatusIs(Response.Status.NOT_FOUND);
+	}
+
+	private void setUpSpiderInstanceProvider(String method, Object supplier) {
+		SpiderInstanceFactorySpy spiderInstanceFactorySpy = new SpiderInstanceFactorySpy();
+		spiderInstanceFactorySpy.MRV.setDefaultReturnValuesSupplier(method, () -> supplier);
+		SpiderInstanceProvider.setSpiderInstanceFactory(spiderInstanceFactorySpy);
+	}
+
+	@Test
 	public void testDownloadNotAChildOfBinary() throws IOException {
-		response = recordEndpoint.downloadResource(AUTH_TOKEN, AUTH_TOKEN,
-				"not_child_of_binary_type", "image:123456789", "master");
+		downloaderSpy.MRV.setAlwaysThrowException("download", new MisuseException(
+				"It is only possible to download files to recordTypes that are children of binary"));
+		setUpSpiderInstanceProvider("factorDownloader", downloaderSpy);
+
+		response = recordEndpoint.downloadResource(AUTH_TOKEN, AUTH_TOKEN, SOME_RESOURCE_TYPE,
+				SOME_ID, "master");
 		assertResponseStatusIs(Response.Status.METHOD_NOT_ALLOWED);
 	}
 
 	@Test
 	public void testDownloadBadRequest() throws IOException {
-		response = recordEndpoint.downloadResource(AUTH_TOKEN, AUTH_TOKEN, "image",
-				"image:123456789", "");
+		downloaderSpy.MRV.setAlwaysThrowException("download",
+				new DataMissingException("No stream to store"));
+		setUpSpiderInstanceProvider("factorDownloader", downloaderSpy);
+
+		response = recordEndpoint.downloadResource(AUTH_TOKEN, AUTH_TOKEN, SOME_TYPE, SOME_ID, "");
 		assertResponseStatusIs(Response.Status.BAD_REQUEST);
 		assertResponseContentTypeIs(TEXT_PLAIN);
 	}

@@ -66,6 +66,7 @@ import se.uu.ub.cora.logger.Logger;
 import se.uu.ub.cora.logger.LoggerProvider;
 import se.uu.ub.cora.spider.authentication.AuthenticationException;
 import se.uu.ub.cora.spider.authorization.AuthorizationException;
+import se.uu.ub.cora.spider.binary.ArchiveDataIntergrityException;
 import se.uu.ub.cora.spider.binary.ResourceInputStream;
 import se.uu.ub.cora.spider.data.DataMissingException;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
@@ -73,9 +74,10 @@ import se.uu.ub.cora.spider.record.ConflictException;
 import se.uu.ub.cora.spider.record.DataException;
 import se.uu.ub.cora.spider.record.MisuseException;
 import se.uu.ub.cora.spider.record.RecordListIndexer;
+import se.uu.ub.cora.spider.record.RecordNotFoundException;
 import se.uu.ub.cora.spider.record.RecordValidator;
+import se.uu.ub.cora.spider.record.ResourceNotFoundException;
 import se.uu.ub.cora.storage.RecordConflictException;
-import se.uu.ub.cora.storage.RecordNotFoundException;
 
 @Path("/")
 public class RecordEndpoint {
@@ -280,7 +282,9 @@ public class RecordEndpoint {
 					.header(HttpHeaders.CONTENT_TYPE, TEXT_PLAIN_CHARSET_UTF_8).build();
 		}
 
-		if (error instanceof RecordNotFoundException) {
+		if (error instanceof se.uu.ub.cora.storage.RecordNotFoundException
+				|| error instanceof RecordNotFoundException
+				|| error instanceof ResourceNotFoundException) {
 			return Response.status(Response.Status.NOT_FOUND)
 					.entity(errorFromCaller + error.getMessage())
 					.header(HttpHeaders.CONTENT_TYPE, TEXT_PLAIN_CHARSET_UTF_8).build();
@@ -304,7 +308,8 @@ public class RecordEndpoint {
 
 	private boolean errorIsCausedByDataProblem(Exception error) {
 		return error instanceof ConverterException || errorDuringJsonConversion(error)
-				|| error instanceof DataException || error instanceof DataMissingException;
+				|| error instanceof DataException || error instanceof DataMissingException
+				|| error instanceof ArchiveDataIntergrityException;
 	}
 
 	private boolean errorDuringJsonConversion(Exception error) {

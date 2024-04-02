@@ -33,7 +33,7 @@ import se.uu.ub.cora.spider.record.RecordSearcher;
 import se.uu.ub.cora.spider.record.RecordUpdater;
 import se.uu.ub.cora.spider.record.RecordValidator;
 
-public class SpiderInstanceFactorySpy implements SpiderInstanceFactory {
+public class OldSpiderInstanceFactorySpy implements SpiderInstanceFactory {
 
 	public SpiderDownloaderSpy spiderDownloaderSpy;
 	public SpiderUploaderSpy spiderUploaderSpy;
@@ -83,14 +83,12 @@ public class SpiderInstanceFactorySpy implements SpiderInstanceFactory {
 
 	@Override
 	public Uploader factorUploader() {
-		spiderUploaderSpy = new SpiderUploaderSpy();
-		return spiderUploaderSpy;
+		return new SpiderUploaderSpy();
 	}
 
 	@Override
 	public Downloader factorDownloader() {
-		spiderDownloaderSpy = new SpiderDownloaderSpy();
-		return spiderDownloaderSpy;
+		return new SpiderDownloaderSpy();
 	}
 
 	@Override

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Uppsala University Library
+ * Copyright 2023 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -16,29 +16,31 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
+package se.uu.ub.cora.therest.spy;
 
-package se.uu.ub.cora.therest.record;
-
+import java.io.IOException;
 import java.io.InputStream;
+import java.util.function.Supplier;
 
-import se.uu.ub.cora.data.DataRecord;
-import se.uu.ub.cora.spider.binary.Uploader;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
+import se.uu.ub.cora.testutils.mrv.MethodReturnValues;
 
-@Deprecated
-public class SpiderUploaderSpy implements Uploader {
+public class InputStreamSpy extends InputStream {
+	public MethodCallRecorder MCR = new MethodCallRecorder();
+	public MethodReturnValues MRV = new MethodReturnValues();
 
-	MethodCallRecorder MCR = new MethodCallRecorder();
-
-	public String authToken;
-	public String type;
-	public String id;
-	public InputStream inputStream;
-	public String fileName;
+	public InputStreamSpy() {
+		MCR.useMRV(MRV);
+		MRV.setDefaultReturnValuesSupplier("read", (Supplier<Integer>) () -> 0);
+	}
 
 	@Override
-	public DataRecord upload(String authToken, String type, String id, InputStream inputStream,
-			String represntation) {
-		return null;
+	public int read() throws IOException {
+		return (int) MCR.addCallAndReturnFromMRV();
+	}
+
+	@Override
+	public void close() throws IOException {
+		MCR.addCall();
 	}
 }
