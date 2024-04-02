@@ -621,7 +621,7 @@ public class RecordEndpoint {
 		try {
 			return tryDownloadResource(authToken, type, id, resourceType);
 		} catch (Exception error) {
-			return handleError(authToken, error, "Some error");
+			return handleError(authToken, error, "");
 		}
 	}
 

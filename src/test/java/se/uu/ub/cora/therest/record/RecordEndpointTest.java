@@ -1326,13 +1326,16 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testDownloadWhenResourceNotFound() throws IOException {
+		String exceptionMessage = "someException";
 		downloaderSpy.MRV.setAlwaysThrowException("download",
-				ResourceNotFoundException.withMessage("someException"));
+				ResourceNotFoundException.withMessage(exceptionMessage));
 		setUpSpiderInstanceProvider("factorDownloader", downloaderSpy);
 
 		response = recordEndpoint.downloadResource(AUTH_TOKEN, AUTH_TOKEN, SOME_TYPE, SOME_ID,
 				"someRepresentation");
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
+		assertEquals(exceptionMessage, response.getEntity());
+
 	}
 
 	@Test
