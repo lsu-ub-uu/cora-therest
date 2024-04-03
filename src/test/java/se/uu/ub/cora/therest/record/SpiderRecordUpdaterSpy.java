@@ -63,10 +63,10 @@ public class SpiderRecordUpdaterSpy implements RecordUpdater {
 			throw new AuthorizationException("not authorized");
 		}
 		if ("place:0001_NOT_FOUND".equals(id)) {
-			throw RecordNotFoundException.withMessage("no record exist with id " + id);
+			throw RecordNotFoundException.withMessage("No record exist with id " + id);
 		}
 		if ("place_NOT_FOUND".equals(type)) {
-			throw RecordNotFoundException.withMessage("no record exist with type " + type);
+			throw RecordNotFoundException.withMessage("No record exist with type " + type);
 		}
 	}
 

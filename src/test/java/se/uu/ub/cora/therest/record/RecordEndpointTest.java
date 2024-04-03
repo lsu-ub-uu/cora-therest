@@ -349,7 +349,7 @@ public class RecordEndpointTest {
 				jsonFilter);
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
 		assertEquals(response.getEntity(),
-				"Error reading records with recordType: place_NOT_FOUND.Record not found");
+				"Error reading records with recordType: place_NOT_FOUND. Record not found");
 	}
 
 	@Test
@@ -502,7 +502,7 @@ public class RecordEndpointTest {
 				"place:0001_NOT_FOUND");
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
 		assertEquals(response.getEntity(), "Error reading record with recordType: " + PLACE
-				+ " and recordId: place:0001_NOT_FOUND.no record exsist with id place:0001_NOT_FOUND");
+				+ " and recordId: place:0001_NOT_FOUND. No record exist with id place:0001_NOT_FOUND");
 	}
 
 	@Test
@@ -824,7 +824,7 @@ public class RecordEndpointTest {
 		assertResponseContentTypeIs(TEXT_PLAIN);
 		assertEquals(response.getEntity(),
 				"Error updating record with recordType: " + PLACE + " and recordId: " + PLACE_0001
-						+ "_NOT_FOUND.no record exist with id place:0001_NOT_FOUND");
+						+ "_NOT_FOUND. No record exist with id place:0001_NOT_FOUND");
 	}
 
 	@Test
@@ -835,7 +835,7 @@ public class RecordEndpointTest {
 		assertResponseContentTypeIs(TEXT_PLAIN);
 		assertEquals(response.getEntity(),
 				"Error updating record with recordType: " + PLACE + "_NOT_FOUND and recordId: "
-						+ PLACE_0001 + ".no record exist with type place_NOT_FOUND");
+						+ PLACE_0001 + ". No record exist with type place_NOT_FOUND");
 	}
 
 	@Test
@@ -1120,6 +1120,7 @@ public class RecordEndpointTest {
 				inputStreamSpy, SOME_RESOURCE_TYPE);
 
 		assertResponseStatusIs(Response.Status.OK);
+		assertEquals(response.getEntity(), "Fake json compacted format");
 	}
 
 	@Test
@@ -1135,6 +1136,8 @@ public class RecordEndpointTest {
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.OK);
 		assertResponseContentTypeIs(APPLICATION_VND_UUB_RECORD_XML);
+		assertEquals(response.getEntity(),
+				"fake string from ExternallyConvertibleToStringConverterSpy");
 	}
 
 	@Test
@@ -1184,20 +1187,23 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testUploadNotFound() {
+		String errorMessage = "No record exists with recordId: " + SOME_ID;
 		uploaderSpy.MRV.setAlwaysThrowException("upload",
-				RecordNotFoundException.withMessage("No record exists with recordId: " + SOME_ID));
+				RecordNotFoundException.withMessage(errorMessage));
 		setUpSpiderInstanceProvider("factorUploader", uploaderSpy);
 
 		response = recordEndpoint.uploadResourceJson(AUTH_TOKEN, AUTH_TOKEN, SOME_TYPE, SOME_ID,
 				inputStreamSpy, SOME_RESOURCE_TYPE);
 
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
+		assertEquals(response.getEntity(),
+				"An error has ocurred while uploading a resource: " + errorMessage);
 	}
 
 	@Test
 	public void testUploadNotAChildOfBinary() {
-		uploaderSpy.MRV.setAlwaysThrowException("upload", new MisuseException(
-				"It is only possible to upload files to recordTypes that are children of binary"));
+		String errorMessage = "It is only possible to upload files to recordTypes that are children of binary";
+		uploaderSpy.MRV.setAlwaysThrowException("upload", new MisuseException(errorMessage));
 		setUpSpiderInstanceProvider("factorUploader", uploaderSpy);
 
 		response = recordEndpoint.uploadResourceJson(AUTH_TOKEN, AUTH_TOKEN, SOME_TYPE, SOME_ID,
@@ -1205,6 +1211,7 @@ public class RecordEndpointTest {
 
 		assertResponseStatusIs(Response.Status.METHOD_NOT_ALLOWED);
 		assertResponseContentTypeIs(TEXT_PLAIN);
+		assertEquals(response.getEntity(), errorMessage);
 	}
 
 	@Test
@@ -1218,6 +1225,8 @@ public class RecordEndpointTest {
 
 		assertResponseStatusIs(Response.Status.BAD_REQUEST);
 		assertResponseContentTypeIs(TEXT_PLAIN);
+		assertEquals(response.getEntity(),
+				"An error has ocurred while uploading a resource: No stream to store");
 	}
 
 	@Test
@@ -1230,6 +1239,8 @@ public class RecordEndpointTest {
 				inputStreamSpy, "someRepresentation");
 		assertResponseStatusIs(Response.Status.BAD_REQUEST);
 		assertResponseContentTypeIs(TEXT_PLAIN);
+		assertEquals(response.getEntity(),
+				"An error has ocurred while uploading a resource: someException");
 	}
 
 	@Test
@@ -1283,6 +1294,7 @@ public class RecordEndpointTest {
 				SOME_ID, "master");
 		assertDownloadStreamResponse();
 		assertResponseStatusIs(Response.Status.OK);
+		assertTrue(response.getEntity() instanceof InputStream);
 	}
 
 	private ResourceInputStream createDownloadStream() {
@@ -1334,7 +1346,8 @@ public class RecordEndpointTest {
 		response = recordEndpoint.downloadResource(AUTH_TOKEN, AUTH_TOKEN, SOME_TYPE, SOME_ID,
 				"someRepresentation");
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
-		assertEquals(exceptionMessage, response.getEntity());
+		assertEquals(response.getEntity(),
+				"An error has ocurred while downloading a resource: " + exceptionMessage);
 
 	}
 
@@ -1347,6 +1360,8 @@ public class RecordEndpointTest {
 		response = recordEndpoint.downloadResource(AUTH_TOKEN, AUTH_TOKEN, SOME_TYPE, SOME_ID,
 				"someRepresentation");
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
+		assertEquals(response.getEntity(),
+				"An error has ocurred while downloading a resource: someException");
 	}
 
 	private void setUpSpiderInstanceProvider(String method, Object supplier) {
@@ -1368,13 +1383,16 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testDownloadBadRequest() throws IOException {
+		String errorMessage = "No stream to store";
 		downloaderSpy.MRV.setAlwaysThrowException("download",
-				new DataMissingException("No stream to store"));
+				new DataMissingException(errorMessage));
 		setUpSpiderInstanceProvider("factorDownloader", downloaderSpy);
 
 		response = recordEndpoint.downloadResource(AUTH_TOKEN, AUTH_TOKEN, SOME_TYPE, SOME_ID, "");
 		assertResponseStatusIs(Response.Status.BAD_REQUEST);
 		assertResponseContentTypeIs(TEXT_PLAIN);
+		assertEquals(response.getEntity(),
+				"An error has ocurred while downloading a resource: " + errorMessage);
 	}
 
 	@Test
@@ -1503,7 +1521,7 @@ public class RecordEndpointTest {
 				defaultJson);
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
 		assertEquals(response.getEntity(),
-				"Error searching record with searchId: aSearchId_NOT_FOUND.Record does not exist");
+				"Error searching record with searchId: aSearchId_NOT_FOUND. Record does not exist");
 	}
 
 	@Test

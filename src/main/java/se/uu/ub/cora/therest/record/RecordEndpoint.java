@@ -286,7 +286,7 @@ public class RecordEndpoint {
 				|| error instanceof RecordNotFoundException
 				|| error instanceof ResourceNotFoundException) {
 			return Response.status(Response.Status.NOT_FOUND)
-					.entity(errorFromCaller + error.getMessage())
+					.entity(errorFromCaller + " " + error.getMessage())
 					.header(HttpHeaders.CONTENT_TYPE, TEXT_PLAIN_CHARSET_UTF_8).build();
 		}
 
@@ -621,7 +621,8 @@ public class RecordEndpoint {
 		try {
 			return tryDownloadResource(authToken, type, id, resourceType);
 		} catch (Exception error) {
-			return handleError(authToken, error, "");
+			return handleError(authToken, error,
+					"An error has ocurred while downloading a resource:");
 		}
 	}
 
@@ -676,7 +677,7 @@ public class RecordEndpoint {
 					resourceType);
 		} catch (Exception error) {
 			return handleError(authToken, error,
-					"An error has ocurred while uploading a resource :" + error.getMessage());
+					"An error has ocurred while uploading a resource:");
 		}
 	}
 
