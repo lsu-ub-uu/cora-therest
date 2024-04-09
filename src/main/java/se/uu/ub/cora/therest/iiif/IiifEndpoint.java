@@ -55,6 +55,11 @@ public class IiifEndpoint {
 		try {
 			return tryToReadIiif(headers, request, identifier, requestedUri);
 		} catch (AuthorizationException e) {
+			System.out.println(headers.getRequestHeader("authToken"));
+			if (headers.getRequestHeader("authToken") != null) {
+
+				return Response.status(Response.Status.FORBIDDEN).build();
+			}
 			return Response.status(Response.Status.UNAUTHORIZED).build();
 		} catch (RecordNotFoundException e) {
 			return Response.status(Response.Status.NOT_FOUND).build();
