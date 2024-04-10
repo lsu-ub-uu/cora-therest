@@ -41,6 +41,7 @@ import se.uu.ub.cora.spider.record.RecordNotFoundException;
 
 @Path("/")
 public class IiifEndpoint {
+	private static final String AUTH_TOKEN = "authtoken";
 	private static final Set<String> restrictedHeaders = Set.of("access-control-request-headers",
 			"access-control-request-method", "connection", "content-length",
 			"content-transfer-encoding", "host", "keep-alive", "origin", "trailer",
@@ -55,9 +56,7 @@ public class IiifEndpoint {
 		try {
 			return tryToReadIiif(headers, request, identifier, requestedUri);
 		} catch (AuthorizationException e) {
-			System.out.println(headers.getRequestHeader("authToken"));
-			if (headers.getRequestHeader("authToken") != null) {
-
+			if (authTokenExistInHeaders(headers)) {
 				return Response.status(Response.Status.FORBIDDEN).build();
 			}
 			return Response.status(Response.Status.UNAUTHORIZED).build();
@@ -66,6 +65,10 @@ public class IiifEndpoint {
 		} catch (Exception e) {
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
 		}
+	}
+
+	private boolean authTokenExistInHeaders(HttpHeaders headers) {
+		return headers.getRequestHeader(AUTH_TOKEN) != null;
 	}
 
 	private Response tryToReadIiif(HttpHeaders headers, Request request, String identifier,

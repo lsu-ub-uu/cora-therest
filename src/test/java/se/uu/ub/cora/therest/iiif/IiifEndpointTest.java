@@ -132,7 +132,7 @@ public class IiifEndpointTest {
 	public void testIiiifReaderNotAuthorizedReturnsForbiddenForKnownToken() throws Exception {
 		iiifReader.MRV.setAlwaysThrowException("readIiif", new AuthorizationException("someError"));
 		headers.MRV.setSpecificReturnValuesSupplier("getRequestHeader", () -> List.of("someToken"),
-				"authToken");
+				"authtoken");
 
 		Response response = endpoint.readIiif(headers, request, "someIdentifier",
 				"some/requested/Uri");
