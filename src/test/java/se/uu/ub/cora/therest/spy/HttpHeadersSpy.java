@@ -18,7 +18,6 @@
  */
 package se.uu.ub.cora.therest.spy;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -39,7 +38,7 @@ public class HttpHeadersSpy implements HttpHeaders {
 
 	public HttpHeadersSpy() {
 		MCR.useMRV(MRV);
-		MRV.setDefaultReturnValuesSupplier("getRequestHeader", Collections::emptyList);
+		MRV.setDefaultReturnValuesSupplier("getRequestHeader", () -> null);
 		MRV.setDefaultReturnValuesSupplier("getRequestHeaders", () -> new MultivaluedHashMap<>());
 	}
 
