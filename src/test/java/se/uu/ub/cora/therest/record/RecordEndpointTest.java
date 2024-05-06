@@ -160,6 +160,14 @@ public class RecordEndpointTest {
 	}
 
 	@Test
+	public void testClassAnnotation() throws Exception {
+		AnnotationTestHelper annotationHelper = AnnotationTestHelper
+				.createAnnotationTestHelperForClass(RecordEndpoint.class);
+
+		annotationHelper.assertPathAnnotationForClass("/");
+	}
+
+	@Test
 	public void testXForwardedProtoHttps() {
 		requestSpy.headers.put("X-Forwarded-Proto", "https");
 		recordEndpoint = new RecordEndpoint(requestSpy);
