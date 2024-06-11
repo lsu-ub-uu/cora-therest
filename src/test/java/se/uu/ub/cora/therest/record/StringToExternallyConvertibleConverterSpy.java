@@ -19,29 +19,28 @@
 
 package se.uu.ub.cora.therest.record;
 
-import se.uu.ub.cora.converter.ConverterException;
 import se.uu.ub.cora.converter.StringToExternallyConvertibleConverter;
-import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.ExternallyConvertible;
+import se.uu.ub.cora.data.spies.DataGroupSpy;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
-import se.uu.ub.cora.therest.coradata.DataGroupSpy;
+import se.uu.ub.cora.testutils.mrv.MethodReturnValues;
 
 public class StringToExternallyConvertibleConverterSpy
 		implements StringToExternallyConvertibleConverter {
 
-	MethodCallRecorder MCR = new MethodCallRecorder();
 	public boolean throwExceptionOnConvert;
+
+	public MethodCallRecorder MCR = new MethodCallRecorder();
+	public MethodReturnValues MRV = new MethodReturnValues();
+
+	public StringToExternallyConvertibleConverterSpy() {
+		MCR.useMRV(MRV);
+		MRV.setDefaultReturnValuesSupplier("convert", DataGroupSpy::new);
+	}
 
 	@Override
 	public ExternallyConvertible convert(String dataString) {
-		MCR.addCall("dataString", dataString);
-
-		if (throwExceptionOnConvert) {
-			throw new ConverterException("exception from spy");
-		}
-		DataGroup dataPartToReturn = new DataGroupSpy("dummyId");
-		MCR.addReturned(dataPartToReturn);
-		return dataPartToReturn;
+		return (ExternallyConvertible) MCR.addCallAndReturnFromMRV("dataString", dataString);
 	}
 
 }

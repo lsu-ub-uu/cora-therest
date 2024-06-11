@@ -808,9 +808,9 @@ public class RecordEndpoint {
 	private Response validateRecord(String contentType, String accept, String headerAuthToken,
 			String queryAuthToken, String jsonValidationRecord) {
 		String usedToken = getExistingTokenPreferHeader(headerAuthToken, queryAuthToken);
-		String recordTypeToUse = "validationOrder";
+		String validationOrderRecordType = "validationOrder";
 		return validateRecordUsingAuthTokenWithRecord(contentType, accept, usedToken,
-				recordTypeToUse, jsonValidationRecord);
+				validationOrderRecordType, jsonValidationRecord);
 	}
 
 	private Response validateRecordUsingAuthTokenWithRecord(String contentType, String accept,
@@ -828,7 +828,8 @@ public class RecordEndpoint {
 		DataGroup recordToValidate = null;
 		if (contentType.endsWith("+xml")) {
 			DataGroup container = convertXmlToDataElement(inputRecord);
-			validationOrder = container.getFirstGroupWithNameInData("order");
+			DataGroup order = container.getFirstGroupWithNameInData("order");
+			order.getChildren();
 			recordToValidate = container.getFirstGroupWithNameInData("record");
 		} else {
 			JsonObject jsonObject = getJsonObjectFromJsonRecordString(inputRecord);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Uppsala University Library
+ * Copyright 2022, 2024 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -22,10 +22,20 @@ import se.uu.ub.cora.converter.ConverterFactory;
 import se.uu.ub.cora.converter.ExternallyConvertibleToStringConverter;
 import se.uu.ub.cora.converter.StringToExternallyConvertibleConverter;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
+import se.uu.ub.cora.testutils.mrv.MethodReturnValues;
 
 public class ConverterFactorySpy implements ConverterFactory {
-	MethodCallRecorder MCR = new MethodCallRecorder();
-	public boolean xmlToDataConverterThrowsException = false;
+	// MethodCallRecorder MCR = new MethodCallRecorder();
+	// public boolean xmlToDataConverterThrowsException = false;
+
+	public MethodCallRecorder MCR = new MethodCallRecorder();
+	public MethodReturnValues MRV = new MethodReturnValues();
+
+	public ConverterFactorySpy() {
+		MCR.useMRV(MRV);
+		MRV.setDefaultReturnValuesSupplier("factorStringToExternallyConvertableConverter",
+				StringToExternallyConvertibleConverterSpy::new);
+	}
 
 	@Override
 	public ExternallyConvertibleToStringConverter factorExternallyConvertableToStringConverter() {
@@ -39,12 +49,14 @@ public class ConverterFactorySpy implements ConverterFactory {
 
 	@Override
 	public StringToExternallyConvertibleConverter factorStringToExternallyConvertableConverter() {
-		MCR.addCall();
-
-		StringToExternallyConvertibleConverterSpy converterSpy = new StringToExternallyConvertibleConverterSpy();
-		converterSpy.throwExceptionOnConvert = xmlToDataConverterThrowsException;
-		MCR.addReturned(converterSpy);
-		return converterSpy;
+		// MCR.addCall();
+		//
+		// StringToExternallyConvertibleConverterSpy converterSpy = new
+		// StringToExternallyConvertibleConverterSpy();
+		// converterSpy.throwExceptionOnConvert = xmlToDataConverterThrowsException;
+		// MCR.addReturned(converterSpy);
+		// return converterSpy;
+		return (StringToExternallyConvertibleConverter) MCR.addCallAndReturnFromMRV();
 	}
 
 	@Override
