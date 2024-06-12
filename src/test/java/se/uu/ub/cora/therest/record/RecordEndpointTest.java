@@ -32,6 +32,7 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,14 +42,17 @@ import org.testng.annotations.Test;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
+import se.uu.ub.cora.converter.ConverterException;
 import se.uu.ub.cora.converter.ConverterProvider;
 import se.uu.ub.cora.converter.ExternalUrls;
 import se.uu.ub.cora.data.Convertible;
+import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataList;
 import se.uu.ub.cora.data.DataRecord;
 import se.uu.ub.cora.data.converter.DataToJsonConverterProvider;
 import se.uu.ub.cora.data.converter.JsonToDataConverterProvider;
+import se.uu.ub.cora.data.spies.DataGroupSpy;
 import se.uu.ub.cora.initialize.SettingsProvider;
 import se.uu.ub.cora.json.parser.JsonValue;
 import se.uu.ub.cora.json.parser.org.OrgJsonParser;
@@ -67,7 +71,6 @@ import se.uu.ub.cora.spider.spies.DownloaderSpy;
 import se.uu.ub.cora.spider.spies.SpiderInstanceFactorySpy;
 import se.uu.ub.cora.spider.spies.UploaderSpy;
 import se.uu.ub.cora.therest.AnnotationTestHelper;
-import se.uu.ub.cora.therest.coradata.DataGroupSpy;
 import se.uu.ub.cora.therest.coradata.DataListSpy;
 import se.uu.ub.cora.therest.coradata.DataRecordSpy;
 import se.uu.ub.cora.therest.spy.InputStreamSpy;
@@ -114,6 +117,7 @@ public class RecordEndpointTest {
 	private InputStreamSpy inputStreamSpy;
 	private DownloaderSpy downloaderSpy;
 	private UploaderSpy uploaderSpy;
+	private StringToExternallyConvertibleConverterSpy stringToExternallyConvertibleConverterSpy;
 
 	@BeforeMethod
 	public void beforeMethod() {
@@ -123,7 +127,11 @@ public class RecordEndpointTest {
 		DataToJsonConverterProvider
 				.setDataToJsonConverterFactoryCreator(converterFactoryCreatorSpy);
 
+		stringToExternallyConvertibleConverterSpy = new StringToExternallyConvertibleConverterSpy();
 		converterFactorySpy = new ConverterFactorySpy();
+		converterFactorySpy.MRV.setDefaultReturnValuesSupplier(
+				"factorStringToExternallyConvertableConverter",
+				() -> stringToExternallyConvertibleConverterSpy);
 		ConverterProvider.setConverterFactory("xml", converterFactorySpy);
 
 		jsonToDataConverterFactorySpy = new JsonToDataConverterFactorySpy();
@@ -1615,20 +1623,101 @@ public class RecordEndpointTest {
 	}
 
 	@Test
-	public void testValidateRecordForXml() {
+	public void testValidateWorkOrderPartMissing() throws Exception {
+		DataGroupSpy order = createDataGroupWithChildren();
+		DataGroupSpy recordToValidate = new DataGroupSpy();
+		DataGroupSpy record = createDataGroupWithChildren(recordToValidate);
+		DataGroupSpy workOrder = createWorkOrderWithOrder(order, record);
+
+		workOrder.MRV.setAlwaysThrowException("getFirstGroupWithNameInData",
+				new se.uu.ub.cora.data.DataMissingException("someException"));
+
 		response = recordEndpoint.validateRecordXmlXml(AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultXml);
 
-		DataGroupSpy container = (DataGroupSpy) getValueFromConvertAndAssertParameters();
+		assertEquals(response.getStatus(), 400);
+		assertEquals(response.getEntity(),
+				"Validation failed due to: WorkOrder part 'order' not found.");
+	}
 
-		container.MCR.assertParameters("getFirstGroupWithNameInData", 0, "order");
-		container.MCR.assertParameters("getFirstGroupWithNameInData", 1, "record");
+	@Test
+	public void testValidateMultipleRecordToValidateExists() throws Exception {
+		DataGroupSpy validationOrder = new DataGroupSpy();
+		DataGroupSpy order = createDataGroupWithChildren(validationOrder);
+		DataGroupSpy recordToValidate1 = new DataGroupSpy();
+		DataGroupSpy recordToValidate2 = new DataGroupSpy();
+		DataGroupSpy record = createDataGroupWithChildren(recordToValidate1, recordToValidate2);
+		createWorkOrderWithOrder(order, record);
 
-		var validationOrder = container.MCR.getReturnValue("getFirstGroupWithNameInData", 0);
-		var recordToValidate = container.MCR.getReturnValue("getFirstGroupWithNameInData", 1);
+		response = recordEndpoint.validateRecordXmlXml(AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultXml);
+
+		assertEquals(response.getStatus(), 400);
+		assertEquals(response.getEntity(),
+				"Validation failed due to: Too many children in workOrder part.");
+	}
+
+	@Test
+	public void testValidateMultipleValidateOrderExists() throws Exception {
+		DataGroupSpy validationOrder1 = new DataGroupSpy();
+		DataGroupSpy validationOrder2 = new DataGroupSpy();
+		DataGroupSpy order = createDataGroupWithChildren(validationOrder1, validationOrder2);
+		DataGroupSpy recordToValidate = new DataGroupSpy();
+		DataGroupSpy record = createDataGroupWithChildren(recordToValidate);
+		createWorkOrderWithOrder(order, record);
+
+		response = recordEndpoint.validateRecordXmlXml(AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultXml);
+
+		assertEquals(response.getStatus(), 400);
+		assertEquals(response.getEntity(),
+				"Validation failed due to: Too many children in workOrder part.");
+	}
+
+	@Test
+	public void testValidateRecordForXml() {
+		DataGroupSpy validationOrder = new DataGroupSpy();
+		DataGroupSpy order = createDataGroupWithChildren(validationOrder);
+		DataGroupSpy recordToValidate = new DataGroupSpy();
+		DataGroupSpy record = createDataGroupWithChildren(recordToValidate);
+		DataGroupSpy workOrder = createWorkOrderWithOrder(order, record);
+
+		response = recordEndpoint.validateRecordXmlXml(AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultXml);
+
+		workOrder.MCR.assertParameters("getFirstGroupWithNameInData", 0, "order");
+		workOrder.MCR.assertParameters("getFirstGroupWithNameInData", 1, "record");
+		order.MCR.assertParameters("getChildren", 0);
+		record.MCR.assertParameters("getChildren", 0);
 
 		spiderInstanceFactorySpy.spiderRecordValidatorSpy.MCR.assertParameters("validateRecord", 0,
 				AUTH_TOKEN, "validationOrder", validationOrder, recordToValidate);
 
+		assertValidationResult();
+	}
+
+	private DataGroupSpy createWorkOrderWithOrder(DataGroupSpy order, DataGroupSpy record) {
+		DataGroupSpy workOrder = new DataGroupSpy();
+		workOrder.MRV.setSpecificReturnValuesSupplier("getFirstGroupWithNameInData", () -> order,
+				"order");
+		workOrder.MRV.setSpecificReturnValuesSupplier("getFirstGroupWithNameInData", () -> record,
+				"record");
+		stringToExternallyConvertibleConverterSpy.MRV.setDefaultReturnValuesSupplier("convert",
+				() -> workOrder);
+		return workOrder;
+	}
+
+	private DataGroupSpy createDataGroupWithChildren(DataGroupSpy... validationOrders) {
+		DataGroupSpy dataGroup = new DataGroupSpy();
+		addChildrenToOrder(dataGroup, validationOrders);
+		return dataGroup;
+	}
+
+	private void addChildrenToOrder(DataGroupSpy order, DataGroupSpy... validationOrders) {
+		ArrayList<DataChild> orderChildren = new ArrayList<>();
+		for (DataGroup validationOrder : validationOrders) {
+			orderChildren.add(validationOrder);
+		}
+		order.MRV.setDefaultReturnValuesSupplier("getChildren", () -> orderChildren);
+	}
+
+	private void assertValidationResult() {
 		DataRecord validationResult = (DataRecord) spiderInstanceFactorySpy.spiderRecordValidatorSpy.MCR
 				.getReturnValue("validateRecord", 0);
 
@@ -1653,26 +1742,21 @@ public class RecordEndpointTest {
 				AUTH_TOKEN, "validationOrder", validationOrderSentOnToSpider,
 				recordToValidateSentOnToSpider);
 
-		DataRecord validationResult = (DataRecord) spiderInstanceFactorySpy.spiderRecordValidatorSpy.MCR
-				.getReturnValue("validateRecord", 0);
-
-		assertXmlConvertionOfResponse(validationResult);
-		assertEntityExists();
-		assertResponseStatusIs(Response.Status.OK);
-		assertResponseContentTypeIs(APPLICATION_VND_UUB_RECORD_XML);
+		assertValidationResult();
 	}
 
 	@Test
 	public void testValidateRecordInputAsXMLResponseAsJson() {
+		DataGroupSpy validationOrder = new DataGroupSpy();
+		DataGroupSpy order = createDataGroupWithChildren(validationOrder);
+		DataGroupSpy recordToValidate = new DataGroupSpy();
+		DataGroupSpy record = createDataGroupWithChildren(recordToValidate);
+		DataGroupSpy workOrder = createWorkOrderWithOrder(order, record);
+
 		response = recordEndpoint.validateRecordXmlJson(AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultXml);
 
-		DataGroupSpy container = (DataGroupSpy) getValueFromConvertAndAssertParameters();
-
-		container.MCR.assertParameters("getFirstGroupWithNameInData", 0, "order");
-		container.MCR.assertParameters("getFirstGroupWithNameInData", 1, "record");
-
-		var validationOrder = container.MCR.getReturnValue("getFirstGroupWithNameInData", 0);
-		var recordToValidate = container.MCR.getReturnValue("getFirstGroupWithNameInData", 1);
+		workOrder.MCR.assertParameters("getFirstGroupWithNameInData", 0, "order");
+		workOrder.MCR.assertParameters("getFirstGroupWithNameInData", 1, "record");
 
 		spiderInstanceFactorySpy.spiderRecordValidatorSpy.MCR.assertParameters("validateRecord", 0,
 				AUTH_TOKEN, "validationOrder", validationOrder, recordToValidate);
@@ -1696,7 +1780,8 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testValidateRecordInputXmlWrongContentType() {
-		converterFactorySpy.xmlToDataConverterThrowsException = true;
+		stringToExternallyConvertibleConverterSpy.MRV.setAlwaysThrowException("convert",
+				new ConverterException("exception from spy"));
 		response = recordEndpoint.validateRecordXmlJson(AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultJson);
 		assertResponseStatusIs(Response.Status.BAD_REQUEST);
 		assertResponseContentTypeIs(TEXT_PLAIN);
@@ -1881,7 +1966,8 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testIndexRecordListWithJsonAnWrongContentTypeAndResponseXml() {
-		converterFactorySpy.xmlToDataConverterThrowsException = true;
+		stringToExternallyConvertibleConverterSpy.MRV.setAlwaysThrowException("convert",
+				new ConverterException("exception from spy"));
 
 		response = recordEndpoint.batchIndexXmlXml(AUTH_TOKEN, AUTH_TOKEN, PLACE, jsonIndexData);
 
