@@ -299,7 +299,7 @@ public class RecordEndpointTest {
 	public void testReadRecordListForXml() {
 		response = recordEndpoint.readRecordListXml(AUTH_TOKEN, AUTH_TOKEN, "place", defaultXml);
 
-		var filterElement = getValueFromConvertAndAssertParameters(defaultXml);
+		var filterElement = getValueFromConvertAndAssertParameters();
 
 		spiderInstanceFactorySpy.spiderRecordListReaderSpy.MCR.assertParameters("readRecordList", 0,
 				AUTH_TOKEN, "place", filterElement);
@@ -734,7 +734,7 @@ public class RecordEndpointTest {
 		response = recordEndpoint.updateRecordXmlJson(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001,
 				defaultXml);
 
-		var dataElement = getValueFromConvertAndAssertParameters(defaultXml);
+		var dataElement = getValueFromConvertAndAssertParameters();
 
 		spiderInstanceFactorySpy.spiderRecordUpdaterSpy.MCR.assertParameters("updateRecord", 0,
 				AUTH_TOKEN, PLACE, PLACE_0001, dataElement);
@@ -753,7 +753,7 @@ public class RecordEndpointTest {
 		response = recordEndpoint.updateRecordXmlXml(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001,
 				defaultXml);
 
-		var dataElement = getValueFromConvertAndAssertParameters(defaultXml);
+		var dataElement = getValueFromConvertAndAssertParameters();
 
 		spiderInstanceFactorySpy.spiderRecordUpdaterSpy.MCR.assertParameters("updateRecord", 0,
 				AUTH_TOKEN, PLACE, PLACE_0001, dataElement);
@@ -767,10 +767,10 @@ public class RecordEndpointTest {
 		assertResponseContentTypeIs(APPLICATION_VND_UUB_RECORD_XML);
 	}
 
-	private Object getValueFromConvertAndAssertParameters(String xml) {
+	private Object getValueFromConvertAndAssertParameters() {
 		StringToExternallyConvertibleConverterSpy xmlToDataConverter = (StringToExternallyConvertibleConverterSpy) converterFactorySpy.MCR
 				.getReturnValue("factorStringToExternallyConvertableConverter", 0);
-		xmlToDataConverter.MCR.assertParameters("convert", 0, xml);
+		xmlToDataConverter.MCR.assertParameters("convert", 0, defaultXml);
 		var dataElement = xmlToDataConverter.MCR.getReturnValue("convert", 0);
 		return dataElement;
 	}
@@ -937,7 +937,7 @@ public class RecordEndpointTest {
 	public void testCreateRecordBodyInXmlWithReplyInJson() {
 		response = recordEndpoint.createRecordXmlJson(AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultXml);
 
-		var dataElement = getValueFromConvertAndAssertParameters(defaultXml);
+		var dataElement = getValueFromConvertAndAssertParameters();
 		spiderInstanceFactorySpy.spiderCreatorSpy.MCR.assertParameters("createAndStoreRecord", 0,
 				AUTH_TOKEN, PLACE, dataElement);
 
@@ -954,7 +954,7 @@ public class RecordEndpointTest {
 	public void testCreateRecordForXmlXml() {
 		response = recordEndpoint.createRecordXmlXml(AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultXml);
 
-		var dataElement = getValueFromConvertAndAssertParameters(defaultXml);
+		var dataElement = getValueFromConvertAndAssertParameters();
 		spiderInstanceFactorySpy.spiderCreatorSpy.MCR.assertParameters("createAndStoreRecord", 0,
 				AUTH_TOKEN, PLACE, dataElement);
 
@@ -1473,7 +1473,7 @@ public class RecordEndpointTest {
 	public void testSearchRecordForXml() {
 		response = recordEndpoint.searchRecordXml(AUTH_TOKEN, AUTH_TOKEN, "aSearchId", defaultXml);
 
-		var dataElement = getValueFromConvertAndAssertParameters(defaultXml);
+		var dataElement = getValueFromConvertAndAssertParameters();
 
 		spiderInstanceFactorySpy.spiderRecordSearcherSpy.MCR.assertParameters("search", 0,
 				AUTH_TOKEN, "aSearchId", dataElement);
@@ -1491,7 +1491,7 @@ public class RecordEndpointTest {
 	public void testSearchRecordSearchDataInXmlForJson() {
 		response = recordEndpoint.searchRecordJson(AUTH_TOKEN, AUTH_TOKEN, "aSearchId", defaultXml);
 
-		var dataElement = getValueFromConvertAndAssertParameters(defaultXml);
+		var dataElement = getValueFromConvertAndAssertParameters();
 
 		spiderInstanceFactorySpy.spiderRecordSearcherSpy.MCR.assertParameters("search", 0,
 				AUTH_TOKEN, "aSearchId", dataElement);
@@ -1623,59 +1623,66 @@ public class RecordEndpointTest {
 	}
 
 	@Test
-	public void testValidateRecordForXml() {
-		DataGroupSpy order = new DataGroupSpy();
-		DataGroupSpy validationOrderDG = new DataGroupSpy();
-		ArrayList<DataChild> orderChildren = new ArrayList<>();
-		orderChildren.add(validationOrderDG);
-		order.MRV.setDefaultReturnValuesSupplier("getChildren", () -> orderChildren);
+	public void testValidateNoValidationOrderAdded() throws Exception {
+		DataGroupSpy order = createOrderWithChildren();
+		DataGroupSpy workOrder = createWorkOrderWithOrder(order);
 
+		response = recordEndpoint.validateRecordXmlXml(AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultXml);
+
+		assertEquals(response.getStatus(), 400);
+	}
+
+	@Test
+	public void testValidateRecordForXml() {
+		DataGroupSpy validationOrder = new DataGroupSpy();
+		DataGroupSpy order = createOrderWithChildren(validationOrder);
+		DataGroupSpy workOrder = createWorkOrderWithOrder(order);
+
+		response = recordEndpoint.validateRecordXmlXml(AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultXml);
+
+		workOrder.MCR.assertParameters("getFirstGroupWithNameInData", 0, "order");
+		workOrder.MCR.assertParameters("getFirstGroupWithNameInData", 1, "record");
+		order.MCR.assertParameters("getChildren", 0);
+
+		var recordToValidate = workOrder.MCR.getReturnValue("getFirstGroupWithNameInData", 1);
+
+		spiderInstanceFactorySpy.spiderRecordValidatorSpy.MCR.assertParameters("validateRecord", 0,
+				AUTH_TOKEN, "validationOrder", validationOrder, recordToValidate);
+
+		assertValidationResult();
+	}
+
+	private DataGroupSpy createWorkOrderWithOrder(DataGroupSpy order) {
 		DataGroupSpy workOrder = new DataGroupSpy();
 		workOrder.MRV.setSpecificReturnValuesSupplier("getFirstGroupWithNameInData", () -> order,
 				"order");
 		stringToExternallyConvertibleConverterSpy.MRV.setDefaultReturnValuesSupplier("convert",
 				() -> workOrder);
+		return workOrder;
+	}
 
-		String workOrderXml = """
-				<?xml version="1.0" encoding="UTF-8"?>
-				<workOrder>
-					<order>
-						<validationOrder></validationOrder>
-					</order>
-					<record>
-						<someRecord></someRecord>
-					</record>
-				</workOrder>
-				""";
+	private DataGroupSpy createOrderWithChildren(DataGroupSpy... validationOrders) {
+		DataGroupSpy order = new DataGroupSpy();
+		addChildrenToOrder(order, validationOrders);
+		return order;
+	}
 
-		response = recordEndpoint.validateRecordXmlXml(AUTH_TOKEN, AUTH_TOKEN, PLACE, workOrderXml);
+	private void addChildrenToOrder(DataGroupSpy order, DataGroupSpy... validationOrders) {
+		ArrayList<DataChild> orderChildren = new ArrayList<>();
+		for (DataGroup validationOrder : validationOrders) {
+			orderChildren.add(validationOrder);
+		}
+		order.MRV.setDefaultReturnValuesSupplier("getChildren", () -> orderChildren);
+	}
 
-		// DataGroupSpy container = (DataGroupSpy) getValueFromConvertAndAssertParameters(
-		// workOrderXml);
+	private void assertValidationResult() {
+		DataRecord validationResult = (DataRecord) spiderInstanceFactorySpy.spiderRecordValidatorSpy.MCR
+				.getReturnValue("validateRecord", 0);
 
-		workOrder.MCR.assertParameters("getFirstGroupWithNameInData", 0, "order");
-		workOrder.MCR.assertParameters("getFirstGroupWithNameInData", 1, "record");
-
-		// DataGroupSpy orderDG = (DataGroupSpy) container.MCR
-		// .getReturnValue("getFirstGroupWithNameInData", 0);
-
-		order.MCR.assertParameters("getChildren", 0);
-
-		// var validationOrder = orderDG.MCR.getReturnValue("getFirstGroupWithNameInData", 0);
-		// var recordToValidate = container.MCR.getReturnValue("getFirstGroupWithNameInData", 1);
-		//
-		// spiderInstanceFactorySpy.spiderRecordValidatorSpy.MCR.assertParameters("validateRecord",
-		// 0,
-		// AUTH_TOKEN, "validationOrder", validationOrder, recordToValidate);
-		//
-		// DataRecord validationResult = (DataRecord)
-		// spiderInstanceFactorySpy.spiderRecordValidatorSpy.MCR
-		// .getReturnValue("validateRecord", 0);
-		//
-		// assertXmlConvertionOfResponse(validationResult);
-		// assertEntityExists();
-		// assertResponseStatusIs(Response.Status.OK);
-		// assertResponseContentTypeIs(APPLICATION_VND_UUB_RECORD_XML);
+		assertXmlConvertionOfResponse(validationResult);
+		assertEntityExists();
+		assertResponseStatusIs(Response.Status.OK);
+		assertResponseContentTypeIs(APPLICATION_VND_UUB_RECORD_XML);
 	}
 
 	@Test
@@ -1693,26 +1700,21 @@ public class RecordEndpointTest {
 				AUTH_TOKEN, "validationOrder", validationOrderSentOnToSpider,
 				recordToValidateSentOnToSpider);
 
-		DataRecord validationResult = (DataRecord) spiderInstanceFactorySpy.spiderRecordValidatorSpy.MCR
-				.getReturnValue("validateRecord", 0);
-
-		assertXmlConvertionOfResponse(validationResult);
-		assertEntityExists();
-		assertResponseStatusIs(Response.Status.OK);
-		assertResponseContentTypeIs(APPLICATION_VND_UUB_RECORD_XML);
+		assertValidationResult();
 	}
 
 	@Test
 	public void testValidateRecordInputAsXMLResponseAsJson() {
+		DataGroupSpy validationOrder = new DataGroupSpy();
+		DataGroupSpy order = createOrderWithChildren(validationOrder);
+		DataGroupSpy workOrder = createWorkOrderWithOrder(order);
+
 		response = recordEndpoint.validateRecordXmlJson(AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultXml);
 
-		DataGroupSpy container = (DataGroupSpy) getValueFromConvertAndAssertParameters(defaultXml);
+		workOrder.MCR.assertParameters("getFirstGroupWithNameInData", 0, "order");
+		workOrder.MCR.assertParameters("getFirstGroupWithNameInData", 1, "record");
 
-		container.MCR.assertParameters("getFirstGroupWithNameInData", 0, "order");
-		container.MCR.assertParameters("getFirstGroupWithNameInData", 1, "record");
-
-		var validationOrder = container.MCR.getReturnValue("getFirstGroupWithNameInData", 0);
-		var recordToValidate = container.MCR.getReturnValue("getFirstGroupWithNameInData", 1);
+		var recordToValidate = workOrder.MCR.getReturnValue("getFirstGroupWithNameInData", 1);
 
 		spiderInstanceFactorySpy.spiderRecordValidatorSpy.MCR.assertParameters("validateRecord", 0,
 				AUTH_TOKEN, "validationOrder", validationOrder, recordToValidate);
@@ -1869,7 +1871,7 @@ public class RecordEndpointTest {
 	public void testIndexRecordListWithFilterAsXmlAndResponseXml() {
 		response = recordEndpoint.batchIndexXmlXml(AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultXml);
 
-		var filterElement = getValueFromConvertAndAssertParameters(defaultXml);
+		var filterElement = getValueFromConvertAndAssertParameters();
 
 		spiderInstanceFactorySpy.spiderRecordListIndexerSpy.MCR.assertParameters("indexRecordList",
 				0, AUTH_TOKEN, "place", filterElement);
@@ -1887,7 +1889,7 @@ public class RecordEndpointTest {
 	public void testIndexRecordListWithFilterAsXmlndResponseJson() {
 		response = recordEndpoint.batchIndexXmlJson(AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultXml);
 
-		var filterElement = getValueFromConvertAndAssertParameters(defaultXml);
+		var filterElement = getValueFromConvertAndAssertParameters();
 
 		spiderInstanceFactorySpy.spiderRecordListIndexerSpy.MCR.assertParameters("indexRecordList",
 				0, AUTH_TOKEN, "place", filterElement);

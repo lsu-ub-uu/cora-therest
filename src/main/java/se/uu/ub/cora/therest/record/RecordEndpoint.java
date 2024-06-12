@@ -827,10 +827,13 @@ public class RecordEndpoint {
 		DataGroup validationOrder = null;
 		DataGroup recordToValidate = null;
 		if (contentType.endsWith("+xml")) {
-			DataGroup container = convertXmlToDataElement(inputRecord);
-			DataGroup order = container.getFirstGroupWithNameInData("order");
-			order.getChildren();
-			recordToValidate = container.getFirstGroupWithNameInData("record");
+			DataGroup workOrder = convertXmlToDataElement(inputRecord);
+			DataGroup order = workOrder.getFirstGroupWithNameInData("order");
+			if (!order.hasChildren()) {
+				throw new DataException("");
+			}
+			validationOrder = (DataGroup) order.getChildren().get(0);
+			recordToValidate = workOrder.getFirstGroupWithNameInData("record");
 		} else {
 			JsonObject jsonObject = getJsonObjectFromJsonRecordString(inputRecord);
 			validationOrder = getDataGroupFromJsonObjectUsingName(jsonObject, "order");
