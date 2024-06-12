@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
+import java.util.List;
 
 import org.glassfish.jersey.media.multipart.FormDataParam;
 
@@ -46,6 +47,7 @@ import se.uu.ub.cora.converter.ExternalUrls;
 import se.uu.ub.cora.converter.ExternallyConvertibleToStringConverter;
 import se.uu.ub.cora.converter.StringToExternallyConvertibleConverter;
 import se.uu.ub.cora.data.Convertible;
+import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataList;
 import se.uu.ub.cora.data.DataRecord;
@@ -818,7 +820,7 @@ public class RecordEndpoint {
 		try {
 			return tryValidateRecord(contentType, accept, authToken, type, jsonRecord);
 		} catch (Exception error) {
-			return handleError(authToken, error, "Some error");
+			return handleError(authToken, error, "Validation failed due to:");
 		}
 	}
 
@@ -828,12 +830,8 @@ public class RecordEndpoint {
 		DataGroup recordToValidate = null;
 		if (contentType.endsWith("+xml")) {
 			DataGroup workOrder = convertXmlToDataElement(inputRecord);
-			DataGroup order = workOrder.getFirstGroupWithNameInData("order");
-			if (!order.hasChildren()) {
-				throw new DataException("");
-			}
-			validationOrder = (DataGroup) order.getChildren().get(0);
-			recordToValidate = workOrder.getFirstGroupWithNameInData("record");
+			validationOrder = extractWorkOrderPart(workOrder, "order");
+			recordToValidate = extractWorkOrderPart(workOrder, "record");
 		} else {
 			JsonObject jsonObject = getJsonObjectFromJsonRecordString(inputRecord);
 			validationOrder = getDataGroupFromJsonObjectUsingName(jsonObject, "order");
@@ -847,6 +845,27 @@ public class RecordEndpoint {
 		String outputRecord = convertConvertibleToString(accept, validationResult);
 		return Response.status(Response.Status.OK).header(HttpHeaders.CONTENT_TYPE, accept)
 				.entity(outputRecord).build();
+	}
+
+	private DataGroup extractWorkOrderPart(DataGroup workOrder, String partName) {
+		try {
+			DataGroup workOrderPart = workOrder.getFirstGroupWithNameInData(partName);
+			return (DataGroup) ensureAndReturnOnlyOneChildForWorkOrderPart(workOrderPart);
+		} catch (se.uu.ub.cora.data.DataMissingException e) {
+			throw new DataException("WorkOrder part '" + partName + "' not found.");
+		}
+	}
+
+	private DataChild ensureAndReturnOnlyOneChildForWorkOrderPart(DataGroup workOrderPart) {
+		List<DataChild> childrenOfWorkOrderPart = workOrderPart.getChildren();
+		if (hasMoreThanOneChild(childrenOfWorkOrderPart)) {
+			throw new DataException("Too many children in workOrder part.");
+		}
+		return childrenOfWorkOrderPart.get(0);
+	}
+
+	private boolean hasMoreThanOneChild(List<DataChild> childrenOfWorkOrderPart) {
+		return childrenOfWorkOrderPart.size() > 1;
 	}
 
 	private JsonObject getJsonObjectFromJsonRecordString(String jsonRecord) {

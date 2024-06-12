@@ -1623,28 +1623,68 @@ public class RecordEndpointTest {
 	}
 
 	@Test
-	public void testValidateNoValidationOrderAdded() throws Exception {
-		DataGroupSpy order = createOrderWithChildren();
-		DataGroupSpy workOrder = createWorkOrderWithOrder(order);
+	public void testValidateWorkOrderPartMissing() throws Exception {
+		DataGroupSpy order = createDataGroupWithChildren();
+		DataGroupSpy recordToValidate = new DataGroupSpy();
+		DataGroupSpy record = createDataGroupWithChildren(recordToValidate);
+		DataGroupSpy workOrder = createWorkOrderWithOrder(order, record);
+
+		workOrder.MRV.setAlwaysThrowException("getFirstGroupWithNameInData",
+				new se.uu.ub.cora.data.DataMissingException("someException"));
 
 		response = recordEndpoint.validateRecordXmlXml(AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultXml);
 
 		assertEquals(response.getStatus(), 400);
+		assertEquals(response.getEntity(),
+				"Validation failed due to: WorkOrder part 'order' not found.");
+	}
+
+	@Test
+	public void testValidateMultipleRecordToValidateExists() throws Exception {
+		DataGroupSpy validationOrder = new DataGroupSpy();
+		DataGroupSpy order = createDataGroupWithChildren(validationOrder);
+		DataGroupSpy recordToValidate1 = new DataGroupSpy();
+		DataGroupSpy recordToValidate2 = new DataGroupSpy();
+		DataGroupSpy record = createDataGroupWithChildren(recordToValidate1, recordToValidate2);
+		createWorkOrderWithOrder(order, record);
+
+		response = recordEndpoint.validateRecordXmlXml(AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultXml);
+
+		assertEquals(response.getStatus(), 400);
+		assertEquals(response.getEntity(),
+				"Validation failed due to: Too many children in workOrder part.");
+	}
+
+	@Test
+	public void testValidateMultipleValidateOrderExists() throws Exception {
+		DataGroupSpy validationOrder1 = new DataGroupSpy();
+		DataGroupSpy validationOrder2 = new DataGroupSpy();
+		DataGroupSpy order = createDataGroupWithChildren(validationOrder1, validationOrder2);
+		DataGroupSpy recordToValidate = new DataGroupSpy();
+		DataGroupSpy record = createDataGroupWithChildren(recordToValidate);
+		createWorkOrderWithOrder(order, record);
+
+		response = recordEndpoint.validateRecordXmlXml(AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultXml);
+
+		assertEquals(response.getStatus(), 400);
+		assertEquals(response.getEntity(),
+				"Validation failed due to: Too many children in workOrder part.");
 	}
 
 	@Test
 	public void testValidateRecordForXml() {
 		DataGroupSpy validationOrder = new DataGroupSpy();
-		DataGroupSpy order = createOrderWithChildren(validationOrder);
-		DataGroupSpy workOrder = createWorkOrderWithOrder(order);
+		DataGroupSpy order = createDataGroupWithChildren(validationOrder);
+		DataGroupSpy recordToValidate = new DataGroupSpy();
+		DataGroupSpy record = createDataGroupWithChildren(recordToValidate);
+		DataGroupSpy workOrder = createWorkOrderWithOrder(order, record);
 
 		response = recordEndpoint.validateRecordXmlXml(AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultXml);
 
 		workOrder.MCR.assertParameters("getFirstGroupWithNameInData", 0, "order");
 		workOrder.MCR.assertParameters("getFirstGroupWithNameInData", 1, "record");
 		order.MCR.assertParameters("getChildren", 0);
-
-		var recordToValidate = workOrder.MCR.getReturnValue("getFirstGroupWithNameInData", 1);
+		record.MCR.assertParameters("getChildren", 0);
 
 		spiderInstanceFactorySpy.spiderRecordValidatorSpy.MCR.assertParameters("validateRecord", 0,
 				AUTH_TOKEN, "validationOrder", validationOrder, recordToValidate);
@@ -1652,19 +1692,21 @@ public class RecordEndpointTest {
 		assertValidationResult();
 	}
 
-	private DataGroupSpy createWorkOrderWithOrder(DataGroupSpy order) {
+	private DataGroupSpy createWorkOrderWithOrder(DataGroupSpy order, DataGroupSpy record) {
 		DataGroupSpy workOrder = new DataGroupSpy();
 		workOrder.MRV.setSpecificReturnValuesSupplier("getFirstGroupWithNameInData", () -> order,
 				"order");
+		workOrder.MRV.setSpecificReturnValuesSupplier("getFirstGroupWithNameInData", () -> record,
+				"record");
 		stringToExternallyConvertibleConverterSpy.MRV.setDefaultReturnValuesSupplier("convert",
 				() -> workOrder);
 		return workOrder;
 	}
 
-	private DataGroupSpy createOrderWithChildren(DataGroupSpy... validationOrders) {
-		DataGroupSpy order = new DataGroupSpy();
-		addChildrenToOrder(order, validationOrders);
-		return order;
+	private DataGroupSpy createDataGroupWithChildren(DataGroupSpy... validationOrders) {
+		DataGroupSpy dataGroup = new DataGroupSpy();
+		addChildrenToOrder(dataGroup, validationOrders);
+		return dataGroup;
 	}
 
 	private void addChildrenToOrder(DataGroupSpy order, DataGroupSpy... validationOrders) {
@@ -1706,15 +1748,15 @@ public class RecordEndpointTest {
 	@Test
 	public void testValidateRecordInputAsXMLResponseAsJson() {
 		DataGroupSpy validationOrder = new DataGroupSpy();
-		DataGroupSpy order = createOrderWithChildren(validationOrder);
-		DataGroupSpy workOrder = createWorkOrderWithOrder(order);
+		DataGroupSpy order = createDataGroupWithChildren(validationOrder);
+		DataGroupSpy recordToValidate = new DataGroupSpy();
+		DataGroupSpy record = createDataGroupWithChildren(recordToValidate);
+		DataGroupSpy workOrder = createWorkOrderWithOrder(order, record);
 
 		response = recordEndpoint.validateRecordXmlJson(AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultXml);
 
 		workOrder.MCR.assertParameters("getFirstGroupWithNameInData", 0, "order");
 		workOrder.MCR.assertParameters("getFirstGroupWithNameInData", 1, "record");
-
-		var recordToValidate = workOrder.MCR.getReturnValue("getFirstGroupWithNameInData", 1);
 
 		spiderInstanceFactorySpy.spiderRecordValidatorSpy.MCR.assertParameters("validateRecord", 0,
 				AUTH_TOKEN, "validationOrder", validationOrder, recordToValidate);
