@@ -23,7 +23,7 @@
 	<parent>
 		<groupId>se.uu.ub.cora</groupId>
 		<artifactId>cora-parent</artifactId>
-		<version>2.5.0</version>
+		<version>2.6.0</version>
 	</parent>
 
 	<artifactId>therest</artifactId>
@@ -33,12 +33,12 @@
 	
 	<properties>
 		<json.version>3.10.0</json.version>
-		<spider.version>8.3.0</spider.version>
+		<spider.version>8.7.0</spider.version>
 		<spider-spies.version>1.8.0</spider-spies.version>
 		<jaxb-api.version>2.3.1</jaxb-api.version>
-		<servlet-api.version>5.0.0</servlet-api.version>
-		<jersey.version>3.1.6</jersey.version>
-		<bookkeeper.version>9.3.0</bookkeeper.version>
+		<servlet-api.version>6.1.0</servlet-api.version>
+		<jersey.version>3.1.7</jersey.version>
+		<bookkeeper.version>9.4.0</bookkeeper.version>
 		<gatekeeperclient.version>4.9.0</gatekeeperclient.version>
 		<beefeater.version>3.13.0</beefeater.version>
 		<solrsearch.version>5.7.0</solrsearch.version>
@@ -53,7 +53,7 @@
 		<coralog4j.version>2.1.0</coralog4j.version>
 		<coradata.version>9.0.0</coradata.version>
 		<messaging.version>3.0.0</messaging.version>
-		<testutils.version>1.11.0</testutils.version>
+		<testutils.version>1.13.0</testutils.version>
 		<converter.version>4.0.0</converter.version>
 		<xmlconverter.version>3.0.0</xmlconverter.version>
 		<binary.version>2.0.0</binary.version>

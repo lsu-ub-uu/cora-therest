@@ -248,19 +248,7 @@ public class ServletContextSpy implements ServletContext {
 	}
 
 	@Override
-	public Servlet getServlet(String arg0) throws ServletException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public String getServletContextName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Enumeration<String> getServletNames() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -278,12 +266,6 @@ public class ServletContextSpy implements ServletContext {
 	}
 
 	@Override
-	public Enumeration<Servlet> getServlets() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public SessionCookieConfig getSessionCookieConfig() {
 		// TODO Auto-generated method stub
 		return null;
@@ -291,12 +273,6 @@ public class ServletContextSpy implements ServletContext {
 
 	@Override
 	public void log(String arg0) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void log(Exception arg0, String arg1) {
 		// TODO Auto-generated method stub
 
 	}
