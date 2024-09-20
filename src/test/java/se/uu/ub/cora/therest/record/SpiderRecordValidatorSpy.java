@@ -20,6 +20,7 @@ package se.uu.ub.cora.therest.record;
 
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataRecord;
+import se.uu.ub.cora.data.DataRecordGroup;
 import se.uu.ub.cora.spider.authorization.AuthorizationException;
 import se.uu.ub.cora.spider.record.RecordValidator;
 import se.uu.ub.cora.storage.RecordNotFoundException;
@@ -33,20 +34,22 @@ public class SpiderRecordValidatorSpy implements RecordValidator {
 	public String authToken;
 	public String recordType;
 	public DataGroup dataGroup;
-	public DataGroup recordToValidate;
+	public DataRecordGroup recordToValidate;
 	public DataGroup validationOrder;
 	public boolean throwRecordNotFoundException = false;
 	public MethodCallRecorder MCR = new MethodCallRecorder();
 
 	@Override
-	public DataRecord validateRecord(String authToken, String recordType,
-			DataGroup validationRecord, DataGroup recordToValidate) {
-		MCR.addCall("authToken", authToken, "recordType", recordType, "validationRecord",
-				validationRecord, "recordToValidate", recordToValidate);
+	// public DataRecord validateRecord(String authToken, String recordType,
+	// DataGroup validationRecord, DataGroup recordToValidate) {
+	public DataRecord validateRecord(String authToken, String recordType, DataGroup validationOrder,
+			DataRecordGroup recordToValidate) {
+		MCR.addCall("authToken", authToken, "recordType", recordType, "validationOrder",
+				validationOrder, "recordToValidate", recordToValidate);
 		this.authToken = authToken;
 		this.recordType = recordType;
-		this.validationOrder = validationRecord;
-		this.dataGroup = validationRecord;
+		this.validationOrder = validationOrder;
+		// this.dataGroup = validationRecord;
 		this.recordToValidate = recordToValidate;
 
 		if ("dummyNonAuthorizedToken".equals(authToken)) {
@@ -75,5 +78,13 @@ public class SpiderRecordValidatorSpy implements RecordValidator {
 		validationResult.addChild(recordInfo);
 		return validationResult;
 	}
+
+	// @Override
+	// public DataRecord validateRecord(String authToken, String recordType, DataGroup
+	// validationOrder,
+	// DataRecordGroup recordToValidate) {
+	// // TODO Auto-generated method stub
+	// return null;
+	// }
 
 }

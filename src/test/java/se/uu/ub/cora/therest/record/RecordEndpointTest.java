@@ -49,10 +49,14 @@ import se.uu.ub.cora.data.Convertible;
 import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataList;
+import se.uu.ub.cora.data.DataProvider;
 import se.uu.ub.cora.data.DataRecord;
+import se.uu.ub.cora.data.DataRecordGroup;
 import se.uu.ub.cora.data.converter.DataToJsonConverterProvider;
 import se.uu.ub.cora.data.converter.JsonToDataConverterProvider;
+import se.uu.ub.cora.data.spies.DataFactorySpy;
 import se.uu.ub.cora.data.spies.DataGroupSpy;
+import se.uu.ub.cora.data.spies.DataRecordSpy;
 import se.uu.ub.cora.initialize.SettingsProvider;
 import se.uu.ub.cora.json.parser.JsonValue;
 import se.uu.ub.cora.json.parser.org.OrgJsonParser;
@@ -72,7 +76,6 @@ import se.uu.ub.cora.spider.spies.SpiderInstanceFactorySpy;
 import se.uu.ub.cora.spider.spies.UploaderSpy;
 import se.uu.ub.cora.therest.AnnotationTestHelper;
 import se.uu.ub.cora.therest.coradata.DataListSpy;
-import se.uu.ub.cora.therest.coradata.DataRecordSpy;
 import se.uu.ub.cora.therest.spy.InputStreamSpy;
 
 public class RecordEndpointTest {
@@ -102,6 +105,7 @@ public class RecordEndpointTest {
 	private Response response;
 	private HttpServletRequestSpy requestSpy;
 	private LoggerFactorySpy loggerFactorySpy;
+	private DataFactorySpy dataFactorySpy;
 
 	private String jsonToValidate = "{\"order\":{\"name\":\"validationOrder\",\"children\":[{\"name\":\"recordInfo\",\"children\":[{\"name\":\"dataDivider\",\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"system\"},{\"name\":\"linkedRecordId\",\"value\":\"testSystem\"}]}]},{\"name\":\"recordType\",\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"recordType\"},{\"name\":\"linkedRecordId\",\"value\":\"someRecordType\"}]},{\"name\":\"metadataToValidate\",\"value\":\"existing\"},{\"name\":\"validateLinks\",\"value\":\"false\"}]},\"record\":{\"name\":\"text\",\"children\":[{\"name\":\"recordInfo\",\"children\":[{\"name\":\"id\",\"value\":\"workOrderRecordIdTextVar2Text\"},{\"name\":\"dataDivider\",\"children\":[{\"name\":\"linkedRecordType\",\"value\":\"system\"},{\"name\":\"linkedRecordId\",\"value\":\"cora\"}]}]},{\"name\":\"textPart\",\"children\":[{\"name\":\"text\",\"value\":\"Id på länkad post\"}],\"attributes\":{\"type\":\"default\",\"lang\":\"sv\"}},{\"name\":\"textPart\",\"children\":[{\"name\":\"text\",\"value\":\"Linked record id\"}],\"attributes\":{\"type\":\"alternative\",\"lang\":\"en\"}}]}}";
 	private String defaultJson = "{\"name\":\"someRecordType\",\"children\":[]}";
@@ -123,6 +127,9 @@ public class RecordEndpointTest {
 	public void beforeMethod() {
 		loggerFactorySpy = new LoggerFactorySpy();
 		LoggerProvider.setLoggerFactory(loggerFactorySpy);
+		dataFactorySpy = new DataFactorySpy();
+		DataProvider.onlyForTestSetDataFactory(dataFactorySpy);
+
 		converterFactoryCreatorSpy = new DataToJsonConverterFactoryCreatorSpy();
 		DataToJsonConverterProvider
 				.setDataToJsonConverterFactoryCreator(converterFactoryCreatorSpy);
@@ -152,7 +159,6 @@ public class RecordEndpointTest {
 		recordEndpoint = new RecordEndpoint(requestSpy);
 
 		setUpSpiesInRecordEndpoint();
-
 	}
 
 	private void setUpSpiesInRecordEndpoint() {
@@ -193,7 +199,7 @@ public class RecordEndpointTest {
 	private String getBaseUrlsFromFactorUsingConvertibleAndExternalUrls(
 			DataToJsonConverterFactorySpy converterFactory) {
 		se.uu.ub.cora.data.converter.ExternalUrls externalUrls = (se.uu.ub.cora.data.converter.ExternalUrls) converterFactory.MCR
-				.getValueForMethodNameAndCallNumberAndParameterName(
+				.getParameterForMethodAndCallNumberAndParameter(
 						"factorUsingConvertibleAndExternalUrls", 0, "externalUrls");
 		return externalUrls.getBaseUrl();
 	}
@@ -201,7 +207,7 @@ public class RecordEndpointTest {
 	private String getIiifUrlFromFactorUsingConvertibleAndExternalUrls(
 			DataToJsonConverterFactorySpy converterFactory) {
 		se.uu.ub.cora.data.converter.ExternalUrls externalUrls = (se.uu.ub.cora.data.converter.ExternalUrls) converterFactory.MCR
-				.getValueForMethodNameAndCallNumberAndParameterName(
+				.getParameterForMethodAndCallNumberAndParameter(
 						"factorUsingConvertibleAndExternalUrls", 0, "externalUrls");
 		return externalUrls.getIfffUrl();
 	}
@@ -415,7 +421,6 @@ public class RecordEndpointTest {
 
 	private void expectTokenForReadToPreferablyBeHeaderThanQuery(String headerAuthToken,
 			String queryAuthToken, String authTokenExpected) {
-
 		response = recordEndpoint.readRecordJson(headerAuthToken, queryAuthToken, PLACE,
 				PLACE_0001);
 
@@ -445,7 +450,6 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testReadRecordUsesToRestConverterFactoryForJson() {
-
 		response = recordEndpoint.readRecordJson(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001);
 
 		DataRecord recordReturnedFromReader = spiderInstanceFactorySpy.spiderRecordReaderSpy.dataRecord;
@@ -460,10 +464,9 @@ public class RecordEndpointTest {
 		converterFactory.MCR.assertParameters("factorUsingConvertibleAndExternalUrls", 0,
 				convertible);
 		se.uu.ub.cora.data.converter.ExternalUrls externalUrls = (se.uu.ub.cora.data.converter.ExternalUrls) converterFactory.MCR
-				.getValueForMethodNameAndCallNumberAndParameterName(
+				.getParameterForMethodAndCallNumberAndParameter(
 						"factorUsingConvertibleAndExternalUrls", 0, "externalUrls");
 		assertEquals(externalUrls.getBaseUrl(), standardBaseUrlHttp);
-		// assertEquals(externalUrls.getIfffUrl(), iiifUrl);
 		assertEquals(externalUrls.getIfffUrl(), standardIffUrlHttp);
 
 		DataToJsonConverterSpy converterSpy = (DataToJsonConverterSpy) converterFactory.MCR
@@ -482,16 +485,14 @@ public class RecordEndpointTest {
 	}
 
 	private void assertXmlConvertionOfResponse(Convertible convertible) {
-
 		ExternallyConvertibleToStringConverterSpy dataToXmlConverter = (ExternallyConvertibleToStringConverterSpy) converterFactorySpy.MCR
 				.getReturnValue("factorExternallyConvertableToStringConverter", 0);
 
 		dataToXmlConverter.MCR.assertParameters("convertWithLinks", 0, convertible);
 		ExternalUrls externalUrls = (ExternalUrls) dataToXmlConverter.MCR
-				.getValueForMethodNameAndCallNumberAndParameterName("convertWithLinks", 0,
+				.getParameterForMethodAndCallNumberAndParameter("convertWithLinks", 0,
 						"externalUrls");
 		assertEquals(externalUrls.getBaseUrl(), standardBaseUrlHttp);
-		// assertEquals(externalUrls.getIfffUrl(), iiifUrl);
 		assertEquals(externalUrls.getIfffUrl(), standardIffUrlHttp);
 
 		var entity = response.getEntity();
@@ -539,7 +540,6 @@ public class RecordEndpointTest {
 
 	private void expectTokenForReadIncomingLinksToPrefereblyBeHeaderThanQuery(
 			String headerAuthToken, String queryAuthToken, String authTokenExpected) {
-
 		response = recordEndpoint.readIncomingRecordLinksJson(headerAuthToken, queryAuthToken,
 				PLACE, PLACE_0001);
 
@@ -625,7 +625,6 @@ public class RecordEndpointTest {
 
 	private void expectTokenForDeleteToPreferablyBeHeaderThanQuery(String headerAuthToken,
 			String queryAuthToken, String authTokenExpected) {
-
 		response = recordEndpoint.deleteRecord(headerAuthToken, queryAuthToken, PLACE,
 				"place:0002");
 
@@ -679,7 +678,6 @@ public class RecordEndpointTest {
 
 	private void expectTokenForUpdateToPrefereblyBeHeaderThanQuery(String headerAuthToken,
 			String queryAuthToken, String authTokenExpected) {
-
 		response = recordEndpoint.updateRecordJsonJson(headerAuthToken, queryAuthToken, PLACE,
 				PLACE_0001, defaultJson);
 
@@ -885,11 +883,10 @@ public class RecordEndpointTest {
 
 	private void expectTokenForCreateToPreferablyBeHeaderThanQuery(String headerAuthToken,
 			String queryAuthToken, String authTokenExpected) {
-
 		response = recordEndpoint.createRecordJsonJson(headerAuthToken, queryAuthToken, PLACE,
 				defaultJson);
 
-		SpiderCreatorSpy spiderCreatorSpy = spiderInstanceFactorySpy.spiderCreatorSpy;
+		SpiderCreatorOldSpy spiderCreatorSpy = spiderInstanceFactorySpy.spiderCreatorSpy;
 		assertEquals(spiderCreatorSpy.authToken, authTokenExpected);
 	}
 
@@ -903,7 +900,6 @@ public class RecordEndpointTest {
 
 	@Test
 	public void testCreateRecordUsesFactories() {
-
 		response = recordEndpoint.createRecordJsonJson(AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultJson);
 
 		DataGroup recordSentOnToSpider = spiderInstanceFactorySpy.spiderCreatorSpy.record;
@@ -1070,7 +1066,6 @@ public class RecordEndpointTest {
 		assertResponseStatusIs(Response.Status.CONFLICT);
 		assertResponseContentTypeIs(TEXT_PLAIN);
 		assertEquals(response.getEntity(), "Record already exists in spider");
-
 	}
 
 	@Test
@@ -1092,10 +1087,9 @@ public class RecordEndpointTest {
 		loggerSpy.MCR.assertNumberOfCallsToMethod("logErrorUsingMessageAndException", 1);
 		loggerSpy.MCR.assertParameter("logErrorUsingMessageAndException", 0, "message",
 				"Error handling request: Some error");
-		var caughtException = loggerSpy.MCR.getValueForMethodNameAndCallNumberAndParameterName(
+		var caughtException = loggerSpy.MCR.getParameterForMethodAndCallNumberAndParameter(
 				"logErrorUsingMessageAndException", 0, "exception");
 		assertTrue(caughtException instanceof NullPointerException);
-
 	}
 
 	@Test
@@ -1364,7 +1358,6 @@ public class RecordEndpointTest {
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
 		assertEquals(response.getEntity(),
 				"An error has ocurred while downloading a resource: " + exceptionMessage);
-
 	}
 
 	@Test
@@ -1575,7 +1568,6 @@ public class RecordEndpointTest {
 
 	private void expectTokenForValidateToPrefereblyBeHeaderThanQuery(String headerAuthToken,
 			String queryAuthToken, String authTokenExpected) {
-
 		response = recordEndpoint.validateRecordJsonJson(headerAuthToken, queryAuthToken, PLACE,
 				jsonToValidate);
 
@@ -1597,7 +1589,7 @@ public class RecordEndpointTest {
 		assertEquals(topJsonObject.keys.get(1), "record");
 
 		DataGroup validationOrderSentOnToSpider = spiderInstanceFactorySpy.spiderRecordValidatorSpy.validationOrder;
-		DataGroup recordToValidateSentOnToSpider = spiderInstanceFactorySpy.spiderRecordValidatorSpy.recordToValidate;
+		DataRecordGroup recordToValidateSentOnToSpider = spiderInstanceFactorySpy.spiderRecordValidatorSpy.recordToValidate;
 
 		JsonValue orderDataFromParser = jsonParser.returnedJsonValue.returnedJsonValues.get(0);
 		JsonValue firstSentToConverterFactory = jsonToDataConverterFactorySpy.jsonValues.get(0);
@@ -1736,7 +1728,7 @@ public class RecordEndpointTest {
 		assertEquals(topJsonObject.keys.get(1), "record");
 
 		DataGroup validationOrderSentOnToSpider = spiderInstanceFactorySpy.spiderRecordValidatorSpy.validationOrder;
-		DataGroup recordToValidateSentOnToSpider = spiderInstanceFactorySpy.spiderRecordValidatorSpy.recordToValidate;
+		DataRecordGroup recordToValidateSentOnToSpider = spiderInstanceFactorySpy.spiderRecordValidatorSpy.recordToValidate;
 
 		spiderInstanceFactorySpy.spiderRecordValidatorSpy.MCR.assertParameters("validateRecord", 0,
 				AUTH_TOKEN, "validationOrder", validationOrderSentOnToSpider,

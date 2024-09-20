@@ -50,7 +50,9 @@ import se.uu.ub.cora.data.Convertible;
 import se.uu.ub.cora.data.DataChild;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataList;
+import se.uu.ub.cora.data.DataProvider;
 import se.uu.ub.cora.data.DataRecord;
+import se.uu.ub.cora.data.DataRecordGroup;
 import se.uu.ub.cora.data.ExternallyConvertible;
 import se.uu.ub.cora.data.converter.ConversionException;
 import se.uu.ub.cora.data.converter.DataToJsonConverter;
@@ -224,8 +226,11 @@ public class RecordEndpoint {
 
 	private Response createResponseForCreate(String accept, String authToken, String type,
 			DataGroup dataRecord) throws URISyntaxException {
+		DataRecordGroup recordGroup = DataProvider.createRecordGroupFromDataGroup(dataRecord);
+		// DataRecord createdRecord = SpiderInstanceProvider.getRecordCreator()
+		// .createAndStoreRecord(authToken, type, dataRecord);
 		DataRecord createdRecord = SpiderInstanceProvider.getRecordCreator()
-				.createAndStoreRecord(authToken, type, dataRecord);
+				.createAndStoreRecord(authToken, type, recordGroup);
 
 		URI uri = createUri(type, createdRecord);
 		String outputRecord = convertConvertibleToString(accept, createdRecord);
@@ -433,7 +438,6 @@ public class RecordEndpoint {
 	}
 
 	private Response tryReadRecord(String accept, String authToken, String type, String id) {
-
 		DataRecord dataRecord = SpiderInstanceProvider.getRecordReader().readRecord(authToken, type,
 				id);
 
@@ -595,10 +599,13 @@ public class RecordEndpoint {
 
 	private Response tryUpdateRecord(String contentType, String accept, String authToken,
 			String type, String id, String inputRecord) {
-
 		DataGroup dataRecord = convertStringToDataGroup(contentType, inputRecord);
+		DataRecordGroup recordGroup = DataProvider.createRecordGroupFromDataGroup(dataRecord);
+		// DataRecord updatedRecord =
+		// SpiderInstanceProvider.getRecordUpdater().updateRecord(authToken,
+		// type, id, dataRecord);
 		DataRecord updatedRecord = SpiderInstanceProvider.getRecordUpdater().updateRecord(authToken,
-				type, id, dataRecord);
+				type, id, recordGroup);
 		String outputRecord = convertConvertibleToString(accept, updatedRecord);
 
 		return Response.status(Response.Status.OK).header(HttpHeaders.CONTENT_TYPE, accept)
@@ -839,8 +846,11 @@ public class RecordEndpoint {
 		}
 
 		RecordValidator recordValidator = SpiderInstanceProvider.getRecordValidator();
+		DataRecordGroup recordGroup = DataProvider.createRecordGroupFromDataGroup(recordToValidate);
+		// DataRecord validationResult = recordValidator.validateRecord(authToken, type,
+		// validationOrder, recordToValidate);
 		DataRecord validationResult = recordValidator.validateRecord(authToken, type,
-				validationOrder, recordToValidate);
+				validationOrder, recordGroup);
 
 		String outputRecord = convertConvertibleToString(accept, validationResult);
 		return Response.status(Response.Status.OK).header(HttpHeaders.CONTENT_TYPE, accept)

@@ -20,13 +20,13 @@ package se.uu.ub.cora.therest.record;
 
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataRecord;
+import se.uu.ub.cora.data.spies.DataRecordSpy;
 import se.uu.ub.cora.spider.authorization.AuthorizationException;
 import se.uu.ub.cora.spider.record.RecordListIndexer;
 import se.uu.ub.cora.storage.RecordNotFoundException;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 import se.uu.ub.cora.therest.coradata.DataAtomicSpy;
 import se.uu.ub.cora.therest.coradata.DataGroupSpy;
-import se.uu.ub.cora.therest.coradata.DataRecordSpy;
 
 public class IndexBatchJobCreatorSpy implements RecordListIndexer {
 
@@ -53,7 +53,8 @@ public class IndexBatchJobCreatorSpy implements RecordListIndexer {
 		recordInfo.addChild(typeGroup);
 		indexBatchJob.addChild(recordInfo);
 
-		recordToReturn = new DataRecordSpy(indexBatchJob);
+		// recordToReturn = new DataRecordSpy(indexBatchJob);
+		recordToReturn = new DataRecordSpy();
 		MCR.addReturned(recordToReturn);
 		return recordToReturn;
 	}
