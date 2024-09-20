@@ -227,8 +227,6 @@ public class RecordEndpoint {
 	private Response createResponseForCreate(String accept, String authToken, String type,
 			DataGroup dataRecord) throws URISyntaxException {
 		DataRecordGroup recordGroup = DataProvider.createRecordGroupFromDataGroup(dataRecord);
-		// DataRecord createdRecord = SpiderInstanceProvider.getRecordCreator()
-		// .createAndStoreRecord(authToken, type, dataRecord);
 		DataRecord createdRecord = SpiderInstanceProvider.getRecordCreator()
 				.createAndStoreRecord(authToken, type, recordGroup);
 
@@ -601,9 +599,6 @@ public class RecordEndpoint {
 			String type, String id, String inputRecord) {
 		DataGroup dataRecord = convertStringToDataGroup(contentType, inputRecord);
 		DataRecordGroup recordGroup = DataProvider.createRecordGroupFromDataGroup(dataRecord);
-		// DataRecord updatedRecord =
-		// SpiderInstanceProvider.getRecordUpdater().updateRecord(authToken,
-		// type, id, dataRecord);
 		DataRecord updatedRecord = SpiderInstanceProvider.getRecordUpdater().updateRecord(authToken,
 				type, id, recordGroup);
 		String outputRecord = convertConvertibleToString(accept, updatedRecord);
@@ -847,8 +842,6 @@ public class RecordEndpoint {
 
 		RecordValidator recordValidator = SpiderInstanceProvider.getRecordValidator();
 		DataRecordGroup recordGroup = DataProvider.createRecordGroupFromDataGroup(recordToValidate);
-		// DataRecord validationResult = recordValidator.validateRecord(authToken, type,
-		// validationOrder, recordToValidate);
 		DataRecord validationResult = recordValidator.validateRecord(authToken, type,
 				validationOrder, recordGroup);
 

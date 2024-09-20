@@ -19,7 +19,6 @@
 
 package se.uu.ub.cora.therest.record;
 
-import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataRecord;
 import se.uu.ub.cora.data.DataRecordGroup;
 import se.uu.ub.cora.data.spies.DataRecordSpy;
@@ -36,17 +35,17 @@ public class SpiderCreatorOldSpy implements RecordCreator {
 
 	public String authToken;
 	public String type;
-	public DataGroup record;
+	public DataRecordGroup record;
 	public MethodCallRecorder MCR = new MethodCallRecorder();
 
 	@Override
 	// public DataRecord createAndStoreRecord(String authToken, String type, DataGroup record) {
 	public DataRecord createAndStoreRecord(String authToken, String type,
 			DataRecordGroup recordGroup) {
-		MCR.addCall("authToken", authToken, "type", type, "record", record);
+		MCR.addCall("authToken", authToken, "type", type, "recordGroup", recordGroup);
 		this.authToken = authToken;
 		this.type = type;
-		this.record = record;
+		this.record = recordGroup;
 		if ("dummyNonAuthorizedToken".equals(authToken)) {
 			throw new AuthorizationException("not authorized");
 		}
@@ -68,6 +67,7 @@ public class SpiderCreatorOldSpy implements RecordCreator {
 		// DataCreator.createRecordWithNameInDataAndIdAndTypeAndLinkedRecordId("nameInData",
 		// "someId", type, "linkedRecordId"));
 		DataRecordSpy dataRecordSpy = new DataRecordSpy();
+		dataRecordSpy.MRV.setDefaultReturnValuesSupplier("getId", () -> "someCreatedId");
 		MCR.addReturned(dataRecordSpy);
 		return dataRecordSpy;
 	}

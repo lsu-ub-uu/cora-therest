@@ -55,6 +55,8 @@ public class IndexBatchJobCreatorSpy implements RecordListIndexer {
 
 		// recordToReturn = new DataRecordSpy(indexBatchJob);
 		recordToReturn = new DataRecordSpy();
+		recordToReturn.MRV.setDefaultReturnValuesSupplier("getId", () -> "someCreatedBatchJobId");
+
 		MCR.addReturned(recordToReturn);
 		return recordToReturn;
 	}

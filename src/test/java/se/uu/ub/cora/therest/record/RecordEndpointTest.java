@@ -266,7 +266,7 @@ public class RecordEndpointTest {
 		SpiderRecordListReaderSpy spiderListReaderSpy = spiderInstanceFactorySpy.spiderRecordListReaderSpy;
 
 		DataGroup filterSentOnToSpider = spiderInstanceFactorySpy.spiderRecordListReaderSpy.filter;
-		assertJsonStringConvertedToDataUsesCoraData(jsonFilterData, filterSentOnToSpider);
+		assertJsonStringConvertedToGroupUsesCoraData(jsonFilterData, filterSentOnToSpider);
 
 		DataListSpy returnedDataListFromReader = spiderListReaderSpy.returnedDataList;
 
@@ -305,7 +305,7 @@ public class RecordEndpointTest {
 	public void testReadRecordListForXml() {
 		response = recordEndpoint.readRecordListXml(AUTH_TOKEN, AUTH_TOKEN, "place", defaultXml);
 
-		var filterElement = getValueFromConvertAndAssertParameters();
+		var filterElement = assertParametersAndGetConvertedXmlDataElement();
 
 		spiderInstanceFactorySpy.spiderRecordListReaderSpy.MCR.assertParameters("readRecordList", 0,
 				AUTH_TOKEN, "place", filterElement);
@@ -326,7 +326,7 @@ public class RecordEndpointTest {
 		var filterSentOnToSpider = spiderInstanceFactorySpy.spiderRecordListReaderSpy.filter;
 
 		String defaultFilter = "{\"name\":\"filter\",\"children\":[]}";
-		assertJsonStringConvertedToDataUsesCoraData(defaultFilter, filterSentOnToSpider);
+		assertJsonStringConvertedToGroupUsesCoraData(defaultFilter, filterSentOnToSpider);
 
 		spiderInstanceFactorySpy.spiderRecordListReaderSpy.MCR.assertParameters("readRecordList", 0,
 				AUTH_TOKEN, "place", filterSentOnToSpider);
@@ -697,17 +697,20 @@ public class RecordEndpointTest {
 		response = recordEndpoint.updateRecordJsonJson(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001,
 				defaultJson);
 
-		DataGroup recordSentOnToSpider = spiderInstanceFactorySpy.spiderRecordUpdaterSpy.record;
-		assertJsonStringConvertedToDataUsesCoraData(defaultJson, recordSentOnToSpider);
+		DataRecordGroup recordSentOnToSpider = spiderInstanceFactorySpy.spiderRecordUpdaterSpy.record;
+		assertJsonStringConvertedToRecordUsesConverter(defaultJson, recordSentOnToSpider);
 	}
 
-	private void assertJsonStringConvertedToDataUsesCoraData(String jsonSentToEndPoint,
-			DataGroup recordSentOnToSpider) {
+	private void assertJsonStringConvertedToRecordUsesConverter(String jsonSentToEndPoint,
+			DataRecordGroup recordSentOnToSpider) {
 		assertSame(jsonParser.jsonString, jsonSentToEndPoint);
 		assertSame(jsonToDataConverterFactorySpy.jsonValue, jsonParser.returnedJsonValue);
 		JsonToDataConverterSpy jsonToDataConverterSpy = jsonToDataConverterFactorySpy.jsonToDataConverterSpy;
 		DataGroup returnedDataPart = jsonToDataConverterSpy.dataPartToReturn;
-		assertSame(recordSentOnToSpider, returnedDataPart);
+
+		DataRecordGroup convertedToRecord = (DataRecordGroup) dataFactorySpy.MCR
+				.assertCalledParametersReturn("factorRecordGroupFromDataGroup", returnedDataPart);
+		assertSame(recordSentOnToSpider, convertedToRecord);
 	}
 
 	@Test
@@ -715,8 +718,8 @@ public class RecordEndpointTest {
 		response = recordEndpoint.updateRecordJsonXml(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001,
 				defaultJson);
 
-		DataGroup recordSentOnToSpider = spiderInstanceFactorySpy.spiderRecordUpdaterSpy.record;
-		assertJsonStringConvertedToDataUsesCoraData(defaultJson, recordSentOnToSpider);
+		DataRecordGroup recordSentOnToSpider = spiderInstanceFactorySpy.spiderRecordUpdaterSpy.record;
+		assertJsonStringConvertedToRecordUsesConverter(defaultJson, recordSentOnToSpider);
 
 		DataRecord updatedRecord = (DataRecord) spiderInstanceFactorySpy.spiderRecordUpdaterSpy.MCR
 				.getReturnValue("updateRecord", 0);
@@ -732,10 +735,10 @@ public class RecordEndpointTest {
 		response = recordEndpoint.updateRecordXmlJson(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001,
 				defaultXml);
 
-		var dataElement = getValueFromConvertAndAssertParameters();
+		DataRecordGroup dataRecord = assertParametersAndGetConvertedXmlDataRecordGroup();
 
 		spiderInstanceFactorySpy.spiderRecordUpdaterSpy.MCR.assertParameters("updateRecord", 0,
-				AUTH_TOKEN, PLACE, PLACE_0001, dataElement);
+				AUTH_TOKEN, PLACE, PLACE_0001, dataRecord);
 
 		DataRecord updatedRecord = (DataRecord) spiderInstanceFactorySpy.spiderRecordUpdaterSpy.MCR
 				.getReturnValue("updateRecord", 0);
@@ -751,10 +754,10 @@ public class RecordEndpointTest {
 		response = recordEndpoint.updateRecordXmlXml(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001,
 				defaultXml);
 
-		var dataElement = getValueFromConvertAndAssertParameters();
+		DataRecordGroup dataRecord = assertParametersAndGetConvertedXmlDataRecordGroup();
 
 		spiderInstanceFactorySpy.spiderRecordUpdaterSpy.MCR.assertParameters("updateRecord", 0,
-				AUTH_TOKEN, PLACE, PLACE_0001, dataElement);
+				AUTH_TOKEN, PLACE, PLACE_0001, dataRecord);
 
 		DataRecord updatedRecord = (DataRecord) spiderInstanceFactorySpy.spiderRecordUpdaterSpy.MCR
 				.getReturnValue("updateRecord", 0);
@@ -765,12 +768,24 @@ public class RecordEndpointTest {
 		assertResponseContentTypeIs(APPLICATION_VND_UUB_RECORD_XML);
 	}
 
-	private Object getValueFromConvertAndAssertParameters() {
+	private Object assertParametersAndGetConvertedXmlDataElement() {
 		StringToExternallyConvertibleConverterSpy xmlToDataConverter = (StringToExternallyConvertibleConverterSpy) converterFactorySpy.MCR
 				.getReturnValue("factorStringToExternallyConvertableConverter", 0);
 		xmlToDataConverter.MCR.assertParameters("convert", 0, defaultXml);
 		var dataElement = xmlToDataConverter.MCR.getReturnValue("convert", 0);
 		return dataElement;
+	}
+
+	private DataRecordGroup assertParametersAndGetConvertedXmlDataRecordGroup() {
+		StringToExternallyConvertibleConverterSpy xmlToDataConverter = (StringToExternallyConvertibleConverterSpy) converterFactorySpy.MCR
+				.getReturnValue("factorStringToExternallyConvertableConverter", 0);
+		xmlToDataConverter.MCR.assertParameters("convert", 0, defaultXml);
+		DataGroup dataGroup = (DataGroup) xmlToDataConverter.MCR.getReturnValue("convert", 0);
+
+		DataRecordGroup convertedToRecord = (DataRecordGroup) dataFactorySpy.MCR
+				.assertCalledParametersReturn("factorRecordGroupFromDataGroup", dataGroup);
+
+		return convertedToRecord;
 	}
 
 	@Test
@@ -895,30 +910,30 @@ public class RecordEndpointTest {
 		response = recordEndpoint.createRecordJsonJson(AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultJson);
 
 		assertResponseStatusIs(Response.Status.CREATED);
-		assertEquals(response.getLocation().toString(), PLACE + "/idFromDataRecordSpy");
+		assertEquals(response.getLocation().toString(), PLACE + "/someCreatedId");
 	}
 
 	@Test
 	public void testCreateRecordUsesFactories() {
 		response = recordEndpoint.createRecordJsonJson(AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultJson);
 
-		DataGroup recordSentOnToSpider = spiderInstanceFactorySpy.spiderCreatorSpy.record;
-		assertJsonStringConvertedToDataUsesCoraData(defaultJson, recordSentOnToSpider);
+		DataRecordGroup recordSentOnToSpider = spiderInstanceFactorySpy.spiderCreatorSpy.record;
+		assertJsonStringConvertedToRecordUsesConverter(defaultJson, recordSentOnToSpider);
 		DataRecord createdRecord = (DataRecord) spiderInstanceFactorySpy.spiderCreatorSpy.MCR
 				.getReturnValue("createAndStoreRecord", 0);
 
 		assertDataFromSpiderConvertedToJsonUsingConvertersFromProvider(createdRecord);
 
 		assertResponseStatusIs(Response.Status.CREATED);
-		assertEquals(response.getLocation().toString(), PLACE + "/idFromDataRecordSpy");
+		assertEquals(response.getLocation().toString(), PLACE + "/someCreatedId");
 	}
 
 	@Test
 	public void testCreateRecordBodyInJsonWithReplyInXml() {
 		response = recordEndpoint.createRecordJsonXml(AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultJson);
 
-		DataGroup recordSentOnToSpider = spiderInstanceFactorySpy.spiderCreatorSpy.record;
-		assertJsonStringConvertedToDataUsesCoraData(defaultJson, recordSentOnToSpider);
+		DataRecordGroup recordSentOnToSpider = spiderInstanceFactorySpy.spiderCreatorSpy.record;
+		assertJsonStringConvertedToRecordUsesConverter(defaultJson, recordSentOnToSpider);
 
 		DataRecord createdRecord = (DataRecord) spiderInstanceFactorySpy.spiderCreatorSpy.MCR
 				.getReturnValue("createAndStoreRecord", 0);
@@ -933,9 +948,10 @@ public class RecordEndpointTest {
 	public void testCreateRecordBodyInXmlWithReplyInJson() {
 		response = recordEndpoint.createRecordXmlJson(AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultXml);
 
-		var dataElement = getValueFromConvertAndAssertParameters();
+		DataRecordGroup dataRecord = assertParametersAndGetConvertedXmlDataRecordGroup();
+
 		spiderInstanceFactorySpy.spiderCreatorSpy.MCR.assertParameters("createAndStoreRecord", 0,
-				AUTH_TOKEN, PLACE, dataElement);
+				AUTH_TOKEN, PLACE, dataRecord);
 
 		DataRecord createdRecord = (DataRecord) spiderInstanceFactorySpy.spiderCreatorSpy.MCR
 				.getReturnValue("createAndStoreRecord", 0);
@@ -950,9 +966,10 @@ public class RecordEndpointTest {
 	public void testCreateRecordForXmlXml() {
 		response = recordEndpoint.createRecordXmlXml(AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultXml);
 
-		var dataElement = getValueFromConvertAndAssertParameters();
+		DataRecordGroup dataRecord = assertParametersAndGetConvertedXmlDataRecordGroup();
+
 		spiderInstanceFactorySpy.spiderCreatorSpy.MCR.assertParameters("createAndStoreRecord", 0,
-				AUTH_TOKEN, PLACE, dataElement);
+				AUTH_TOKEN, PLACE, dataRecord);
 
 		DataRecord createdRecord = (DataRecord) spiderInstanceFactorySpy.spiderCreatorSpy.MCR
 				.getReturnValue("createAndStoreRecord", 0);
@@ -1414,7 +1431,7 @@ public class RecordEndpointTest {
 		assertEquals(spiderRecordSearcherSpy.searchId, "aSearchId");
 
 		DataGroup searchSentOnToSpider = spiderInstanceFactorySpy.spiderRecordSearcherSpy.searchData;
-		assertJsonStringConvertedToDataUsesCoraData(defaultJson, searchSentOnToSpider);
+		assertJsonStringConvertedToGroupUsesCoraData(defaultJson, searchSentOnToSpider);
 	}
 
 	@Test
@@ -1425,11 +1442,21 @@ public class RecordEndpointTest {
 		SpiderRecordSearcherSpy spiderRecordSearcherSpy = spiderInstanceFactorySpy.spiderRecordSearcherSpy;
 
 		DataGroup searchSentOnToSpider = spiderInstanceFactorySpy.spiderRecordSearcherSpy.searchData;
-		assertJsonStringConvertedToDataUsesCoraData(defaultJson, searchSentOnToSpider);
+		assertJsonStringConvertedToGroupUsesCoraData(defaultJson, searchSentOnToSpider);
 
 		DataList returnedDataListFromReader = spiderRecordSearcherSpy.searchResult;
 
 		assertDataFromSpiderConvertedToJsonUsingConvertersFromProvider(returnedDataListFromReader);
+	}
+
+	private void assertJsonStringConvertedToGroupUsesCoraData(String jsonSentToEndPoint,
+			DataGroup recordSentOnToSpider) {
+		assertSame(jsonParser.jsonString, jsonSentToEndPoint);
+		assertSame(jsonToDataConverterFactorySpy.jsonValue, jsonParser.returnedJsonValue);
+		JsonToDataConverterSpy jsonToDataConverterSpy = jsonToDataConverterFactorySpy.jsonToDataConverterSpy;
+		DataGroup returnedDataPart = jsonToDataConverterSpy.dataPartToReturn;
+
+		assertSame(recordSentOnToSpider, returnedDataPart);
 	}
 
 	@Test
@@ -1466,7 +1493,7 @@ public class RecordEndpointTest {
 	public void testSearchRecordForXml() {
 		response = recordEndpoint.searchRecordXml(AUTH_TOKEN, AUTH_TOKEN, "aSearchId", defaultXml);
 
-		var dataElement = getValueFromConvertAndAssertParameters();
+		var dataElement = assertParametersAndGetConvertedXmlDataElement();
 
 		spiderInstanceFactorySpy.spiderRecordSearcherSpy.MCR.assertParameters("search", 0,
 				AUTH_TOKEN, "aSearchId", dataElement);
@@ -1484,7 +1511,7 @@ public class RecordEndpointTest {
 	public void testSearchRecordSearchDataInXmlForJson() {
 		response = recordEndpoint.searchRecordJson(AUTH_TOKEN, AUTH_TOKEN, "aSearchId", defaultXml);
 
-		var dataElement = getValueFromConvertAndAssertParameters();
+		var dataElement = assertParametersAndGetConvertedXmlDataElement();
 
 		spiderInstanceFactorySpy.spiderRecordSearcherSpy.MCR.assertParameters("search", 0,
 				AUTH_TOKEN, "aSearchId", dataElement);
@@ -1605,7 +1632,11 @@ public class RecordEndpointTest {
 
 		var converterSpyForRecord = jsonToDataConverterFactorySpy.jsonToDataConverterSpies.get(1);
 		DataGroup recordReturnedDataPart = converterSpyForRecord.dataPartToReturn;
-		assertSame(recordToValidateSentOnToSpider, recordReturnedDataPart);
+
+		DataRecordGroup convertedToRecord = (DataRecordGroup) dataFactorySpy.MCR
+				.assertCalledParametersReturn("factorRecordGroupFromDataGroup",
+						recordReturnedDataPart);
+		assertSame(recordToValidateSentOnToSpider, convertedToRecord);
 
 		DataRecord validationResult = (DataRecord) spiderInstanceFactorySpy.spiderRecordValidatorSpy.MCR
 				.getReturnValue("validateRecord", 0);
@@ -1678,8 +1709,10 @@ public class RecordEndpointTest {
 		order.MCR.assertParameters("getChildren", 0);
 		record.MCR.assertParameters("getChildren", 0);
 
+		DataRecordGroup convertedToRecord = (DataRecordGroup) dataFactorySpy.MCR
+				.assertCalledParametersReturn("factorRecordGroupFromDataGroup", recordToValidate);
 		spiderInstanceFactorySpy.spiderRecordValidatorSpy.MCR.assertParameters("validateRecord", 0,
-				AUTH_TOKEN, "validationOrder", validationOrder, recordToValidate);
+				AUTH_TOKEN, "validationOrder", validationOrder, convertedToRecord);
 
 		assertValidationResult();
 	}
@@ -1750,8 +1783,10 @@ public class RecordEndpointTest {
 		workOrder.MCR.assertParameters("getFirstGroupWithNameInData", 0, "order");
 		workOrder.MCR.assertParameters("getFirstGroupWithNameInData", 1, "record");
 
+		DataRecordGroup convertedToRecord = (DataRecordGroup) dataFactorySpy.MCR
+				.assertCalledParametersReturn("factorRecordGroupFromDataGroup", recordToValidate);
 		spiderInstanceFactorySpy.spiderRecordValidatorSpy.MCR.assertParameters("validateRecord", 0,
-				AUTH_TOKEN, "validationOrder", validationOrder, recordToValidate);
+				AUTH_TOKEN, "validationOrder", validationOrder, convertedToRecord);
 
 		DataRecord validationResult = (DataRecord) spiderInstanceFactorySpy.spiderRecordValidatorSpy.MCR
 				.getReturnValue("validateRecord", 0);
@@ -1869,7 +1904,7 @@ public class RecordEndpointTest {
 		IndexBatchJobCreatorSpy indexBatchJobCreator = spiderInstanceFactorySpy.spiderRecordListIndexerSpy;
 
 		DataGroup filterSentOnToSpider = spiderInstanceFactorySpy.spiderRecordListIndexerSpy.filter;
-		assertJsonStringConvertedToDataUsesCoraData(jsonIndexData, filterSentOnToSpider);
+		assertJsonStringConvertedToGroupUsesCoraData(jsonIndexData, filterSentOnToSpider);
 
 		assertEquals(indexBatchJobCreator.type, PLACE);
 
@@ -1878,7 +1913,7 @@ public class RecordEndpointTest {
 
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.CREATED);
-		assertEquals(response.getLocation().toString(), "indexBatchJob/idFromDataRecordSpy");
+		assertEquals(response.getLocation().toString(), "indexBatchJob/someCreatedBatchJobId");
 	}
 
 	@Test
@@ -1886,7 +1921,7 @@ public class RecordEndpointTest {
 		response = recordEndpoint.batchIndexJsonJson(AUTH_TOKEN, AUTH_TOKEN, PLACE, null);
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.CREATED);
-		assertEquals(response.getLocation().toString(), "indexBatchJob/idFromDataRecordSpy");
+		assertEquals(response.getLocation().toString(), "indexBatchJob/someCreatedBatchJobId");
 
 		assertEquals(jsonParser.jsonString, "{\"name\":\"indexSettings\",\"children\":[]}");
 	}
@@ -1896,7 +1931,7 @@ public class RecordEndpointTest {
 		response = recordEndpoint.batchIndexJsonJson(AUTH_TOKEN, AUTH_TOKEN, PLACE, "");
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.CREATED);
-		assertEquals(response.getLocation().toString(), "indexBatchJob/idFromDataRecordSpy");
+		assertEquals(response.getLocation().toString(), "indexBatchJob/someCreatedBatchJobId");
 
 		assertEquals(jsonParser.jsonString, "{\"name\":\"indexSettings\",\"children\":[]}");
 	}
@@ -1905,7 +1940,7 @@ public class RecordEndpointTest {
 	public void testIndexRecordListWithFilterAsXmlAndResponseXml() {
 		response = recordEndpoint.batchIndexXmlXml(AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultXml);
 
-		var filterElement = getValueFromConvertAndAssertParameters();
+		var filterElement = assertParametersAndGetConvertedXmlDataElement();
 
 		spiderInstanceFactorySpy.spiderRecordListIndexerSpy.MCR.assertParameters("indexRecordList",
 				0, AUTH_TOKEN, "place", filterElement);
@@ -1923,7 +1958,7 @@ public class RecordEndpointTest {
 	public void testIndexRecordListWithFilterAsXmlndResponseJson() {
 		response = recordEndpoint.batchIndexXmlJson(AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultXml);
 
-		var filterElement = getValueFromConvertAndAssertParameters();
+		var filterElement = assertParametersAndGetConvertedXmlDataElement();
 
 		spiderInstanceFactorySpy.spiderRecordListIndexerSpy.MCR.assertParameters("indexRecordList",
 				0, AUTH_TOKEN, "place", filterElement);
@@ -1942,7 +1977,7 @@ public class RecordEndpointTest {
 		response = recordEndpoint.batchIndexJsonXml(AUTH_TOKEN, AUTH_TOKEN, PLACE, jsonIndexData);
 
 		DataGroup filterSentOnToSpider = spiderInstanceFactorySpy.spiderRecordListIndexerSpy.filter;
-		assertJsonStringConvertedToDataUsesCoraData(jsonIndexData, filterSentOnToSpider);
+		assertJsonStringConvertedToGroupUsesCoraData(jsonIndexData, filterSentOnToSpider);
 
 		spiderInstanceFactorySpy.spiderRecordListIndexerSpy.MCR.assertParameters("indexRecordList",
 				0, AUTH_TOKEN, "place", filterSentOnToSpider);
@@ -1978,7 +2013,7 @@ public class RecordEndpointTest {
 		response = recordEndpoint.batchIndexXmlXml(AUTH_TOKEN, AUTH_TOKEN, PLACE, null);
 
 		DataGroup filterSentOnToSpider = spiderInstanceFactorySpy.spiderRecordListIndexerSpy.filter;
-		assertJsonStringConvertedToDataUsesCoraData("{\"name\":\"indexSettings\",\"children\":[]}",
+		assertJsonStringConvertedToGroupUsesCoraData("{\"name\":\"indexSettings\",\"children\":[]}",
 				filterSentOnToSpider);
 
 		spiderInstanceFactorySpy.spiderRecordListIndexerSpy.MCR.assertParameters("indexRecordList",
