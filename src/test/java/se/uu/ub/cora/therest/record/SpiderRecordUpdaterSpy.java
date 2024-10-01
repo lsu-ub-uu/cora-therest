@@ -19,8 +19,8 @@
 
 package se.uu.ub.cora.therest.record;
 
-import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataRecord;
+import se.uu.ub.cora.data.DataRecordGroup;
 import se.uu.ub.cora.spider.authorization.AuthorizationException;
 import se.uu.ub.cora.spider.record.DataException;
 import se.uu.ub.cora.spider.record.RecordUpdater;
@@ -35,11 +35,13 @@ public class SpiderRecordUpdaterSpy implements RecordUpdater {
 	public String authToken;
 	public String type;
 	public String id;
-	public DataGroup record;
+	public DataRecordGroup record;
 	public boolean throwDataException = false;
 
 	@Override
-	public DataRecord updateRecord(String authToken, String type, String id, DataGroup record) {
+	// public DataRecord updateRecord(String authToken, String type, String id, DataGroup record) {
+	public DataRecord updateRecord(String authToken, String type, String id,
+			DataRecordGroup record) {
 		MCR.addCall("authToken", authToken, "type", type, "id", id, "record", record);
 
 		this.authToken = authToken;
@@ -69,5 +71,12 @@ public class SpiderRecordUpdaterSpy implements RecordUpdater {
 			throw RecordNotFoundException.withMessage("No record exist with type " + type);
 		}
 	}
+
+	// @Override
+	// public DataRecord updateRecord(String authToken, String type, String id,
+	// DataRecordGroup record) {
+	// // TODO Auto-generated method stub
+	// return null;
+	// }
 
 }

@@ -28,34 +28,34 @@
 
 	<artifactId>therest</artifactId>
 	<packaging>jar</packaging>
-	<version>10.3-SNAPSHOT</version>
+	<version>11.0-SNAPSHOT</version>
 	<name>The Rest</name>
 	
 	<properties>
 		<json.version>3.10.0</json.version>
-		<spider.version>8.7.0</spider.version>
-		<spider-spies.version>1.8.0</spider-spies.version>
+		<spider.version>9.0.0</spider.version>
+		<spider-spies.version>2.0-SNAPSHOT</spider-spies.version>
 		<jaxb-api.version>2.3.1</jaxb-api.version>
 		<servlet-api.version>6.1.0</servlet-api.version>
-		<jersey.version>3.1.7</jersey.version>
-		<bookkeeper.version>9.4.0</bookkeeper.version>
+		<jersey.version>3.1.8</jersey.version>
+		<bookkeeper.version>10.0.0</bookkeeper.version>
 		<gatekeeperclient.version>4.9.0</gatekeeperclient.version>
 		<beefeater.version>3.13.0</beefeater.version>
-		<solrsearch.version>5.7.0</solrsearch.version>
+		<solrsearch.version>6.0.0</solrsearch.version>
 		<httphandler.version>2.16.0</httphandler.version>
-		<storage.version>9.1.0</storage.version>
-		<storage-spies.version>1.7.0</storage-spies.version>
+		<storage.version>9.3.0</storage.version>
+		<storage-spies.version>1.10.0</storage-spies.version>
 		<initialize.version>1.6.0</initialize.version>
-		<search.version>5.7.0</search.version>
+		<search.version>6.0.0</search.version>
 		<searchstorage.version>3.22.0</searchstorage.version>
 		<logger.version>2.10.0</logger.version>
 		<logger-spies.version>1.5.0</logger-spies.version>
 		<coralog4j.version>2.1.0</coralog4j.version>
-		<coradata.version>9.0.0</coradata.version>
+		<coradata.version>10.0.0</coradata.version>
 		<messaging.version>3.0.0</messaging.version>
-		<testutils.version>1.13.0</testutils.version>
-		<converter.version>4.0.0</converter.version>
-		<xmlconverter.version>3.0.0</xmlconverter.version>
+		<testutils.version>1.14.0</testutils.version>
+		<converter.version>4.1.0</converter.version>
+		<xmlconverter.version>3.1.0</xmlconverter.version>
 		<binary.version>2.0.0</binary.version>
 	</properties>
 	

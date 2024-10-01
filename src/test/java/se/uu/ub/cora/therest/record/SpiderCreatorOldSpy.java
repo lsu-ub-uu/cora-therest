@@ -19,8 +19,9 @@
 
 package se.uu.ub.cora.therest.record;
 
-import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataRecord;
+import se.uu.ub.cora.data.DataRecordGroup;
+import se.uu.ub.cora.data.spies.DataRecordSpy;
 import se.uu.ub.cora.spider.authorization.AuthorizationException;
 import se.uu.ub.cora.spider.record.ConflictException;
 import se.uu.ub.cora.spider.record.DataException;
@@ -29,22 +30,22 @@ import se.uu.ub.cora.spider.record.RecordCreator;
 import se.uu.ub.cora.storage.RecordConflictException;
 import se.uu.ub.cora.storage.RecordNotFoundException;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
-import se.uu.ub.cora.therest.coradata.DataRecordSpy;
-import se.uu.ub.cora.therest.testdata.DataCreator;
 
-public class SpiderCreatorSpy implements RecordCreator {
+public class SpiderCreatorOldSpy implements RecordCreator {
 
 	public String authToken;
 	public String type;
-	public DataGroup record;
+	public DataRecordGroup record;
 	public MethodCallRecorder MCR = new MethodCallRecorder();
 
 	@Override
-	public DataRecord createAndStoreRecord(String authToken, String type, DataGroup record) {
-		MCR.addCall("authToken", authToken, "type", type, "record", record);
+	// public DataRecord createAndStoreRecord(String authToken, String type, DataGroup record) {
+	public DataRecord createAndStoreRecord(String authToken, String type,
+			DataRecordGroup recordGroup) {
+		MCR.addCall("authToken", authToken, "type", type, "recordGroup", recordGroup);
 		this.authToken = authToken;
 		this.type = type;
-		this.record = record;
+		this.record = recordGroup;
 		if ("dummyNonAuthorizedToken".equals(authToken)) {
 			throw new AuthorizationException("not authorized");
 		}
@@ -62,11 +63,20 @@ public class SpiderCreatorSpy implements RecordCreator {
 		} else if ("place_unexpected_error".equals(type)) {
 			throw new NullPointerException("Some error");
 		}
-		DataRecordSpy dataRecordSpy = new DataRecordSpy(
-				DataCreator.createRecordWithNameInDataAndIdAndTypeAndLinkedRecordId("nameInData",
-						"someId", type, "linkedRecordId"));
+		// DataRecordSpy dataRecordSpy = new DataRecordSpy(
+		// DataCreator.createRecordWithNameInDataAndIdAndTypeAndLinkedRecordId("nameInData",
+		// "someId", type, "linkedRecordId"));
+		DataRecordSpy dataRecordSpy = new DataRecordSpy();
+		dataRecordSpy.MRV.setDefaultReturnValuesSupplier("getId", () -> "someCreatedId");
 		MCR.addReturned(dataRecordSpy);
 		return dataRecordSpy;
 	}
+
+	// @Override
+	// public DataRecord createAndStoreRecord(String authToken, String type,
+	// DataRecordGroup recordGroup) {
+	// // TODO Auto-generated method stub
+	// return null;
+	// }
 
 }

@@ -117,7 +117,7 @@ public class TheRestDependencyProviderTest {
 		SolrRecordIndexer recordIndexer = (SolrRecordIndexer) dependencyProvider.getRecordIndexer();
 
 		SolrClientProviderImp solrClientProviderImp = (SolrClientProviderImp) recordIndexer
-				.getSolrClientProvider();
+				.onlyForTestGetSolrClientProvider();
 		assertEquals(solrClientProviderImp.getBaseURL(), "http://localhost:8983/solr/stuff");
 	}
 

@@ -37,7 +37,7 @@ public class OldSpiderInstanceFactorySpy implements SpiderInstanceFactory {
 
 	public SpiderDownloaderSpy spiderDownloaderSpy;
 	public SpiderUploaderSpy spiderUploaderSpy;
-	public SpiderCreatorSpy spiderCreatorSpy;
+	public SpiderCreatorOldSpy spiderCreatorSpy;
 	public SpiderRecordUpdaterSpy spiderRecordUpdaterSpy;
 	public SpiderRecordDeleterSpy spiderRecordDeleterSpy;
 	public SpiderRecordReaderSpy spiderRecordReaderSpy;
@@ -64,7 +64,7 @@ public class OldSpiderInstanceFactorySpy implements SpiderInstanceFactory {
 
 	@Override
 	public RecordCreator factorRecordCreator() {
-		spiderCreatorSpy = new SpiderCreatorSpy();
+		spiderCreatorSpy = new SpiderCreatorOldSpy();
 		return spiderCreatorSpy;
 	}
 
