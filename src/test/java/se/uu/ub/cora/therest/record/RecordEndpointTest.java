@@ -79,16 +79,18 @@ import se.uu.ub.cora.therest.coradata.DataListSpy;
 import se.uu.ub.cora.therest.spy.InputStreamSpy;
 
 public class RecordEndpointTest {
-	private static final String APPLICATION_VND_UUB_WORKORDER_XML_QS_0_9 = "application/vnd.uub.workorder+xml;qs=0.9";
+	private static final String APPLICATION_XML = "application/xml";
+	private static final String APPLICATION_XML_QS01 = "application/xml;qs=0.1";
+	private static final String APPLICATION_VND_UUB_RECORD_LIST_XML = "application/vnd.uub.recordList+xml";
+	private static final String APPLICATION_VND_UUB_RECORD_LIST_JSON = "application/vnd.uub.recordList+json";
+	private static final String APPLICATION_VND_UUB_RECORD_LIST_JSON_QS09 = "application/vnd.uub.recordList+json;qs=0.9";
+	private static final String APPLICATION_VND_UUB_RECORD_XML = "application/vnd.uub.record+xml";
+	private static final String APPLICATION_VND_UUB_RECORD_JSON = "application/vnd.uub.record+json";
+	private static final String APPLICATION_VND_UUB_RECORD_JSON_QS09 = "application/vnd.uub.record+json;qs=0.9";
+	private static final String APPLICATION_VND_UUB_WORKORDER_XML = "application/vnd.uub.workorder+xml";
 	private static final String APPLICATION_VND_UUB_WORKORDER_JSON = "application/vnd.uub.workorder+json";
 	private static final String MULTIPART_FORM_DATA = "multipart/form-data";
 	private static final String TEXT_PLAIN = "text/plain; charset=utf-8";
-	private static final String APPLICATION_VND_UUB_RECORD_LIST_XML = "application/vnd.uub.recordList+xml";
-	private static final String APPLICATION_VND_UUB_RECORD_LIST_XML_QS09 = "application/vnd.uub.recordList+xml;qs=0.9";
-	private static final String APPLICATION_VND_UUB_RECORD_LIST_JSON = "application/vnd.uub.recordList+json";
-	private static final String APPLICATION_VND_UUB_RECORD_XML = "application/vnd.uub.record+xml";
-	private static final String APPLICATION_VND_UUB_RECORD_XML_QS09 = "application/vnd.uub.record+xml;qs=0.9";
-	private static final String APPLICATION_VND_UUB_RECORD_JSON = "application/vnd.uub.record+json";
 	private static final String DUMMY_NON_AUTHORIZED_TOKEN = "dummyNonAuthorizedToken";
 	private static final String PLACE_0001 = "place:0001";
 	private static final String PLACE = "place";
@@ -320,6 +322,25 @@ public class RecordEndpointTest {
 	}
 
 	@Test
+	public void testReadRecordListAsApplicationXmlForBrowsers() {
+		response = recordEndpoint.readRecordListAsApplicationXmlForBrowsers(AUTH_TOKEN, AUTH_TOKEN,
+				"place", defaultXml);
+
+		var filterElement = assertParametersAndGetConvertedXmlDataElement();
+
+		spiderInstanceFactorySpy.spiderRecordListReaderSpy.MCR.assertParameters("readRecordList", 0,
+				AUTH_TOKEN, "place", filterElement);
+
+		DataList dataList = (DataList) spiderInstanceFactorySpy.spiderRecordListReaderSpy.MCR
+				.getReturnValue("readRecordList", 0);
+
+		assertXmlConvertionOfResponse(dataList);
+		assertEntityExists();
+		assertResponseStatusIs(Response.Status.OK);
+		assertResponseContentTypeIs(APPLICATION_XML);
+	}
+
+	@Test
 	public void testReadRecordListWithNullFilterForXml() {
 		response = recordEndpoint.readRecordListXml(AUTH_TOKEN, AUTH_TOKEN, "place", null);
 
@@ -341,13 +362,35 @@ public class RecordEndpointTest {
 	}
 
 	@Test
+	public void testReadRecordListWithNullFilterAsApplicationXmlForBrowsers() {
+		response = recordEndpoint.readRecordListAsApplicationXmlForBrowsers(AUTH_TOKEN, AUTH_TOKEN,
+				"place", null);
+
+		var filterSentOnToSpider = spiderInstanceFactorySpy.spiderRecordListReaderSpy.filter;
+
+		String defaultFilter = "{\"name\":\"filter\",\"children\":[]}";
+		assertJsonStringConvertedToGroupUsesCoraData(defaultFilter, filterSentOnToSpider);
+
+		spiderInstanceFactorySpy.spiderRecordListReaderSpy.MCR.assertParameters("readRecordList", 0,
+				AUTH_TOKEN, "place", filterSentOnToSpider);
+
+		DataList dataList = (DataList) spiderInstanceFactorySpy.spiderRecordListReaderSpy.MCR
+				.getReturnValue("readRecordList", 0);
+
+		assertXmlConvertionOfResponse(dataList);
+		assertEntityExists();
+		assertResponseStatusIs(Response.Status.OK);
+		assertResponseContentTypeIs(APPLICATION_XML);
+	}
+
+	@Test
 	public void testAnnotationsForReadRecordListJson() throws Exception {
 		AnnotationTestHelper annotationHelper = AnnotationTestHelper
 				.createAnnotationTestHelperForClassMethodNameAndNumOfParameters(
 						recordEndpoint.getClass(), "readRecordListJson", 4);
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("GET", "{type}/");
-		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_LIST_JSON);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_LIST_JSON_QS09);
 		annotationHelper.assertAnnotationForAuthTokensAndTypeParameters();
 		annotationHelper.assertQueryParamAnnotationByNameAndPosition("filter", 3);
 	}
@@ -359,7 +402,19 @@ public class RecordEndpointTest {
 						recordEndpoint.getClass(), "readRecordListXml", 4);
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("GET", "{type}/");
-		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_LIST_XML_QS09);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_LIST_XML);
+		annotationHelper.assertAnnotationForAuthTokensAndTypeParameters();
+		annotationHelper.assertQueryParamAnnotationByNameAndPosition("filter", 3);
+	}
+
+	@Test
+	public void testAnnotationsForReadRecordListAsApplicationXmlForBrowsers() throws Exception {
+		AnnotationTestHelper annotationHelper = AnnotationTestHelper
+				.createAnnotationTestHelperForClassMethodNameAndNumOfParameters(
+						recordEndpoint.getClass(), "readRecordListAsApplicationXmlForBrowsers", 4);
+
+		annotationHelper.assertHttpMethodAndPathAnnotation("GET", "{type}/");
+		annotationHelper.assertProducesAnnotation(APPLICATION_XML_QS01);
 		annotationHelper.assertAnnotationForAuthTokensAndTypeParameters();
 		annotationHelper.assertQueryParamAnnotationByNameAndPosition("filter", 3);
 	}
@@ -396,7 +451,7 @@ public class RecordEndpointTest {
 						recordEndpoint.getClass(), "readRecordJson", 4);
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("GET", "{type}/{id}");
-		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_JSON);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_JSON_QS09);
 		annotationHelper.assertAnnotationForAuthTokensAndTypeAndIdParameters();
 	}
 
@@ -407,7 +462,18 @@ public class RecordEndpointTest {
 						recordEndpoint.getClass(), "readRecordXml", 4);
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("GET", "{type}/{id}");
-		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_XML_QS09);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_XML);
+		annotationHelper.assertAnnotationForAuthTokensAndTypeAndIdParameters();
+	}
+
+	@Test
+	public void testAnnotationsForReadDefaultApplicationXMLForBrowsers() throws Exception {
+		AnnotationTestHelper annotationHelper = AnnotationTestHelper
+				.createAnnotationTestHelperForClassMethodNameAndNumOfParameters(
+						recordEndpoint.getClass(), "readRecordAsApplicationXmlForBrowsers", 4);
+
+		annotationHelper.assertHttpMethodAndPathAnnotation("GET", "{type}/{id}");
+		annotationHelper.assertProducesAnnotation(APPLICATION_XML_QS01);
 		annotationHelper.assertAnnotationForAuthTokensAndTypeAndIdParameters();
 	}
 
@@ -449,6 +515,15 @@ public class RecordEndpointTest {
 	}
 
 	@Test
+	public void testReadRecordAsApplicationXmlForBrowsers() {
+		response = recordEndpoint.readRecordAsApplicationXmlForBrowsers(AUTH_TOKEN, AUTH_TOKEN,
+				PLACE, PLACE_0001);
+		assertEntityExists();
+		assertResponseStatusIs(Response.Status.OK);
+		assertResponseContentTypeIs(APPLICATION_XML);
+	}
+
+	@Test
 	public void testReadRecordUsesToRestConverterFactoryForJson() {
 		response = recordEndpoint.readRecordJson(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001);
 
@@ -479,6 +554,15 @@ public class RecordEndpointTest {
 	@Test
 	public void testReadRecordUsesXmlConverterForAcceptXml() {
 		response = recordEndpoint.readRecordXml(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001);
+
+		DataRecord recordReturnedFromReader = spiderInstanceFactorySpy.spiderRecordReaderSpy.dataRecord;
+		assertXmlConvertionOfResponse(recordReturnedFromReader);
+	}
+
+	@Test
+	public void testReadRecordUsesXmlConverterForAcceptXmlForBrowser() {
+		response = recordEndpoint.readRecordAsApplicationXmlForBrowsers(AUTH_TOKEN, AUTH_TOKEN,
+				PLACE, PLACE_0001);
 
 		DataRecord recordReturnedFromReader = spiderInstanceFactorySpy.spiderRecordReaderSpy.dataRecord;
 		assertXmlConvertionOfResponse(recordReturnedFromReader);
@@ -572,13 +656,26 @@ public class RecordEndpointTest {
 	}
 
 	@Test
+	public void testReadIncomingRecordLinksAsApplicationXmlForBrowsers() {
+		response = recordEndpoint.readIncomingRecordLinksAsApplicationXmlForBrowsers(AUTH_TOKEN,
+				AUTH_TOKEN, PLACE, PLACE_0001);
+		DataList dataList = (DataList) spiderInstanceFactorySpy.spiderRecordIncomingLinksReaderSpy.MCR
+				.getReturnValue("readIncomingLinks", 0);
+
+		assertXmlConvertionOfResponse(dataList);
+		assertEntityExists();
+		assertResponseStatusIs(Response.Status.OK);
+		assertResponseContentTypeIs(APPLICATION_XML);
+	}
+
+	@Test
 	public void testAnnotationsForReadIncomingRecordLinksJson() throws Exception {
 		AnnotationTestHelper annotationHelper = AnnotationTestHelper
 				.createAnnotationTestHelperForClassMethodNameAndNumOfParameters(
 						recordEndpoint.getClass(), "readIncomingRecordLinksJson", 4);
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("GET", "{type}/{id}/incomingLinks");
-		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_LIST_JSON);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_LIST_JSON_QS09);
 		annotationHelper.assertAnnotationForAuthTokensAndTypeAndIdParameters();
 	}
 
@@ -589,7 +686,20 @@ public class RecordEndpointTest {
 						recordEndpoint.getClass(), "readIncomingRecordLinksXml", 4);
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("GET", "{type}/{id}/incomingLinks");
-		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_LIST_XML_QS09);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_LIST_XML);
+		annotationHelper.assertAnnotationForAuthTokensAndTypeAndIdParameters();
+	}
+
+	@Test
+	public void testAnnotationsForReadIncomingRecordLinksAsApplicationXmlForBrowsers()
+			throws Exception {
+		AnnotationTestHelper annotationHelper = AnnotationTestHelper
+				.createAnnotationTestHelperForClassMethodNameAndNumOfParameters(
+						recordEndpoint.getClass(),
+						"readIncomingRecordLinksAsApplicationXmlForBrowsers", 4);
+
+		annotationHelper.assertHttpMethodAndPathAnnotation("GET", "{type}/{id}/incomingLinks");
+		annotationHelper.assertProducesAnnotation(APPLICATION_XML_QS01);
 		annotationHelper.assertAnnotationForAuthTokensAndTypeAndIdParameters();
 	}
 
@@ -796,7 +906,7 @@ public class RecordEndpointTest {
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("POST", "{type}/{id}");
 		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORD_JSON);
-		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_JSON);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_JSON_QS09);
 		annotationHelper.assertAnnotationForAuthTokensAndTypeAndIdParameters();
 	}
 
@@ -808,7 +918,7 @@ public class RecordEndpointTest {
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("POST", "{type}/{id}");
 		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORD_JSON);
-		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_XML_QS09);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_XML);
 		annotationHelper.assertAnnotationForAuthTokensAndTypeAndIdParameters();
 	}
 
@@ -819,8 +929,8 @@ public class RecordEndpointTest {
 						recordEndpoint.getClass(), "updateRecordXmlJson", 5);
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("POST", "{type}/{id}");
-		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORD_XML_QS09);
-		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_JSON);
+		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORD_XML);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_JSON_QS09);
 		annotationHelper.assertAnnotationForAuthTokensAndTypeAndIdParameters();
 	}
 
@@ -831,8 +941,8 @@ public class RecordEndpointTest {
 						recordEndpoint.getClass(), "updateRecordXmlXml", 5);
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("POST", "{type}/{id}");
-		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORD_XML_QS09);
-		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_XML_QS09);
+		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORD_XML);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_XML);
 		annotationHelper.assertAnnotationForAuthTokensAndTypeAndIdParameters();
 	}
 
@@ -988,7 +1098,7 @@ public class RecordEndpointTest {
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("POST", "{type}");
 		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORD_JSON);
-		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_JSON);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_JSON_QS09);
 		annotationHelper.assertAnnotationForAuthTokensAndTypeParameters();
 	}
 
@@ -1000,7 +1110,7 @@ public class RecordEndpointTest {
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("POST", "{type}");
 		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORD_JSON);
-		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_XML_QS09);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_XML);
 		annotationHelper.assertAnnotationForAuthTokensAndTypeParameters();
 	}
 
@@ -1011,8 +1121,8 @@ public class RecordEndpointTest {
 						recordEndpoint.getClass(), "createRecordXmlJson", 4);
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("POST", "{type}");
-		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORD_XML_QS09);
-		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_JSON);
+		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORD_XML);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_JSON_QS09);
 		annotationHelper.assertAnnotationForAuthTokensAndTypeParameters();
 	}
 
@@ -1023,8 +1133,8 @@ public class RecordEndpointTest {
 						recordEndpoint.getClass(), "createRecordXmlXml", 4);
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("POST", "{type}");
-		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORD_XML_QS09);
-		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_XML_QS09);
+		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORD_XML);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_XML);
 		annotationHelper.assertAnnotationForAuthTokensAndTypeParameters();
 	}
 
@@ -1177,7 +1287,7 @@ public class RecordEndpointTest {
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("POST", "{type}/{id}/{resourceType}");
 		annotationHelper.assertConsumesAnnotation(MULTIPART_FORM_DATA);
-		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_JSON);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_JSON_QS09);
 		annotationHelper.assertAnnotationForAuthTokensAndTypeAndIdParameters();
 		annotationHelper.assertFormDataParamAnnotationByNameAndPositionAndType("file", 4);
 		annotationHelper.assertPathParamAnnotationByNameAndPosition("resourceType", 5);
@@ -1193,7 +1303,7 @@ public class RecordEndpointTest {
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("POST", "{type}/{id}/{resourceType}");
 		annotationHelper.assertConsumesAnnotation(MULTIPART_FORM_DATA);
-		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_XML_QS09);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_XML);
 		annotationHelper.assertAnnotationForAuthTokensAndTypeAndIdParameters();
 		annotationHelper.assertFormDataParamAnnotationByNameAndPositionAndType("file", 4);
 		annotationHelper.assertPathParamAnnotationByNameAndPosition("resourceType", 5);
@@ -1532,7 +1642,7 @@ public class RecordEndpointTest {
 						recordEndpoint.getClass(), "searchRecordJson", 4);
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("GET", "searchResult/{searchId}");
-		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_LIST_JSON);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_LIST_JSON_QS09);
 		annotationHelper.assertAnnotationForAuthTokenParameters();
 		annotationHelper.assertPathParamAnnotationByNameAndPosition("searchId", 2);
 		annotationHelper.assertQueryParamAnnotationByNameAndPosition("searchData", 3);
@@ -1545,7 +1655,7 @@ public class RecordEndpointTest {
 						recordEndpoint.getClass(), "searchRecordXml", 4);
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("GET", "searchResult/{searchId}");
-		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_LIST_XML_QS09);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_LIST_XML);
 		annotationHelper.assertAnnotationForAuthTokenParameters();
 		annotationHelper.assertPathParamAnnotationByNameAndPosition("searchId", 2);
 		annotationHelper.assertQueryParamAnnotationByNameAndPosition("searchData", 3);
@@ -1822,7 +1932,7 @@ public class RecordEndpointTest {
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("POST", "{type}");
 		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_WORKORDER_JSON);
-		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_JSON);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_JSON_QS09);
 		annotationHelper.assertAnnotationForAuthTokensAndTypeParameters();
 	}
 
@@ -1834,7 +1944,7 @@ public class RecordEndpointTest {
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("POST", "{type}");
 		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_WORKORDER_JSON);
-		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_XML_QS09);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_XML);
 		annotationHelper.assertAnnotationForAuthTokensAndTypeParameters();
 	}
 
@@ -1845,8 +1955,8 @@ public class RecordEndpointTest {
 						recordEndpoint.getClass(), "validateRecordXmlJson", 4);
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("POST", "{type}");
-		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_WORKORDER_XML_QS_0_9);
-		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_JSON);
+		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_WORKORDER_XML);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_JSON_QS09);
 		annotationHelper.assertAnnotationForAuthTokensAndTypeParameters();
 	}
 
@@ -1857,8 +1967,8 @@ public class RecordEndpointTest {
 						recordEndpoint.getClass(), "validateRecordXmlXml", 4);
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("POST", "{type}");
-		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_WORKORDER_XML_QS_0_9);
-		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_XML_QS09);
+		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_WORKORDER_XML);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_XML);
 		annotationHelper.assertAnnotationForAuthTokensAndTypeParameters();
 	}
 
@@ -2036,7 +2146,7 @@ public class RecordEndpointTest {
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("POST", "index/{type}");
 		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORD_JSON);
-		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_JSON);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_JSON_QS09);
 		annotationHelper.assertAnnotationForAuthTokensAndTypeParameters();
 	}
 
@@ -2048,7 +2158,7 @@ public class RecordEndpointTest {
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("POST", "index/{type}");
 		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORD_JSON);
-		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_XML_QS09);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_XML);
 		annotationHelper.assertAnnotationForAuthTokensAndTypeParameters();
 	}
 
@@ -2059,8 +2169,8 @@ public class RecordEndpointTest {
 						recordEndpoint.getClass(), "batchIndexXmlJson", 4);
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("POST", "index/{type}");
-		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORD_XML_QS09);
-		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_JSON);
+		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORD_XML);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_JSON_QS09);
 		annotationHelper.assertAnnotationForAuthTokensAndTypeParameters();
 	}
 
@@ -2071,8 +2181,8 @@ public class RecordEndpointTest {
 						recordEndpoint.getClass(), "batchIndexXmlXml", 4);
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("POST", "index/{type}");
-		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORD_XML_QS09);
-		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_XML_QS09);
+		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORD_XML);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_XML);
 		annotationHelper.assertAnnotationForAuthTokensAndTypeParameters();
 	}
 
