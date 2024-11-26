@@ -57,7 +57,6 @@ public class IiifEndpoint {
 		try {
 			return tryToReadIiif(headers, request, identifier, requestedUri);
 		} catch (AuthorizationException | AuthenticationException e) {
-			// } catch (AuthorizationException e) {
 			if (authTokenExistInHeaders(headers)) {
 				return Response.status(Response.Status.FORBIDDEN).build();
 			}
