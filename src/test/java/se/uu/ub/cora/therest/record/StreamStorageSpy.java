@@ -60,4 +60,10 @@ public class StreamStorageSpy implements StreamStorage {
 		return new ByteArrayInputStream("a string out".getBytes(StandardCharsets.UTF_8));
 	}
 
+	@Override
+	public void delete(String streamId, String dataDivider) {
+		// TODO Auto-generated method stub
+
+	}
+
 }
