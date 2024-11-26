@@ -32,6 +32,7 @@ import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MultivaluedHashMap;
 import jakarta.ws.rs.core.Request;
 import jakarta.ws.rs.core.Response;
+import se.uu.ub.cora.spider.authentication.AuthenticationException;
 import se.uu.ub.cora.spider.authorization.AuthorizationException;
 import se.uu.ub.cora.spider.binary.iiif.IiifResponse;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
@@ -116,6 +117,17 @@ public class IiifEndpointTest {
 	private Map<String, String> getHeadersFromCallToIiifReader(IiifReaderSpy iiifReader) {
 		return (Map<String, String>) iiifReader.MCR
 				.getValueForMethodNameAndCallNumberAndParameterName("readIiif", 0, "headers");
+	}
+
+	@Test
+	public void testIiiifReaderNotAuthenticated() throws Exception {
+		iiifReader.MRV.setAlwaysThrowException("readIiif",
+				new AuthenticationException("someError"));
+
+		Response response = endpoint.readIiif(headers, request, "someIdentifier",
+				"some/requested/Uri");
+
+		assertEquals(response.getStatus(), 401);
 	}
 
 	@Test

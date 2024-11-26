@@ -33,6 +33,7 @@ import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.Request;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.ResponseBuilder;
+import se.uu.ub.cora.spider.authentication.AuthenticationException;
 import se.uu.ub.cora.spider.authorization.AuthorizationException;
 import se.uu.ub.cora.spider.binary.iiif.IiifReader;
 import se.uu.ub.cora.spider.binary.iiif.IiifResponse;
@@ -55,7 +56,8 @@ public class IiifEndpoint {
 
 		try {
 			return tryToReadIiif(headers, request, identifier, requestedUri);
-		} catch (AuthorizationException e) {
+		} catch (AuthorizationException | AuthenticationException e) {
+			// } catch (AuthorizationException e) {
 			if (authTokenExistInHeaders(headers)) {
 				return Response.status(Response.Status.FORBIDDEN).build();
 			}
