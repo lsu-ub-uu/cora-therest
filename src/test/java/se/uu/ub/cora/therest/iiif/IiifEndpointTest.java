@@ -131,6 +131,19 @@ public class IiifEndpointTest {
 	}
 
 	@Test
+	public void testIiiifReaderNotAuthenticatedWithWrongAuthToken() throws Exception {
+		iiifReader.MRV.setAlwaysThrowException("readIiif",
+				new AuthenticationException("someError"));
+		headers.MRV.setSpecificReturnValuesSupplier("getRequestHeader", () -> List.of("someToken"),
+				"authtoken");
+
+		Response response = endpoint.readIiif(headers, request, "someIdentifier",
+				"some/requested/Uri");
+
+		assertEquals(response.getStatus(), 401);
+	}
+
+	@Test
 	public void testIiiifReaderNotAuthorizedToRead() throws Exception {
 		iiifReader.MRV.setAlwaysThrowException("readIiif", new AuthorizationException("someError"));
 
