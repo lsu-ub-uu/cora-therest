@@ -21,45 +21,87 @@ package se.uu.ub.cora.therest.initialize;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.fail;
 
 import java.util.Map;
 import java.util.ServiceLoader;
 
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletContextEvent;
+import se.uu.ub.cora.initialize.InitializationException;
 import se.uu.ub.cora.initialize.SettingsProvider;
 import se.uu.ub.cora.logger.LoggerProvider;
 import se.uu.ub.cora.logger.spies.LoggerFactorySpy;
 import se.uu.ub.cora.logger.spies.LoggerSpy;
+import se.uu.ub.cora.messaging.AmqpMessageListenerRoutingInfo;
+import se.uu.ub.cora.messaging.MessagingProvider;
+import se.uu.ub.cora.spider.cache.DataChangeMessageReceiver;
 import se.uu.ub.cora.storage.StreamStorageProvider;
 import se.uu.ub.cora.storage.archive.RecordArchiveProvider;
 import se.uu.ub.cora.storage.idgenerator.RecordIdGeneratorProvider;
+import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
+import se.uu.ub.cora.therest.cache.spies.MessageListenerSpy;
+import se.uu.ub.cora.therest.cache.spies.MessagingFactorySpy;
 
 public class TheRestModuleInitializerTest {
 	private ServletContext source;
 	private ServletContextEvent context;
 	private TheRestModuleInitializer initializer;
 	private LoggerFactorySpy loggerFactorySpy;
+	private MessagingFactorySpy messagingFactory;
+	private LoggerSpy loggerSettingsProvider;
+	private LoggerSpy loggerRestInit;
+
+	@BeforeTest
+	private void beforeTest() {
+		loggerSettingsProvider = new LoggerSpy();
+
+	}
 
 	@BeforeMethod
 	public void beforeMethod() {
+
 		loggerFactorySpy = new LoggerFactorySpy();
 		LoggerProvider.setLoggerFactory(loggerFactorySpy);
+		loggerRestInit = new LoggerSpy();
+		loggerFactorySpy.MRV.setSpecificReturnValuesSupplier("factorForClass",
+				() -> loggerSettingsProvider, SettingsProvider.class);
+		loggerFactorySpy.MRV.setSpecificReturnValuesSupplier("factorForClass", () -> loggerRestInit,
+				TheRestModuleInitializer.class);
+
+		messagingFactory = new MessagingFactorySpy();
+		MessagingProvider.setMessagingFactory(messagingFactory);
+
 		source = new ServletContextSpy();
+		setNeededInitParameters();
+		context = new ServletContextEvent(source);
+		initializer = new TheRestModuleInitializer();
+	}
+
+	@AfterMethod
+	private void afterMethod() {
+		loggerSettingsProvider.MCR = new MethodCallRecorder();
+	}
+
+	private void setNeededInitParameters() {
 		source.setInitParameter("theRestPublicPathToSystem", "/therest/rest/");
 		source.setInitParameter("dependencyProviderClassName",
 				"se.uu.ub.cora.therest.initialize.DependencyProviderSpy");
 		source.setInitParameter("initParam1", "initValue1");
 		source.setInitParameter("initParam2", "initValue2");
-		context = new ServletContextEvent(source);
-		initializer = new TheRestModuleInitializer();
+		source.setInitParameter("rabbitMqHostname", "someHostname");
+		source.setInitParameter("rabbitMqPort", "6666");
+		source.setInitParameter("rabbitMqVirtualHost", "someVirtualHost");
+		source.setInitParameter("rabbitMqDataExchange", "someExchange");
 	}
 
 	@Test
-	public void testNonExceptionThrowingStartup() throws Exception {
+	public void testNonExceptionThrowingStartup() {
 		TheRestModuleStarterSpy starter = startTheRestModuleInitializerWithStarterSpy();
 		starter.MCR.assertMethodWasCalled("startUsingInitInfoAndProviders");
 	}
@@ -71,49 +113,48 @@ public class TheRestModuleInitializerTest {
 		return starter;
 	}
 
-	@Test
-	public void testLogMessagesOnStartup() throws Exception {
+	@Test(priority = -1)
+	public void testLogMessagesOnStartup() {
 		startTheRestModuleInitializerWithStarterSpy();
-		LoggerSpy loggerSpy = (LoggerSpy) loggerFactorySpy.MCR.getReturnValue("factorForClass", 1);
-		loggerSpy.MCR.assertNumberOfCallsToMethod("logInfoUsingMessage", 4);
-		loggerSpy.MCR.assertParameter("logInfoUsingMessage", 0, "message",
+		loggerRestInit.MCR.assertParameter("logInfoUsingMessage", 0, "message",
 				"TheRestModuleInitializer starting...");
-		loggerSpy.MCR.assertParameter("logInfoUsingMessage", 1, "message",
-				"Found /therest/rest/ as theRestPublicPathToSystem");
-		loggerSpy.MCR.assertParameter("logInfoUsingMessage", 2, "message",
-				"Found se.uu.ub.cora.therest.initialize.DependencyProviderSpy as "
+		loggerSettingsProvider.MCR.assertNumberOfCallsToMethod("logInfoUsingMessage", 6);
+		loggerSettingsProvider.MCR.assertParameter("logInfoUsingMessage", 0, "message",
+				"Found: /therest/rest/ as: theRestPublicPathToSystem");
+		loggerSettingsProvider.MCR.assertParameter("logInfoUsingMessage", 1, "message",
+				"Found: se.uu.ub.cora.therest.initialize.DependencyProviderSpy as: "
 						+ "dependencyProviderClassName");
-		loggerSpy.MCR.assertParameter("logInfoUsingMessage", 3, "message",
+		loggerRestInit.MCR.assertParameter("logInfoUsingMessage", 1, "message",
 				"TheRestModuleInitializer started");
 	}
 
-	@Test(expectedExceptions = TheRestInitializationException.class, expectedExceptionsMessageRegExp = ""
-			+ "InitInfo must contain theRestPublicPathToSystem")
-	public void testErrorIsThrownIfMissingTheRestPublicPathToSystem() throws Exception {
+	@Test(expectedExceptions = InitializationException.class, expectedExceptionsMessageRegExp = ""
+			+ "Setting name: theRestPublicPathToSystem not found in SettingsProvider.")
+	public void testErrorIsThrownIfMissingTheRestPublicPathToSystem() {
 		source = new ServletContextSpy();
 		context = new ServletContextEvent(source);
 		startTheRestModuleInitializerWithStarterSpy();
 	}
 
 	@Test
-	public void testErrorIsLoggedIfMissingTheRestPublicPathToSystem() throws Exception {
+	public void testErrorIsLoggedIfMissingTheRestPublicPathToSystem() {
 		source = new ServletContextSpy();
 		context = new ServletContextEvent(source);
 		try {
 			startTheRestModuleInitializerWithStarterSpy();
+			fail();
 		} catch (Exception e) {
 
 		}
 
-		LoggerSpy loggerSpy = (LoggerSpy) loggerFactorySpy.MCR.getReturnValue("factorForClass", 1);
-		loggerSpy.MCR.assertNumberOfCallsToMethod("logFatalUsingMessage", 1);
-		loggerSpy.MCR.assertParameter("logFatalUsingMessage", 0, "message",
-				"InitInfo must contain theRestPublicPathToSystem");
+		loggerSettingsProvider.MCR.assertNumberOfCallsToMethod("logFatalUsingMessage", 1);
+		loggerSettingsProvider.MCR.assertParameter("logFatalUsingMessage", 0, "message",
+				"Setting name: theRestPublicPathToSystem not found in SettingsProvider.");
 	}
 
-	@Test(expectedExceptions = TheRestInitializationException.class, expectedExceptionsMessageRegExp = ""
-			+ "InitInfo must contain dependencyProviderClassName")
-	public void testErrorIsThrownIfMissingDependencyProviderClassName() throws Exception {
+	@Test(expectedExceptions = InitializationException.class, expectedExceptionsMessageRegExp = ""
+			+ "Setting name: dependencyProviderClassName not found in SettingsProvider.")
+	public void testErrorIsThrownIfMissingDependencyProviderClassName() {
 		source = new ServletContextSpy();
 		source.setInitParameter("theRestPublicPathToSystem", "/therest/rest/");
 		context = new ServletContextEvent(source);
@@ -121,7 +162,7 @@ public class TheRestModuleInitializerTest {
 	}
 
 	@Test
-	public void testErrorIsLoggedIfMissingDependencyProviderClassName() throws Exception {
+	public void testErrorIsLoggedIfMissingDependencyProviderClassName() {
 		source = new ServletContextSpy();
 		source.setInitParameter("theRestPublicPathToSystem", "/therest/rest/");
 		context = new ServletContextEvent(source);
@@ -131,14 +172,13 @@ public class TheRestModuleInitializerTest {
 
 		}
 
-		LoggerSpy loggerSpy = (LoggerSpy) loggerFactorySpy.MCR.getReturnValue("factorForClass", 1);
-		loggerSpy.MCR.assertNumberOfCallsToMethod("logFatalUsingMessage", 1);
-		loggerSpy.MCR.assertParameter("logFatalUsingMessage", 0, "message",
-				"InitInfo must contain dependencyProviderClassName");
+		loggerSettingsProvider.MCR.assertNumberOfCallsToMethod("logFatalUsingMessage", 1);
+		loggerSettingsProvider.MCR.assertParameter("logFatalUsingMessage", 0, "message",
+				"Setting name: dependencyProviderClassName not found in SettingsProvider.");
 	}
 
 	@Test
-	public void testSettingsProviderIsInitialized() throws Exception {
+	public void testSettingsProviderIsInitialized() {
 		startTheRestModuleInitializerWithStarterSpy();
 
 		assertEquals(SettingsProvider.getSetting("theRestPublicPathToSystem"), "/therest/rest/");
@@ -153,7 +193,7 @@ public class TheRestModuleInitializerTest {
 		TheRestModuleStarterSpy starter = startTheRestModuleInitializerWithStarterSpy();
 		Map<String, String> initInfo = getInitInfoFromStarterSpy(starter);
 
-		assertEquals(initInfo.size(), 4);
+		assertEquals(initInfo.size(), 8);
 		assertEquals(initInfo.get("theRestPublicPathToSystem"), "/therest/rest/");
 		assertEquals(initInfo.get("dependencyProviderClassName"),
 				"se.uu.ub.cora.therest.initialize.DependencyProviderSpy");
@@ -162,15 +202,13 @@ public class TheRestModuleInitializerTest {
 	}
 
 	private Map<String, String> getInitInfoFromStarterSpy(TheRestModuleStarterSpy starter) {
-		return (Map<String, String>) starter.MCR.getValueForMethodNameAndCallNumberAndParameterName(
+		return (Map<String, String>) starter.MCR.getParameterForMethodAndCallNumberAndParameter(
 				"startUsingInitInfoAndProviders", 0, "initInfo");
 	}
 
 	private Providers getProviders(TheRestModuleStarterSpy starter) {
-		Providers providers = (Providers) starter.MCR
-				.getValueForMethodNameAndCallNumberAndParameterName(
-						"startUsingInitInfoAndProviders", 0, "providers");
-		return providers;
+		return (Providers) starter.MCR.getParameterForMethodAndCallNumberAndParameter(
+				"startUsingInitInfoAndProviders", 0, "providers");
 	}
 
 	@Test
@@ -205,7 +243,7 @@ public class TheRestModuleInitializerTest {
 	}
 
 	@Test
-	public void testInitUsesDefaultTheRestModuleStarter() throws Exception {
+	public void testInitUsesDefaultTheRestModuleStarter() {
 		TheRestModuleStarterImp starter = (TheRestModuleStarterImp) initializer
 				.onlyForTestGetStarter();
 		assertStarterIsTheRestModuleStarter(starter);
@@ -213,6 +251,40 @@ public class TheRestModuleInitializerTest {
 
 	private void assertStarterIsTheRestModuleStarter(TheRestModuleStarter starter) {
 		assertTrue(starter instanceof TheRestModuleStarterImp);
+	}
+
+	@Test
+	public void testStartListening() {
+		startTheRestModuleInitializerWithStarterSpy();
+
+		messagingFactory.MCR.assertMethodWasCalled("factorTopicMessageListener");
+		assertRoutingInfo();
+		var listener = assertListenerAndReturn();
+		assertMessageReceiver(listener);
+	}
+
+	private void assertRoutingInfo() {
+		var routingInfo = (AmqpMessageListenerRoutingInfo) messagingFactory.MCR
+				.getParameterForMethodAndCallNumberAndParameter("factorTopicMessageListener", 0,
+						"messagingRoutingInfo");
+		assertEquals(routingInfo.hostname, "someHostname");
+		assertEquals(routingInfo.port, 6666);
+		assertEquals(routingInfo.virtualHost, "someVirtualHost");
+		assertEquals(routingInfo.exchange, "someExchange");
+		assertEquals(routingInfo.routingKey, "*");
+	}
+
+	private MessageListenerSpy assertListenerAndReturn() {
+		var listener = (MessageListenerSpy) messagingFactory.MCR
+				.getReturnValue("factorTopicMessageListener", 0);
+		listener.MCR.assertMethodWasCalled("listen");
+		return listener;
+	}
+
+	private void assertMessageReceiver(MessageListenerSpy listener) {
+		var messageReceiver = listener.MCR.getParameterForMethodAndCallNumberAndParameter("listen",
+				0, "messageReceiver");
+		assertTrue(messageReceiver instanceof DataChangeMessageReceiver);
 	}
 
 }

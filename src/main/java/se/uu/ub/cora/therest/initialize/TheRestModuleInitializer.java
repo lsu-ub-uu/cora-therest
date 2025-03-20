@@ -31,6 +31,10 @@ import jakarta.servlet.annotation.WebListener;
 import se.uu.ub.cora.initialize.SettingsProvider;
 import se.uu.ub.cora.logger.Logger;
 import se.uu.ub.cora.logger.LoggerProvider;
+import se.uu.ub.cora.messaging.AmqpMessageListenerRoutingInfo;
+import se.uu.ub.cora.messaging.MessageRoutingInfo;
+import se.uu.ub.cora.messaging.MessagingProvider;
+import se.uu.ub.cora.spider.cache.DataChangeMessageReceiver;
 import se.uu.ub.cora.storage.StreamStorageProvider;
 import se.uu.ub.cora.storage.archive.RecordArchiveProvider;
 import se.uu.ub.cora.storage.idgenerator.RecordIdGeneratorProvider;
@@ -39,9 +43,10 @@ import se.uu.ub.cora.storage.idgenerator.RecordIdGeneratorProvider;
 public class TheRestModuleInitializer implements ServletContextListener {
 	private TheRestModuleStarter starter = new TheRestModuleStarterImp();
 	private ServletContext servletContext;
-	private HashMap<String, String> initInfo = new HashMap<>();
+
 	private Logger log = LoggerProvider.getLoggerForClass(TheRestModuleInitializer.class);
 	private Providers providers = new Providers();
+	private HashMap<String, String> initInfo;
 
 	@Override
 	public void contextInitialized(ServletContextEvent contextEvent) {
@@ -52,40 +57,49 @@ public class TheRestModuleInitializer implements ServletContextListener {
 	private void initializeTheRest() {
 		String simpleName = TheRestModuleInitializer.class.getSimpleName();
 		log.logInfoUsingMessage(simpleName + " starting...");
-		collectInitInformation();
-		SettingsProvider.setSettings(initInfo);
+
+		collectInitInformationIntoSettingsProvider();
 		ensureNeededParametersExistsInInitInfo();
 		collectProviderImplementationsAndAddToProviders();
 		startTheRestStarter();
+		startListenForDataChangesForUser();
+
 		log.logInfoUsingMessage(simpleName + " started");
 	}
 
 	private void ensureNeededParametersExistsInInitInfo() {
-		tryToGetInitParameter("theRestPublicPathToSystem");
-		tryToGetInitParameter("dependencyProviderClassName");
+		// tryToGetInitParameter("theRestPublicPathToSystem");
+		// tryToGetInitParameter("dependencyProviderClassName");
+		SettingsProvider.getSetting("theRestPublicPathToSystem");
+		SettingsProvider.getSetting("dependencyProviderClassName");
 	}
 
-	private String tryToGetInitParameter(String parameterName) {
-		throwErrorIfKeyIsMissingFromInitInfo(parameterName);
-		String parameter = initInfo.get(parameterName);
-		log.logInfoUsingMessage("Found " + parameter + " as " + parameterName);
-		return parameter;
+	private void startListenForDataChangesForUser() {
+		MessageRoutingInfo routingInfo = createRoutingInfo();
+		var listener = MessagingProvider.getTopicMessageListener(routingInfo);
+
+		listener.listen(new DataChangeMessageReceiver());
 	}
 
-	private void throwErrorIfKeyIsMissingFromInitInfo(String key) {
-		if (!initInfo.containsKey(key)) {
-			String errorMessage = "InitInfo must contain " + key;
-			log.logFatalUsingMessage(errorMessage);
-			throw new TheRestInitializationException(errorMessage);
-		}
+	private MessageRoutingInfo createRoutingInfo() {
+		String hostname = SettingsProvider.getSetting("rabbitMqHostname");
+		int port = Integer.parseInt(SettingsProvider.getSetting("rabbitMqPort"));
+		String virtualHost = SettingsProvider.getSetting("rabbitMqVirtualHost");
+		String exchange = SettingsProvider.getSetting("rabbitMqDataExchange");
+		String routingKey = "*";
+
+		return new AmqpMessageListenerRoutingInfo(hostname, port, virtualHost, exchange,
+				routingKey);
 	}
 
-	private void collectInitInformation() {
+	private void collectInitInformationIntoSettingsProvider() {
 		Enumeration<String> initParameterNames = servletContext.getInitParameterNames();
+		initInfo = new HashMap<>();
 		while (initParameterNames.hasMoreElements()) {
 			String key = initParameterNames.nextElement();
 			initInfo.put(key, servletContext.getInitParameter(key));
 		}
+		SettingsProvider.setSettings(initInfo);
 	}
 
 	private void collectProviderImplementationsAndAddToProviders() {
