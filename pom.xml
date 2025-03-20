@@ -33,7 +33,7 @@
 	
 	<properties>
 		<json.version>3.10.0</json.version>
-		<spider.version>9.6.0</spider.version>
+		<spider.version>9.7.0</spider.version>
 		<spider-spies.version>2.0.0</spider-spies.version>
 		<jaxb-api.version>2.3.1</jaxb-api.version>
 		<servlet-api.version>6.1.0</servlet-api.version>
