@@ -85,11 +85,6 @@ public class TheRestModuleInitializerTest {
 
 	@AfterMethod
 	private void afterMethod() {
-		System.err.println();
-		System.err.println(loggerSettingsProvider);
-		System.err.println(
-				loggerSettingsProvider.MCR.getNumberOfCallsToMethod("logInfoUsingMessage"));
-
 		loggerSettingsProvider.MCR = new MethodCallRecorder();
 	}
 
@@ -212,9 +207,8 @@ public class TheRestModuleInitializerTest {
 	}
 
 	private Providers getProviders(TheRestModuleStarterSpy starter) {
-		return (Providers) starter.MCR
-				.getParameterForMethodAndCallNumberAndParameter("startUsingInitInfoAndProviders", 0,
-						"providers");
+		return (Providers) starter.MCR.getParameterForMethodAndCallNumberAndParameter(
+				"startUsingInitInfoAndProviders", 0, "providers");
 	}
 
 	@Test
