@@ -68,8 +68,6 @@ public class TheRestModuleInitializer implements ServletContextListener {
 	}
 
 	private void ensureNeededParametersExistsInInitInfo() {
-		// tryToGetInitParameter("theRestPublicPathToSystem");
-		// tryToGetInitParameter("dependencyProviderClassName");
 		SettingsProvider.getSetting("theRestPublicPathToSystem");
 		SettingsProvider.getSetting("dependencyProviderClassName");
 	}

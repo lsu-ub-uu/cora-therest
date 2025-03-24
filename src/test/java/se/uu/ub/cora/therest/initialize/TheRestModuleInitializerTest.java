@@ -28,7 +28,6 @@ import java.util.ServiceLoader;
 
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 import jakarta.servlet.ServletContext;
@@ -44,7 +43,6 @@ import se.uu.ub.cora.spider.cache.DataChangeMessageReceiver;
 import se.uu.ub.cora.storage.StreamStorageProvider;
 import se.uu.ub.cora.storage.archive.RecordArchiveProvider;
 import se.uu.ub.cora.storage.idgenerator.RecordIdGeneratorProvider;
-import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 import se.uu.ub.cora.therest.cache.spies.MessageListenerSpy;
 import se.uu.ub.cora.therest.cache.spies.MessagingFactorySpy;
 
@@ -57,22 +55,18 @@ public class TheRestModuleInitializerTest {
 	private LoggerSpy loggerSettingsProvider;
 	private LoggerSpy loggerRestInit;
 
-	@BeforeTest
-	private void beforeTest() {
-		loggerSettingsProvider = new LoggerSpy();
-
-	}
-
 	@BeforeMethod
 	public void beforeMethod() {
 
 		loggerFactorySpy = new LoggerFactorySpy();
 		LoggerProvider.setLoggerFactory(loggerFactorySpy);
+
 		loggerRestInit = new LoggerSpy();
-		loggerFactorySpy.MRV.setSpecificReturnValuesSupplier("factorForClass",
-				() -> loggerSettingsProvider, SettingsProvider.class);
 		loggerFactorySpy.MRV.setSpecificReturnValuesSupplier("factorForClass", () -> loggerRestInit,
 				TheRestModuleInitializer.class);
+
+		loggerSettingsProvider = new LoggerSpy();
+		SettingsProvider.onlyForTestSetLogger(loggerSettingsProvider);
 
 		messagingFactory = new MessagingFactorySpy();
 		MessagingProvider.setMessagingFactory(messagingFactory);
@@ -85,7 +79,7 @@ public class TheRestModuleInitializerTest {
 
 	@AfterMethod
 	private void afterMethod() {
-		loggerSettingsProvider.MCR = new MethodCallRecorder();
+		SettingsProvider.onlyForTestClearLoggedNames();
 	}
 
 	private void setNeededInitParameters() {
@@ -113,17 +107,27 @@ public class TheRestModuleInitializerTest {
 		return starter;
 	}
 
-	@Test(priority = -1)
+	@Test
 	public void testLogMessagesOnStartup() {
 		startTheRestModuleInitializerWithStarterSpy();
 		loggerRestInit.MCR.assertParameter("logInfoUsingMessage", 0, "message",
 				"TheRestModuleInitializer starting...");
-		loggerSettingsProvider.MCR.assertNumberOfCallsToMethod("logInfoUsingMessage", 6);
+
 		loggerSettingsProvider.MCR.assertParameter("logInfoUsingMessage", 0, "message",
 				"Found: /therest/rest/ as: theRestPublicPathToSystem");
 		loggerSettingsProvider.MCR.assertParameter("logInfoUsingMessage", 1, "message",
 				"Found: se.uu.ub.cora.therest.initialize.DependencyProviderSpy as: "
 						+ "dependencyProviderClassName");
+		loggerSettingsProvider.MCR.assertParameter("logInfoUsingMessage", 2, "message",
+				"Found: someHostname as: rabbitMqHostname");
+		loggerSettingsProvider.MCR.assertParameter("logInfoUsingMessage", 3, "message",
+				"Found: 6666 as: rabbitMqPort");
+		loggerSettingsProvider.MCR.assertParameter("logInfoUsingMessage", 4, "message",
+				"Found: someVirtualHost as: rabbitMqVirtualHost");
+		loggerSettingsProvider.MCR.assertParameter("logInfoUsingMessage", 5, "message",
+				"Found: someExchange as: rabbitMqDataExchange");
+		loggerSettingsProvider.MCR.assertNumberOfCallsToMethod("logInfoUsingMessage", 6);
+
 		loggerRestInit.MCR.assertParameter("logInfoUsingMessage", 1, "message",
 				"TheRestModuleInitializer started");
 	}
