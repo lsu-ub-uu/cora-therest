@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2016, 2018, 2021, 2022, 2024 Uppsala University Library
+ * Copyright 2015, 2016, 2018, 2021, 2022, 2024, 2025 Uppsala University Library
  * Copyright 2016 Olov McKie
  *
  * This file is part of Cora.
@@ -79,6 +79,7 @@ import se.uu.ub.cora.therest.coradata.DataListSpy;
 import se.uu.ub.cora.therest.spy.InputStreamSpy;
 
 public class RecordEndpointTest {
+	private static final String APPLICATION_VND_UUB_RECORD_DECORATED_XML = "application/vnd.uub.record-decorated+xml";
 	private static final String APPLICATION_XML = "application/xml";
 	private static final String APPLICATION_XML_QS01 = "application/xml;qs=0.1";
 	private static final String APPLICATION_VND_UUB_RECORD_LIST_XML = "application/vnd.uub.recordList+xml";
@@ -478,7 +479,18 @@ public class RecordEndpointTest {
 	}
 
 	@Test
-	public void testPreferredTokenForRead() throws IOException {
+	public void testAnnotationsForReadDecoratedXml() throws Exception {
+		AnnotationTestHelper annotationHelper = AnnotationTestHelper
+				.createAnnotationTestHelperForClassMethodNameAndNumOfParameters(
+						recordEndpoint.getClass(), "readDecoratedRecordXml", 3);
+
+		annotationHelper.assertHttpMethodAndPathAnnotation("GET", "{type}/{id}");
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_DECORATED_XML);
+		annotationHelper.assertAnnotationForHeaderAuthToken();
+	}
+
+	@Test
+	public void testPreferredTokenForRead() {
 		expectTokenForReadToPreferablyBeHeaderThanQuery(AUTH_TOKEN, "authToken2", AUTH_TOKEN);
 		expectTokenForReadToPreferablyBeHeaderThanQuery(null, AUTH_TOKEN, AUTH_TOKEN);
 		expectTokenForReadToPreferablyBeHeaderThanQuery(AUTH_TOKEN, null, AUTH_TOKEN);
@@ -614,7 +626,7 @@ public class RecordEndpointTest {
 	}
 
 	@Test
-	public void testPreferredTokenForReadIncomingLinks() throws IOException {
+	public void testPreferredTokenForReadIncomingLinks() {
 		expectTokenForReadIncomingLinksToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, "authToken2",
 				AUTH_TOKEN);
 		expectTokenForReadIncomingLinksToPrefereblyBeHeaderThanQuery(null, AUTH_TOKEN, AUTH_TOKEN);
@@ -1756,11 +1768,11 @@ public class RecordEndpointTest {
 	}
 
 	@Test
-	public void testValidateWorkOrderPartMissing() throws Exception {
+	public void testValidateWorkOrderPartMissing() {
 		DataGroupSpy order = createDataGroupWithChildren();
 		DataGroupSpy recordToValidate = new DataGroupSpy();
-		DataGroupSpy record = createDataGroupWithChildren(recordToValidate);
-		DataGroupSpy workOrder = createWorkOrderWithOrder(order, record);
+		DataGroupSpy recordAsDataGroup = createDataGroupWithChildren(recordToValidate);
+		DataGroupSpy workOrder = createWorkOrderWithOrder(order, recordAsDataGroup);
 
 		workOrder.MRV.setAlwaysThrowException("getFirstGroupWithNameInData",
 				new se.uu.ub.cora.data.DataMissingException("someException"));
@@ -1773,13 +1785,14 @@ public class RecordEndpointTest {
 	}
 
 	@Test
-	public void testValidateMultipleRecordToValidateExists() throws Exception {
+	public void testValidateMultipleRecordToValidateExists() {
 		DataGroupSpy validationOrder = new DataGroupSpy();
 		DataGroupSpy order = createDataGroupWithChildren(validationOrder);
 		DataGroupSpy recordToValidate1 = new DataGroupSpy();
 		DataGroupSpy recordToValidate2 = new DataGroupSpy();
-		DataGroupSpy record = createDataGroupWithChildren(recordToValidate1, recordToValidate2);
-		createWorkOrderWithOrder(order, record);
+		DataGroupSpy recordAsDataGroup = createDataGroupWithChildren(recordToValidate1,
+				recordToValidate2);
+		createWorkOrderWithOrder(order, recordAsDataGroup);
 
 		response = recordEndpoint.validateRecordXmlXml(AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultXml);
 
@@ -1789,13 +1802,13 @@ public class RecordEndpointTest {
 	}
 
 	@Test
-	public void testValidateMultipleValidateOrderExists() throws Exception {
+	public void testValidateMultipleValidateOrderExists() {
 		DataGroupSpy validationOrder1 = new DataGroupSpy();
 		DataGroupSpy validationOrder2 = new DataGroupSpy();
 		DataGroupSpy order = createDataGroupWithChildren(validationOrder1, validationOrder2);
 		DataGroupSpy recordToValidate = new DataGroupSpy();
-		DataGroupSpy record = createDataGroupWithChildren(recordToValidate);
-		createWorkOrderWithOrder(order, record);
+		DataGroupSpy recordAsDataGroup = createDataGroupWithChildren(recordToValidate);
+		createWorkOrderWithOrder(order, recordAsDataGroup);
 
 		response = recordEndpoint.validateRecordXmlXml(AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultXml);
 
@@ -1809,15 +1822,15 @@ public class RecordEndpointTest {
 		DataGroupSpy validationOrder = new DataGroupSpy();
 		DataGroupSpy order = createDataGroupWithChildren(validationOrder);
 		DataGroupSpy recordToValidate = new DataGroupSpy();
-		DataGroupSpy record = createDataGroupWithChildren(recordToValidate);
-		DataGroupSpy workOrder = createWorkOrderWithOrder(order, record);
+		DataGroupSpy recordAsDataGroup = createDataGroupWithChildren(recordToValidate);
+		DataGroupSpy workOrder = createWorkOrderWithOrder(order, recordAsDataGroup);
 
 		response = recordEndpoint.validateRecordXmlXml(AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultXml);
 
 		workOrder.MCR.assertParameters("getFirstGroupWithNameInData", 0, "order");
 		workOrder.MCR.assertParameters("getFirstGroupWithNameInData", 1, "record");
 		order.MCR.assertParameters("getChildren", 0);
-		record.MCR.assertParameters("getChildren", 0);
+		recordAsDataGroup.MCR.assertParameters("getChildren", 0);
 
 		DataRecordGroup convertedToRecord = (DataRecordGroup) dataFactorySpy.MCR
 				.assertCalledParametersReturn("factorRecordGroupFromDataGroup", recordToValidate);
@@ -1827,12 +1840,12 @@ public class RecordEndpointTest {
 		assertValidationResult();
 	}
 
-	private DataGroupSpy createWorkOrderWithOrder(DataGroupSpy order, DataGroupSpy record) {
+	private DataGroupSpy createWorkOrderWithOrder(DataGroupSpy order, DataGroupSpy dataGroup) {
 		DataGroupSpy workOrder = new DataGroupSpy();
 		workOrder.MRV.setSpecificReturnValuesSupplier("getFirstGroupWithNameInData", () -> order,
 				"order");
-		workOrder.MRV.setSpecificReturnValuesSupplier("getFirstGroupWithNameInData", () -> record,
-				"record");
+		workOrder.MRV.setSpecificReturnValuesSupplier("getFirstGroupWithNameInData",
+				() -> dataGroup, "record");
 		stringToExternallyConvertibleConverterSpy.MRV.setDefaultReturnValuesSupplier("convert",
 				() -> workOrder);
 		return workOrder;
@@ -1885,8 +1898,8 @@ public class RecordEndpointTest {
 		DataGroupSpy validationOrder = new DataGroupSpy();
 		DataGroupSpy order = createDataGroupWithChildren(validationOrder);
 		DataGroupSpy recordToValidate = new DataGroupSpy();
-		DataGroupSpy record = createDataGroupWithChildren(recordToValidate);
-		DataGroupSpy workOrder = createWorkOrderWithOrder(order, record);
+		DataGroupSpy dataRecord = createDataGroupWithChildren(recordToValidate);
+		DataGroupSpy workOrder = createWorkOrderWithOrder(order, dataRecord);
 
 		response = recordEndpoint.validateRecordXmlJson(AUTH_TOKEN, AUTH_TOKEN, PLACE, defaultXml);
 
@@ -1989,7 +2002,7 @@ public class RecordEndpointTest {
 	}
 
 	@Test
-	public void testPreferredTokenForBatchIndex() throws IOException {
+	public void testPreferredTokenForBatchIndex() {
 		expectTokenForBatchIndexToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, "authToken2", AUTH_TOKEN);
 		expectTokenForBatchIndexToPrefereblyBeHeaderThanQuery(null, AUTH_TOKEN, AUTH_TOKEN);
 		expectTokenForBatchIndexToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, null, AUTH_TOKEN);

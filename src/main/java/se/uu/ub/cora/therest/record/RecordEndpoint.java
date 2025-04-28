@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2016, 2018, 2021, 2024 Uppsala University Library
+ * Copyright 2015, 2016, 2018, 2021, 2024, 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -85,6 +85,7 @@ import se.uu.ub.cora.storage.RecordConflictException;
 
 @Path("/")
 public class RecordEndpoint {
+	private static final String APPLICATION_VND_UUB_RECORD_DECORATED_XML = "application/vnd.uub.record-decorated+xml";
 	private static final String APPLICATION_XML = "application/xml";
 	private static final String APPLICATION_XML_QS01 = "application/xml;qs=0.1";
 	private static final String APPLICATION_VND_UUB_RECORD_LIST_XML = "application/vnd.uub.recordList+xml";
@@ -439,6 +440,15 @@ public class RecordEndpoint {
 			@PathParam("id") String id) {
 		return readRecord(APPLICATION_VND_UUB_RECORD_XML, headerAuthToken, queryAuthToken, type,
 				id);
+	}
+
+	@GET
+	@Path("{type}/{id}")
+	@Produces(APPLICATION_VND_UUB_RECORD_DECORATED_XML)
+	public Response readDecoratedRecordXml(@HeaderParam("authToken") String headerAuthToken,
+			@PathParam("type") String type, @PathParam("id") String id) {
+		return readRecordUsingAuthTokenByTypeAndId(APPLICATION_VND_UUB_RECORD_DECORATED_XML,
+				headerAuthToken, type, id);
 	}
 
 	private Response readRecord(String accept, String headerAuthToken, String queryAuthToken,
@@ -827,7 +837,7 @@ public class RecordEndpoint {
 	public Response validateRecordXmlJson(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			String jsonValidationRecord) {
-		return validateRecord("application/vnd.uub.workorder+xml", APPLICATION_VND_UUB_RECORD_JSON,
+		return validateRecord(APPLICATION_VND_UUB_WORKORDER_XML, APPLICATION_VND_UUB_RECORD_JSON,
 				headerAuthToken, queryAuthToken, jsonValidationRecord);
 	}
 
@@ -838,7 +848,7 @@ public class RecordEndpoint {
 	public Response validateRecordXmlXml(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			String jsonValidationRecord) {
-		return validateRecord("application/vnd.uub.workorder+xml", APPLICATION_VND_UUB_RECORD_XML,
+		return validateRecord(APPLICATION_VND_UUB_WORKORDER_XML, APPLICATION_VND_UUB_RECORD_XML,
 				headerAuthToken, queryAuthToken, jsonValidationRecord);
 	}
 
