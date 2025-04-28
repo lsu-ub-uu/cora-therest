@@ -19,6 +19,7 @@
 
 package se.uu.ub.cora.therest.initialize;
 
+import se.uu.ub.cora.bookkeeper.decorator.DataDecarator;
 import se.uu.ub.cora.bookkeeper.linkcollector.DataRecordLinkCollector;
 import se.uu.ub.cora.bookkeeper.termcollector.DataGroupTermCollector;
 import se.uu.ub.cora.bookkeeper.validator.DataValidator;
@@ -115,6 +116,12 @@ public class DependencyProviderSpy extends DependencyProviderAbstract {
 	@Override
 	public void initializeExtendedFunctionality() {
 		initializeExtendedFunctionalityHasBeenCalled = true;
+	}
+
+	@Override
+	public DataDecarator getDataDecorator() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
