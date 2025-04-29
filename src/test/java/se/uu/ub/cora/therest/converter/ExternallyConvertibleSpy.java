@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Uppsala University Library
+ * Copyright 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -16,22 +16,11 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.therest.record;
+package se.uu.ub.cora.therest.converter;
 
-import se.uu.ub.cora.data.converter.DataToJsonConverterFactory;
-import se.uu.ub.cora.data.converter.DataToJsonConverterFactoryCreator;
-import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
+import se.uu.ub.cora.data.Convertible;
+import se.uu.ub.cora.data.ExternallyConvertible;
 
-public class DataToJsonConverterFactoryCreatorSpy implements DataToJsonConverterFactoryCreator {
-	public MethodCallRecorder MCR = new MethodCallRecorder();
-
-	@Override
-	public DataToJsonConverterFactory createFactory() {
-		MCR.addCall();
-		DataToJsonConverterFactory converterFactorySpy = new DataToJsonConverterFactorySpy();
-
-		MCR.addReturned(converterFactorySpy);
-		return converterFactorySpy;
-	}
+public class ExternallyConvertibleSpy implements ExternallyConvertible, Convertible {
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Uppsala University Library
+ * Copyright 2024, 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -134,6 +134,11 @@ public class AnnotationTestHelper {
 
 	private void assertTypeAnnotation(Annotation[][] parameterAnnotations, int startPosition) {
 		assertPathParamAnnotationByNameAndPosition("type", startPosition);
+	}
+
+	public void assertAnnotationForHeaderAuthToken() {
+		HeaderParam headerAuthTokenParameter = (HeaderParam) parameterAnnotations[0][0];
+		assertEquals(headerAuthTokenParameter.value(), "authToken");
 	}
 
 	public void assertPathParamAnnotationByNameAndPosition(String name, int startPosition) {

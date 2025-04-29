@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Uppsala University Library
+ * Copyright 2025 Olov McKie
  *
  * This file is part of Cora.
  *
@@ -18,20 +18,20 @@
  */
 package se.uu.ub.cora.therest.record;
 
-import se.uu.ub.cora.data.converter.DataToJsonConverterFactory;
-import se.uu.ub.cora.data.converter.DataToJsonConverterFactoryCreator;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
+import se.uu.ub.cora.testutils.mrv.MethodReturnValues;
 
-public class DataToJsonConverterFactoryCreatorSpy implements DataToJsonConverterFactoryCreator {
+public class RecordEndpointDependencyFactorySpy implements RecordEndpointDependencyFactory {
+	public MethodReturnValues MRV = new MethodReturnValues();
 	public MethodCallRecorder MCR = new MethodCallRecorder();
 
-	@Override
-	public DataToJsonConverterFactory createFactory() {
-		MCR.addCall();
-		DataToJsonConverterFactory converterFactorySpy = new DataToJsonConverterFactorySpy();
-
-		MCR.addReturned(converterFactorySpy);
-		return converterFactorySpy;
+	public RecordEndpointDependencyFactorySpy() {
+		MCR.useMRV(MRV);
+		MRV.setDefaultReturnValuesSupplier("createDecoratedReader", EndpointDecoratedReaderSpy::new);
 	}
 
+	@Override
+	public EndpointDecoratedReader createDecoratedReader() {
+		return (EndpointDecoratedReader) MCR.addCallAndReturnFromMRV();
+	}
 }

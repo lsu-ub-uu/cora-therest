@@ -81,4 +81,5 @@ public class TheRestDependencyProvider extends DependencyProviderAbstract {
 	public RecordIndexer getRecordIndexer() {
 		return SolrRecordIndexer.createSolrRecordIndexerUsingSolrClientProvider(solrClientProvider);
 	}
+
 }

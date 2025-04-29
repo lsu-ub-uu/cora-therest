@@ -23,7 +23,7 @@ import se.uu.ub.cora.json.builder.JsonObjectBuilder;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 
 public class DataToJsonConverterSpy implements DataToJsonConverter {
-	MethodCallRecorder MCR = new MethodCallRecorder();
+	public MethodCallRecorder MCR = new MethodCallRecorder();
 
 	@Override
 	public JsonObjectBuilder toJsonObjectBuilder() {

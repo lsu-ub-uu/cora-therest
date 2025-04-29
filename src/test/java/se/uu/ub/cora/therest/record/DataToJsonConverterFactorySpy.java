@@ -25,7 +25,7 @@ import se.uu.ub.cora.data.converter.ExternalUrls;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 
 public class DataToJsonConverterFactorySpy implements DataToJsonConverterFactory {
-	MethodCallRecorder MCR = new MethodCallRecorder();
+	public MethodCallRecorder MCR = new MethodCallRecorder();
 
 	@Override
 	public DataToJsonConverter factorUsingConvertible(Convertible convertible) {

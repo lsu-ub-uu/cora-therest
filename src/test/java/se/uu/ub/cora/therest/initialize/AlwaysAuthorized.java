@@ -22,6 +22,7 @@ package se.uu.ub.cora.therest.initialize;
 import java.util.List;
 
 import se.uu.ub.cora.beefeater.Authorizator;
+import se.uu.ub.cora.beefeater.authentication.User;
 import se.uu.ub.cora.beefeater.authorization.Rule;
 
 public class AlwaysAuthorized implements Authorizator {
@@ -38,6 +39,12 @@ public class AlwaysAuthorized implements Authorizator {
 			List<Rule> requiredRules) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public boolean getUserIsAuthorizedForPemissionUnit(User user, String recordPermissionUnit) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

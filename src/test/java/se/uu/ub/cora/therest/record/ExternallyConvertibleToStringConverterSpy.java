@@ -25,7 +25,7 @@ import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 
 public class ExternallyConvertibleToStringConverterSpy
 		implements ExternallyConvertibleToStringConverter {
-	MethodCallRecorder MCR = new MethodCallRecorder();
+	public MethodCallRecorder MCR = new MethodCallRecorder();
 
 	@Override
 	public String convert(ExternallyConvertible externallyConvertible) {

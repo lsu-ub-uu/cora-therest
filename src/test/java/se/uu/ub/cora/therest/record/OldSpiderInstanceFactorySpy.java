@@ -23,6 +23,7 @@ import se.uu.ub.cora.spider.binary.Downloader;
 import se.uu.ub.cora.spider.binary.Uploader;
 import se.uu.ub.cora.spider.binary.iiif.IiifReader;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceFactory;
+import se.uu.ub.cora.spider.record.DecoratedRecordReader;
 import se.uu.ub.cora.spider.record.IncomingLinksReader;
 import se.uu.ub.cora.spider.record.RecordCreator;
 import se.uu.ub.cora.spider.record.RecordDeleter;
@@ -124,6 +125,12 @@ public class OldSpiderInstanceFactorySpy implements SpiderInstanceFactory {
 
 	@Override
 	public IiifReader factorIiifReader() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public DecoratedRecordReader factorDecoratedRecordReader() {
 		// TODO Auto-generated method stub
 		return null;
 	}

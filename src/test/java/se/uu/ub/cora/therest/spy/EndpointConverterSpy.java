@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Uppsala University Library
+ * Copyright 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -16,22 +16,29 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.therest.record;
+package se.uu.ub.cora.therest.spy;
 
-import se.uu.ub.cora.data.converter.DataToJsonConverterFactory;
-import se.uu.ub.cora.data.converter.DataToJsonConverterFactoryCreator;
+import jakarta.servlet.http.HttpServletRequest;
+import se.uu.ub.cora.data.ExternallyConvertible;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
+import se.uu.ub.cora.testutils.mrv.MethodReturnValues;
+import se.uu.ub.cora.therest.converter.EndpointConverter;
 
-public class DataToJsonConverterFactoryCreatorSpy implements DataToJsonConverterFactoryCreator {
+public class EndpointConverterSpy implements EndpointConverter {
 	public MethodCallRecorder MCR = new MethodCallRecorder();
+	public MethodReturnValues MRV = new MethodReturnValues();
+
+	public EndpointConverterSpy() {
+		MCR.useMRV(MRV);
+		MRV.setDefaultReturnValuesSupplier("convertConvertibleToString",
+				() -> "someConvertedRecord");
+	}
 
 	@Override
-	public DataToJsonConverterFactory createFactory() {
-		MCR.addCall();
-		DataToJsonConverterFactory converterFactorySpy = new DataToJsonConverterFactorySpy();
-
-		MCR.addReturned(converterFactorySpy);
-		return converterFactorySpy;
+	public String convertConvertibleToString(HttpServletRequest request, String accept,
+			ExternallyConvertible convertible) {
+		return (String) MCR.addCallAndReturnFromMRV("request", request, "accept", accept,
+				"convertible", convertible);
 	}
 
 }

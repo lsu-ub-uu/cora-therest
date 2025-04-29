@@ -64,4 +64,16 @@ public class SpiderAuthorizorAlwaysAuthorized implements SpiderAuthorizator {
 		return null;
 	}
 
+	@Override
+	public void checkUserIsAuthorizedForPemissionUnit(User user, String recordPermissionUnit) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public boolean getUserIsAuthorizedForPemissionUnit(User user, String string) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

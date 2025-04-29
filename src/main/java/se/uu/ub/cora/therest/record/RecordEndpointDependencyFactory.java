@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Uppsala University Library
+ * Copyright 2025 Olov McKie
  *
  * This file is part of Cora.
  *
@@ -18,20 +18,8 @@
  */
 package se.uu.ub.cora.therest.record;
 
-import se.uu.ub.cora.data.converter.DataToJsonConverterFactory;
-import se.uu.ub.cora.data.converter.DataToJsonConverterFactoryCreator;
-import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
+public interface RecordEndpointDependencyFactory {
 
-public class DataToJsonConverterFactoryCreatorSpy implements DataToJsonConverterFactoryCreator {
-	public MethodCallRecorder MCR = new MethodCallRecorder();
-
-	@Override
-	public DataToJsonConverterFactory createFactory() {
-		MCR.addCall();
-		DataToJsonConverterFactory converterFactorySpy = new DataToJsonConverterFactorySpy();
-
-		MCR.addReturned(converterFactorySpy);
-		return converterFactorySpy;
-	}
+	EndpointDecoratedReader createDecoratedReader();
 
 }

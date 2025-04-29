@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Uppsala University Library
+ * Copyright 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -16,22 +16,26 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.therest.record;
+package se.uu.ub.cora.therest.spy;
 
-import se.uu.ub.cora.data.converter.DataToJsonConverterFactory;
-import se.uu.ub.cora.data.converter.DataToJsonConverterFactoryCreator;
+import jakarta.ws.rs.core.Response;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
+import se.uu.ub.cora.testutils.mrv.MethodReturnValues;
+import se.uu.ub.cora.therest.error.ErrorHandlder;
 
-public class DataToJsonConverterFactoryCreatorSpy implements DataToJsonConverterFactoryCreator {
+public class ErrorHandlerSpy implements ErrorHandlder {
 	public MethodCallRecorder MCR = new MethodCallRecorder();
+	public MethodReturnValues MRV = new MethodReturnValues();
 
-	@Override
-	public DataToJsonConverterFactory createFactory() {
-		MCR.addCall();
-		DataToJsonConverterFactory converterFactorySpy = new DataToJsonConverterFactorySpy();
-
-		MCR.addReturned(converterFactorySpy);
-		return converterFactorySpy;
+	public ErrorHandlerSpy() {
+		MCR.useMRV(MRV);
+		MRV.setDefaultReturnValuesSupplier("handleError",
+				() -> Response.status(Response.Status.INTERNAL_SERVER_ERROR).build());
 	}
 
+	@Override
+	public Response handleError(String authToken, Exception error, String errorFromCaller) {
+		return (Response) MCR.addCallAndReturnFromMRV("authToken", authToken, "error", error,
+				"errorFromCaller", errorFromCaller);
+	}
 }
