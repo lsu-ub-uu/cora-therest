@@ -28,6 +28,7 @@ import jakarta.ws.rs.core.Response;
 import se.uu.ub.cora.therest.AnnotationTestHelper;
 
 public class RecordEndpointReadDecoratedTest {
+	private static final String APPLICATION_VND_UUB_RECORD_DECORATED_XML_QS09 = "application/vnd.uub.record-decorated+xml;qs=0.9";
 	private static final String APPLICATION_VND_UUB_RECORD_DECORATED_XML = "application/vnd.uub.record-decorated+xml";
 	private static final String APPLICATION_VND_UUB_RECORD_DECORATED_JSON_QS09 = "application/vnd.uub.record-decorated+json;qs=0.9";
 	private static final String APPLICATION_VND_UUB_RECORD_DECORATED_JSON = "application/vnd.uub.record-decorated+json";
@@ -72,7 +73,7 @@ public class RecordEndpointReadDecoratedTest {
 						recordEndpoint.getClass(), "readDecoratedRecordXml", 3);
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("GET", "{type}/{id}");
-		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_DECORATED_XML);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_DECORATED_XML_QS09);
 		annotationHelper.assertAnnotationForHeaderAuthToken();
 	}
 

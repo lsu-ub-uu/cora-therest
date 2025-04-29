@@ -19,7 +19,6 @@
 
 package se.uu.ub.cora.therest.initialize;
 
-import se.uu.ub.cora.bookkeeper.decorator.DataDecarator;
 import se.uu.ub.cora.gatekeeperclient.authentication.AuthenticatorImp;
 import se.uu.ub.cora.httphandler.HttpHandlerFactory;
 import se.uu.ub.cora.httphandler.HttpHandlerFactoryImp;
@@ -83,9 +82,4 @@ public class TheRestDependencyProvider extends DependencyProviderAbstract {
 		return SolrRecordIndexer.createSolrRecordIndexerUsingSolrClientProvider(solrClientProvider);
 	}
 
-	@Override
-	public DataDecarator getDataDecorator() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }
