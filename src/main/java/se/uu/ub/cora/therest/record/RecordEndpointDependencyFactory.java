@@ -20,6 +20,6 @@ package se.uu.ub.cora.therest.record;
 
 public interface RecordEndpointDependencyFactory {
 
-	DecoratedReader createDecoratedReader();
+	EndpointDecoratedReader createDecoratedReader();
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Olov McKie
+ * Copyright 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -18,20 +18,27 @@
  */
 package se.uu.ub.cora.therest.record;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.core.Response;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 import se.uu.ub.cora.testutils.mrv.MethodReturnValues;
 
-public class RecordEndpointDependencyFactorySpy implements RecordEndpointDependencyFactory {
-	public MethodReturnValues MRV = new MethodReturnValues();
-	public MethodCallRecorder MCR = new MethodCallRecorder();
+public class EndpointDecoratedReaderSpy implements EndpointDecoratedReader {
 
-	public RecordEndpointDependencyFactorySpy() {
+	public MethodCallRecorder MCR = new MethodCallRecorder();
+	public MethodReturnValues MRV = new MethodReturnValues();
+
+	public EndpointDecoratedReaderSpy() {
 		MCR.useMRV(MRV);
-		MRV.setDefaultReturnValuesSupplier("createDecoratedReader", EndpointDecoratedReaderSpy::new);
+		MRV.setDefaultReturnValuesSupplier("readAndDecorateRecord",
+				() -> Response.status(Response.Status.OK).build());
 	}
 
 	@Override
-	public EndpointDecoratedReader createDecoratedReader() {
-		return (EndpointDecoratedReader) MCR.addCallAndReturnFromMRV();
+	public Response readAndDecorateRecord(HttpServletRequest request, String accept,
+			String authToken, String type, String id) {
+		return (Response) MCR.addCallAndReturnFromMRV("request", request, "accept", accept,
+				"authToken", authToken, "type", type, "id", id);
 	}
+
 }

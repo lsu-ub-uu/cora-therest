@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Olov McKie
+ * Copyright 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -16,8 +16,20 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.therest.record;
+package se.uu.ub.cora.therest.error;
 
-public interface DecoratedReader {
+import jakarta.ws.rs.core.Response;
+
+public interface ErrorHandlder {
+
+	/**
+	 * Handles errors and generate an apropiate response
+	 * 
+	 * @param authToken
+	 * @param error
+	 * @param errorFromCaller
+	 * @return
+	 */
+	public Response handleError(String authToken, Exception error, String errorFromCaller);
 
 }

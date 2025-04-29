@@ -20,13 +20,20 @@ package se.uu.ub.cora.therest.record;
 
 public class RecordEndpointDependencyProvider {
 
-	public DecoratedReader getDecoratedReader() {
-		// TODO Auto-generated method stub
-		return null;
+	private static RecordEndpointDependencyFactory depFactory = new RecordEndpointDependencyFactoryImp();
+
+	RecordEndpointDependencyProvider() {
 	}
 
-	public void onlyForTestSetFactory(RecordEndpointDependencyFactory depFactory) {
-		// TODO Auto-generated method stub
+	public static EndpointDecoratedReader getDecoratedReader() {
+		return depFactory.createDecoratedReader();
+	}
 
+	public static void onlyForTestSetFactory(RecordEndpointDependencyFactory depFactory) {
+		RecordEndpointDependencyProvider.depFactory = depFactory;
+	}
+
+	public static RecordEndpointDependencyFactory onlyForTestGetFactory() {
+		return depFactory;
 	}
 }

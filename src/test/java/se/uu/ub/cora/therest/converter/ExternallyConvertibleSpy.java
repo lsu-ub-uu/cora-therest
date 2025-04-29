@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Olov McKie
+ * Copyright 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -16,13 +16,11 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.therest.record;
+package se.uu.ub.cora.therest.converter;
 
-import org.testng.annotations.Test;
+import se.uu.ub.cora.data.Convertible;
+import se.uu.ub.cora.data.ExternallyConvertible;
 
-public class DecoratedReaderTest {
-	@Test
-	public void testInit() {
-		DecoratedReader reader = new DecoratedReaderImp();
-	}
+public class ExternallyConvertibleSpy implements ExternallyConvertible, Convertible {
+
 }

@@ -23,7 +23,7 @@ import se.uu.ub.cora.data.converter.DataToJsonConverterFactoryCreator;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 
 public class DataToJsonConverterFactoryCreatorSpy implements DataToJsonConverterFactoryCreator {
-	MethodCallRecorder MCR = new MethodCallRecorder();
+	public MethodCallRecorder MCR = new MethodCallRecorder();
 
 	@Override
 	public DataToJsonConverterFactory createFactory() {

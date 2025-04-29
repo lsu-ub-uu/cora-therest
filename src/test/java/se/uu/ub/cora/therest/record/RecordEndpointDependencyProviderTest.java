@@ -18,31 +18,52 @@
  */
 package se.uu.ub.cora.therest.record;
 
+import static org.testng.Assert.assertSame;
+import static org.testng.Assert.assertTrue;
+
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class RecordEndpointDependencyProviderTest {
-	private RecordEndpointDependencyProvider depProvider;
 	private RecordEndpointDependencyFactorySpy depFactory;
 
 	@BeforeMethod
 	public void beforeMethod() {
-		depProvider = new RecordEndpointDependencyProvider();
 		depFactory = new RecordEndpointDependencyFactorySpy();
+	}
+
+	@AfterMethod
+	public void afterMethod() {
+		RecordEndpointDependencyProvider
+				.onlyForTestSetFactory(new RecordEndpointDependencyFactoryImp());
+	}
+
+	@Test(priority = 0)
+	public void testDefaultFactory() {
+		RecordEndpointDependencyFactory defaultFactory = RecordEndpointDependencyProvider
+				.onlyForTestGetFactory();
+		assertTrue(defaultFactory instanceof RecordEndpointDependencyFactoryImp);
 	}
 
 	@Test
 	public void testGetDecoratedReaderUsesFactory() {
-		depProvider.onlyForTestSetFactory(depFactory);
+		RecordEndpointDependencyProvider.onlyForTestSetFactory(depFactory);
 
-		DecoratedReader reader = depProvider.getDecoratedReader();
+		EndpointDecoratedReader reader = RecordEndpointDependencyProvider.getDecoratedReader();
 
 		depFactory.MCR.assertReturn("createDecoratedReader", 0, reader);
 	}
 
 	@Test
 	public void testOnlyForTestSetFactory() {
-		depProvider.onlyForTestSetFactory(depFactory);
+		RecordEndpointDependencyProvider.onlyForTestSetFactory(depFactory);
+	}
+
+	@Test
+	public void testOnlyForTestGetFactory() {
+		RecordEndpointDependencyProvider.onlyForTestSetFactory(depFactory);
+		assertSame(RecordEndpointDependencyProvider.onlyForTestGetFactory(), depFactory);
 	}
 
 }

@@ -18,17 +18,34 @@
  */
 package se.uu.ub.cora.therest.record;
 
+import static org.testng.Assert.assertTrue;
+
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.logger.LoggerFactory;
+import se.uu.ub.cora.logger.LoggerProvider;
+import se.uu.ub.cora.logger.spies.LoggerFactorySpy;
+import se.uu.ub.cora.therest.converter.EndpointConverterImp;
+import se.uu.ub.cora.therest.error.ErrorHandlerImp;
+
 public class RecordEndpointDependencyFactoryTest {
-	@Test
-	public void testInit() {
-		RecordEndpointDependencyFactory depFactory = new RecordEndpointDependencyFactoryImp();
+	private RecordEndpointDependencyFactory depFactory;
+
+	@BeforeMethod
+	public void beforeMethod() {
+		LoggerFactory loggerFactory = new LoggerFactorySpy();
+		LoggerProvider.setLoggerFactory(loggerFactory);
+
+		depFactory = new RecordEndpointDependencyFactoryImp();
 	}
 
 	@Test
 	public void testFactorDecoratedReader() {
-		RecordEndpointDependencyFactory depFactory = new RecordEndpointDependencyFactoryImp();
-		DecoratedReader reader = depFactory.createDecoratedReader();
+		EndpointDecoratedReaderImp reader = (EndpointDecoratedReaderImp) depFactory
+				.createDecoratedReader();
+
+		assertTrue(reader.onlyForTestGetEndpointConverter() instanceof EndpointConverterImp);
+		assertTrue(reader.onlyForTestGetErrorHandler() instanceof ErrorHandlerImp);
 	}
 }

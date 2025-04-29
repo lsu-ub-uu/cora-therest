@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Olov McKie
+ * Copyright 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -16,22 +16,26 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.therest.record;
+package se.uu.ub.cora.therest.spy;
 
+import jakarta.ws.rs.core.Response;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 import se.uu.ub.cora.testutils.mrv.MethodReturnValues;
+import se.uu.ub.cora.therest.error.ErrorHandlder;
 
-public class RecordEndpointDependencyFactorySpy implements RecordEndpointDependencyFactory {
-	public MethodReturnValues MRV = new MethodReturnValues();
+public class ErrorHandlerSpy implements ErrorHandlder {
 	public MethodCallRecorder MCR = new MethodCallRecorder();
+	public MethodReturnValues MRV = new MethodReturnValues();
 
-	public RecordEndpointDependencyFactorySpy() {
+	public ErrorHandlerSpy() {
 		MCR.useMRV(MRV);
-		MRV.setDefaultReturnValuesSupplier("createDecoratedReader", EndpointDecoratedReaderSpy::new);
+		MRV.setDefaultReturnValuesSupplier("handleError",
+				() -> Response.status(Response.Status.INTERNAL_SERVER_ERROR).build());
 	}
 
 	@Override
-	public EndpointDecoratedReader createDecoratedReader() {
-		return (EndpointDecoratedReader) MCR.addCallAndReturnFromMRV();
+	public Response handleError(String authToken, Exception error, String errorFromCaller) {
+		return (Response) MCR.addCallAndReturnFromMRV("authToken", authToken, "error", error,
+				"errorFromCaller", errorFromCaller);
 	}
 }

@@ -18,12 +18,14 @@
  */
 package se.uu.ub.cora.therest.record;
 
+import se.uu.ub.cora.therest.converter.EndpointConverterImp;
+import se.uu.ub.cora.therest.error.ErrorHandlerImp;
+
 public class RecordEndpointDependencyFactoryImp implements RecordEndpointDependencyFactory {
 
 	@Override
-	public DecoratedReader createDecoratedReader() {
-		// TODO Auto-generated method stub
-		return null;
+	public EndpointDecoratedReader createDecoratedReader() {
+		return new EndpointDecoratedReaderImp(new EndpointConverterImp(), new ErrorHandlerImp());
 	}
 
 }
