@@ -55,6 +55,8 @@ import se.uu.ub.cora.therest.AnnotationTestHelper;
 public class RecordEndpointUpdateTest {
 	private static final String APPLICATION_VND_UUB_RECORD_XML = "application/vnd.cora.record+xml";
 	private static final String APPLICATION_VND_UUB_RECORD_JSON = "application/vnd.cora.record+json";
+	private static final String APPLICATION_VND_UUB_RECORDGROUP_XML = "application/vnd.cora.recordgroup+xml";
+	private static final String APPLICATION_VND_UUB_RECORDGROUP_JSON = "application/vnd.cora.recordgroup+json";
 	private static final String APPLICATION_VND_UUB_RECORD_JSON_QS09 = "application/vnd.cora.record+json;qs=0.9";
 	private static final String TEXT_PLAIN = "text/plain; charset=utf-8";
 	private static final String DUMMY_NON_AUTHORIZED_TOKEN = "dummyNonAuthorizedToken";
@@ -298,7 +300,7 @@ public class RecordEndpointUpdateTest {
 						recordEndpoint.getClass(), "updateRecordJsonJson", 5);
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("POST", "{type}/{id}");
-		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORD_JSON);
+		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORDGROUP_JSON);
 		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_JSON_QS09);
 		annotationHelper.assertAnnotationForAuthTokensAndTypeAndIdParameters();
 	}
@@ -310,7 +312,7 @@ public class RecordEndpointUpdateTest {
 						recordEndpoint.getClass(), "updateRecordJsonXml", 5);
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("POST", "{type}/{id}");
-		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORD_JSON);
+		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORDGROUP_JSON);
 		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_XML);
 		annotationHelper.assertAnnotationForAuthTokensAndTypeAndIdParameters();
 	}
@@ -322,7 +324,7 @@ public class RecordEndpointUpdateTest {
 						recordEndpoint.getClass(), "updateRecordXmlJson", 5);
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("POST", "{type}/{id}");
-		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORD_XML);
+		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORDGROUP_XML);
 		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_JSON_QS09);
 		annotationHelper.assertAnnotationForAuthTokensAndTypeAndIdParameters();
 	}
@@ -334,7 +336,7 @@ public class RecordEndpointUpdateTest {
 						recordEndpoint.getClass(), "updateRecordXmlXml", 5);
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("POST", "{type}/{id}");
-		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORD_XML);
+		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORDGROUP_XML);
 		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_XML);
 		annotationHelper.assertAnnotationForAuthTokensAndTypeAndIdParameters();
 	}

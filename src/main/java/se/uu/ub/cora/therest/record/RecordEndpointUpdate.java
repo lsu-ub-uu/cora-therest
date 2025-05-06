@@ -74,6 +74,8 @@ import se.uu.ub.cora.storage.RecordConflictException;
 public class RecordEndpointUpdate {
 	private static final String APPLICATION_VND_UUB_RECORD_XML = "application/vnd.cora.record+xml";
 	private static final String APPLICATION_VND_UUB_RECORD_JSON = "application/vnd.cora.record+json";
+	private static final String APPLICATION_VND_UUB_RECORDGROUP_XML = "application/vnd.cora.recordgroup+xml";
+	private static final String APPLICATION_VND_UUB_RECORDGROUP_JSON = "application/vnd.cora.recordgroup+json";
 	private static final String APPLICATION_VND_UUB_RECORD_JSON_QS09 = "application/vnd.cora.record+json;qs=0.9";
 	private static final String TEXT_PLAIN_CHARSET_UTF_8 = "text/plain; charset=utf-8";
 	private static final int AFTERHTTP = 10;
@@ -251,7 +253,7 @@ public class RecordEndpointUpdate {
 	/** fix: consumes is not a record, but a topDataGroup */
 	@POST
 	@Path("{type}/{id}")
-	@Consumes({ APPLICATION_VND_UUB_RECORD_JSON })
+	@Consumes({ APPLICATION_VND_UUB_RECORDGROUP_JSON })
 	@Produces({ APPLICATION_VND_UUB_RECORD_JSON_QS09 })
 	public Response updateRecordJsonJson(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
@@ -262,7 +264,7 @@ public class RecordEndpointUpdate {
 
 	@POST
 	@Path("{type}/{id}")
-	@Consumes(APPLICATION_VND_UUB_RECORD_JSON)
+	@Consumes(APPLICATION_VND_UUB_RECORDGROUP_JSON)
 	@Produces(APPLICATION_VND_UUB_RECORD_XML)
 	public Response updateRecordJsonXml(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
@@ -273,7 +275,7 @@ public class RecordEndpointUpdate {
 
 	@POST
 	@Path("{type}/{id}")
-	@Consumes(APPLICATION_VND_UUB_RECORD_XML)
+	@Consumes(APPLICATION_VND_UUB_RECORDGROUP_XML)
 	@Produces(APPLICATION_VND_UUB_RECORD_JSON_QS09)
 	public Response updateRecordXmlJson(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
@@ -284,7 +286,7 @@ public class RecordEndpointUpdate {
 
 	@POST
 	@Path("{type}/{id}")
-	@Consumes(APPLICATION_VND_UUB_RECORD_XML)
+	@Consumes(APPLICATION_VND_UUB_RECORDGROUP_XML)
 	@Produces(APPLICATION_VND_UUB_RECORD_XML)
 	public Response updateRecordXmlXml(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,

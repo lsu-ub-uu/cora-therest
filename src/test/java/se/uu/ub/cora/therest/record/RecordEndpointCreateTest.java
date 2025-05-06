@@ -26,7 +26,6 @@ import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -55,6 +54,8 @@ import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
 import se.uu.ub.cora.therest.AnnotationTestHelper;
 
 public class RecordEndpointCreateTest {
+	private static final String APPLICATION_VND_UUB_RECORDGROUP_XML = "application/vnd.cora.recordgroup+xml";
+	private static final String APPLICATION_VND_UUB_RECORDGROUP_JSON = "application/vnd.cora.recordgroup+json";
 	private static final String APPLICATION_VND_UUB_RECORD_XML = "application/vnd.cora.record+xml";
 	private static final String APPLICATION_VND_UUB_RECORD_JSON = "application/vnd.cora.record+json";
 	private static final String APPLICATION_VND_UUB_RECORD_JSON_QS09 = "application/vnd.cora.record+json;qs=0.9";
@@ -195,7 +196,7 @@ public class RecordEndpointCreateTest {
 	}
 
 	@Test
-	public void testPreferredTokenForCreate() throws IOException {
+	public void testPreferredTokenForCreate() {
 		expectTokenForCreateToPreferablyBeHeaderThanQuery(AUTH_TOKEN, "authToken2", AUTH_TOKEN);
 		expectTokenForCreateToPreferablyBeHeaderThanQuery(null, AUTH_TOKEN, AUTH_TOKEN);
 		expectTokenForCreateToPreferablyBeHeaderThanQuery(AUTH_TOKEN, null, AUTH_TOKEN);
@@ -305,7 +306,7 @@ public class RecordEndpointCreateTest {
 						recordEndpoint.getClass(), "createRecordJsonJson", 4);
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("POST", "{type}");
-		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORD_JSON);
+		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORDGROUP_JSON);
 		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_JSON_QS09);
 		annotationHelper.assertAnnotationForAuthTokensAndTypeParameters();
 	}
@@ -317,7 +318,7 @@ public class RecordEndpointCreateTest {
 						recordEndpoint.getClass(), "createRecordJsonXml", 4);
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("POST", "{type}");
-		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORD_JSON);
+		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORDGROUP_JSON);
 		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_XML);
 		annotationHelper.assertAnnotationForAuthTokensAndTypeParameters();
 	}
@@ -329,7 +330,7 @@ public class RecordEndpointCreateTest {
 						recordEndpoint.getClass(), "createRecordXmlJson", 4);
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("POST", "{type}");
-		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORD_XML);
+		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORDGROUP_XML);
 		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_JSON_QS09);
 		annotationHelper.assertAnnotationForAuthTokensAndTypeParameters();
 	}
@@ -341,7 +342,7 @@ public class RecordEndpointCreateTest {
 						recordEndpoint.getClass(), "createRecordXmlXml", 4);
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("POST", "{type}");
-		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORD_XML);
+		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORDGROUP_XML);
 		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_XML);
 		annotationHelper.assertAnnotationForAuthTokensAndTypeParameters();
 	}

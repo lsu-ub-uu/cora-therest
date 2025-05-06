@@ -74,6 +74,8 @@ import se.uu.ub.cora.storage.RecordConflictException;
 public class RecordEndpointBatchIndex {
 	private static final String APPLICATION_VND_UUB_RECORD_XML = "application/vnd.cora.record+xml";
 	private static final String APPLICATION_VND_UUB_RECORD_JSON = "application/vnd.cora.record+json";
+	private static final String APPLICATION_VND_UUB_RECORDGROUP_XML = "application/vnd.cora.recordgroup+xml";
+	private static final String APPLICATION_VND_UUB_RECORDGROUP_JSON = "application/vnd.cora.recordgroup+json";
 	private static final String APPLICATION_VND_UUB_RECORD_JSON_QS09 = "application/vnd.cora.record+json;qs=0.9";
 	private static final String TEXT_PLAIN_CHARSET_UTF_8 = "text/plain; charset=utf-8";
 	private static final String URL_DELIMITER = "/";
@@ -255,7 +257,7 @@ public class RecordEndpointBatchIndex {
 
 	@POST
 	@Path("index/{type}")
-	@Consumes({ APPLICATION_VND_UUB_RECORD_JSON })
+	@Consumes({ APPLICATION_VND_UUB_RECORDGROUP_JSON })
 	@Produces({ APPLICATION_VND_UUB_RECORD_JSON_QS09 })
 	public Response batchIndexJsonJson(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
@@ -266,7 +268,7 @@ public class RecordEndpointBatchIndex {
 
 	@POST
 	@Path("index/{type}")
-	@Consumes(APPLICATION_VND_UUB_RECORD_JSON)
+	@Consumes(APPLICATION_VND_UUB_RECORDGROUP_JSON)
 	@Produces(APPLICATION_VND_UUB_RECORD_XML)
 	public Response batchIndexJsonXml(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
@@ -277,7 +279,7 @@ public class RecordEndpointBatchIndex {
 
 	@POST
 	@Path("index/{type}")
-	@Consumes(APPLICATION_VND_UUB_RECORD_XML)
+	@Consumes(APPLICATION_VND_UUB_RECORDGROUP_XML)
 	@Produces(APPLICATION_VND_UUB_RECORD_JSON_QS09)
 	public Response batchIndexXmlJson(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
@@ -288,7 +290,7 @@ public class RecordEndpointBatchIndex {
 
 	@POST
 	@Path("index/{type}")
-	@Consumes(APPLICATION_VND_UUB_RECORD_XML)
+	@Consumes(APPLICATION_VND_UUB_RECORDGROUP_XML)
 	@Produces(APPLICATION_VND_UUB_RECORD_XML)
 	public Response batchIndexXmlXml(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
