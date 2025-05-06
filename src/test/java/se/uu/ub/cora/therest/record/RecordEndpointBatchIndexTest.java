@@ -55,8 +55,6 @@ import se.uu.ub.cora.therest.AnnotationTestHelper;
 public class RecordEndpointBatchIndexTest {
 	private static final String APPLICATION_VND_UUB_RECORD_XML = "application/vnd.cora.record+xml";
 	private static final String APPLICATION_VND_UUB_RECORD_JSON = "application/vnd.cora.record+json";
-	private static final String APPLICATION_VND_UUB_RECORDGROUP_XML = "application/vnd.cora.recordgroup+xml";
-	private static final String APPLICATION_VND_UUB_RECORDGROUP_JSON = "application/vnd.cora.recordgroup+json";
 	private static final String APPLICATION_VND_UUB_RECORD_JSON_QS09 = "application/vnd.cora.record+json;qs=0.9";
 	private static final String TEXT_PLAIN = "text/plain; charset=utf-8";
 	private static final String DUMMY_NON_AUTHORIZED_TOKEN = "dummyNonAuthorizedToken";
@@ -358,7 +356,7 @@ public class RecordEndpointBatchIndexTest {
 						recordEndpoint.getClass(), "batchIndexJsonJson", 4);
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("POST", "index/{type}");
-		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORDGROUP_JSON);
+		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORD_JSON);
 		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_JSON_QS09);
 		annotationHelper.assertAnnotationForAuthTokensAndTypeParameters();
 	}
@@ -370,7 +368,7 @@ public class RecordEndpointBatchIndexTest {
 						recordEndpoint.getClass(), "batchIndexJsonXml", 4);
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("POST", "index/{type}");
-		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORDGROUP_JSON);
+		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORD_JSON);
 		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_XML);
 		annotationHelper.assertAnnotationForAuthTokensAndTypeParameters();
 	}
@@ -382,7 +380,7 @@ public class RecordEndpointBatchIndexTest {
 						recordEndpoint.getClass(), "batchIndexXmlJson", 4);
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("POST", "index/{type}");
-		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORDGROUP_XML);
+		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORD_XML);
 		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_JSON_QS09);
 		annotationHelper.assertAnnotationForAuthTokensAndTypeParameters();
 	}
@@ -394,7 +392,7 @@ public class RecordEndpointBatchIndexTest {
 						recordEndpoint.getClass(), "batchIndexXmlXml", 4);
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("POST", "index/{type}");
-		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORDGROUP_XML);
+		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORD_XML);
 		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_XML);
 		annotationHelper.assertAnnotationForAuthTokensAndTypeParameters();
 	}
