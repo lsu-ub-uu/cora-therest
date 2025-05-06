@@ -30,10 +30,10 @@ import jakarta.ws.rs.core.Response;
 
 @Path("/")
 public class RecordEndpointReadDecorated {
-	private static final String APPLICATION_VND_UUB_RECORD_DECORATED_XML_QS09 = "application/vnd.uub.record-decorated+xml;qs=0.9";
-	private static final String APPLICATION_VND_UUB_RECORD_DECORATED_XML = "application/vnd.uub.record-decorated+xml";
-	private static final String APPLICATION_VND_UUB_RECORD_DECORATED_JSON_QS09 = "application/vnd.uub.record-decorated+json;qs=0.9";
-	private static final String APPLICATION_VND_UUB_RECORD_DECORATED_JSON = "application/vnd.uub.record-decorated+json";
+	private static final String APPLICATION_VND_UUB_RECORD_DECORATED_XML_QS09 = "application/vnd.cora.record-decorated+xml;qs=0.9";
+	private static final String APPLICATION_VND_UUB_RECORD_DECORATED_XML = "application/vnd.cora.record-decorated+xml";
+	private static final String APPLICATION_VND_UUB_RECORD_DECORATED_JSON_QS09 = "application/vnd.cora.record-decorated+json;qs=0.9";
+	private static final String APPLICATION_VND_UUB_RECORD_DECORATED_JSON = "application/vnd.cora.record-decorated+json";
 	HttpServletRequest request;
 
 	public RecordEndpointReadDecorated(@Context HttpServletRequest req) {

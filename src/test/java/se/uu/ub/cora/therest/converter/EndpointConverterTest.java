@@ -44,8 +44,8 @@ import se.uu.ub.cora.therest.record.JsonToDataConverterFactorySpy;
 import se.uu.ub.cora.therest.record.StringToExternallyConvertibleConverterSpy;
 
 public class EndpointConverterTest {
-	private static final String ACCEPT_XML = "application/vnd.uub.record-decorated+xml";
-	private static final String ACCEPT_JSON = "application/vnd.uub.record-decorated+json";
+	private static final String ACCEPT_XML = "application/vnd.cora.record-decorated+xml";
+	private static final String ACCEPT_JSON = "application/vnd.cora.record-decorated+json";
 	private EndpointConverter converter;
 	private HttpServletRequestSpy requestSpy;
 	private DataToJsonConverterFactoryCreatorSpy converterFactoryCreatorSpy;
