@@ -63,9 +63,9 @@ import se.uu.ub.cora.storage.RecordConflictException;
 public class RecordEndpointReadIncomingLinks {
 	private static final String APPLICATION_XML = "application/xml";
 	private static final String APPLICATION_XML_QS01 = "application/xml;qs=0.1";
-	private static final String APPLICATION_VND_UUB_RECORD_LIST_XML = "application/vnd.cora.recordList+xml";
-	private static final String APPLICATION_VND_UUB_RECORD_LIST_JSON = "application/vnd.cora.recordList+json";
-	private static final String APPLICATION_VND_UUB_RECORD_LIST_JSON_QS09 = "application/vnd.cora.recordList+json;qs=0.9";
+	private static final String APPLICATION_VND_CORA_RECORD_LIST_XML = "application/vnd.cora.recordList+xml";
+	private static final String APPLICATION_VND_CORA_RECORD_LIST_JSON = "application/vnd.cora.recordList+json";
+	private static final String APPLICATION_VND_CORA_RECORD_LIST_JSON_QS09 = "application/vnd.cora.recordList+json;qs=0.9";
 	private static final String TEXT_PLAIN_CHARSET_UTF_8 = "text/plain; charset=utf-8";
 	private static final int AFTERHTTP = 10;
 	HttpServletRequest request;
@@ -223,11 +223,11 @@ public class RecordEndpointReadIncomingLinks {
 	 */
 	@GET
 	@Path("{type}/{id}/incomingLinks")
-	@Produces({ APPLICATION_VND_UUB_RECORD_LIST_JSON_QS09 })
+	@Produces({ APPLICATION_VND_CORA_RECORD_LIST_JSON_QS09 })
 	public Response readIncomingRecordLinksJson(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			@PathParam("id") String id) {
-		return readIncomingRecordLink(APPLICATION_VND_UUB_RECORD_LIST_JSON, headerAuthToken,
+		return readIncomingRecordLink(APPLICATION_VND_CORA_RECORD_LIST_JSON, headerAuthToken,
 				queryAuthToken, type, id);
 	}
 
@@ -243,11 +243,11 @@ public class RecordEndpointReadIncomingLinks {
 
 	@GET
 	@Path("{type}/{id}/incomingLinks")
-	@Produces(APPLICATION_VND_UUB_RECORD_LIST_XML)
+	@Produces(APPLICATION_VND_CORA_RECORD_LIST_XML)
 	public Response readIncomingRecordLinksXml(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			@PathParam("id") String id) {
-		return readIncomingRecordLink(APPLICATION_VND_UUB_RECORD_LIST_XML, headerAuthToken,
+		return readIncomingRecordLink(APPLICATION_VND_CORA_RECORD_LIST_XML, headerAuthToken,
 				queryAuthToken, type, id);
 	}
 

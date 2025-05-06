@@ -73,11 +73,11 @@ import se.uu.ub.cora.storage.RecordConflictException;
 
 @Path("/")
 public class RecordEndpointCreate {
-	private static final String APPLICATION_VND_UUB_RECORD_XML = "application/vnd.cora.record+xml";
-	private static final String APPLICATION_VND_UUB_RECORD_JSON = "application/vnd.cora.record+json";
-	private static final String APPLICATION_VND_UUB_RECORDGROUP_XML = "application/vnd.cora.recordgroup+xml";
-	private static final String APPLICATION_VND_UUB_RECORDGROUP_JSON = "application/vnd.cora.recordgroup+json";
-	private static final String APPLICATION_VND_UUB_RECORD_JSON_QS09 = "application/vnd.cora.record+json;qs=0.9";
+	private static final String APPLICATION_VND_CORA_RECORD_XML = "application/vnd.cora.record+xml";
+	private static final String APPLICATION_VND_CORA_RECORD_JSON = "application/vnd.cora.record+json";
+	private static final String APPLICATION_VND_CORA_RECORDGROUP_XML = "application/vnd.cora.recordgroup+xml";
+	private static final String APPLICATION_VND_CORA_RECORDGROUP_JSON = "application/vnd.cora.recordgroup+json";
+	private static final String APPLICATION_VND_CORA_RECORD_JSON_QS09 = "application/vnd.cora.record+json;qs=0.9";
 	private static final String TEXT_PLAIN_CHARSET_UTF_8 = "text/plain; charset=utf-8";
 	private static final String URL_DELIMITER = "/";
 	private static final int AFTERHTTP = 10;
@@ -144,45 +144,45 @@ public class RecordEndpointCreate {
 	/** fix: consumes is not a record, but a topDataGroup */
 	@POST
 	@Path("{type}")
-	@Consumes({ APPLICATION_VND_UUB_RECORDGROUP_JSON })
-	@Produces({ APPLICATION_VND_UUB_RECORD_JSON_QS09 })
+	@Consumes({ APPLICATION_VND_CORA_RECORDGROUP_JSON })
+	@Produces({ APPLICATION_VND_CORA_RECORD_JSON_QS09 })
 	public Response createRecordJsonJson(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			String inputRecord) {
-		return createRecord(APPLICATION_VND_UUB_RECORD_JSON, APPLICATION_VND_UUB_RECORD_JSON,
+		return createRecord(APPLICATION_VND_CORA_RECORD_JSON, APPLICATION_VND_CORA_RECORD_JSON,
 				headerAuthToken, queryAuthToken, type, inputRecord);
 	}
 
 	@POST
 	@Path("{type}")
-	@Consumes(APPLICATION_VND_UUB_RECORDGROUP_JSON)
-	@Produces(APPLICATION_VND_UUB_RECORD_XML)
+	@Consumes(APPLICATION_VND_CORA_RECORDGROUP_JSON)
+	@Produces(APPLICATION_VND_CORA_RECORD_XML)
 	public Response createRecordJsonXml(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			String inputRecord) {
-		return createRecord(APPLICATION_VND_UUB_RECORD_JSON, APPLICATION_VND_UUB_RECORD_XML,
+		return createRecord(APPLICATION_VND_CORA_RECORD_JSON, APPLICATION_VND_CORA_RECORD_XML,
 				headerAuthToken, queryAuthToken, type, inputRecord);
 	}
 
 	@POST
 	@Path("{type}")
-	@Consumes(APPLICATION_VND_UUB_RECORDGROUP_XML)
-	@Produces(APPLICATION_VND_UUB_RECORD_JSON_QS09)
+	@Consumes(APPLICATION_VND_CORA_RECORDGROUP_XML)
+	@Produces(APPLICATION_VND_CORA_RECORD_JSON_QS09)
 	public Response createRecordXmlJson(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			String inputRecord) {
-		return createRecord(APPLICATION_VND_UUB_RECORD_XML, APPLICATION_VND_UUB_RECORD_JSON,
+		return createRecord(APPLICATION_VND_CORA_RECORD_XML, APPLICATION_VND_CORA_RECORD_JSON,
 				headerAuthToken, queryAuthToken, type, inputRecord);
 	}
 
 	@POST
 	@Path("{type}")
-	@Consumes(APPLICATION_VND_UUB_RECORDGROUP_XML)
-	@Produces(APPLICATION_VND_UUB_RECORD_XML)
+	@Consumes(APPLICATION_VND_CORA_RECORDGROUP_XML)
+	@Produces(APPLICATION_VND_CORA_RECORD_XML)
 	public Response createRecordXmlXml(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			String inputRecord) {
-		return createRecord(APPLICATION_VND_UUB_RECORD_XML, APPLICATION_VND_UUB_RECORD_XML,
+		return createRecord(APPLICATION_VND_CORA_RECORD_XML, APPLICATION_VND_CORA_RECORD_XML,
 				headerAuthToken, queryAuthToken, type, inputRecord);
 	}
 

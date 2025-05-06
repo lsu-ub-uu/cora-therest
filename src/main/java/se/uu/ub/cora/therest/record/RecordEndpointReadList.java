@@ -71,9 +71,9 @@ import se.uu.ub.cora.storage.RecordConflictException;
 public class RecordEndpointReadList {
 	private static final String APPLICATION_XML = "application/xml";
 	private static final String APPLICATION_XML_QS01 = "application/xml;qs=0.1";
-	private static final String APPLICATION_VND_UUB_RECORD_LIST_XML = "application/vnd.cora.recordList+xml";
-	private static final String APPLICATION_VND_UUB_RECORD_LIST_JSON = "application/vnd.cora.recordList+json";
-	private static final String APPLICATION_VND_UUB_RECORD_LIST_JSON_QS09 = "application/vnd.cora.recordList+json;qs=0.9";
+	private static final String APPLICATION_VND_CORA_RECORD_LIST_XML = "application/vnd.cora.recordList+xml";
+	private static final String APPLICATION_VND_CORA_RECORD_LIST_JSON = "application/vnd.cora.recordList+json";
+	private static final String APPLICATION_VND_CORA_RECORD_LIST_JSON_QS09 = "application/vnd.cora.recordList+json;qs=0.9";
 	private static final String TEXT_PLAIN_CHARSET_UTF_8 = "text/plain; charset=utf-8";
 	private static final int AFTERHTTP = 10;
 	HttpServletRequest request;
@@ -234,11 +234,11 @@ public class RecordEndpointReadList {
 
 	@GET
 	@Path("{type}/")
-	@Produces({ APPLICATION_VND_UUB_RECORD_LIST_JSON_QS09 })
+	@Produces({ APPLICATION_VND_CORA_RECORD_LIST_JSON_QS09 })
 	public Response readRecordListJson(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			@QueryParam("filter") String filterAsJson) {
-		return readRecordList(APPLICATION_VND_UUB_RECORD_LIST_JSON, headerAuthToken, queryAuthToken,
+		return readRecordList(APPLICATION_VND_CORA_RECORD_LIST_JSON, headerAuthToken, queryAuthToken,
 				type, filterAsJson);
 	}
 
@@ -254,11 +254,11 @@ public class RecordEndpointReadList {
 
 	@GET
 	@Path("{type}/")
-	@Produces(APPLICATION_VND_UUB_RECORD_LIST_XML)
+	@Produces(APPLICATION_VND_CORA_RECORD_LIST_XML)
 	public Response readRecordListXml(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			@QueryParam("filter") String filterAsJson) {
-		return readRecordList(APPLICATION_VND_UUB_RECORD_LIST_XML, headerAuthToken, queryAuthToken,
+		return readRecordList(APPLICATION_VND_CORA_RECORD_LIST_XML, headerAuthToken, queryAuthToken,
 				type, filterAsJson);
 	}
 

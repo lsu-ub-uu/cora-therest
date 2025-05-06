@@ -64,9 +64,9 @@ import se.uu.ub.cora.storage.RecordConflictException;
 public class RecordEndpointRead {
 	private static final String APPLICATION_XML = "application/xml";
 	private static final String APPLICATION_XML_QS01 = "application/xml;qs=0.1";
-	private static final String APPLICATION_VND_UUB_RECORD_XML = "application/vnd.cora.record+xml";
-	private static final String APPLICATION_VND_UUB_RECORD_JSON = "application/vnd.cora.record+json";
-	private static final String APPLICATION_VND_UUB_RECORD_JSON_QS09 = "application/vnd.cora.record+json;qs=0.9";
+	private static final String APPLICATION_VND_CORA_RECORD_XML = "application/vnd.cora.record+xml";
+	private static final String APPLICATION_VND_CORA_RECORD_JSON = "application/vnd.cora.record+json";
+	private static final String APPLICATION_VND_CORA_RECORD_JSON_QS09 = "application/vnd.cora.record+json;qs=0.9";
 	private static final String TEXT_PLAIN_CHARSET_UTF_8 = "text/plain; charset=utf-8";
 	private static final int AFTERHTTP = 10;
 	HttpServletRequest request;
@@ -205,11 +205,11 @@ public class RecordEndpointRead {
 
 	@GET
 	@Path("{type}/{id}")
-	@Produces({ APPLICATION_VND_UUB_RECORD_JSON_QS09 })
+	@Produces({ APPLICATION_VND_CORA_RECORD_JSON_QS09 })
 	public Response readRecordJson(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			@PathParam("id") String id) {
-		return readRecord(APPLICATION_VND_UUB_RECORD_JSON, headerAuthToken, queryAuthToken, type,
+		return readRecord(APPLICATION_VND_CORA_RECORD_JSON, headerAuthToken, queryAuthToken, type,
 				id);
 	}
 
@@ -225,11 +225,11 @@ public class RecordEndpointRead {
 
 	@GET
 	@Path("{type}/{id}")
-	@Produces(APPLICATION_VND_UUB_RECORD_XML)
+	@Produces(APPLICATION_VND_CORA_RECORD_XML)
 	public Response readRecordXml(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			@PathParam("id") String id) {
-		return readRecord(APPLICATION_VND_UUB_RECORD_XML, headerAuthToken, queryAuthToken, type,
+		return readRecord(APPLICATION_VND_CORA_RECORD_XML, headerAuthToken, queryAuthToken, type,
 				id);
 	}
 

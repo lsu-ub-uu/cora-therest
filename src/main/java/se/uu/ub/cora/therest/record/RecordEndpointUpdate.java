@@ -72,11 +72,11 @@ import se.uu.ub.cora.storage.RecordConflictException;
 
 @Path("/")
 public class RecordEndpointUpdate {
-	private static final String APPLICATION_VND_UUB_RECORD_XML = "application/vnd.cora.record+xml";
-	private static final String APPLICATION_VND_UUB_RECORD_JSON = "application/vnd.cora.record+json";
-	private static final String APPLICATION_VND_UUB_RECORDGROUP_XML = "application/vnd.cora.recordgroup+xml";
-	private static final String APPLICATION_VND_UUB_RECORDGROUP_JSON = "application/vnd.cora.recordgroup+json";
-	private static final String APPLICATION_VND_UUB_RECORD_JSON_QS09 = "application/vnd.cora.record+json;qs=0.9";
+	private static final String APPLICATION_VND_CORA_RECORD_XML = "application/vnd.cora.record+xml";
+	private static final String APPLICATION_VND_CORA_RECORD_JSON = "application/vnd.cora.record+json";
+	private static final String APPLICATION_VND_CORA_RECORDGROUP_XML = "application/vnd.cora.recordgroup+xml";
+	private static final String APPLICATION_VND_CORA_RECORDGROUP_JSON = "application/vnd.cora.recordgroup+json";
+	private static final String APPLICATION_VND_CORA_RECORD_JSON_QS09 = "application/vnd.cora.record+json;qs=0.9";
 	private static final String TEXT_PLAIN_CHARSET_UTF_8 = "text/plain; charset=utf-8";
 	private static final int AFTERHTTP = 10;
 	HttpServletRequest request;
@@ -253,45 +253,45 @@ public class RecordEndpointUpdate {
 	/** fix: consumes is not a record, but a topDataGroup */
 	@POST
 	@Path("{type}/{id}")
-	@Consumes({ APPLICATION_VND_UUB_RECORDGROUP_JSON })
-	@Produces({ APPLICATION_VND_UUB_RECORD_JSON_QS09 })
+	@Consumes({ APPLICATION_VND_CORA_RECORDGROUP_JSON })
+	@Produces({ APPLICATION_VND_CORA_RECORD_JSON_QS09 })
 	public Response updateRecordJsonJson(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			@PathParam("id") String id, String inputRecord) {
-		return updateRecord(APPLICATION_VND_UUB_RECORD_JSON, APPLICATION_VND_UUB_RECORD_JSON,
+		return updateRecord(APPLICATION_VND_CORA_RECORD_JSON, APPLICATION_VND_CORA_RECORD_JSON,
 				headerAuthToken, queryAuthToken, type, id, inputRecord);
 	}
 
 	@POST
 	@Path("{type}/{id}")
-	@Consumes(APPLICATION_VND_UUB_RECORDGROUP_JSON)
-	@Produces(APPLICATION_VND_UUB_RECORD_XML)
+	@Consumes(APPLICATION_VND_CORA_RECORDGROUP_JSON)
+	@Produces(APPLICATION_VND_CORA_RECORD_XML)
 	public Response updateRecordJsonXml(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			@PathParam("id") String id, String inputRecord) {
-		return updateRecord(APPLICATION_VND_UUB_RECORD_JSON, APPLICATION_VND_UUB_RECORD_XML,
+		return updateRecord(APPLICATION_VND_CORA_RECORD_JSON, APPLICATION_VND_CORA_RECORD_XML,
 				headerAuthToken, queryAuthToken, type, id, inputRecord);
 	}
 
 	@POST
 	@Path("{type}/{id}")
-	@Consumes(APPLICATION_VND_UUB_RECORDGROUP_XML)
-	@Produces(APPLICATION_VND_UUB_RECORD_JSON_QS09)
+	@Consumes(APPLICATION_VND_CORA_RECORDGROUP_XML)
+	@Produces(APPLICATION_VND_CORA_RECORD_JSON_QS09)
 	public Response updateRecordXmlJson(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			@PathParam("id") String id, String inputRecord) {
-		return updateRecord(APPLICATION_VND_UUB_RECORD_XML, APPLICATION_VND_UUB_RECORD_JSON,
+		return updateRecord(APPLICATION_VND_CORA_RECORD_XML, APPLICATION_VND_CORA_RECORD_JSON,
 				headerAuthToken, queryAuthToken, type, id, inputRecord);
 	}
 
 	@POST
 	@Path("{type}/{id}")
-	@Consumes(APPLICATION_VND_UUB_RECORDGROUP_XML)
-	@Produces(APPLICATION_VND_UUB_RECORD_XML)
+	@Consumes(APPLICATION_VND_CORA_RECORDGROUP_XML)
+	@Produces(APPLICATION_VND_CORA_RECORD_XML)
 	public Response updateRecordXmlXml(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			@PathParam("id") String id, String inputRecord) {
-		return updateRecord(APPLICATION_VND_UUB_RECORD_XML, APPLICATION_VND_UUB_RECORD_XML,
+		return updateRecord(APPLICATION_VND_CORA_RECORD_XML, APPLICATION_VND_CORA_RECORD_XML,
 				headerAuthToken, queryAuthToken, type, id, inputRecord);
 	}
 

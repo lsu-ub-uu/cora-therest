@@ -49,8 +49,8 @@ import se.uu.ub.cora.therest.AnnotationTestHelper;
 public class RecordEndpointReadIncomingLinksTest {
 	private static final String APPLICATION_XML = "application/xml";
 	private static final String APPLICATION_XML_QS01 = "application/xml;qs=0.1";
-	private static final String APPLICATION_VND_UUB_RECORD_LIST_XML = "application/vnd.cora.recordList+xml";
-	private static final String APPLICATION_VND_UUB_RECORD_LIST_JSON_QS09 = "application/vnd.cora.recordList+json;qs=0.9";
+	private static final String APPLICATION_VND_CORA_RECORD_LIST_XML = "application/vnd.cora.recordList+xml";
+	private static final String APPLICATION_VND_CORA_RECORD_LIST_JSON_QS09 = "application/vnd.cora.recordList+json;qs=0.9";
 	private static final String DUMMY_NON_AUTHORIZED_TOKEN = "dummyNonAuthorizedToken";
 	private static final String PLACE_0001 = "place:0001";
 	private static final String PLACE = "place";
@@ -202,7 +202,7 @@ public class RecordEndpointReadIncomingLinksTest {
 		assertXmlConvertionOfResponse(dataList);
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.OK);
-		assertResponseContentTypeIs(APPLICATION_VND_UUB_RECORD_LIST_XML);
+		assertResponseContentTypeIs(APPLICATION_VND_CORA_RECORD_LIST_XML);
 	}
 
 	@Test
@@ -225,7 +225,7 @@ public class RecordEndpointReadIncomingLinksTest {
 						recordEndpoint.getClass(), "readIncomingRecordLinksJson", 4);
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("GET", "{type}/{id}/incomingLinks");
-		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_LIST_JSON_QS09);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_CORA_RECORD_LIST_JSON_QS09);
 		annotationHelper.assertAnnotationForAuthTokensAndTypeAndIdParameters();
 	}
 
@@ -236,7 +236,7 @@ public class RecordEndpointReadIncomingLinksTest {
 						recordEndpoint.getClass(), "readIncomingRecordLinksXml", 4);
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("GET", "{type}/{id}/incomingLinks");
-		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_LIST_XML);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_CORA_RECORD_LIST_XML);
 		annotationHelper.assertAnnotationForAuthTokensAndTypeAndIdParameters();
 	}
 

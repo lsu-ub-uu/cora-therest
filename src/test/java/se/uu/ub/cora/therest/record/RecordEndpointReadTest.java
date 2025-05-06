@@ -49,9 +49,9 @@ import se.uu.ub.cora.therest.AnnotationTestHelper;
 public class RecordEndpointReadTest {
 	private static final String APPLICATION_XML = "application/xml";
 	private static final String APPLICATION_XML_QS01 = "application/xml;qs=0.1";
-	private static final String APPLICATION_VND_UUB_RECORD_XML = "application/vnd.cora.record+xml";
-	private static final String APPLICATION_VND_UUB_RECORD_JSON = "application/vnd.cora.record+json";
-	private static final String APPLICATION_VND_UUB_RECORD_JSON_QS09 = "application/vnd.cora.record+json;qs=0.9";
+	private static final String APPLICATION_VND_CORA_RECORD_XML = "application/vnd.cora.record+xml";
+	private static final String APPLICATION_VND_CORA_RECORD_JSON = "application/vnd.cora.record+json";
+	private static final String APPLICATION_VND_CORA_RECORD_JSON_QS09 = "application/vnd.cora.record+json;qs=0.9";
 	private static final String DUMMY_NON_AUTHORIZED_TOKEN = "dummyNonAuthorizedToken";
 	private static final String PLACE_0001 = "place:0001";
 	private static final String PLACE = "place";
@@ -195,7 +195,7 @@ public class RecordEndpointReadTest {
 						recordEndpoint.getClass(), "readRecordJson", 4);
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("GET", "{type}/{id}");
-		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_JSON_QS09);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_CORA_RECORD_JSON_QS09);
 		annotationHelper.assertAnnotationForAuthTokensAndTypeAndIdParameters();
 	}
 
@@ -206,7 +206,7 @@ public class RecordEndpointReadTest {
 						recordEndpoint.getClass(), "readRecordXml", 4);
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("GET", "{type}/{id}");
-		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_XML);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_CORA_RECORD_XML);
 		annotationHelper.assertAnnotationForAuthTokensAndTypeAndIdParameters();
 	}
 
@@ -243,7 +243,7 @@ public class RecordEndpointReadTest {
 		response = recordEndpoint.readRecordJson(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001);
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.OK);
-		assertResponseContentTypeIs(APPLICATION_VND_UUB_RECORD_JSON);
+		assertResponseContentTypeIs(APPLICATION_VND_CORA_RECORD_JSON);
 	}
 
 	private void assertResponseContentTypeIs(String expectedContentType) {
@@ -255,7 +255,7 @@ public class RecordEndpointReadTest {
 		response = recordEndpoint.readRecordXml(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001);
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.OK);
-		assertResponseContentTypeIs(APPLICATION_VND_UUB_RECORD_XML);
+		assertResponseContentTypeIs(APPLICATION_VND_CORA_RECORD_XML);
 	}
 
 	@Test

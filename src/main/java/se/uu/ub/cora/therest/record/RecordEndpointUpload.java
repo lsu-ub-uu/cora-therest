@@ -65,9 +65,9 @@ import se.uu.ub.cora.storage.RecordConflictException;
 
 @Path("/")
 public class RecordEndpointUpload {
-	private static final String APPLICATION_VND_UUB_RECORD_XML = "application/vnd.cora.record+xml";
-	private static final String APPLICATION_VND_UUB_RECORD_JSON = "application/vnd.cora.record+json";
-	private static final String APPLICATION_VND_UUB_RECORD_JSON_QS09 = "application/vnd.cora.record+json;qs=0.9";
+	private static final String APPLICATION_VND_CORA_RECORD_XML = "application/vnd.cora.record+xml";
+	private static final String APPLICATION_VND_CORA_RECORD_JSON = "application/vnd.cora.record+json";
+	private static final String APPLICATION_VND_CORA_RECORD_JSON_QS09 = "application/vnd.cora.record+json;qs=0.9";
 	private static final String MULTIPART_FORM_DATA = "multipart/form-data";
 	private static final String TEXT_PLAIN_CHARSET_UTF_8 = "text/plain; charset=utf-8";
 	private static final int AFTERHTTP = 10;
@@ -227,24 +227,24 @@ public class RecordEndpointUpload {
 	@POST
 	@Path("{type}/{id}/{resourceType}")
 	@Consumes(MULTIPART_FORM_DATA)
-	@Produces({ APPLICATION_VND_UUB_RECORD_JSON_QS09 })
+	@Produces({ APPLICATION_VND_CORA_RECORD_JSON_QS09 })
 	public Response uploadResourceJson(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			@PathParam("id") String id, @FormDataParam("file") InputStream uploadedInputStream,
 			@PathParam("resourceType") String resourceType) {
-		return uploadResource(APPLICATION_VND_UUB_RECORD_JSON, headerAuthToken, queryAuthToken,
+		return uploadResource(APPLICATION_VND_CORA_RECORD_JSON, headerAuthToken, queryAuthToken,
 				type, id, uploadedInputStream, resourceType);
 	}
 
 	@POST
 	@Path("{type}/{id}/{resourceType}")
 	@Consumes(MULTIPART_FORM_DATA)
-	@Produces(APPLICATION_VND_UUB_RECORD_XML)
+	@Produces(APPLICATION_VND_CORA_RECORD_XML)
 	public Response uploadResourceXml(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			@PathParam("id") String id, @FormDataParam("file") InputStream uploadedInputStream,
 			@PathParam("resourceType") String resourceType) {
-		return uploadResource(APPLICATION_VND_UUB_RECORD_XML, headerAuthToken, queryAuthToken, type,
+		return uploadResource(APPLICATION_VND_CORA_RECORD_XML, headerAuthToken, queryAuthToken, type,
 				id, uploadedInputStream, resourceType);
 	}
 

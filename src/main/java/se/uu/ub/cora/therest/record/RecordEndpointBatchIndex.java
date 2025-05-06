@@ -72,9 +72,9 @@ import se.uu.ub.cora.storage.RecordConflictException;
 
 @Path("/")
 public class RecordEndpointBatchIndex {
-	private static final String APPLICATION_VND_UUB_RECORD_XML = "application/vnd.cora.record+xml";
-	private static final String APPLICATION_VND_UUB_RECORD_JSON = "application/vnd.cora.record+json";
-	private static final String APPLICATION_VND_UUB_RECORD_JSON_QS09 = "application/vnd.cora.record+json;qs=0.9";
+	private static final String APPLICATION_VND_CORA_RECORD_XML = "application/vnd.cora.record+xml";
+	private static final String APPLICATION_VND_CORA_RECORD_JSON = "application/vnd.cora.record+json";
+	private static final String APPLICATION_VND_CORA_RECORD_JSON_QS09 = "application/vnd.cora.record+json;qs=0.9";
 	private static final String TEXT_PLAIN_CHARSET_UTF_8 = "text/plain; charset=utf-8";
 	private static final String URL_DELIMITER = "/";
 	private static final int AFTERHTTP = 10;
@@ -255,45 +255,45 @@ public class RecordEndpointBatchIndex {
 
 	@POST
 	@Path("index/{type}")
-	@Consumes({ APPLICATION_VND_UUB_RECORD_JSON })
-	@Produces({ APPLICATION_VND_UUB_RECORD_JSON_QS09 })
+	@Consumes({ APPLICATION_VND_CORA_RECORD_JSON })
+	@Produces({ APPLICATION_VND_CORA_RECORD_JSON_QS09 })
 	public Response batchIndexJsonJson(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			String indexSettingsAsJson) {
-		return batchIndex(APPLICATION_VND_UUB_RECORD_JSON, APPLICATION_VND_UUB_RECORD_JSON,
+		return batchIndex(APPLICATION_VND_CORA_RECORD_JSON, APPLICATION_VND_CORA_RECORD_JSON,
 				headerAuthToken, queryAuthToken, type, indexSettingsAsJson);
 	}
 
 	@POST
 	@Path("index/{type}")
-	@Consumes(APPLICATION_VND_UUB_RECORD_JSON)
-	@Produces(APPLICATION_VND_UUB_RECORD_XML)
+	@Consumes(APPLICATION_VND_CORA_RECORD_JSON)
+	@Produces(APPLICATION_VND_CORA_RECORD_XML)
 	public Response batchIndexJsonXml(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			String indexSettingsAsJson) {
-		return batchIndex(APPLICATION_VND_UUB_RECORD_JSON, APPLICATION_VND_UUB_RECORD_XML,
+		return batchIndex(APPLICATION_VND_CORA_RECORD_JSON, APPLICATION_VND_CORA_RECORD_XML,
 				headerAuthToken, queryAuthToken, type, indexSettingsAsJson);
 	}
 
 	@POST
 	@Path("index/{type}")
-	@Consumes(APPLICATION_VND_UUB_RECORD_XML)
-	@Produces(APPLICATION_VND_UUB_RECORD_JSON_QS09)
+	@Consumes(APPLICATION_VND_CORA_RECORD_XML)
+	@Produces(APPLICATION_VND_CORA_RECORD_JSON_QS09)
 	public Response batchIndexXmlJson(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			String indexSettingsAsJson) {
-		return batchIndex(APPLICATION_VND_UUB_RECORD_XML, APPLICATION_VND_UUB_RECORD_JSON,
+		return batchIndex(APPLICATION_VND_CORA_RECORD_XML, APPLICATION_VND_CORA_RECORD_JSON,
 				headerAuthToken, queryAuthToken, type, indexSettingsAsJson);
 	}
 
 	@POST
 	@Path("index/{type}")
-	@Consumes(APPLICATION_VND_UUB_RECORD_XML)
-	@Produces(APPLICATION_VND_UUB_RECORD_XML)
+	@Consumes(APPLICATION_VND_CORA_RECORD_XML)
+	@Produces(APPLICATION_VND_CORA_RECORD_XML)
 	public Response batchIndexXmlXml(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("type") String type,
 			String indexSettingsAsJson) {
-		return batchIndex(APPLICATION_VND_UUB_RECORD_XML, APPLICATION_VND_UUB_RECORD_XML,
+		return batchIndex(APPLICATION_VND_CORA_RECORD_XML, APPLICATION_VND_CORA_RECORD_XML,
 				headerAuthToken, queryAuthToken, type, indexSettingsAsJson);
 	}
 
@@ -311,7 +311,7 @@ public class RecordEndpointBatchIndex {
 
 	private String calculateContentTypeToUse(String contentType, String indexSettingsAsJson) {
 		if (indexSettingsAsJson == null || indexSettingsAsJson.isEmpty()) {
-			return APPLICATION_VND_UUB_RECORD_JSON;
+			return APPLICATION_VND_CORA_RECORD_JSON;
 		}
 		return contentType;
 	}

@@ -30,10 +30,10 @@ import jakarta.ws.rs.core.Response;
 
 @Path("/")
 public class RecordEndpointReadDecorated {
-	private static final String APPLICATION_VND_UUB_RECORD_DECORATED_XML_QS09 = "application/vnd.cora.record-decorated+xml;qs=0.9";
-	private static final String APPLICATION_VND_UUB_RECORD_DECORATED_XML = "application/vnd.cora.record-decorated+xml";
-	private static final String APPLICATION_VND_UUB_RECORD_DECORATED_JSON_QS09 = "application/vnd.cora.record-decorated+json;qs=0.9";
-	private static final String APPLICATION_VND_UUB_RECORD_DECORATED_JSON = "application/vnd.cora.record-decorated+json";
+	private static final String APPLICATION_VND_CORA_RECORD_DECORATED_XML_QS09 = "application/vnd.cora.record-decorated+xml;qs=0.9";
+	private static final String APPLICATION_VND_CORA_RECORD_DECORATED_XML = "application/vnd.cora.record-decorated+xml";
+	private static final String APPLICATION_VND_CORA_RECORD_DECORATED_JSON_QS09 = "application/vnd.cora.record-decorated+json;qs=0.9";
+	private static final String APPLICATION_VND_CORA_RECORD_DECORATED_JSON = "application/vnd.cora.record-decorated+json";
 	HttpServletRequest request;
 
 	public RecordEndpointReadDecorated(@Context HttpServletRequest req) {
@@ -42,10 +42,10 @@ public class RecordEndpointReadDecorated {
 
 	@GET
 	@Path("{type}/{id}")
-	@Produces(APPLICATION_VND_UUB_RECORD_DECORATED_XML_QS09)
+	@Produces(APPLICATION_VND_CORA_RECORD_DECORATED_XML_QS09)
 	public Response readDecoratedRecordXml(@HeaderParam("authToken") String authToken,
 			@PathParam("type") String type, @PathParam("id") String id) {
-		return callReadAndDecorateRecord(APPLICATION_VND_UUB_RECORD_DECORATED_XML, authToken, type,
+		return callReadAndDecorateRecord(APPLICATION_VND_CORA_RECORD_DECORATED_XML, authToken, type,
 				id);
 	}
 
@@ -58,10 +58,10 @@ public class RecordEndpointReadDecorated {
 
 	@GET
 	@Path("{type}/{id}")
-	@Produces({ APPLICATION_VND_UUB_RECORD_DECORATED_JSON_QS09 })
+	@Produces({ APPLICATION_VND_CORA_RECORD_DECORATED_JSON_QS09 })
 	public Response readDecoratedRecordJson(@HeaderParam("authToken") String authToken,
 			@PathParam("type") String type, @PathParam("id") String id) {
-		return callReadAndDecorateRecord(APPLICATION_VND_UUB_RECORD_DECORATED_JSON, authToken, type,
+		return callReadAndDecorateRecord(APPLICATION_VND_CORA_RECORD_DECORATED_JSON, authToken, type,
 				id);
 	}
 

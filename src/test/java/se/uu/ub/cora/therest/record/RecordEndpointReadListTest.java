@@ -54,8 +54,8 @@ import se.uu.ub.cora.therest.coradata.DataListSpy;
 public class RecordEndpointReadListTest {
 	private static final String APPLICATION_XML = "application/xml";
 	private static final String APPLICATION_XML_QS01 = "application/xml;qs=0.1";
-	private static final String APPLICATION_VND_UUB_RECORD_LIST_XML = "application/vnd.cora.recordList+xml";
-	private static final String APPLICATION_VND_UUB_RECORD_LIST_JSON_QS09 = "application/vnd.cora.recordList+json;qs=0.9";
+	private static final String APPLICATION_VND_CORA_RECORD_LIST_XML = "application/vnd.cora.recordList+xml";
+	private static final String APPLICATION_VND_CORA_RECORD_LIST_JSON_QS09 = "application/vnd.cora.recordList+json;qs=0.9";
 	private static final String DUMMY_NON_AUTHORIZED_TOKEN = "dummyNonAuthorizedToken";
 	private static final String PLACE = "place";
 	private static final String AUTH_TOKEN = "authToken";
@@ -206,7 +206,7 @@ public class RecordEndpointReadListTest {
 		assertXmlConvertionOfResponse(dataList);
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.OK);
-		assertResponseContentTypeIs(APPLICATION_VND_UUB_RECORD_LIST_XML);
+		assertResponseContentTypeIs(APPLICATION_VND_CORA_RECORD_LIST_XML);
 	}
 
 	@Test
@@ -246,7 +246,7 @@ public class RecordEndpointReadListTest {
 		assertXmlConvertionOfResponse(dataList);
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.OK);
-		assertResponseContentTypeIs(APPLICATION_VND_UUB_RECORD_LIST_XML);
+		assertResponseContentTypeIs(APPLICATION_VND_CORA_RECORD_LIST_XML);
 	}
 
 	@Test
@@ -278,7 +278,7 @@ public class RecordEndpointReadListTest {
 						recordEndpoint.getClass(), "readRecordListJson", 4);
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("GET", "{type}/");
-		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_LIST_JSON_QS09);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_CORA_RECORD_LIST_JSON_QS09);
 		annotationHelper.assertAnnotationForAuthTokensAndTypeParameters();
 		annotationHelper.assertQueryParamAnnotationByNameAndPosition("filter", 3);
 	}
@@ -290,7 +290,7 @@ public class RecordEndpointReadListTest {
 						recordEndpoint.getClass(), "readRecordListXml", 4);
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("GET", "{type}/");
-		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_LIST_XML);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_CORA_RECORD_LIST_XML);
 		annotationHelper.assertAnnotationForAuthTokensAndTypeParameters();
 		annotationHelper.assertQueryParamAnnotationByNameAndPosition("filter", 3);
 	}

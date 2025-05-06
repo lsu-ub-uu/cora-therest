@@ -51,9 +51,9 @@ import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
 import se.uu.ub.cora.therest.AnnotationTestHelper;
 
 public class RecordEndpointSearchTest {
-	private static final String APPLICATION_VND_UUB_RECORD_LIST_XML = "application/vnd.cora.recordList+xml";
-	private static final String APPLICATION_VND_UUB_RECORD_LIST_JSON = "application/vnd.cora.recordList+json";
-	private static final String APPLICATION_VND_UUB_RECORD_LIST_JSON_QS09 = "application/vnd.cora.recordList+json;qs=0.9";
+	private static final String APPLICATION_VND_CORA_RECORD_LIST_XML = "application/vnd.cora.recordList+xml";
+	private static final String APPLICATION_VND_CORA_RECORD_LIST_JSON = "application/vnd.cora.recordList+json";
+	private static final String APPLICATION_VND_CORA_RECORD_LIST_JSON_QS09 = "application/vnd.cora.recordList+json;qs=0.9";
 	private static final String DUMMY_NON_AUTHORIZED_TOKEN = "dummyNonAuthorizedToken";
 	private static final String AUTH_TOKEN = "authToken";
 	private JsonParserSpy jsonParser;
@@ -267,7 +267,7 @@ public class RecordEndpointSearchTest {
 		assertXmlConvertionOfResponse(searchRecord);
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.OK);
-		assertResponseContentTypeIs(APPLICATION_VND_UUB_RECORD_LIST_XML);
+		assertResponseContentTypeIs(APPLICATION_VND_CORA_RECORD_LIST_XML);
 	}
 
 	@Test
@@ -285,7 +285,7 @@ public class RecordEndpointSearchTest {
 		assertDataFromSpiderConvertedToJsonUsingConvertersFromProvider(searchRecord);
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.OK);
-		assertResponseContentTypeIs(APPLICATION_VND_UUB_RECORD_LIST_JSON);
+		assertResponseContentTypeIs(APPLICATION_VND_CORA_RECORD_LIST_JSON);
 	}
 
 	@Test
@@ -295,7 +295,7 @@ public class RecordEndpointSearchTest {
 						recordEndpoint.getClass(), "searchRecordJson", 4);
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("GET", "searchResult/{searchId}");
-		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_LIST_JSON_QS09);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_CORA_RECORD_LIST_JSON_QS09);
 		annotationHelper.assertAnnotationForAuthTokenParameters();
 		annotationHelper.assertPathParamAnnotationByNameAndPosition("searchId", 2);
 		annotationHelper.assertQueryParamAnnotationByNameAndPosition("searchData", 3);
@@ -308,7 +308,7 @@ public class RecordEndpointSearchTest {
 						recordEndpoint.getClass(), "searchRecordXml", 4);
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("GET", "searchResult/{searchId}");
-		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_LIST_XML);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_CORA_RECORD_LIST_XML);
 		annotationHelper.assertAnnotationForAuthTokenParameters();
 		annotationHelper.assertPathParamAnnotationByNameAndPosition("searchId", 2);
 		annotationHelper.assertQueryParamAnnotationByNameAndPosition("searchData", 3);

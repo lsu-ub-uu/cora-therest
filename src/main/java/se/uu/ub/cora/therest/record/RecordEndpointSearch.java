@@ -69,9 +69,9 @@ import se.uu.ub.cora.storage.RecordConflictException;
 
 @Path("/")
 public class RecordEndpointSearch {
-	private static final String APPLICATION_VND_UUB_RECORD_LIST_XML = "application/vnd.cora.recordList+xml";
-	private static final String APPLICATION_VND_UUB_RECORD_LIST_JSON = "application/vnd.cora.recordList+json";
-	private static final String APPLICATION_VND_UUB_RECORD_LIST_JSON_QS09 = "application/vnd.cora.recordList+json;qs=0.9";
+	private static final String APPLICATION_VND_CORA_RECORD_LIST_XML = "application/vnd.cora.recordList+xml";
+	private static final String APPLICATION_VND_CORA_RECORD_LIST_JSON = "application/vnd.cora.recordList+json";
+	private static final String APPLICATION_VND_CORA_RECORD_LIST_JSON_QS09 = "application/vnd.cora.recordList+json;qs=0.9";
 	private static final String TEXT_PLAIN_CHARSET_UTF_8 = "text/plain; charset=utf-8";
 	private static final int AFTERHTTP = 10;
 	HttpServletRequest request;
@@ -251,21 +251,21 @@ public class RecordEndpointSearch {
 
 	@GET
 	@Path("searchResult/{searchId}")
-	@Produces({ APPLICATION_VND_UUB_RECORD_LIST_JSON_QS09 })
+	@Produces({ APPLICATION_VND_CORA_RECORD_LIST_JSON_QS09 })
 	public Response searchRecordJson(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("searchId") String searchId,
 			@QueryParam("searchData") String searchDataAsString) {
-		return searchRecord(APPLICATION_VND_UUB_RECORD_LIST_JSON, headerAuthToken, queryAuthToken,
+		return searchRecord(APPLICATION_VND_CORA_RECORD_LIST_JSON, headerAuthToken, queryAuthToken,
 				searchId, searchDataAsString);
 	}
 
 	@GET
 	@Path("searchResult/{searchId}")
-	@Produces(APPLICATION_VND_UUB_RECORD_LIST_XML)
+	@Produces(APPLICATION_VND_CORA_RECORD_LIST_XML)
 	public Response searchRecordXml(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("searchId") String searchId,
 			@QueryParam("searchData") String searchDataAsString) {
-		return searchRecord(APPLICATION_VND_UUB_RECORD_LIST_XML, headerAuthToken, queryAuthToken,
+		return searchRecord(APPLICATION_VND_CORA_RECORD_LIST_XML, headerAuthToken, queryAuthToken,
 				searchId, searchDataAsString);
 	}
 

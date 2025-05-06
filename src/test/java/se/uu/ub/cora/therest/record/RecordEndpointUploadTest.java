@@ -56,9 +56,9 @@ import se.uu.ub.cora.therest.AnnotationTestHelper;
 import se.uu.ub.cora.therest.spy.InputStreamSpy;
 
 public class RecordEndpointUploadTest {
-	private static final String APPLICATION_VND_UUB_RECORD_XML = "application/vnd.cora.record+xml";
-	private static final String APPLICATION_VND_UUB_RECORD_JSON = "application/vnd.cora.record+json";
-	private static final String APPLICATION_VND_UUB_RECORD_JSON_QS09 = "application/vnd.cora.record+json;qs=0.9";
+	private static final String APPLICATION_VND_CORA_RECORD_XML = "application/vnd.cora.record+xml";
+	private static final String APPLICATION_VND_CORA_RECORD_JSON = "application/vnd.cora.record+json";
+	private static final String APPLICATION_VND_CORA_RECORD_JSON_QS09 = "application/vnd.cora.record+json;qs=0.9";
 	private static final String MULTIPART_FORM_DATA = "multipart/form-data";
 	private static final String TEXT_PLAIN = "text/plain; charset=utf-8";
 	private static final String DUMMY_NON_AUTHORIZED_TOKEN = "dummyNonAuthorizedToken";
@@ -212,7 +212,7 @@ public class RecordEndpointUploadTest {
 		assertXmlConvertionOfResponse(uploadedFile);
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.OK);
-		assertResponseContentTypeIs(APPLICATION_VND_UUB_RECORD_XML);
+		assertResponseContentTypeIs(APPLICATION_VND_CORA_RECORD_XML);
 		assertEquals(response.getEntity(),
 				"fake string from ExternallyConvertibleToStringConverterSpy");
 	}
@@ -227,7 +227,7 @@ public class RecordEndpointUploadTest {
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("POST", "{type}/{id}/{resourceType}");
 		annotationHelper.assertConsumesAnnotation(MULTIPART_FORM_DATA);
-		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_JSON_QS09);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_CORA_RECORD_JSON_QS09);
 		annotationHelper.assertAnnotationForAuthTokensAndTypeAndIdParameters();
 		annotationHelper.assertFormDataParamAnnotationByNameAndPositionAndType("file", 4);
 		annotationHelper.assertPathParamAnnotationByNameAndPosition("resourceType", 5);
@@ -243,7 +243,7 @@ public class RecordEndpointUploadTest {
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("POST", "{type}/{id}/{resourceType}");
 		annotationHelper.assertConsumesAnnotation(MULTIPART_FORM_DATA);
-		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_XML);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_CORA_RECORD_XML);
 		annotationHelper.assertAnnotationForAuthTokensAndTypeAndIdParameters();
 		annotationHelper.assertFormDataParamAnnotationByNameAndPositionAndType("file", 4);
 		annotationHelper.assertPathParamAnnotationByNameAndPosition("resourceType", 5);
@@ -256,7 +256,7 @@ public class RecordEndpointUploadTest {
 		setUpSpiderInstanceProvider("factorUploader", uploaderSpy);
 
 		response = recordEndpoint.uploadResourceUsingAuthTokenWithStream(
-				APPLICATION_VND_UUB_RECORD_JSON, DUMMY_NON_AUTHORIZED_TOKEN, SOME_TYPE, SOME_ID,
+				APPLICATION_VND_CORA_RECORD_JSON, DUMMY_NON_AUTHORIZED_TOKEN, SOME_TYPE, SOME_ID,
 				inputStreamSpy, SOME_RESOURCE_TYPE);
 
 		assertResponseStatusIs(Response.Status.FORBIDDEN);

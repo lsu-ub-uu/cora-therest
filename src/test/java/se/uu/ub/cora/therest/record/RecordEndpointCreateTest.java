@@ -54,11 +54,11 @@ import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
 import se.uu.ub.cora.therest.AnnotationTestHelper;
 
 public class RecordEndpointCreateTest {
-	private static final String APPLICATION_VND_UUB_RECORDGROUP_XML = "application/vnd.cora.recordgroup+xml";
-	private static final String APPLICATION_VND_UUB_RECORDGROUP_JSON = "application/vnd.cora.recordgroup+json";
-	private static final String APPLICATION_VND_UUB_RECORD_XML = "application/vnd.cora.record+xml";
-	private static final String APPLICATION_VND_UUB_RECORD_JSON = "application/vnd.cora.record+json";
-	private static final String APPLICATION_VND_UUB_RECORD_JSON_QS09 = "application/vnd.cora.record+json;qs=0.9";
+	private static final String APPLICATION_VND_CORA_RECORDGROUP_XML = "application/vnd.cora.recordgroup+xml";
+	private static final String APPLICATION_VND_CORA_RECORDGROUP_JSON = "application/vnd.cora.recordgroup+json";
+	private static final String APPLICATION_VND_CORA_RECORD_XML = "application/vnd.cora.record+xml";
+	private static final String APPLICATION_VND_CORA_RECORD_JSON = "application/vnd.cora.record+json";
+	private static final String APPLICATION_VND_CORA_RECORD_JSON_QS09 = "application/vnd.cora.record+json;qs=0.9";
 	private static final String TEXT_PLAIN = "text/plain; charset=utf-8";
 	private static final String DUMMY_NON_AUTHORIZED_TOKEN = "dummyNonAuthorizedToken";
 	private static final String PLACE = "place";
@@ -260,7 +260,7 @@ public class RecordEndpointCreateTest {
 		assertXmlConvertionOfResponse(createdRecord);
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.CREATED);
-		assertResponseContentTypeIs(APPLICATION_VND_UUB_RECORD_XML);
+		assertResponseContentTypeIs(APPLICATION_VND_CORA_RECORD_XML);
 	}
 
 	@Test
@@ -278,7 +278,7 @@ public class RecordEndpointCreateTest {
 		assertDataFromSpiderConvertedToJsonUsingConvertersFromProvider(createdRecord);
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.CREATED);
-		assertResponseContentTypeIs(APPLICATION_VND_UUB_RECORD_JSON);
+		assertResponseContentTypeIs(APPLICATION_VND_CORA_RECORD_JSON);
 	}
 
 	@Test
@@ -296,7 +296,7 @@ public class RecordEndpointCreateTest {
 		assertXmlConvertionOfResponse(createdRecord);
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.CREATED);
-		assertResponseContentTypeIs(APPLICATION_VND_UUB_RECORD_XML);
+		assertResponseContentTypeIs(APPLICATION_VND_CORA_RECORD_XML);
 	}
 
 	@Test
@@ -306,8 +306,8 @@ public class RecordEndpointCreateTest {
 						recordEndpoint.getClass(), "createRecordJsonJson", 4);
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("POST", "{type}");
-		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORDGROUP_JSON);
-		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_JSON_QS09);
+		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_CORA_RECORDGROUP_JSON);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_CORA_RECORD_JSON_QS09);
 		annotationHelper.assertAnnotationForAuthTokensAndTypeParameters();
 	}
 
@@ -318,8 +318,8 @@ public class RecordEndpointCreateTest {
 						recordEndpoint.getClass(), "createRecordJsonXml", 4);
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("POST", "{type}");
-		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORDGROUP_JSON);
-		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_XML);
+		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_CORA_RECORDGROUP_JSON);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_CORA_RECORD_XML);
 		annotationHelper.assertAnnotationForAuthTokensAndTypeParameters();
 	}
 
@@ -330,8 +330,8 @@ public class RecordEndpointCreateTest {
 						recordEndpoint.getClass(), "createRecordXmlJson", 4);
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("POST", "{type}");
-		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORDGROUP_XML);
-		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_JSON_QS09);
+		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_CORA_RECORDGROUP_XML);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_CORA_RECORD_JSON_QS09);
 		annotationHelper.assertAnnotationForAuthTokensAndTypeParameters();
 	}
 
@@ -342,8 +342,8 @@ public class RecordEndpointCreateTest {
 						recordEndpoint.getClass(), "createRecordXmlXml", 4);
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("POST", "{type}");
-		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_UUB_RECORDGROUP_XML);
-		annotationHelper.assertProducesAnnotation(APPLICATION_VND_UUB_RECORD_XML);
+		annotationHelper.assertConsumesAnnotation(APPLICATION_VND_CORA_RECORDGROUP_XML);
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_CORA_RECORD_XML);
 		annotationHelper.assertAnnotationForAuthTokensAndTypeParameters();
 	}
 
