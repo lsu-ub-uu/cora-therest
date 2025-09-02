@@ -44,7 +44,7 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.HttpUpgradeHandler;
 import jakarta.servlet.http.Part;
 
-public class HttpServletRequestSpy implements HttpServletRequest {
+public class HttpServletRequestOldSpy implements HttpServletRequest {
 	public Map<String, String> headers = new HashMap<>();
 	public StringBuffer requestURL;
 

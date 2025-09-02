@@ -1,0 +1,53 @@
+/*
+ * Copyright 2025 Uppsala University Library
+ *
+ * This file is part of Cora.
+ *
+ *     Cora is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     Cora is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package se.uu.ub.cora.therest.dependency;
+
+import se.uu.ub.cora.therest.record.EndpointDecoratedReader;
+import se.uu.ub.cora.therest.url.UrlHandler;
+
+public final class TheRestInstanceProvider {
+	private static TheRestInstanceFactory factory = new TheRestInstanceFactoryImp();
+
+	private TheRestInstanceProvider() {
+		// not called
+		throw new UnsupportedOperationException();
+	}
+
+	public static UrlHandler getUrlHandler() {
+		return factory.factorUrlHandler();
+	}
+
+	public static EndpointDecoratedReader getDecoratedReader() {
+		return factory.createDecoratedReader();
+	}
+
+	public static void onlyForTestSetTheRestInstanceFactory(TheRestInstanceFactory factory) {
+		TheRestInstanceProvider.factory = factory;
+	}
+
+	public static TheRestInstanceFactory onlyForTestGetTheRestInstanceFactory() {
+		return factory;
+	}
+
+	public static void onlyForTestResetTheRestInstanceFactory() {
+		factory = new TheRestInstanceFactoryImp();
+	}
+
+}

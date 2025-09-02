@@ -24,8 +24,6 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -41,7 +39,6 @@ import se.uu.ub.cora.data.DataRecord;
 import se.uu.ub.cora.data.converter.DataToJsonConverterProvider;
 import se.uu.ub.cora.data.converter.JsonToDataConverterProvider;
 import se.uu.ub.cora.data.spies.DataFactorySpy;
-import se.uu.ub.cora.initialize.SettingsProvider;
 import se.uu.ub.cora.logger.LoggerProvider;
 import se.uu.ub.cora.logger.spies.LoggerFactorySpy;
 import se.uu.ub.cora.spider.authorization.AuthorizationException;
@@ -53,7 +50,10 @@ import se.uu.ub.cora.spider.record.RecordNotFoundException;
 import se.uu.ub.cora.spider.spies.SpiderInstanceFactorySpy;
 import se.uu.ub.cora.spider.spies.UploaderSpy;
 import se.uu.ub.cora.therest.AnnotationTestHelper;
+import se.uu.ub.cora.therest.dependency.TheRestInstanceFactorySpy;
+import se.uu.ub.cora.therest.dependency.TheRestInstanceProvider;
 import se.uu.ub.cora.therest.spy.InputStreamSpy;
+import se.uu.ub.cora.therest.url.UrlHandlerSpy;
 
 public class RecordEndpointUploadTest {
 	private static final String APPLICATION_VND_CORA_RECORD_XML = "application/vnd.cora.record+xml";
@@ -72,17 +72,16 @@ public class RecordEndpointUploadTest {
 	private RecordEndpointUpload recordEndpoint;
 	private OldSpiderInstanceFactorySpy spiderInstanceFactorySpy;
 	private Response response;
-	private HttpServletRequestSpy requestSpy;
+	private HttpServletRequestOldSpy requestSpy;
 	private LoggerFactorySpy loggerFactorySpy;
 	private DataFactorySpy dataFactorySpy;
 
 	private DataToJsonConverterFactoryCreatorSpy converterFactoryCreatorSpy;
 	private ConverterFactorySpy converterFactorySpy;
-	private String standardBaseUrlHttp = "http://cora.epc.ub.uu.se/systemone/rest/record/";
-	private String standardIffUrlHttp = "http://cora.epc.ub.uu.se/systemone/iiif/";
 	private InputStreamSpy inputStreamSpy;
 	private UploaderSpy uploaderSpy;
 	private StringToExternallyConvertibleConverterSpy stringToExternallyConvertibleConverterSpy;
+	private TheRestInstanceFactorySpy instanceFactory;
 
 	@BeforeMethod
 	public void beforeMethod() {
@@ -90,6 +89,7 @@ public class RecordEndpointUploadTest {
 		LoggerProvider.setLoggerFactory(loggerFactorySpy);
 		dataFactorySpy = new DataFactorySpy();
 		DataProvider.onlyForTestSetDataFactory(dataFactorySpy);
+		setupUrlHandler();
 
 		converterFactoryCreatorSpy = new DataToJsonConverterFactoryCreatorSpy();
 		DataToJsonConverterProvider
@@ -110,13 +110,13 @@ public class RecordEndpointUploadTest {
 		inputStreamSpy = new InputStreamSpy();
 		uploaderSpy = new UploaderSpy();
 
-		Map<String, String> settings = new HashMap<>();
-		settings.put("theRestPublicPathToSystem", "/systemone/rest/");
-		settings.put("iiifPublicPathToSystem", "/systemone/iiif/");
-		SettingsProvider.setSettings(settings);
-
-		requestSpy = new HttpServletRequestSpy();
+		requestSpy = new HttpServletRequestOldSpy();
 		recordEndpoint = new RecordEndpointUpload(requestSpy);
+	}
+
+	private void setupUrlHandler() {
+		instanceFactory = new TheRestInstanceFactorySpy();
+		TheRestInstanceProvider.onlyForTestSetTheRestInstanceFactory(instanceFactory);
 	}
 
 	@Test
@@ -130,6 +130,41 @@ public class RecordEndpointUploadTest {
 				.createAnnotationTestHelperForClass(RecordEndpointUpdate.class);
 
 		annotationHelper.assertPathAnnotationForClass("/");
+	}
+
+	@Test
+	public void testUrlsHandledByUrlHandler() {
+		setUpSpiderInstanceProvider("factorUploader", uploaderSpy);
+
+		response = recordEndpoint.uploadResourceJson(AUTH_TOKEN, AUTH_TOKEN, SOME_TYPE, SOME_ID,
+				inputStreamSpy, SOME_RESOURCE_TYPE);
+
+		UrlHandlerSpy urlHandler = (UrlHandlerSpy) instanceFactory.MCR
+				.getReturnValue("factorUrlHandler", 0);
+
+		var restUrl = urlHandler.MCR.assertCalledParametersReturn("getRestUrl", requestSpy);
+		var iiifUrl = urlHandler.MCR.assertCalledParametersReturn("getIiifUrl", requestSpy);
+
+		assertEquals(restUrl, getRestUrlFromFactorUsingConvertibleAndExternalUrls());
+		assertEquals(iiifUrl, getIiifUrlFromFactorUsingConvertibleAndExternalUrls());
+	}
+
+	private String getRestUrlFromFactorUsingConvertibleAndExternalUrls() {
+		DataToJsonConverterFactorySpy converterFactory = (DataToJsonConverterFactorySpy) converterFactoryCreatorSpy.MCR
+				.getReturnValue("createFactory", 0);
+		se.uu.ub.cora.data.converter.ExternalUrls externalUrls = (se.uu.ub.cora.data.converter.ExternalUrls) converterFactory.MCR
+				.getParameterForMethodAndCallNumberAndParameter(
+						"factorUsingConvertibleAndExternalUrls", 0, "externalUrls");
+		return externalUrls.getBaseUrl();
+	}
+
+	private String getIiifUrlFromFactorUsingConvertibleAndExternalUrls() {
+		DataToJsonConverterFactorySpy converterFactory = (DataToJsonConverterFactorySpy) converterFactoryCreatorSpy.MCR
+				.getReturnValue("createFactory", 0);
+		se.uu.ub.cora.data.converter.ExternalUrls externalUrls = (se.uu.ub.cora.data.converter.ExternalUrls) converterFactory.MCR
+				.getParameterForMethodAndCallNumberAndParameter(
+						"factorUsingConvertibleAndExternalUrls", 0, "externalUrls");
+		return externalUrls.getIfffUrl();
 	}
 
 	private void assertEntityExists() {
@@ -148,12 +183,10 @@ public class RecordEndpointUploadTest {
 		ExternallyConvertibleToStringConverterSpy dataToXmlConverter = (ExternallyConvertibleToStringConverterSpy) converterFactorySpy.MCR
 				.getReturnValue("factorExternallyConvertableToStringConverter", 0);
 
-		dataToXmlConverter.MCR.assertParameters("convertWithLinks", 0, convertible);
 		ExternalUrls externalUrls = (ExternalUrls) dataToXmlConverter.MCR
 				.getParameterForMethodAndCallNumberAndParameter("convertWithLinks", 0,
 						"externalUrls");
-		assertEquals(externalUrls.getBaseUrl(), standardBaseUrlHttp);
-		assertEquals(externalUrls.getIfffUrl(), standardIffUrlHttp);
+		dataToXmlConverter.MCR.assertParameters("convertWithLinks", 0, convertible, externalUrls);
 
 		var entity = response.getEntity();
 		dataToXmlConverter.MCR.assertReturn("convertWithLinks", 0, entity);

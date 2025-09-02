@@ -26,6 +26,8 @@ import org.testng.annotations.Test;
 
 import jakarta.ws.rs.core.Response;
 import se.uu.ub.cora.therest.AnnotationTestHelper;
+import se.uu.ub.cora.therest.dependency.TheRestInstanceFactorySpy;
+import se.uu.ub.cora.therest.dependency.TheRestInstanceProvider;
 
 public class RecordEndpointReadDecoratedTest {
 	private static final String APPLICATION_VND_CORA_RECORD_DECORATED_XML_QS09 = "application/vnd.cora.record-decorated+xml;qs=0.9";
@@ -34,23 +36,22 @@ public class RecordEndpointReadDecoratedTest {
 	private static final String APPLICATION_VND_CORA_RECORD_DECORATED_JSON = "application/vnd.cora.record-decorated+json";
 
 	private RecordEndpointReadDecorated recordEndpoint;
-	private HttpServletRequestSpy requestSpy;
-	private RecordEndpointDependencyFactorySpy depFactory;
+	private HttpServletRequestOldSpy requestSpy;
+	private TheRestInstanceFactorySpy factory;
 
 	@BeforeMethod
 	public void beforeMethod() {
 
-		depFactory = new RecordEndpointDependencyFactorySpy();
-		RecordEndpointDependencyProvider.onlyForTestSetFactory(depFactory);
+		factory = new TheRestInstanceFactorySpy();
+		TheRestInstanceProvider.onlyForTestSetTheRestInstanceFactory(factory);
 
-		requestSpy = new HttpServletRequestSpy();
+		requestSpy = new HttpServletRequestOldSpy();
 		recordEndpoint = new RecordEndpointReadDecorated(requestSpy);
 	}
 
 	@AfterMethod
 	public void afterMethod() {
-		RecordEndpointDependencyProvider
-				.onlyForTestSetFactory(new RecordEndpointDependencyFactoryImp());
+		TheRestInstanceProvider.onlyForTestResetTheRestInstanceFactory();
 	}
 
 	@Test
@@ -103,7 +104,7 @@ public class RecordEndpointReadDecoratedTest {
 	}
 
 	private void assertCallDecorateReader(String accept, Response response) {
-		var decoratedReader = (EndpointDecoratedReaderSpy) depFactory.MCR
+		var decoratedReader = (EndpointDecoratedReaderSpy) factory.MCR
 				.assertCalledParametersReturn("createDecoratedReader");
 
 		decoratedReader.MCR.assertParameters("readAndDecorateRecord", 0, requestSpy, accept,

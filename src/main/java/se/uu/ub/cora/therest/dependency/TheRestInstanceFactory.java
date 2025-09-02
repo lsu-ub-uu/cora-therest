@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Olov McKie
+ * Copyright 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -16,24 +16,21 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.therest.record;
 
-public class RecordEndpointDependencyProvider {
+package se.uu.ub.cora.therest.dependency;
 
-	private static RecordEndpointDependencyFactory depFactory = new RecordEndpointDependencyFactoryImp();
+import se.uu.ub.cora.therest.record.EndpointDecoratedReader;
+import se.uu.ub.cora.therest.url.UrlHandler;
 
-	RecordEndpointDependencyProvider() {
-	}
+public interface TheRestInstanceFactory {
 
-	public static EndpointDecoratedReader getDecoratedReader() {
-		return depFactory.createDecoratedReader();
-	}
+	/**
+	 * factorUrlHandler factors a new UrlHandler
+	 * 
+	 * @return the newly created UrlHandler
+	 */
+	UrlHandler factorUrlHandler();
 
-	public static void onlyForTestSetFactory(RecordEndpointDependencyFactory depFactory) {
-		RecordEndpointDependencyProvider.depFactory = depFactory;
-	}
+	EndpointDecoratedReader createDecoratedReader();
 
-	public static RecordEndpointDependencyFactory onlyForTestGetFactory() {
-		return depFactory;
-	}
 }

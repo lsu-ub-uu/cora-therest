@@ -22,20 +22,13 @@ package se.uu.ub.cora.therest.record;
 
 import static org.testng.Assert.assertEquals;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
-import se.uu.ub.cora.converter.ConverterProvider;
 import se.uu.ub.cora.data.DataProvider;
-import se.uu.ub.cora.data.converter.DataToJsonConverterProvider;
-import se.uu.ub.cora.data.converter.JsonToDataConverterProvider;
 import se.uu.ub.cora.data.spies.DataFactorySpy;
-import se.uu.ub.cora.initialize.SettingsProvider;
 import se.uu.ub.cora.logger.LoggerProvider;
 import se.uu.ub.cora.logger.spies.LoggerFactorySpy;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
@@ -47,18 +40,12 @@ public class RecordEndpointDeleteTest {
 	private static final String PLACE = "place";
 	private static final String AUTH_TOKEN = "authToken";
 
-	private JsonToDataConverterFactorySpy jsonToDataConverterFactorySpy = new JsonToDataConverterFactorySpy();
-
 	private RecordEndpointDelete recordEndpoint;
 	private OldSpiderInstanceFactorySpy spiderInstanceFactorySpy;
 	private Response response;
-	private HttpServletRequestSpy requestSpy;
+	private HttpServletRequestOldSpy requestSpy;
 	private LoggerFactorySpy loggerFactorySpy;
 	private DataFactorySpy dataFactorySpy;
-
-	private DataToJsonConverterFactoryCreatorSpy converterFactoryCreatorSpy;
-	private ConverterFactorySpy converterFactorySpy;
-	private StringToExternallyConvertibleConverterSpy stringToExternallyConvertibleConverterSpy;
 
 	@BeforeMethod
 	public void beforeMethod() {
@@ -67,28 +54,10 @@ public class RecordEndpointDeleteTest {
 		dataFactorySpy = new DataFactorySpy();
 		DataProvider.onlyForTestSetDataFactory(dataFactorySpy);
 
-		converterFactoryCreatorSpy = new DataToJsonConverterFactoryCreatorSpy();
-		DataToJsonConverterProvider
-				.setDataToJsonConverterFactoryCreator(converterFactoryCreatorSpy);
-
-		stringToExternallyConvertibleConverterSpy = new StringToExternallyConvertibleConverterSpy();
-		converterFactorySpy = new ConverterFactorySpy();
-		converterFactorySpy.MRV.setDefaultReturnValuesSupplier(
-				"factorStringToExternallyConvertableConverter",
-				() -> stringToExternallyConvertibleConverterSpy);
-		ConverterProvider.setConverterFactory("xml", converterFactorySpy);
-
-		jsonToDataConverterFactorySpy = new JsonToDataConverterFactorySpy();
-		JsonToDataConverterProvider.setJsonToDataConverterFactory(jsonToDataConverterFactorySpy);
 		spiderInstanceFactorySpy = new OldSpiderInstanceFactorySpy();
 		SpiderInstanceProvider.setSpiderInstanceFactory(spiderInstanceFactorySpy);
 
-		Map<String, String> settings = new HashMap<>();
-		settings.put("theRestPublicPathToSystem", "/systemone/rest/");
-		settings.put("iiifPublicPathToSystem", "/systemone/iiif/");
-		SettingsProvider.setSettings(settings);
-
-		requestSpy = new HttpServletRequestSpy();
+		requestSpy = new HttpServletRequestOldSpy();
 		recordEndpoint = new RecordEndpointDelete(requestSpy);
 	}
 

@@ -27,48 +27,48 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import se.uu.ub.cora.converter.ConverterProvider;
-import se.uu.ub.cora.converter.ExternalUrls;
 import se.uu.ub.cora.data.ExternallyConvertible;
 import se.uu.ub.cora.data.converter.DataToJsonConverterProvider;
 import se.uu.ub.cora.data.converter.JsonToDataConverterProvider;
 import se.uu.ub.cora.initialize.SettingsProvider;
 import se.uu.ub.cora.logger.LoggerProvider;
 import se.uu.ub.cora.logger.spies.LoggerFactorySpy;
+import se.uu.ub.cora.therest.dependency.TheRestInstanceFactorySpy;
+import se.uu.ub.cora.therest.dependency.TheRestInstanceProvider;
 import se.uu.ub.cora.therest.record.ConverterFactorySpy;
 import se.uu.ub.cora.therest.record.DataToJsonConverterFactoryCreatorSpy;
 import se.uu.ub.cora.therest.record.DataToJsonConverterFactorySpy;
 import se.uu.ub.cora.therest.record.DataToJsonConverterSpy;
 import se.uu.ub.cora.therest.record.ExternallyConvertibleToStringConverterSpy;
-import se.uu.ub.cora.therest.record.HttpServletRequestSpy;
+import se.uu.ub.cora.therest.record.HttpServletRequestOldSpy;
 import se.uu.ub.cora.therest.record.JsonToDataConverterFactorySpy;
 import se.uu.ub.cora.therest.record.StringToExternallyConvertibleConverterSpy;
+import se.uu.ub.cora.therest.url.UrlHandlerSpy;
 
 public class EndpointConverterTest {
 	private static final String ACCEPT_XML = "application/vnd.cora.record-decorated+xml";
 	private static final String ACCEPT_JSON = "application/vnd.cora.record-decorated+json";
 	private EndpointConverter converter;
-	private HttpServletRequestSpy requestSpy;
+	private HttpServletRequestOldSpy requestSpy;
 	private DataToJsonConverterFactoryCreatorSpy converterFactoryCreatorSpy;
 	private JsonToDataConverterFactorySpy jsonToDataConverterFactorySpy;
 	private ConverterFactorySpy converterFactorySpy;
-	private String standardBaseUrlHttp = "http://cora.epc.ub.uu.se/systemone/rest/record/";
-	private String standardBaseUrlHttps = "https://cora.epc.ub.uu.se/systemone/rest/record/";
-	private String standardIffUrlHttp = "http://cora.epc.ub.uu.se/systemone/iiif/";
-	private String standardIffUrlHttps = "https://cora.epc.ub.uu.se/systemone/iiif/";
 	private StringToExternallyConvertibleConverterSpy stringToExternallyConvertibleConverterSpy;
 	private ExternallyConvertible externallyConvertable;
+	private TheRestInstanceFactorySpy instanceFactory;
 
 	@BeforeMethod
 	public void beforeMethod() {
 		LoggerFactorySpy loggerFactory = new LoggerFactorySpy();
 		LoggerProvider.setLoggerFactory(loggerFactory);
+		setupUrlHandler();
 
 		Map<String, String> settings = new HashMap<>();
 		settings.put("theRestPublicPathToSystem", "/systemone/rest/");
 		settings.put("iiifPublicPathToSystem", "/systemone/iiif/");
 		SettingsProvider.setSettings(settings);
 
-		requestSpy = new HttpServletRequestSpy();
+		requestSpy = new HttpServletRequestOldSpy();
 
 		converterFactoryCreatorSpy = new DataToJsonConverterFactoryCreatorSpy();
 		DataToJsonConverterProvider
@@ -89,40 +89,41 @@ public class EndpointConverterTest {
 		converter = new EndpointConverterImp();
 	}
 
-	@Test
-	public void testXForwardedProtoHttpsJson() {
-		requestSpy.headers.put("X-Forwarded-Proto", "https");
-
-		converter.convertConvertibleToString(requestSpy, ACCEPT_JSON, externallyConvertable);
-
-		assertHttpsInUrlsForJsonConverter();
+	private void setupUrlHandler() {
+		instanceFactory = new TheRestInstanceFactorySpy();
+		TheRestInstanceProvider.onlyForTestSetTheRestInstanceFactory(instanceFactory);
 	}
 
 	@Test
-	public void testXForwardedProtoHttpsWhenAlreadyHttpsInRequestUrlJson() {
-		requestSpy.headers.put("X-Forwarded-Proto", "https");
-		requestSpy.requestURL = new StringBuffer(
-				"https://cora.epc.ub.uu.se/systemone/rest/record/text/");
-
+	public void testUrlsHandledByUrlHandler() {
 		converter.convertConvertibleToString(requestSpy, ACCEPT_JSON, externallyConvertable);
 
-		assertHttpsInUrlsForJsonConverter();
+		UrlHandlerSpy urlHandler = (UrlHandlerSpy) instanceFactory.MCR
+				.getReturnValue("factorUrlHandler", 0);
+
+		var restUrl = urlHandler.MCR.assertCalledParametersReturn("getRestUrl", requestSpy);
+		var iiifUrl = urlHandler.MCR.assertCalledParametersReturn("getIiifUrl", requestSpy);
+
+		assertEquals(restUrl, getRestUrlFromFactorUsingConvertibleAndExternalUrls());
+		assertEquals(iiifUrl, getIiifUrlFromFactorUsingConvertibleAndExternalUrls());
 	}
 
-	@Test
-	public void testXForwardedProtoEmptyJson() {
-		requestSpy.headers.put("X-Forwarded-Proto", "");
-
-		converter.convertConvertibleToString(requestSpy, ACCEPT_JSON, externallyConvertable);
-
-		assertHttpInUrlsForJsonConverter();
+	private String getRestUrlFromFactorUsingConvertibleAndExternalUrls() {
+		DataToJsonConverterFactorySpy converterFactory = (DataToJsonConverterFactorySpy) converterFactoryCreatorSpy.MCR
+				.getReturnValue("createFactory", 0);
+		se.uu.ub.cora.data.converter.ExternalUrls externalUrls = (se.uu.ub.cora.data.converter.ExternalUrls) converterFactory.MCR
+				.getParameterForMethodAndCallNumberAndParameter(
+						"factorUsingConvertibleAndExternalUrls", 0, "externalUrls");
+		return externalUrls.getBaseUrl();
 	}
 
-	@Test
-	public void testXForwardedProtoMissingJson() {
-		converter.convertConvertibleToString(requestSpy, ACCEPT_JSON, externallyConvertable);
-
-		assertHttpInUrlsForJsonConverter();
+	private String getIiifUrlFromFactorUsingConvertibleAndExternalUrls() {
+		DataToJsonConverterFactorySpy converterFactory = (DataToJsonConverterFactorySpy) converterFactoryCreatorSpy.MCR
+				.getReturnValue("createFactory", 0);
+		se.uu.ub.cora.data.converter.ExternalUrls externalUrls = (se.uu.ub.cora.data.converter.ExternalUrls) converterFactory.MCR
+				.getParameterForMethodAndCallNumberAndParameter(
+						"factorUsingConvertibleAndExternalUrls", 0, "externalUrls");
+		return externalUrls.getIfffUrl();
 	}
 
 	@Test
@@ -131,37 +132,6 @@ public class EndpointConverterTest {
 				externallyConvertable);
 
 		assertConverterCalledAndReturnedJsonValueIs(convertedJson);
-	}
-
-	private void assertHttpsInUrlsForJsonConverter() {
-		assertEquals(getBaseUrlsFromJsonFactorUsingConvertibleAndExternalUrls(),
-				standardBaseUrlHttps);
-		assertEquals(getIiifUrlFromJsonFactorUsingConvertibleAndExternalUrls(),
-				standardIffUrlHttps);
-	}
-
-	private void assertHttpInUrlsForJsonConverter() {
-		assertEquals(getBaseUrlsFromJsonFactorUsingConvertibleAndExternalUrls(),
-				standardBaseUrlHttp);
-		assertEquals(getIiifUrlFromJsonFactorUsingConvertibleAndExternalUrls(), standardIffUrlHttp);
-	}
-
-	private String getBaseUrlsFromJsonFactorUsingConvertibleAndExternalUrls() {
-		se.uu.ub.cora.data.converter.ExternalUrls externalUrls = getExternalUrlsForJson();
-		return externalUrls.getBaseUrl();
-	}
-
-	private se.uu.ub.cora.data.converter.ExternalUrls getExternalUrlsForJson() {
-		var converterFactory = (DataToJsonConverterFactorySpy) converterFactoryCreatorSpy.MCR
-				.getReturnValue("createFactory", 0);
-		return (se.uu.ub.cora.data.converter.ExternalUrls) converterFactory.MCR
-				.getParameterForMethodAndCallNumberAndParameter(
-						"factorUsingConvertibleAndExternalUrls", 0, "externalUrls");
-	}
-
-	private String getIiifUrlFromJsonFactorUsingConvertibleAndExternalUrls() {
-		se.uu.ub.cora.data.converter.ExternalUrls externalUrls = getExternalUrlsForJson();
-		return externalUrls.getIfffUrl();
 	}
 
 	private void assertConverterCalledAndReturnedJsonValueIs(String convertedJson) {
@@ -175,77 +145,11 @@ public class EndpointConverterTest {
 	}
 
 	@Test
-	public void testXForwardedProtoHttpsXML() {
-		requestSpy.headers.put("X-Forwarded-Proto", "https");
-
-		converter.convertConvertibleToString(requestSpy, ACCEPT_XML, externallyConvertable);
-
-		assertHttpsInUrlsForXMLConverter();
-	}
-
-	@Test
-	public void testXForwardedProtoHttpsWhenAlreadyHttpsInRequestUrlXML() {
-		requestSpy.headers.put("X-Forwarded-Proto", "https");
-		requestSpy.requestURL = new StringBuffer(
-				"https://cora.epc.ub.uu.se/systemone/rest/record/text/");
-
-		converter.convertConvertibleToString(requestSpy, ACCEPT_XML, externallyConvertable);
-
-		assertHttpsInUrlsForXMLConverter();
-	}
-
-	@Test
-	public void testXForwardedProtoEmptyXML() {
-		requestSpy.headers.put("X-Forwarded-Proto", "");
-
-		converter.convertConvertibleToString(requestSpy, ACCEPT_XML, externallyConvertable);
-
-		assertHttpInUrlsForXMLConverter();
-	}
-
-	@Test
-	public void testXForwardedProtoMissingXML() {
-		converter.convertConvertibleToString(requestSpy, ACCEPT_XML, externallyConvertable);
-
-		assertHttpInUrlsForXMLConverter();
-	}
-
-	@Test
 	public void testConvertedDataIsReturnedXML() {
 		String convertedXML = converter.convertConvertibleToString(requestSpy, ACCEPT_XML,
 				externallyConvertable);
 
 		assertConverterCalledAndReturnedXMLValueIs(convertedXML);
-	}
-
-	private void assertHttpsInUrlsForXMLConverter() {
-		assertEquals(getBaseUrlsFromXMLFactorUsingConvertibleAndExternalUrls(),
-				standardBaseUrlHttps);
-		assertEquals(getIiifUrlFromXMLFactorUsingConvertibleAndExternalUrls(), standardIffUrlHttps);
-	}
-
-	private void assertHttpInUrlsForXMLConverter() {
-		assertEquals(getBaseUrlsFromXMLFactorUsingConvertibleAndExternalUrls(),
-				standardBaseUrlHttp);
-		assertEquals(getIiifUrlFromXMLFactorUsingConvertibleAndExternalUrls(), standardIffUrlHttp);
-	}
-
-	private String getBaseUrlsFromXMLFactorUsingConvertibleAndExternalUrls() {
-		ExternalUrls externalUrls = getExternalUrlsForXML();
-		return externalUrls.getBaseUrl();
-	}
-
-	private ExternalUrls getExternalUrlsForXML() {
-		ExternallyConvertibleToStringConverterSpy dataToXmlConverter = (ExternallyConvertibleToStringConverterSpy) converterFactorySpy.MCR
-				.getReturnValue("factorExternallyConvertableToStringConverter", 0);
-
-		return (ExternalUrls) dataToXmlConverter.MCR.getParameterForMethodAndCallNumberAndParameter(
-				"convertWithLinks", 0, "externalUrls");
-	}
-
-	private String getIiifUrlFromXMLFactorUsingConvertibleAndExternalUrls() {
-		ExternalUrls externalUrls = getExternalUrlsForXML();
-		return externalUrls.getIfffUrl();
 	}
 
 	private void assertConverterCalledAndReturnedXMLValueIs(String convertedXML) {

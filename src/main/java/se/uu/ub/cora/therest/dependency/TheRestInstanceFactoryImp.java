@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Olov McKie
+ * Copyright 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -16,22 +16,26 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.therest.record;
 
-import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
-import se.uu.ub.cora.testutils.mrv.MethodReturnValues;
+package se.uu.ub.cora.therest.dependency;
 
-public class RecordEndpointDependencyFactorySpy implements RecordEndpointDependencyFactory {
-	public MethodReturnValues MRV = new MethodReturnValues();
-	public MethodCallRecorder MCR = new MethodCallRecorder();
+import se.uu.ub.cora.therest.converter.EndpointConverterImp;
+import se.uu.ub.cora.therest.error.ErrorHandlerImp;
+import se.uu.ub.cora.therest.record.EndpointDecoratedReader;
+import se.uu.ub.cora.therest.record.EndpointDecoratedReaderImp;
+import se.uu.ub.cora.therest.url.UrlHandler;
+import se.uu.ub.cora.therest.url.UrlHandlerImp;
 
-	public RecordEndpointDependencyFactorySpy() {
-		MCR.useMRV(MRV);
-		MRV.setDefaultReturnValuesSupplier("createDecoratedReader", EndpointDecoratedReaderSpy::new);
+public final class TheRestInstanceFactoryImp implements TheRestInstanceFactory {
+
+	@Override
+	public UrlHandler factorUrlHandler() {
+		return new UrlHandlerImp();
 	}
 
 	@Override
 	public EndpointDecoratedReader createDecoratedReader() {
-		return (EndpointDecoratedReader) MCR.addCallAndReturnFromMRV();
+		return new EndpointDecoratedReaderImp(new EndpointConverterImp(), new ErrorHandlerImp());
 	}
+
 }

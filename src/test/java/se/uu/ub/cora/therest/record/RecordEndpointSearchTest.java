@@ -25,9 +25,6 @@ import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -43,12 +40,14 @@ import se.uu.ub.cora.data.DataProvider;
 import se.uu.ub.cora.data.converter.DataToJsonConverterProvider;
 import se.uu.ub.cora.data.converter.JsonToDataConverterProvider;
 import se.uu.ub.cora.data.spies.DataFactorySpy;
-import se.uu.ub.cora.initialize.SettingsProvider;
 import se.uu.ub.cora.json.parser.org.OrgJsonParser;
 import se.uu.ub.cora.logger.LoggerProvider;
 import se.uu.ub.cora.logger.spies.LoggerFactorySpy;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
 import se.uu.ub.cora.therest.AnnotationTestHelper;
+import se.uu.ub.cora.therest.dependency.TheRestInstanceFactorySpy;
+import se.uu.ub.cora.therest.dependency.TheRestInstanceProvider;
+import se.uu.ub.cora.therest.url.UrlHandlerSpy;
 
 public class RecordEndpointSearchTest {
 	private static final String APPLICATION_VND_CORA_RECORD_LIST_XML = "application/vnd.cora.recordList+xml";
@@ -63,7 +62,7 @@ public class RecordEndpointSearchTest {
 	private RecordEndpointSearch recordEndpoint;
 	private OldSpiderInstanceFactorySpy spiderInstanceFactorySpy;
 	private Response response;
-	private HttpServletRequestSpy requestSpy;
+	private HttpServletRequestOldSpy requestSpy;
 	private LoggerFactorySpy loggerFactorySpy;
 	private DataFactorySpy dataFactorySpy;
 
@@ -71,9 +70,8 @@ public class RecordEndpointSearchTest {
 	private String defaultXml = "<someXml></someXml>";
 	private DataToJsonConverterFactoryCreatorSpy converterFactoryCreatorSpy;
 	private ConverterFactorySpy converterFactorySpy;
-	private String standardBaseUrlHttp = "http://cora.epc.ub.uu.se/systemone/rest/record/";
-	private String standardIffUrlHttp = "http://cora.epc.ub.uu.se/systemone/iiif/";
 	private StringToExternallyConvertibleConverterSpy stringToExternallyConvertibleConverterSpy;
+	private TheRestInstanceFactorySpy instanceFactory;
 
 	@BeforeMethod
 	public void beforeMethod() {
@@ -81,6 +79,7 @@ public class RecordEndpointSearchTest {
 		LoggerProvider.setLoggerFactory(loggerFactorySpy);
 		dataFactorySpy = new DataFactorySpy();
 		DataProvider.onlyForTestSetDataFactory(dataFactorySpy);
+		setupUrlHandler();
 
 		converterFactoryCreatorSpy = new DataToJsonConverterFactoryCreatorSpy();
 		DataToJsonConverterProvider
@@ -98,15 +97,15 @@ public class RecordEndpointSearchTest {
 		spiderInstanceFactorySpy = new OldSpiderInstanceFactorySpy();
 		SpiderInstanceProvider.setSpiderInstanceFactory(spiderInstanceFactorySpy);
 
-		Map<String, String> settings = new HashMap<>();
-		settings.put("theRestPublicPathToSystem", "/systemone/rest/");
-		settings.put("iiifPublicPathToSystem", "/systemone/iiif/");
-		SettingsProvider.setSettings(settings);
-
-		requestSpy = new HttpServletRequestSpy();
+		requestSpy = new HttpServletRequestOldSpy();
 		recordEndpoint = new RecordEndpointSearch(requestSpy);
 
 		setUpSpiesInRecordEndpoint();
+	}
+
+	private void setupUrlHandler() {
+		instanceFactory = new TheRestInstanceFactorySpy();
+		TheRestInstanceProvider.onlyForTestSetTheRestInstanceFactory(instanceFactory);
 	}
 
 	private void setUpSpiesInRecordEndpoint() {
@@ -129,6 +128,39 @@ public class RecordEndpointSearchTest {
 		annotationHelper.assertPathAnnotationForClass("/");
 	}
 
+	@Test
+	public void testUrlsHandledByUrlHandler() {
+		response = recordEndpoint.searchRecordJson(AUTH_TOKEN, AUTH_TOKEN, "aSearchId",
+				defaultJson);
+
+		UrlHandlerSpy urlHandler = (UrlHandlerSpy) instanceFactory.MCR
+				.getReturnValue("factorUrlHandler", 0);
+
+		var restUrl = urlHandler.MCR.assertCalledParametersReturn("getRestUrl", requestSpy);
+		var iiifUrl = urlHandler.MCR.assertCalledParametersReturn("getIiifUrl", requestSpy);
+
+		assertEquals(restUrl, getRestUrlFromFactorUsingConvertibleAndExternalUrls());
+		assertEquals(iiifUrl, getIiifUrlFromFactorUsingConvertibleAndExternalUrls());
+	}
+
+	private String getRestUrlFromFactorUsingConvertibleAndExternalUrls() {
+		DataToJsonConverterFactorySpy converterFactory = (DataToJsonConverterFactorySpy) converterFactoryCreatorSpy.MCR
+				.getReturnValue("createFactory", 0);
+		se.uu.ub.cora.data.converter.ExternalUrls externalUrls = (se.uu.ub.cora.data.converter.ExternalUrls) converterFactory.MCR
+				.getParameterForMethodAndCallNumberAndParameter(
+						"factorUsingConvertibleAndExternalUrls", 0, "externalUrls");
+		return externalUrls.getBaseUrl();
+	}
+
+	private String getIiifUrlFromFactorUsingConvertibleAndExternalUrls() {
+		DataToJsonConverterFactorySpy converterFactory = (DataToJsonConverterFactorySpy) converterFactoryCreatorSpy.MCR
+				.getReturnValue("createFactory", 0);
+		se.uu.ub.cora.data.converter.ExternalUrls externalUrls = (se.uu.ub.cora.data.converter.ExternalUrls) converterFactory.MCR
+				.getParameterForMethodAndCallNumberAndParameter(
+						"factorUsingConvertibleAndExternalUrls", 0, "externalUrls");
+		return externalUrls.getIfffUrl();
+	}
+
 	private void assertEntityExists() {
 		assertNotNull(response.getEntity(), "An entity should be returned");
 	}
@@ -146,13 +178,11 @@ public class RecordEndpointSearchTest {
 		DataToJsonConverterFactorySpy converterFactory = (DataToJsonConverterFactorySpy) converterFactoryCreatorSpy.MCR
 				.getReturnValue("createFactory", 0);
 
-		converterFactory.MCR.assertParameters("factorUsingConvertibleAndExternalUrls", 0,
-				convertible);
 		se.uu.ub.cora.data.converter.ExternalUrls externalUrls = (se.uu.ub.cora.data.converter.ExternalUrls) converterFactory.MCR
 				.getParameterForMethodAndCallNumberAndParameter(
 						"factorUsingConvertibleAndExternalUrls", 0, "externalUrls");
-		assertEquals(externalUrls.getBaseUrl(), standardBaseUrlHttp);
-		assertEquals(externalUrls.getIfffUrl(), standardIffUrlHttp);
+		converterFactory.MCR.assertParameters("factorUsingConvertibleAndExternalUrls", 0,
+				convertible, externalUrls);
 
 		DataToJsonConverterSpy converterSpy = (DataToJsonConverterSpy) converterFactory.MCR
 				.getReturnValue("factorUsingConvertibleAndExternalUrls", 0);
@@ -165,12 +195,10 @@ public class RecordEndpointSearchTest {
 		ExternallyConvertibleToStringConverterSpy dataToXmlConverter = (ExternallyConvertibleToStringConverterSpy) converterFactorySpy.MCR
 				.getReturnValue("factorExternallyConvertableToStringConverter", 0);
 
-		dataToXmlConverter.MCR.assertParameters("convertWithLinks", 0, convertible);
 		ExternalUrls externalUrls = (ExternalUrls) dataToXmlConverter.MCR
 				.getParameterForMethodAndCallNumberAndParameter("convertWithLinks", 0,
 						"externalUrls");
-		assertEquals(externalUrls.getBaseUrl(), standardBaseUrlHttp);
-		assertEquals(externalUrls.getIfffUrl(), standardIffUrlHttp);
+		dataToXmlConverter.MCR.assertParameters("convertWithLinks", 0, convertible, externalUrls);
 
 		var entity = response.getEntity();
 		dataToXmlConverter.MCR.assertReturn("convertWithLinks", 0, entity);

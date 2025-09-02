@@ -29,8 +29,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -38,12 +36,8 @@ import org.testng.annotations.Test;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
-import se.uu.ub.cora.converter.ConverterProvider;
 import se.uu.ub.cora.data.DataProvider;
-import se.uu.ub.cora.data.converter.DataToJsonConverterProvider;
-import se.uu.ub.cora.data.converter.JsonToDataConverterProvider;
 import se.uu.ub.cora.data.spies.DataFactorySpy;
-import se.uu.ub.cora.initialize.SettingsProvider;
 import se.uu.ub.cora.logger.LoggerProvider;
 import se.uu.ub.cora.logger.spies.LoggerFactorySpy;
 import se.uu.ub.cora.spider.authorization.AuthorizationException;
@@ -65,19 +59,14 @@ public class RecordEndpointDownloadTest {
 	private static final String SOME_ID = "someId";
 	private static final String SOME_TYPE = "someType";
 
-	private JsonToDataConverterFactorySpy jsonToDataConverterFactorySpy = new JsonToDataConverterFactorySpy();
-
 	private RecordEndpointDownload recordEndpoint;
 	private OldSpiderInstanceFactorySpy spiderInstanceFactorySpy;
 	private Response response;
-	private HttpServletRequestSpy requestSpy;
+	private HttpServletRequestOldSpy requestSpy;
 	private LoggerFactorySpy loggerFactorySpy;
 	private DataFactorySpy dataFactorySpy;
 
-	private DataToJsonConverterFactoryCreatorSpy converterFactoryCreatorSpy;
-	private ConverterFactorySpy converterFactorySpy;
 	private DownloaderSpy downloaderSpy;
-	private StringToExternallyConvertibleConverterSpy stringToExternallyConvertibleConverterSpy;
 
 	@BeforeMethod
 	public void beforeMethod() {
@@ -86,30 +75,12 @@ public class RecordEndpointDownloadTest {
 		dataFactorySpy = new DataFactorySpy();
 		DataProvider.onlyForTestSetDataFactory(dataFactorySpy);
 
-		converterFactoryCreatorSpy = new DataToJsonConverterFactoryCreatorSpy();
-		DataToJsonConverterProvider
-				.setDataToJsonConverterFactoryCreator(converterFactoryCreatorSpy);
-
-		stringToExternallyConvertibleConverterSpy = new StringToExternallyConvertibleConverterSpy();
-		converterFactorySpy = new ConverterFactorySpy();
-		converterFactorySpy.MRV.setDefaultReturnValuesSupplier(
-				"factorStringToExternallyConvertableConverter",
-				() -> stringToExternallyConvertibleConverterSpy);
-		ConverterProvider.setConverterFactory("xml", converterFactorySpy);
-
-		jsonToDataConverterFactorySpy = new JsonToDataConverterFactorySpy();
-		JsonToDataConverterProvider.setJsonToDataConverterFactory(jsonToDataConverterFactorySpy);
 		spiderInstanceFactorySpy = new OldSpiderInstanceFactorySpy();
 		SpiderInstanceProvider.setSpiderInstanceFactory(spiderInstanceFactorySpy);
 
 		downloaderSpy = new DownloaderSpy();
 
-		Map<String, String> settings = new HashMap<>();
-		settings.put("theRestPublicPathToSystem", "/systemone/rest/");
-		settings.put("iiifPublicPathToSystem", "/systemone/iiif/");
-		SettingsProvider.setSettings(settings);
-
-		requestSpy = new HttpServletRequestSpy();
+		requestSpy = new HttpServletRequestOldSpy();
 		recordEndpoint = new RecordEndpointDownload(requestSpy);
 	}
 
