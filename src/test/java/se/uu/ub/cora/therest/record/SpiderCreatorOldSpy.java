@@ -39,7 +39,6 @@ public class SpiderCreatorOldSpy implements RecordCreator {
 	public MethodCallRecorder MCR = new MethodCallRecorder();
 
 	@Override
-	// public DataRecord createAndStoreRecord(String authToken, String type, DataGroup record) {
 	public DataRecord createAndStoreRecord(String authToken, String type,
 			DataRecordGroup recordGroup) {
 		MCR.addCall("authToken", authToken, "type", type, "recordGroup", recordGroup);
@@ -63,20 +62,10 @@ public class SpiderCreatorOldSpy implements RecordCreator {
 		} else if ("place_unexpected_error".equals(type)) {
 			throw new NullPointerException("Some error");
 		}
-		// DataRecordSpy dataRecordSpy = new DataRecordSpy(
-		// DataCreator.createRecordWithNameInDataAndIdAndTypeAndLinkedRecordId("nameInData",
-		// "someId", type, "linkedRecordId"));
 		DataRecordSpy dataRecordSpy = new DataRecordSpy();
 		dataRecordSpy.MRV.setDefaultReturnValuesSupplier("getId", () -> "someCreatedId");
 		MCR.addReturned(dataRecordSpy);
 		return dataRecordSpy;
 	}
-
-	// @Override
-	// public DataRecord createAndStoreRecord(String authToken, String type,
-	// DataRecordGroup recordGroup) {
-	// // TODO Auto-generated method stub
-	// return null;
-	// }
 
 }

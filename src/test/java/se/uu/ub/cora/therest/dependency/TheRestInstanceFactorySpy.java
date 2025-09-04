@@ -22,8 +22,6 @@ import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 import se.uu.ub.cora.testutils.mrv.MethodReturnValues;
 import se.uu.ub.cora.therest.converter.EndpointConverter;
 import se.uu.ub.cora.therest.error.ErrorHandler;
-import se.uu.ub.cora.therest.record.EndpointDecoratedReader;
-import se.uu.ub.cora.therest.record.EndpointDecoratedReaderSpy;
 import se.uu.ub.cora.therest.spy.EndpointConverterSpy;
 import se.uu.ub.cora.therest.spy.ErrorHandlerSpy;
 import se.uu.ub.cora.therest.url.UrlHandler;
@@ -38,18 +36,11 @@ public class TheRestInstanceFactorySpy implements TheRestInstanceFactory {
 		MRV.setDefaultReturnValuesSupplier("factorUrlHandler", UrlHandlerSpy::new);
 		MRV.setDefaultReturnValuesSupplier("factorEndpointConverter", EndpointConverterSpy::new);
 		MRV.setDefaultReturnValuesSupplier("factorErrorHandler", ErrorHandlerSpy::new);
-		MRV.setDefaultReturnValuesSupplier("createDecoratedReader",
-				EndpointDecoratedReaderSpy::new);
 	}
 
 	@Override
 	public UrlHandler factorUrlHandler() {
 		return (UrlHandler) MCR.addCallAndReturnFromMRV();
-	}
-
-	@Override
-	public EndpointDecoratedReader createDecoratedReader() {
-		return (EndpointDecoratedReader) MCR.addCallAndReturnFromMRV();
 	}
 
 	@Override

@@ -21,7 +21,6 @@ package se.uu.ub.cora.therest.dependency;
 
 import se.uu.ub.cora.therest.converter.EndpointConverter;
 import se.uu.ub.cora.therest.error.ErrorHandler;
-import se.uu.ub.cora.therest.record.EndpointDecoratedReader;
 import se.uu.ub.cora.therest.url.UrlHandler;
 
 public final class TheRestInstanceProvider {
@@ -38,10 +37,6 @@ public final class TheRestInstanceProvider {
 
 	public static EndpointConverter getEndpointConverter() {
 		return factory.factorEndpointConverter();
-	}
-
-	public static EndpointDecoratedReader getDecoratedReader() {
-		return factory.createDecoratedReader();
 	}
 
 	public static ErrorHandler getErrorHandler() {

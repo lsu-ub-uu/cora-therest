@@ -23,8 +23,6 @@ import se.uu.ub.cora.therest.converter.EndpointConverter;
 import se.uu.ub.cora.therest.converter.EndpointConverterImp;
 import se.uu.ub.cora.therest.error.ErrorHandler;
 import se.uu.ub.cora.therest.error.ErrorHandlerImp;
-import se.uu.ub.cora.therest.record.EndpointDecoratedReader;
-import se.uu.ub.cora.therest.record.EndpointDecoratedReaderImp;
 import se.uu.ub.cora.therest.url.UrlHandler;
 import se.uu.ub.cora.therest.url.UrlHandlerImp;
 
@@ -33,11 +31,6 @@ public final class TheRestInstanceFactoryImp implements TheRestInstanceFactory {
 	@Override
 	public UrlHandler factorUrlHandler() {
 		return new UrlHandlerImp();
-	}
-
-	@Override
-	public EndpointDecoratedReader createDecoratedReader() {
-		return new EndpointDecoratedReaderImp(new EndpointConverterImp(), new ErrorHandlerImp());
 	}
 
 	@Override

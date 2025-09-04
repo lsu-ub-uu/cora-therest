@@ -30,7 +30,6 @@ import se.uu.ub.cora.therest.converter.EndpointConverter;
 import se.uu.ub.cora.therest.converter.EndpointConverterImp;
 import se.uu.ub.cora.therest.error.ErrorHandler;
 import se.uu.ub.cora.therest.error.ErrorHandlerImp;
-import se.uu.ub.cora.therest.record.EndpointDecoratedReaderImp;
 import se.uu.ub.cora.therest.url.UrlHandler;
 import se.uu.ub.cora.therest.url.UrlHandlerImp;
 
@@ -66,12 +65,4 @@ public class TheRestInstanceFactoryTest {
 		assertTrue(eh instanceof ErrorHandlerImp);
 	}
 
-	@Test
-	public void testFactorDecoratedReader() {
-		EndpointDecoratedReaderImp reader = (EndpointDecoratedReaderImp) factory
-				.createDecoratedReader();
-
-		assertTrue(reader.onlyForTestGetEndpointConverter() instanceof EndpointConverterImp);
-		assertTrue(reader.onlyForTestGetErrorHandler() instanceof ErrorHandlerImp);
-	}
 }

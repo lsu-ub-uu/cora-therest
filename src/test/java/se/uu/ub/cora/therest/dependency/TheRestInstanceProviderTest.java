@@ -32,7 +32,6 @@ import org.testng.annotations.Test;
 
 import se.uu.ub.cora.therest.converter.EndpointConverter;
 import se.uu.ub.cora.therest.error.ErrorHandler;
-import se.uu.ub.cora.therest.record.EndpointDecoratedReader;
 import se.uu.ub.cora.therest.url.UrlHandler;
 
 public class TheRestInstanceProviderTest {
@@ -100,12 +99,4 @@ public class TheRestInstanceProviderTest {
 		factory.MCR.assertReturn("factorErrorHandler", 0, eh);
 	}
 
-	@Test
-	public void testGetDecoratedReaderUsesFactory() {
-		setSpyFactory();
-
-		EndpointDecoratedReader reader = TheRestInstanceProvider.getDecoratedReader();
-
-		factory.MCR.assertReturn("createDecoratedReader", 0, reader);
-	}
 }

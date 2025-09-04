@@ -21,7 +21,6 @@ package se.uu.ub.cora.therest.dependency;
 
 import se.uu.ub.cora.therest.converter.EndpointConverter;
 import se.uu.ub.cora.therest.error.ErrorHandler;
-import se.uu.ub.cora.therest.record.EndpointDecoratedReader;
 import se.uu.ub.cora.therest.url.UrlHandler;
 
 public interface TheRestInstanceFactory {
@@ -32,8 +31,6 @@ public interface TheRestInstanceFactory {
 	 * @return the newly created UrlHandler
 	 */
 	UrlHandler factorUrlHandler();
-
-	EndpointDecoratedReader createDecoratedReader();
 
 	/**
 	 * factorEndpointConverter factors a new EndpointConverter
