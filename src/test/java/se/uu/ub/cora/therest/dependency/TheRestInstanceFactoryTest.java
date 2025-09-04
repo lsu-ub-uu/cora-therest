@@ -24,17 +24,24 @@ import static org.testng.Assert.assertTrue;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import se.uu.ub.cora.logger.LoggerProvider;
+import se.uu.ub.cora.logger.spies.LoggerFactorySpy;
+import se.uu.ub.cora.therest.converter.EndpointConverter;
 import se.uu.ub.cora.therest.converter.EndpointConverterImp;
+import se.uu.ub.cora.therest.error.ErrorHandler;
 import se.uu.ub.cora.therest.error.ErrorHandlerImp;
 import se.uu.ub.cora.therest.record.EndpointDecoratedReaderImp;
 import se.uu.ub.cora.therest.url.UrlHandler;
 import se.uu.ub.cora.therest.url.UrlHandlerImp;
 
 public class TheRestInstanceFactoryTest {
+	private LoggerFactorySpy loggerFactorySpy;
 	private TheRestInstanceFactory factory;
 
 	@BeforeMethod
 	public void setUp() {
+		loggerFactorySpy = new LoggerFactorySpy();
+		LoggerProvider.setLoggerFactory(loggerFactorySpy);
 		factory = new TheRestInstanceFactoryImp();
 	}
 
@@ -43,6 +50,20 @@ public class TheRestInstanceFactoryTest {
 		UrlHandler uh = factory.factorUrlHandler();
 
 		assertTrue(uh instanceof UrlHandlerImp);
+	}
+
+	@Test
+	public void testFactorEndpontConverter() {
+		EndpointConverter ec = factory.factorEndpointConverter();
+
+		assertTrue(ec instanceof EndpointConverterImp);
+	}
+
+	@Test
+	public void testFactorErrorHandler() {
+		ErrorHandler eh = factory.factorErrorHandler();
+
+		assertTrue(eh instanceof ErrorHandlerImp);
 	}
 
 	@Test

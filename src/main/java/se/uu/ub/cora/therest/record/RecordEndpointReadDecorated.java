@@ -19,6 +19,8 @@
 
 package se.uu.ub.cora.therest.record;
 
+import java.text.MessageFormat;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.HeaderParam;
@@ -26,8 +28,12 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
+import se.uu.ub.cora.data.DataRecord;
+import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
 import se.uu.ub.cora.therest.dependency.TheRestInstanceProvider;
+import se.uu.ub.cora.therest.error.ErrorHandler;
 
 @Path("/")
 public class RecordEndpointReadDecorated {
@@ -52,8 +58,26 @@ public class RecordEndpointReadDecorated {
 
 	private Response callReadAndDecorateRecord(String accept, String authToken, String type,
 			String id) {
-		EndpointDecoratedReader decoratedReader = TheRestInstanceProvider.getDecoratedReader();
-		return decoratedReader.readAndDecorateRecord(request, accept, authToken, type, id);
+		try {
+			return tryReadRecord(request, accept, authToken, type, id);
+		} catch (Exception error) {
+			String errorFromCaller = "Error reading record with recordType: {0} and "
+					+ "recordId: {1}.";
+			ErrorHandler errorHandler = TheRestInstanceProvider.getErrorHandler();
+			return errorHandler.handleError(authToken, error,
+					MessageFormat.format(errorFromCaller, type, id));
+		}
+	}
+
+	private Response tryReadRecord(HttpServletRequest request, String accept, String authToken,
+			String type, String id) {
+		var decoratedRecordReader = SpiderInstanceProvider.getDecoratedRecordReader();
+		DataRecord dataRecord = decoratedRecordReader.readDecoratedRecord(authToken, type, id);
+		var endpointConverter = TheRestInstanceProvider.getEndpointConverter();
+		String convertedDataRecord = endpointConverter.convertConvertibleToString(request, accept,
+				dataRecord);
+		return Response.status(Response.Status.OK).header(HttpHeaders.CONTENT_TYPE, accept)
+				.entity(convertedDataRecord).build();
 	}
 
 	@GET

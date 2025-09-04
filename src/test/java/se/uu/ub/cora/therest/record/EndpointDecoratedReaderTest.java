@@ -30,6 +30,7 @@ import se.uu.ub.cora.spider.spies.DecoratedRecordReaderSpy;
 import se.uu.ub.cora.spider.spies.SpiderInstanceFactorySpy;
 import se.uu.ub.cora.therest.spy.EndpointConverterSpy;
 import se.uu.ub.cora.therest.spy.ErrorHandlerSpy;
+import se.uu.ub.cora.therest.url.HttpServletRequestSpy;
 
 public class EndpointDecoratedReaderTest {
 
@@ -37,7 +38,7 @@ public class EndpointDecoratedReaderTest {
 	private SpiderInstanceFactorySpy spiderInstanceFactorySpy;
 	private EndpointConverterSpy endpointConverter;
 	private ErrorHandlerSpy errorHandler;
-	private HttpServletRequestOldSpy someRequest;
+	private HttpServletRequestSpy someRequest;
 
 	@BeforeMethod
 	private void beforeMethod() {
@@ -45,7 +46,7 @@ public class EndpointDecoratedReaderTest {
 		endpointConverter = new EndpointConverterSpy();
 		errorHandler = new ErrorHandlerSpy();
 		SpiderInstanceProvider.setSpiderInstanceFactory(spiderInstanceFactorySpy);
-		someRequest = new HttpServletRequestOldSpy();
+		someRequest = new HttpServletRequestSpy();
 
 		reader = new EndpointDecoratedReaderImp(endpointConverter, errorHandler);
 	}

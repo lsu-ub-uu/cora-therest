@@ -20,12 +20,45 @@ package se.uu.ub.cora.therest.url;
 
 import jakarta.servlet.http.HttpServletRequest;
 
+/**
+ * UrlHandler creates the Urls where different parts of the system can be reached
+ */
 public interface UrlHandler {
 
+	/**
+	 * getBaseUrl is the base url where the system can be reached
+	 * 
+	 * @param request
+	 *            an HttpServlet request to read url info from
+	 * @return A String with the baseUrl
+	 */
 	String getBaseUrl(HttpServletRequest request);
 
+	/**
+	 * getRestUrl is the url where the REST API of the system can be reached
+	 * 
+	 * @param request
+	 *            an HttpServlet request to read url info from
+	 * @return A String with the restUrl
+	 */
 	String getRestUrl(HttpServletRequest request);
 
+	/**
+	 * getIifUrl is the url where the IIIF API of the system can be reached
+	 * 
+	 * @param request
+	 *            an HttpServlet request to read url info from
+	 * @return A String with the iiifUrl
+	 */
 	String getIiifUrl(HttpServletRequest request);
+
+	/**
+	 * getAPIUrls returns all Urls where the system can be reached
+	 * 
+	 * @param request
+	 *            an HttpServlet request to read url info from
+	 * @return A Record with the base, rest and iiifUrl
+	 */
+	APIUrls getAPIUrls(HttpServletRequest request);
 
 }

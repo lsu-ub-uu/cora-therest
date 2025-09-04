@@ -16,26 +16,20 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.therest.spy;
+package se.uu.ub.cora.therest.error;
 
 import jakarta.ws.rs.core.Response;
-import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
-import se.uu.ub.cora.testutils.mrv.MethodReturnValues;
-import se.uu.ub.cora.therest.error.ErrorHandler;
 
-public class ErrorHandlerSpy implements ErrorHandler {
-	public MethodCallRecorder MCR = new MethodCallRecorder();
-	public MethodReturnValues MRV = new MethodReturnValues();
+public interface ErrorHandler {
 
-	public ErrorHandlerSpy() {
-		MCR.useMRV(MRV);
-		MRV.setDefaultReturnValuesSupplier("handleError",
-				() -> Response.status(Response.Status.INTERNAL_SERVER_ERROR).build());
-	}
+	/**
+	 * Handles errors and generate an apropiate response
+	 * 
+	 * @param authToken
+	 * @param error
+	 * @param errorFromCaller
+	 * @return
+	 */
+	public Response handleError(String authToken, Exception error, String errorFromCaller);
 
-	@Override
-	public Response handleError(String authToken, Exception error, String errorFromCaller) {
-		return (Response) MCR.addCallAndReturnFromMRV("authToken", authToken, "error", error,
-				"errorFromCaller", errorFromCaller);
-	}
 }

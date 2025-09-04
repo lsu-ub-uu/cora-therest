@@ -26,15 +26,15 @@ import jakarta.ws.rs.core.Response;
 import se.uu.ub.cora.data.DataRecord;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
 import se.uu.ub.cora.therest.converter.EndpointConverter;
-import se.uu.ub.cora.therest.error.ErrorHandlder;
+import se.uu.ub.cora.therest.error.ErrorHandler;
 
 public class EndpointDecoratedReaderImp implements EndpointDecoratedReader {
 
 	private EndpointConverter endpointConverter;
-	private ErrorHandlder errorHandler;
+	private ErrorHandler errorHandler;
 
 	public EndpointDecoratedReaderImp(EndpointConverter endpointConverter,
-			ErrorHandlder errorHandler) {
+			ErrorHandler errorHandler) {
 		this.endpointConverter = endpointConverter;
 		this.errorHandler = errorHandler;
 	}
@@ -66,7 +66,7 @@ public class EndpointDecoratedReaderImp implements EndpointDecoratedReader {
 		return endpointConverter;
 	}
 
-	public ErrorHandlder onlyForTestGetErrorHandler() {
+	public ErrorHandler onlyForTestGetErrorHandler() {
 		return errorHandler;
 	}
 }

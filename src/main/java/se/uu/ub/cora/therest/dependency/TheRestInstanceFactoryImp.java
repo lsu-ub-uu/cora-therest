@@ -19,7 +19,9 @@
 
 package se.uu.ub.cora.therest.dependency;
 
+import se.uu.ub.cora.therest.converter.EndpointConverter;
 import se.uu.ub.cora.therest.converter.EndpointConverterImp;
+import se.uu.ub.cora.therest.error.ErrorHandler;
 import se.uu.ub.cora.therest.error.ErrorHandlerImp;
 import se.uu.ub.cora.therest.record.EndpointDecoratedReader;
 import se.uu.ub.cora.therest.record.EndpointDecoratedReaderImp;
@@ -36,6 +38,16 @@ public final class TheRestInstanceFactoryImp implements TheRestInstanceFactory {
 	@Override
 	public EndpointDecoratedReader createDecoratedReader() {
 		return new EndpointDecoratedReaderImp(new EndpointConverterImp(), new ErrorHandlerImp());
+	}
+
+	@Override
+	public EndpointConverter factorEndpointConverter() {
+		return new EndpointConverterImp();
+	}
+
+	@Override
+	public ErrorHandler factorErrorHandler() {
+		return new ErrorHandlerImp();
 	}
 
 }

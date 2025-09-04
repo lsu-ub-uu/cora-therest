@@ -16,20 +16,22 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.therest.error;
+package se.uu.ub.cora.therest.url;
 
-import jakarta.ws.rs.core.Response;
-
-public interface ErrorHandlder {
-
-	/**
-	 * Handles errors and generate an apropiate response
-	 * 
-	 * @param authToken
-	 * @param error
-	 * @param errorFromCaller
-	 * @return
-	 */
-	public Response handleError(String authToken, Exception error, String errorFromCaller);
-
+/**
+ * APIUrls can hold the public urls for the system
+ */
+public record APIUrls(
+		/**
+		 * baseUrl is the base url where the system can be reached
+		 */
+		String baseUrl,
+		/**
+		 * restUrl is the url where the REST API of the system can be reached
+		 */
+		String restUrl,
+		/**
+		 * iifUrl is the url where the IIIF API of the system can be reached
+		 */
+		String iiifUrl) {
 }

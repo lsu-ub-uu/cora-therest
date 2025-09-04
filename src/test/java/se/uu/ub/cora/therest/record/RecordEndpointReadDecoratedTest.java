@@ -20,14 +20,23 @@
 
 package se.uu.ub.cora.therest.record;
 
+import static org.testng.Assert.assertEquals;
+
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
+import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
+import se.uu.ub.cora.spider.spies.DecoratedRecordReaderSpy;
+import se.uu.ub.cora.spider.spies.SpiderInstanceFactorySpy;
 import se.uu.ub.cora.therest.AnnotationTestHelper;
 import se.uu.ub.cora.therest.dependency.TheRestInstanceFactorySpy;
 import se.uu.ub.cora.therest.dependency.TheRestInstanceProvider;
+import se.uu.ub.cora.therest.spy.EndpointConverterSpy;
+import se.uu.ub.cora.therest.spy.ErrorHandlerSpy;
+import se.uu.ub.cora.therest.url.HttpServletRequestSpy;
 
 public class RecordEndpointReadDecoratedTest {
 	private static final String APPLICATION_VND_CORA_RECORD_DECORATED_XML_QS09 = "application/vnd.cora.record-decorated+xml;qs=0.9";
@@ -35,28 +44,26 @@ public class RecordEndpointReadDecoratedTest {
 	private static final String APPLICATION_VND_CORA_RECORD_DECORATED_JSON_QS09 = "application/vnd.cora.record-decorated+json;qs=0.9";
 	private static final String APPLICATION_VND_CORA_RECORD_DECORATED_JSON = "application/vnd.cora.record-decorated+json";
 
+	private SpiderInstanceFactorySpy spiderInstanceFactorySpy;
 	private RecordEndpointReadDecorated recordEndpoint;
-	private HttpServletRequestOldSpy requestSpy;
-	private TheRestInstanceFactorySpy factory;
+	private HttpServletRequestSpy requestSpy;
+	private TheRestInstanceFactorySpy instanceFactory;
 
 	@BeforeMethod
 	public void beforeMethod() {
+		spiderInstanceFactorySpy = new SpiderInstanceFactorySpy();
+		SpiderInstanceProvider.setSpiderInstanceFactory(spiderInstanceFactorySpy);
 
-		factory = new TheRestInstanceFactorySpy();
-		TheRestInstanceProvider.onlyForTestSetTheRestInstanceFactory(factory);
+		instanceFactory = new TheRestInstanceFactorySpy();
+		TheRestInstanceProvider.onlyForTestSetTheRestInstanceFactory(instanceFactory);
 
-		requestSpy = new HttpServletRequestOldSpy();
+		requestSpy = new HttpServletRequestSpy();
 		recordEndpoint = new RecordEndpointReadDecorated(requestSpy);
 	}
 
 	@AfterMethod
 	public void afterMethod() {
 		TheRestInstanceProvider.onlyForTestResetTheRestInstanceFactory();
-	}
-
-	@Test
-	public void testInit() {
-		recordEndpoint = new RecordEndpointReadDecorated(requestSpy);
 	}
 
 	@Test
@@ -89,27 +96,79 @@ public class RecordEndpointReadDecoratedTest {
 		annotationHelper.assertAnnotationForHeaderAuthToken();
 	}
 
+	// @Test
+	// public void testReadDecoratedRecordXml() {
+	// Response response = recordEndpoint.readDecoratedRecordXml("someAuthToken", "someType",
+	// "someId");
+	// assertCallDecorateReader(APPLICATION_VND_CORA_RECORD_DECORATED_XML, response);
+	// }
+	//
+	// @Test
+	// public void testReadDecoratedRecordJson() {
+	// Response response = recordEndpoint.readDecoratedRecordJson("someAuthToken", "someType",
+	// "someId");
+	// assertCallDecorateReader(APPLICATION_VND_CORA_RECORD_DECORATED_JSON, response);
+	// }
+	//
+	// private void assertCallDecorateReader(String accept, Response response) {
+	// var decoratedReader = (EndpointDecoratedReaderSpy) factory.MCR
+	// .assertCalledParametersReturn("createDecoratedReader");
+	//
+	// decoratedReader.MCR.assertParameters("readAndDecorateRecord", 0, requestSpy, accept,
+	// "someAuthToken", "someType", "someId");
+	// decoratedReader.MCR.assertReturn("readAndDecorateRecord", 0, response);
+	// }
 	@Test
-	public void testReadDecoratedRecordXml() {
+	public void testReadAndDecorateRecord_goesWrong() {
+		RuntimeException thrownError = new RuntimeException();
+		spiderInstanceFactorySpy.MRV.setAlwaysThrowException("factorDecoratedRecordReader",
+				thrownError);
+
 		Response response = recordEndpoint.readDecoratedRecordXml("someAuthToken", "someType",
 				"someId");
-		assertCallDecorateReader(APPLICATION_VND_CORA_RECORD_DECORATED_XML, response);
+
+		ErrorHandlerSpy errorHandler = (ErrorHandlerSpy) instanceFactory.MCR
+				.getReturnValue("factorErrorHandler", 0);
+
+		errorHandler.MCR.assertParameters("handleError", 0, "someAuthToken", thrownError,
+				"Error reading record with recordType: someType and " + "recordId: someId.");
+		errorHandler.MCR.assertReturn("handleError", 0, response);
+	}
+
+	@Test
+	public void testReadDecoratedRecordXml() {
+		String contentType = APPLICATION_VND_CORA_RECORD_DECORATED_XML;
+
+		Response response = recordEndpoint.readDecoratedRecordXml("someAuthToken", "someType",
+				"someId");
+
+		assertComponentsCalledCorrectlyForContentType(contentType, response);
+	}
+
+	private void assertComponentsCalledCorrectlyForContentType(String contentType,
+			Response response) {
+		var decoratedRecordReader = (DecoratedRecordReaderSpy) spiderInstanceFactorySpy.MCR
+				.assertCalledParametersReturn("factorDecoratedRecordReader");
+		var dataRecord = decoratedRecordReader.MCR.assertCalledParametersReturn(
+				"readDecoratedRecord", "someAuthToken", "someType", "someId");
+
+		var endpointConverter = (EndpointConverterSpy) instanceFactory.MCR
+				.getReturnValue("factorEndpointConverter", 0);
+		endpointConverter.MCR.assertParameters("convertConvertibleToString", 0, requestSpy,
+				contentType, dataRecord);
+		endpointConverter.MCR.assertReturn("convertConvertibleToString", 0, response.getEntity());
+
+		assertEquals(response.getStatusInfo(), Response.Status.OK);
+		assertEquals(response.getHeaderString(HttpHeaders.CONTENT_TYPE), contentType);
 	}
 
 	@Test
 	public void testReadDecoratedRecordJson() {
+		String contentType = APPLICATION_VND_CORA_RECORD_DECORATED_JSON;
+
 		Response response = recordEndpoint.readDecoratedRecordJson("someAuthToken", "someType",
 				"someId");
-		assertCallDecorateReader(APPLICATION_VND_CORA_RECORD_DECORATED_JSON, response);
+
+		assertComponentsCalledCorrectlyForContentType(contentType, response);
 	}
-
-	private void assertCallDecorateReader(String accept, Response response) {
-		var decoratedReader = (EndpointDecoratedReaderSpy) factory.MCR
-				.assertCalledParametersReturn("createDecoratedReader");
-
-		decoratedReader.MCR.assertParameters("readAndDecorateRecord", 0, requestSpy, accept,
-				"someAuthToken", "someType", "someId");
-		decoratedReader.MCR.assertReturn("readAndDecorateRecord", 0, response);
-	}
-
 }

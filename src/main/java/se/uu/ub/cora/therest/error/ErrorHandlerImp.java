@@ -39,7 +39,7 @@ import se.uu.ub.cora.spider.record.RecordNotFoundException;
 import se.uu.ub.cora.spider.record.ResourceNotFoundException;
 import se.uu.ub.cora.storage.RecordConflictException;
 
-public class ErrorHandlerImp implements ErrorHandlder {
+public class ErrorHandlerImp implements ErrorHandler {
 
 	private Logger log = LoggerProvider.getLoggerForClass(ErrorHandlerImp.class);
 	private static final String TEXT_PLAIN_CHARSET_UTF_8 = "text/plain; charset=utf-8";
