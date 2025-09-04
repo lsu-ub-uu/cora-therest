@@ -47,6 +47,7 @@ import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
 import se.uu.ub.cora.therest.AnnotationTestHelper;
 import se.uu.ub.cora.therest.dependency.TheRestInstanceFactorySpy;
 import se.uu.ub.cora.therest.dependency.TheRestInstanceProvider;
+import se.uu.ub.cora.therest.url.HttpServletRequestSpy;
 import se.uu.ub.cora.therest.url.UrlHandlerSpy;
 
 public class RecordEndpointSearchTest {
@@ -62,7 +63,7 @@ public class RecordEndpointSearchTest {
 	private RecordEndpointSearch recordEndpoint;
 	private OldSpiderInstanceFactorySpy spiderInstanceFactorySpy;
 	private Response response;
-	private HttpServletRequestOldSpy requestSpy;
+	private HttpServletRequestSpy requestSpy;
 	private LoggerFactorySpy loggerFactorySpy;
 	private DataFactorySpy dataFactorySpy;
 
@@ -97,7 +98,7 @@ public class RecordEndpointSearchTest {
 		spiderInstanceFactorySpy = new OldSpiderInstanceFactorySpy();
 		SpiderInstanceProvider.setSpiderInstanceFactory(spiderInstanceFactorySpy);
 
-		requestSpy = new HttpServletRequestOldSpy();
+		requestSpy = new HttpServletRequestSpy();
 		recordEndpoint = new RecordEndpointSearch(requestSpy);
 
 		setUpSpiesInRecordEndpoint();
@@ -208,8 +209,7 @@ public class RecordEndpointSearchTest {
 		StringToExternallyConvertibleConverterSpy xmlToDataConverter = (StringToExternallyConvertibleConverterSpy) converterFactorySpy.MCR
 				.getReturnValue("factorStringToExternallyConvertableConverter", 0);
 		xmlToDataConverter.MCR.assertParameters("convert", 0, defaultXml);
-		var dataElement = xmlToDataConverter.MCR.getReturnValue("convert", 0);
-		return dataElement;
+		return xmlToDataConverter.MCR.getReturnValue("convert", 0);
 	}
 
 	@Test
