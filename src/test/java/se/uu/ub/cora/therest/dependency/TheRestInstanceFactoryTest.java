@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Olov McKie
+ * Copyright 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -16,33 +16,38 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.therest.record;
+
+package se.uu.ub.cora.therest.dependency;
 
 import static org.testng.Assert.assertTrue;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.logger.LoggerFactory;
-import se.uu.ub.cora.logger.LoggerProvider;
-import se.uu.ub.cora.logger.spies.LoggerFactorySpy;
 import se.uu.ub.cora.therest.converter.EndpointConverterImp;
 import se.uu.ub.cora.therest.error.ErrorHandlerImp;
+import se.uu.ub.cora.therest.record.EndpointDecoratedReaderImp;
+import se.uu.ub.cora.therest.url.UrlHandler;
+import se.uu.ub.cora.therest.url.UrlHandlerImp;
 
-public class RecordEndpointDependencyFactoryTest {
-	private RecordEndpointDependencyFactory depFactory;
+public class TheRestInstanceFactoryTest {
+	private TheRestInstanceFactory factory;
 
 	@BeforeMethod
-	public void beforeMethod() {
-		LoggerFactory loggerFactory = new LoggerFactorySpy();
-		LoggerProvider.setLoggerFactory(loggerFactory);
+	public void setUp() {
+		factory = new TheRestInstanceFactoryImp();
+	}
 
-		depFactory = new RecordEndpointDependencyFactoryImp();
+	@Test
+	public void testFactorUrlHandler() {
+		UrlHandler uh = factory.factorUrlHandler();
+
+		assertTrue(uh instanceof UrlHandlerImp);
 	}
 
 	@Test
 	public void testFactorDecoratedReader() {
-		EndpointDecoratedReaderImp reader = (EndpointDecoratedReaderImp) depFactory
+		EndpointDecoratedReaderImp reader = (EndpointDecoratedReaderImp) factory
 				.createDecoratedReader();
 
 		assertTrue(reader.onlyForTestGetEndpointConverter() instanceof EndpointConverterImp);

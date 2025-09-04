@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Olov McKie
+ * Copyright 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -16,10 +16,16 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.therest.record;
+package se.uu.ub.cora.therest.url;
 
-public interface RecordEndpointDependencyFactory {
+import jakarta.servlet.http.HttpServletRequest;
 
-	EndpointDecoratedReader createDecoratedReader();
+public interface UrlHandler {
+
+	String getBaseUrl(HttpServletRequest request);
+
+	String getRestUrl(HttpServletRequest request);
+
+	String getIiifUrl(HttpServletRequest request);
 
 }

@@ -52,7 +52,6 @@ import se.uu.ub.cora.data.converter.DataToJsonConverterFactory;
 import se.uu.ub.cora.data.converter.DataToJsonConverterProvider;
 import se.uu.ub.cora.data.converter.JsonToDataConverter;
 import se.uu.ub.cora.data.converter.JsonToDataConverterProvider;
-import se.uu.ub.cora.initialize.SettingsProvider;
 import se.uu.ub.cora.json.parser.JsonParseException;
 import se.uu.ub.cora.json.parser.JsonParser;
 import se.uu.ub.cora.json.parser.JsonValue;
@@ -70,6 +69,8 @@ import se.uu.ub.cora.spider.record.MisuseException;
 import se.uu.ub.cora.spider.record.RecordNotFoundException;
 import se.uu.ub.cora.spider.record.ResourceNotFoundException;
 import se.uu.ub.cora.storage.RecordConflictException;
+import se.uu.ub.cora.therest.dependency.TheRestInstanceProvider;
+import se.uu.ub.cora.therest.url.UrlHandler;
 
 @Path("/")
 public class RecordEndpointCreate {
@@ -80,7 +81,6 @@ public class RecordEndpointCreate {
 	private static final String APPLICATION_VND_CORA_RECORD_JSON_QS09 = "application/vnd.cora.record+json;qs=0.9";
 	private static final String TEXT_PLAIN_CHARSET_UTF_8 = "text/plain; charset=utf-8";
 	private static final String URL_DELIMITER = "/";
-	private static final int AFTERHTTP = 10;
 	HttpServletRequest request;
 	private Logger log = LoggerProvider.getLoggerForClass(RecordEndpointCreate.class);
 
@@ -90,11 +90,12 @@ public class RecordEndpointCreate {
 
 	public RecordEndpointCreate(@Context HttpServletRequest req) {
 		request = req;
-		String baseUrl = getBaseURLFromURI();
-		String iiifUrl = getIiifURLFromURI();
+		UrlHandler urlHandler = TheRestInstanceProvider.getUrlHandler();
+		String restUrl = urlHandler.getRestUrl(req);
+		String iiifUrl = urlHandler.getIiifUrl(req);
 
-		setExternalUrlsForJsonConverter(baseUrl, iiifUrl);
-		setExternalUrlsForXmlConverter(baseUrl, iiifUrl);
+		setExternalUrlsForJsonConverter(restUrl, iiifUrl);
+		setExternalUrlsForXmlConverter(restUrl, iiifUrl);
 	}
 
 	private void setExternalUrlsForJsonConverter(String baseUrl, String iiifUrl) {
@@ -107,38 +108,6 @@ public class RecordEndpointCreate {
 		externalUrls = new ExternalUrls();
 		externalUrls.setBaseUrl(baseUrl);
 		externalUrls.setIfffUrl(iiifUrl);
-	}
-
-	private final String getBaseURLFromURI() {
-		String baseURL = getBaseURLFromRequest();
-		baseURL += SettingsProvider.getSetting("theRestPublicPathToSystem");
-		baseURL += "record/";
-		return changeHttpToHttpsIfHeaderSaysSo(baseURL);
-	}
-
-	private final String getIiifURLFromURI() {
-		String baseURL = getBaseURLFromRequest();
-		baseURL += SettingsProvider.getSetting("iiifPublicPathToSystem");
-		return changeHttpToHttpsIfHeaderSaysSo(baseURL);
-	}
-
-	private final String getBaseURLFromRequest() {
-		String tempUrl = request.getRequestURL().toString();
-		int indexOfFirstSlashAfterHttp = tempUrl.indexOf('/', AFTERHTTP);
-		return tempUrl.substring(0, indexOfFirstSlashAfterHttp);
-	}
-
-	private String changeHttpToHttpsIfHeaderSaysSo(String baseURI) {
-		String forwardedProtocol = request.getHeader("X-Forwarded-Proto");
-
-		if (ifForwardedProtocolExists(forwardedProtocol)) {
-			return baseURI.replace("http:", forwardedProtocol + ":");
-		}
-		return baseURI;
-	}
-
-	private boolean ifForwardedProtocolExists(String forwardedProtocol) {
-		return null != forwardedProtocol && !"".equals(forwardedProtocol);
 	}
 
 	/** fix: consumes is not a record, but a topDataGroup */

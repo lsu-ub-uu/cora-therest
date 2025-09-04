@@ -27,6 +27,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
+import se.uu.ub.cora.therest.dependency.TheRestInstanceProvider;
 
 @Path("/")
 public class RecordEndpointReadDecorated {
@@ -51,8 +52,7 @@ public class RecordEndpointReadDecorated {
 
 	private Response callReadAndDecorateRecord(String accept, String authToken, String type,
 			String id) {
-		EndpointDecoratedReader decoratedReader = RecordEndpointDependencyProvider
-				.getDecoratedReader();
+		EndpointDecoratedReader decoratedReader = TheRestInstanceProvider.getDecoratedReader();
 		return decoratedReader.readAndDecorateRecord(request, accept, authToken, type, id);
 	}
 
@@ -61,8 +61,8 @@ public class RecordEndpointReadDecorated {
 	@Produces({ APPLICATION_VND_CORA_RECORD_DECORATED_JSON_QS09 })
 	public Response readDecoratedRecordJson(@HeaderParam("authToken") String authToken,
 			@PathParam("type") String type, @PathParam("id") String id) {
-		return callReadAndDecorateRecord(APPLICATION_VND_CORA_RECORD_DECORATED_JSON, authToken, type,
-				id);
+		return callReadAndDecorateRecord(APPLICATION_VND_CORA_RECORD_DECORATED_JSON, authToken,
+				type, id);
 	}
 
 }

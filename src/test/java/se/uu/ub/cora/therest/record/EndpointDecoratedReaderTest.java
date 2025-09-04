@@ -37,7 +37,7 @@ public class EndpointDecoratedReaderTest {
 	private SpiderInstanceFactorySpy spiderInstanceFactorySpy;
 	private EndpointConverterSpy endpointConverter;
 	private ErrorHandlerSpy errorHandler;
-	private HttpServletRequestSpy someRequest;
+	private HttpServletRequestOldSpy someRequest;
 
 	@BeforeMethod
 	private void beforeMethod() {
@@ -45,7 +45,7 @@ public class EndpointDecoratedReaderTest {
 		endpointConverter = new EndpointConverterSpy();
 		errorHandler = new ErrorHandlerSpy();
 		SpiderInstanceProvider.setSpiderInstanceFactory(spiderInstanceFactorySpy);
-		someRequest = new HttpServletRequestSpy();
+		someRequest = new HttpServletRequestOldSpy();
 
 		reader = new EndpointDecoratedReaderImp(endpointConverter, errorHandler);
 	}

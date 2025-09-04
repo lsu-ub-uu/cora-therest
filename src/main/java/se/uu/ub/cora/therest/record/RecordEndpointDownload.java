@@ -32,9 +32,7 @@ import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import se.uu.ub.cora.converter.ConverterException;
-import se.uu.ub.cora.converter.ExternalUrls;
 import se.uu.ub.cora.data.converter.ConversionException;
-import se.uu.ub.cora.initialize.SettingsProvider;
 import se.uu.ub.cora.json.parser.JsonParseException;
 import se.uu.ub.cora.logger.Logger;
 import se.uu.ub.cora.logger.LoggerProvider;
@@ -54,64 +52,11 @@ import se.uu.ub.cora.storage.RecordConflictException;
 @Path("/")
 public class RecordEndpointDownload {
 	private static final String TEXT_PLAIN_CHARSET_UTF_8 = "text/plain; charset=utf-8";
-	private static final int AFTERHTTP = 10;
 	HttpServletRequest request;
 	private Logger log = LoggerProvider.getLoggerForClass(RecordEndpointDownload.class);
 
-	private ExternalUrls externalUrls;
-	private se.uu.ub.cora.data.converter.ExternalUrls externalUrlsForJson;
-
 	public RecordEndpointDownload(@Context HttpServletRequest req) {
 		request = req;
-		String baseUrl = getBaseURLFromURI();
-		String iiifUrl = getIiifURLFromURI();
-
-		setExternalUrlsForJsonConverter(baseUrl, iiifUrl);
-		setExternalUrlsForXmlConverter(baseUrl, iiifUrl);
-	}
-
-	private void setExternalUrlsForJsonConverter(String baseUrl, String iiifUrl) {
-		externalUrlsForJson = new se.uu.ub.cora.data.converter.ExternalUrls();
-		externalUrlsForJson.setBaseUrl(baseUrl);
-		externalUrlsForJson.setIfffUrl(iiifUrl);
-	}
-
-	private void setExternalUrlsForXmlConverter(String baseUrl, String iiifUrl) {
-		externalUrls = new ExternalUrls();
-		externalUrls.setBaseUrl(baseUrl);
-		externalUrls.setIfffUrl(iiifUrl);
-	}
-
-	private final String getBaseURLFromURI() {
-		String baseURL = getBaseURLFromRequest();
-		baseURL += SettingsProvider.getSetting("theRestPublicPathToSystem");
-		baseURL += "record/";
-		return changeHttpToHttpsIfHeaderSaysSo(baseURL);
-	}
-
-	private final String getIiifURLFromURI() {
-		String baseURL = getBaseURLFromRequest();
-		baseURL += SettingsProvider.getSetting("iiifPublicPathToSystem");
-		return changeHttpToHttpsIfHeaderSaysSo(baseURL);
-	}
-
-	private final String getBaseURLFromRequest() {
-		String tempUrl = request.getRequestURL().toString();
-		int indexOfFirstSlashAfterHttp = tempUrl.indexOf('/', AFTERHTTP);
-		return tempUrl.substring(0, indexOfFirstSlashAfterHttp);
-	}
-
-	private String changeHttpToHttpsIfHeaderSaysSo(String baseURI) {
-		String forwardedProtocol = request.getHeader("X-Forwarded-Proto");
-
-		if (ifForwardedProtocolExists(forwardedProtocol)) {
-			return baseURI.replace("http:", forwardedProtocol + ":");
-		}
-		return baseURI;
-	}
-
-	private boolean ifForwardedProtocolExists(String forwardedProtocol) {
-		return null != forwardedProtocol && !"".equals(forwardedProtocol);
 	}
 
 	private Response handleError(String authToken, Exception error, String errorFromCaller) {
