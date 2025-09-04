@@ -18,11 +18,11 @@
  */
 package se.uu.ub.cora.therest.spy;
 
-import jakarta.servlet.http.HttpServletRequest;
 import se.uu.ub.cora.data.ExternallyConvertible;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 import se.uu.ub.cora.testutils.mrv.MethodReturnValues;
 import se.uu.ub.cora.therest.converter.EndpointConverter;
+import se.uu.ub.cora.therest.url.APIUrls;
 
 public class EndpointConverterSpy implements EndpointConverter {
 	public MethodCallRecorder MCR = new MethodCallRecorder();
@@ -35,9 +35,9 @@ public class EndpointConverterSpy implements EndpointConverter {
 	}
 
 	@Override
-	public String convertConvertibleToString(HttpServletRequest request, String accept,
+	public String convertConvertibleToString(APIUrls apiUrls, String accept,
 			ExternallyConvertible convertible) {
-		return (String) MCR.addCallAndReturnFromMRV("request", request, "accept", accept,
+		return (String) MCR.addCallAndReturnFromMRV("apiUrls", apiUrls, "accept", accept,
 				"convertible", convertible);
 	}
 

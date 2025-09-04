@@ -34,6 +34,7 @@ import se.uu.ub.cora.data.DataRecord;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
 import se.uu.ub.cora.therest.dependency.TheRestInstanceProvider;
 import se.uu.ub.cora.therest.error.ErrorHandler;
+import se.uu.ub.cora.therest.url.APIUrls;
 
 @Path("/")
 public class RecordEndpointReadDecorated {
@@ -56,12 +57,21 @@ public class RecordEndpointReadDecorated {
 				id);
 	}
 
+	@GET
+	@Path("{type}/{id}")
+	@Produces({ APPLICATION_VND_CORA_RECORD_DECORATED_JSON_QS09 })
+	public Response readDecoratedRecordJson(@HeaderParam("authToken") String authToken,
+			@PathParam("type") String type, @PathParam("id") String id) {
+		return callReadAndDecorateRecord(APPLICATION_VND_CORA_RECORD_DECORATED_JSON, authToken,
+				type, id);
+	}
+
 	private Response callReadAndDecorateRecord(String accept, String authToken, String type,
 			String id) {
 		try {
 			return tryReadRecord(request, accept, authToken, type, id);
 		} catch (Exception error) {
-			String errorFromCaller = "Error reading record with recordType: {0} and "
+			String errorFromCaller = "Error reading decorated record with recordType: {0} and "
 					+ "recordId: {1}.";
 			ErrorHandler errorHandler = TheRestInstanceProvider.getErrorHandler();
 			return errorHandler.handleError(authToken, error,
@@ -71,22 +81,28 @@ public class RecordEndpointReadDecorated {
 
 	private Response tryReadRecord(HttpServletRequest request, String accept, String authToken,
 			String type, String id) {
-		var decoratedRecordReader = SpiderInstanceProvider.getDecoratedRecordReader();
-		DataRecord dataRecord = decoratedRecordReader.readDecoratedRecord(authToken, type, id);
-		var endpointConverter = TheRestInstanceProvider.getEndpointConverter();
-		String convertedDataRecord = endpointConverter.convertConvertibleToString(request, accept,
-				dataRecord);
-		return Response.status(Response.Status.OK).header(HttpHeaders.CONTENT_TYPE, accept)
-				.entity(convertedDataRecord).build();
+		DataRecord dataRecord = readDecoratedRecordFromSpider(authToken, type, id);
+		String convertedDataRecord = convertDecoratedRecordToString(request, accept, dataRecord);
+		return createResponse(accept, convertedDataRecord);
 	}
 
-	@GET
-	@Path("{type}/{id}")
-	@Produces({ APPLICATION_VND_CORA_RECORD_DECORATED_JSON_QS09 })
-	public Response readDecoratedRecordJson(@HeaderParam("authToken") String authToken,
-			@PathParam("type") String type, @PathParam("id") String id) {
-		return callReadAndDecorateRecord(APPLICATION_VND_CORA_RECORD_DECORATED_JSON, authToken,
-				type, id);
+	private DataRecord readDecoratedRecordFromSpider(String authToken, String type, String id) {
+		var decoratedRecordReader = SpiderInstanceProvider.getDecoratedRecordReader();
+		return decoratedRecordReader.readDecoratedRecord(authToken, type, id);
+	}
+
+	private String convertDecoratedRecordToString(HttpServletRequest request, String accept,
+			DataRecord dataRecord) {
+		var urlHandler = TheRestInstanceProvider.getUrlHandler();
+		APIUrls apiUrls = urlHandler.getAPIUrls(request);
+
+		var endpointConverter = TheRestInstanceProvider.getEndpointConverter();
+		return endpointConverter.convertConvertibleToString(apiUrls, accept, dataRecord);
+	}
+
+	private Response createResponse(String accept, String convertedDataRecord) {
+		return Response.status(Response.Status.OK).header(HttpHeaders.CONTENT_TYPE, accept)
+				.entity(convertedDataRecord).build();
 	}
 
 }

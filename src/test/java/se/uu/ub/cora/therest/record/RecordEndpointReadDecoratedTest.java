@@ -36,7 +36,9 @@ import se.uu.ub.cora.therest.dependency.TheRestInstanceFactorySpy;
 import se.uu.ub.cora.therest.dependency.TheRestInstanceProvider;
 import se.uu.ub.cora.therest.spy.EndpointConverterSpy;
 import se.uu.ub.cora.therest.spy.ErrorHandlerSpy;
+import se.uu.ub.cora.therest.url.APIUrls;
 import se.uu.ub.cora.therest.url.HttpServletRequestSpy;
+import se.uu.ub.cora.therest.url.UrlHandlerSpy;
 
 public class RecordEndpointReadDecoratedTest {
 	private static final String APPLICATION_VND_CORA_RECORD_DECORATED_XML_QS09 = "application/vnd.cora.record-decorated+xml;qs=0.9";
@@ -96,28 +98,6 @@ public class RecordEndpointReadDecoratedTest {
 		annotationHelper.assertAnnotationForHeaderAuthToken();
 	}
 
-	// @Test
-	// public void testReadDecoratedRecordXml() {
-	// Response response = recordEndpoint.readDecoratedRecordXml("someAuthToken", "someType",
-	// "someId");
-	// assertCallDecorateReader(APPLICATION_VND_CORA_RECORD_DECORATED_XML, response);
-	// }
-	//
-	// @Test
-	// public void testReadDecoratedRecordJson() {
-	// Response response = recordEndpoint.readDecoratedRecordJson("someAuthToken", "someType",
-	// "someId");
-	// assertCallDecorateReader(APPLICATION_VND_CORA_RECORD_DECORATED_JSON, response);
-	// }
-	//
-	// private void assertCallDecorateReader(String accept, Response response) {
-	// var decoratedReader = (EndpointDecoratedReaderSpy) factory.MCR
-	// .assertCalledParametersReturn("createDecoratedReader");
-	//
-	// decoratedReader.MCR.assertParameters("readAndDecorateRecord", 0, requestSpy, accept,
-	// "someAuthToken", "someType", "someId");
-	// decoratedReader.MCR.assertReturn("readAndDecorateRecord", 0, response);
-	// }
 	@Test
 	public void testReadAndDecorateRecord_goesWrong() {
 		RuntimeException thrownError = new RuntimeException();
@@ -131,7 +111,8 @@ public class RecordEndpointReadDecoratedTest {
 				.getReturnValue("factorErrorHandler", 0);
 
 		errorHandler.MCR.assertParameters("handleError", 0, "someAuthToken", thrownError,
-				"Error reading record with recordType: someType and " + "recordId: someId.");
+				"Error reading decorated record with recordType: someType and "
+						+ "recordId: someId.");
 		errorHandler.MCR.assertReturn("handleError", 0, response);
 	}
 
@@ -154,7 +135,12 @@ public class RecordEndpointReadDecoratedTest {
 
 		var endpointConverter = (EndpointConverterSpy) instanceFactory.MCR
 				.getReturnValue("factorEndpointConverter", 0);
-		endpointConverter.MCR.assertParameters("convertConvertibleToString", 0, requestSpy,
+
+		var urlHandler = (UrlHandlerSpy) instanceFactory.MCR.getReturnValue("factorUrlHandler", 0);
+		APIUrls apiUrls = (APIUrls) urlHandler.MCR.assertCalledParametersReturn("getAPIUrls",
+				requestSpy);
+
+		endpointConverter.MCR.assertParameters("convertConvertibleToString", 0, apiUrls,
 				contentType, dataRecord);
 		endpointConverter.MCR.assertReturn("convertConvertibleToString", 0, response.getEntity());
 

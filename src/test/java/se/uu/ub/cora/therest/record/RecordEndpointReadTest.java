@@ -43,6 +43,7 @@ import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
 import se.uu.ub.cora.therest.AnnotationTestHelper;
 import se.uu.ub.cora.therest.dependency.TheRestInstanceFactorySpy;
 import se.uu.ub.cora.therest.dependency.TheRestInstanceProvider;
+import se.uu.ub.cora.therest.url.HttpServletRequestSpy;
 import se.uu.ub.cora.therest.url.UrlHandlerSpy;
 
 public class RecordEndpointReadTest {
@@ -61,7 +62,7 @@ public class RecordEndpointReadTest {
 	private RecordEndpointRead recordEndpoint;
 	private OldSpiderInstanceFactorySpy spiderInstanceFactorySpy;
 	private Response response;
-	private HttpServletRequestOldSpy requestSpy;
+	private HttpServletRequestSpy requestSpy;
 	private LoggerFactorySpy loggerFactorySpy;
 	private DataFactorySpy dataFactorySpy;
 
@@ -94,7 +95,7 @@ public class RecordEndpointReadTest {
 		spiderInstanceFactorySpy = new OldSpiderInstanceFactorySpy();
 		SpiderInstanceProvider.setSpiderInstanceFactory(spiderInstanceFactorySpy);
 
-		requestSpy = new HttpServletRequestOldSpy();
+		requestSpy = new HttpServletRequestSpy();
 		recordEndpoint = new RecordEndpointRead(requestSpy);
 	}
 

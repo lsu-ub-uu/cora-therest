@@ -18,22 +18,22 @@
  */
 package se.uu.ub.cora.therest.converter;
 
-import jakarta.servlet.http.HttpServletRequest;
 import se.uu.ub.cora.data.ExternallyConvertible;
+import se.uu.ub.cora.therest.url.APIUrls;
 
 public interface EndpointConverter {
 
 	/**
 	 * Converts a convertible object to a string representation based on the given accept header.
 	 *
-	 * @param request
-	 *            The HttpServletRequest that is making the current request.
+	 * @param apiUrls
+	 *            An APIUrls populated with the urls to reach the running system
 	 * @param accept
 	 *            The accept header value indicating the desired format.
 	 * @param convertible
 	 *            The convertible object to be converted.
 	 * @return A string representation of the convertible object in the specified format.
 	 */
-	public String convertConvertibleToString(HttpServletRequest request, String accept,
+	public String convertConvertibleToString(APIUrls apiUrls, String accept,
 			ExternallyConvertible convertible);
 }
