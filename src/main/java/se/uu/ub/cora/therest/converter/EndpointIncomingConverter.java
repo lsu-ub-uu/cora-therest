@@ -19,21 +19,19 @@
 package se.uu.ub.cora.therest.converter;
 
 import se.uu.ub.cora.data.ExternallyConvertible;
-import se.uu.ub.cora.therest.url.APIUrls;
 
-public interface EndpointConverter {
+/**
+ * EndpointIncomingConverter converts Strings to Data
+ */
+public interface EndpointIncomingConverter {
 
 	/**
-	 * Converts a convertible object to a string representation based on the given accept header.
+	 * Converts a String to Data
 	 *
-	 * @param apiUrls
-	 *            An APIUrls populated with the urls to reach the running system
-	 * @param accept
-	 *            The accept header value indicating the desired format.
-	 * @param convertible
-	 *            The convertible object to be converted.
-	 * @return A string representation of the convertible object in the specified format.
+	 * @param data
+	 *            A String with the incoming data to convert
+	 * @return A DataGroup with the converted data
 	 */
-	public String convertConvertibleToString(APIUrls apiUrls, String accept,
-			ExternallyConvertible convertible);
+	public ExternallyConvertible convertStringToConvertible(String data);
+
 }

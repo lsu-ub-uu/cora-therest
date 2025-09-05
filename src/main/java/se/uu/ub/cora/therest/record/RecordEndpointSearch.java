@@ -31,18 +31,12 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
-import se.uu.ub.cora.converter.ConverterProvider;
-import se.uu.ub.cora.converter.StringToExternallyConvertibleConverter;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataList;
 import se.uu.ub.cora.data.ExternallyConvertible;
-import se.uu.ub.cora.data.converter.JsonToDataConverter;
-import se.uu.ub.cora.data.converter.JsonToDataConverterProvider;
-import se.uu.ub.cora.json.parser.JsonParser;
-import se.uu.ub.cora.json.parser.JsonValue;
-import se.uu.ub.cora.json.parser.org.OrgJsonParser;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
 import se.uu.ub.cora.spider.record.RecordSearcher;
+import se.uu.ub.cora.therest.converter.EndpointIncomingConverter;
 import se.uu.ub.cora.therest.dependency.TheRestInstanceProvider;
 import se.uu.ub.cora.therest.error.ErrorHandler;
 import se.uu.ub.cora.therest.url.APIUrls;
@@ -53,8 +47,6 @@ public class RecordEndpointSearch {
 	private static final String APPLICATION_VND_CORA_RECORD_LIST_JSON = "application/vnd.cora.recordList+json";
 	private static final String APPLICATION_VND_CORA_RECORD_LIST_JSON_QS09 = "application/vnd.cora.recordList+json;qs=0.9";
 	HttpServletRequest request;
-
-	private JsonParser jsonParser = new OrgJsonParser();
 
 	public RecordEndpointSearch(@Context HttpServletRequest req) {
 		request = req;
@@ -110,47 +102,20 @@ public class RecordEndpointSearch {
 	private Response trySearchRecord(String accept, String authToken, String searchId,
 			String searchDataAsString) {
 		DataGroup searchData = convertSearchStringToData(searchDataAsString);
-
-		RecordSearcher recordSearcher = SpiderInstanceProvider.getRecordSearcher();
-		DataList searchRecordList = recordSearcher.search(authToken, searchId, searchData);
-
+		DataList searchRecordList = search(authToken, searchId, searchData);
 		String outputRecord = convertRecordListToString(request, accept, searchRecordList);
-
-		return Response.status(Response.Status.OK).header(HttpHeaders.CONTENT_TYPE, accept)
-				.entity(outputRecord).build();
+		return createResponse(accept, outputRecord);
 	}
 
 	private DataGroup convertSearchStringToData(String searchDataAsString) {
-		String searchDataType = calculateSearchDataType(searchDataAsString);
-		return convertStringToDataGroup(searchDataType, searchDataAsString);
+		EndpointIncomingConverter endpointIncomingConverter = TheRestInstanceProvider
+				.getEndpointIncomingConverter();
+		return (DataGroup) endpointIncomingConverter.convertStringToConvertible(searchDataAsString);
 	}
 
-	private String calculateSearchDataType(String searchDataAsString) {
-		if (searchDataAsString.startsWith("<")) {
-			return "+xml";
-		}
-		return "+json";
-	}
-
-	private DataGroup convertStringToDataGroup(String accept, String input) {
-		if (accept.endsWith("+xml")) {
-			return convertXmlToDataElement(input);
-		} else {
-			return convertJsonStringToDataGroup(input);
-		}
-	}
-
-	private DataGroup convertXmlToDataElement(String input) {
-		StringToExternallyConvertibleConverter xmlToConvertibleConverter = ConverterProvider
-				.getStringToExternallyConvertibleConverter("xml");
-		return (DataGroup) xmlToConvertibleConverter.convert(input);
-	}
-
-	private DataGroup convertJsonStringToDataGroup(String jsonRecord) {
-		JsonValue jsonValue = jsonParser.parseString(jsonRecord);
-		JsonToDataConverter jsonToDataConverter = JsonToDataConverterProvider
-				.getConverterUsingJsonObject(jsonValue);
-		return (DataGroup) jsonToDataConverter.toInstance();
+	private DataList search(String authToken, String searchId, DataGroup searchData) {
+		RecordSearcher recordSearcher = SpiderInstanceProvider.getRecordSearcher();
+		return recordSearcher.search(authToken, searchId, searchData);
 	}
 
 	private String convertRecordListToString(HttpServletRequest request, String accept,
@@ -158,15 +123,12 @@ public class RecordEndpointSearch {
 		var urlHandler = TheRestInstanceProvider.getUrlHandler();
 		APIUrls apiUrls = urlHandler.getAPIUrls(request);
 
-		var endpointConverter = TheRestInstanceProvider.getEndpointConverter();
+		var endpointConverter = TheRestInstanceProvider.getEndpointOutgoingConverter();
 		return endpointConverter.convertConvertibleToString(apiUrls, accept, exConvertible);
 	}
 
-	JsonParser getJsonParser() {
-		return jsonParser;
-	}
-
-	void setJsonParser(JsonParser jsonParser) {
-		this.jsonParser = jsonParser;
+	private Response createResponse(String accept, String outputRecord) {
+		return Response.status(Response.Status.OK).header(HttpHeaders.CONTENT_TYPE, accept)
+				.entity(outputRecord).build();
 	}
 }

@@ -21,14 +21,14 @@ package se.uu.ub.cora.therest.spy;
 import se.uu.ub.cora.data.ExternallyConvertible;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 import se.uu.ub.cora.testutils.mrv.MethodReturnValues;
-import se.uu.ub.cora.therest.converter.EndpointConverter;
+import se.uu.ub.cora.therest.converter.EndpointOutgoingConverter;
 import se.uu.ub.cora.therest.url.APIUrls;
 
-public class EndpointConverterSpy implements EndpointConverter {
+public class EndpointOutgoingConverterSpy implements EndpointOutgoingConverter {
 	public MethodCallRecorder MCR = new MethodCallRecorder();
 	public MethodReturnValues MRV = new MethodReturnValues();
 
-	public EndpointConverterSpy() {
+	public EndpointOutgoingConverterSpy() {
 		MCR.useMRV(MRV);
 		MRV.setDefaultReturnValuesSupplier("convertConvertibleToString",
 				() -> "someConvertedRecord");

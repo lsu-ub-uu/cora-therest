@@ -16,10 +16,10 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.uu.ub.cora.therest.dependency;
 
-import se.uu.ub.cora.therest.converter.EndpointConverter;
+import se.uu.ub.cora.therest.converter.EndpointIncomingConverter;
+import se.uu.ub.cora.therest.converter.EndpointOutgoingConverter;
 import se.uu.ub.cora.therest.error.ErrorHandler;
 import se.uu.ub.cora.therest.url.UrlHandler;
 
@@ -35,12 +35,16 @@ public final class TheRestInstanceProvider {
 		return factory.factorUrlHandler();
 	}
 
-	public static EndpointConverter getEndpointConverter() {
-		return factory.factorEndpointConverter();
-	}
-
 	public static ErrorHandler getErrorHandler() {
 		return factory.factorErrorHandler();
+	}
+
+	public static EndpointOutgoingConverter getEndpointOutgoingConverter() {
+		return factory.factorEndpointOutgoingConverter();
+	}
+
+	public static EndpointIncomingConverter getEndpointIncomingConverter() {
+		return factory.factorEndpointIncomingConverter();
 	}
 
 	public static void onlyForTestSetTheRestInstanceFactory(TheRestInstanceFactory factory) {

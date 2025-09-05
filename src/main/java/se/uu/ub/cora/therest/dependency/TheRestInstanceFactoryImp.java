@@ -19,8 +19,12 @@
 
 package se.uu.ub.cora.therest.dependency;
 
-import se.uu.ub.cora.therest.converter.EndpointConverter;
-import se.uu.ub.cora.therest.converter.EndpointConverterImp;
+import se.uu.ub.cora.json.parser.JsonParser;
+import se.uu.ub.cora.json.parser.org.OrgJsonParser;
+import se.uu.ub.cora.therest.converter.EndpointIncomingConverter;
+import se.uu.ub.cora.therest.converter.EndpointIncomingConverterImp;
+import se.uu.ub.cora.therest.converter.EndpointOutgoingConverter;
+import se.uu.ub.cora.therest.converter.EndpointOutgoingConverterImp;
 import se.uu.ub.cora.therest.error.ErrorHandler;
 import se.uu.ub.cora.therest.error.ErrorHandlerImp;
 import se.uu.ub.cora.therest.url.UrlHandler;
@@ -34,13 +38,19 @@ public final class TheRestInstanceFactoryImp implements TheRestInstanceFactory {
 	}
 
 	@Override
-	public EndpointConverter factorEndpointConverter() {
-		return new EndpointConverterImp();
+	public ErrorHandler factorErrorHandler() {
+		return new ErrorHandlerImp();
 	}
 
 	@Override
-	public ErrorHandler factorErrorHandler() {
-		return new ErrorHandlerImp();
+	public EndpointOutgoingConverter factorEndpointOutgoingConverter() {
+		return new EndpointOutgoingConverterImp();
+	}
+
+	@Override
+	public EndpointIncomingConverter factorEndpointIncomingConverter() {
+		JsonParser jsonParser = new OrgJsonParser();
+		return new EndpointIncomingConverterImp(jsonParser);
 	}
 
 }

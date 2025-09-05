@@ -34,7 +34,7 @@ import se.uu.ub.cora.spider.spies.SpiderInstanceFactorySpy;
 import se.uu.ub.cora.therest.AnnotationTestHelper;
 import se.uu.ub.cora.therest.dependency.TheRestInstanceFactorySpy;
 import se.uu.ub.cora.therest.dependency.TheRestInstanceProvider;
-import se.uu.ub.cora.therest.spy.EndpointConverterSpy;
+import se.uu.ub.cora.therest.spy.EndpointOutgoingConverterSpy;
 import se.uu.ub.cora.therest.spy.ErrorHandlerSpy;
 import se.uu.ub.cora.therest.url.APIUrls;
 import se.uu.ub.cora.therest.url.HttpServletRequestSpy;
@@ -133,8 +133,8 @@ public class RecordEndpointReadDecoratedTest {
 		var dataRecord = decoratedRecordReader.MCR.assertCalledParametersReturn(
 				"readDecoratedRecord", "someAuthToken", "someType", "someId");
 
-		var endpointConverter = (EndpointConverterSpy) instanceFactory.MCR
-				.getReturnValue("factorEndpointConverter", 0);
+		var endpointConverter = (EndpointOutgoingConverterSpy) instanceFactory.MCR
+				.getReturnValue("factorEndpointOutgoingConverter", 0);
 
 		var urlHandler = (UrlHandlerSpy) instanceFactory.MCR.getReturnValue("factorUrlHandler", 0);
 		APIUrls apiUrls = (APIUrls) urlHandler.MCR.assertCalledParametersReturn("getAPIUrls",

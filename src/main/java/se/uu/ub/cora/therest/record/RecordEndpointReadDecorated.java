@@ -92,7 +92,7 @@ public class RecordEndpointReadDecorated {
 		var urlHandler = TheRestInstanceProvider.getUrlHandler();
 		APIUrls apiUrls = urlHandler.getAPIUrls(request);
 
-		var endpointConverter = TheRestInstanceProvider.getEndpointConverter();
+		var endpointConverter = TheRestInstanceProvider.getEndpointOutgoingConverter();
 		return endpointConverter.convertConvertibleToString(apiUrls, accept, dataRecord);
 	}
 

@@ -28,7 +28,7 @@ import se.uu.ub.cora.data.converter.DataToJsonConverterFactory;
 import se.uu.ub.cora.data.converter.DataToJsonConverterProvider;
 import se.uu.ub.cora.therest.url.APIUrls;
 
-public class EndpointConverterImp implements EndpointConverter {
+public class EndpointOutgoingConverterImp implements EndpointOutgoingConverter {
 	private String restUrl;
 	private String iiifUrl;
 

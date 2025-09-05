@@ -20,9 +20,11 @@ package se.uu.ub.cora.therest.dependency;
 
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 import se.uu.ub.cora.testutils.mrv.MethodReturnValues;
-import se.uu.ub.cora.therest.converter.EndpointConverter;
+import se.uu.ub.cora.therest.converter.EndpointIncomingConverter;
+import se.uu.ub.cora.therest.converter.EndpointOutgoingConverter;
 import se.uu.ub.cora.therest.error.ErrorHandler;
-import se.uu.ub.cora.therest.spy.EndpointConverterSpy;
+import se.uu.ub.cora.therest.spy.EndpointIncomingConverterSpy;
+import se.uu.ub.cora.therest.spy.EndpointOutgoingConverterSpy;
 import se.uu.ub.cora.therest.spy.ErrorHandlerSpy;
 import se.uu.ub.cora.therest.url.UrlHandler;
 import se.uu.ub.cora.therest.url.UrlHandlerSpy;
@@ -34,8 +36,11 @@ public class TheRestInstanceFactorySpy implements TheRestInstanceFactory {
 	public TheRestInstanceFactorySpy() {
 		MCR.useMRV(MRV);
 		MRV.setDefaultReturnValuesSupplier("factorUrlHandler", UrlHandlerSpy::new);
-		MRV.setDefaultReturnValuesSupplier("factorEndpointConverter", EndpointConverterSpy::new);
 		MRV.setDefaultReturnValuesSupplier("factorErrorHandler", ErrorHandlerSpy::new);
+		MRV.setDefaultReturnValuesSupplier("factorEndpointOutgoingConverter",
+				EndpointOutgoingConverterSpy::new);
+		MRV.setDefaultReturnValuesSupplier("factorEndpointIncomingConverter",
+				EndpointIncomingConverterSpy::new);
 	}
 
 	@Override
@@ -44,13 +49,18 @@ public class TheRestInstanceFactorySpy implements TheRestInstanceFactory {
 	}
 
 	@Override
-	public EndpointConverter factorEndpointConverter() {
-		return (EndpointConverter) MCR.addCallAndReturnFromMRV();
+	public EndpointOutgoingConverter factorEndpointOutgoingConverter() {
+		return (EndpointOutgoingConverter) MCR.addCallAndReturnFromMRV();
 	}
 
 	@Override
 	public ErrorHandler factorErrorHandler() {
 		return (ErrorHandler) MCR.addCallAndReturnFromMRV();
+	}
+
+	@Override
+	public EndpointIncomingConverter factorEndpointIncomingConverter() {
+		return (EndpointIncomingConverter) MCR.addCallAndReturnFromMRV();
 	}
 
 }

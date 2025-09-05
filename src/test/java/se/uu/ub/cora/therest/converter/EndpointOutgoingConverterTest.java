@@ -45,10 +45,10 @@ import se.uu.ub.cora.therest.record.JsonToDataConverterFactorySpy;
 import se.uu.ub.cora.therest.record.StringToExternallyConvertibleConverterSpy;
 import se.uu.ub.cora.therest.url.APIUrls;
 
-public class EndpointConverterTest {
+public class EndpointOutgoingConverterTest {
 	private static final String ACCEPT_XML = "application/vnd.cora.record-decorated+xml";
 	private static final String ACCEPT_JSON = "application/vnd.cora.record-decorated+json";
-	private EndpointConverter converter;
+	private EndpointOutgoingConverter converter;
 	private APIUrls apiUrls;
 	private DataToJsonConverterFactoryCreatorSpy converterFactoryCreatorSpy;
 	private JsonToDataConverterFactorySpy jsonToDataConverterFactorySpy;
@@ -86,7 +86,7 @@ public class EndpointConverterTest {
 
 		externallyConvertable = new ExternallyConvertibleSpy();
 
-		converter = new EndpointConverterImp();
+		converter = new EndpointOutgoingConverterImp();
 	}
 
 	private void setupUrlHandler() {

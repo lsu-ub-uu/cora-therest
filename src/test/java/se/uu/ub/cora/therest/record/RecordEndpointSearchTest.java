@@ -21,8 +21,6 @@
 package se.uu.ub.cora.therest.record;
 
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertSame;
-import static org.testng.Assert.assertTrue;
 
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -30,20 +28,16 @@ import org.testng.annotations.Test;
 
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
-import se.uu.ub.cora.converter.ConverterProvider;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataList;
-import se.uu.ub.cora.data.converter.JsonToDataConverterProvider;
-import se.uu.ub.cora.json.parser.org.OrgJsonParser;
-import se.uu.ub.cora.logger.LoggerProvider;
-import se.uu.ub.cora.logger.spies.LoggerFactorySpy;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
 import se.uu.ub.cora.spider.spies.RecordSearcherSpy;
 import se.uu.ub.cora.spider.spies.SpiderInstanceFactorySpy;
 import se.uu.ub.cora.therest.AnnotationTestHelper;
 import se.uu.ub.cora.therest.dependency.TheRestInstanceFactorySpy;
 import se.uu.ub.cora.therest.dependency.TheRestInstanceProvider;
-import se.uu.ub.cora.therest.spy.EndpointConverterSpy;
+import se.uu.ub.cora.therest.spy.EndpointIncomingConverterSpy;
+import se.uu.ub.cora.therest.spy.EndpointOutgoingConverterSpy;
 import se.uu.ub.cora.therest.spy.ErrorHandlerSpy;
 import se.uu.ub.cora.therest.url.APIUrls;
 import se.uu.ub.cora.therest.url.HttpServletRequestSpy;
@@ -54,19 +48,14 @@ public class RecordEndpointSearchTest {
 	private static final String APPLICATION_VND_CORA_RECORD_LIST_JSON = "application/vnd.cora.recordList+json";
 	private static final String APPLICATION_VND_CORA_RECORD_LIST_JSON_QS09 = "application/vnd.cora.recordList+json;qs=0.9";
 	private static final String AUTH_TOKEN = "authToken";
-	private JsonParserSpy jsonParser;
 
 	private RecordEndpointSearch recordEndpoint;
 	private SpiderInstanceFactorySpy spiderInstanceFactorySpy;
 	private Response response;
 	private HttpServletRequestSpy requestSpy;
-	private LoggerFactorySpy loggerFactorySpy;
 
 	private String defaultJson = "{\"name\":\"someRecordType\",\"children\":[]}";
 	private String defaultXml = "<someXml></someXml>";
-	private ConverterFactorySpy converterFactorySpy;
-	private JsonToDataConverterFactorySpy jsonToDataConverterFactorySpy = new JsonToDataConverterFactorySpy();
-	private StringToExternallyConvertibleConverterSpy stringToExternallyConvertibleConverterSpy;
 	private TheRestInstanceFactorySpy instanceFactory;
 
 	@BeforeMethod
@@ -77,45 +66,13 @@ public class RecordEndpointSearchTest {
 		instanceFactory = new TheRestInstanceFactorySpy();
 		TheRestInstanceProvider.onlyForTestSetTheRestInstanceFactory(instanceFactory);
 
-		loggerFactorySpy = new LoggerFactorySpy();
-		LoggerProvider.setLoggerFactory(loggerFactorySpy);
-		setupUrlHandler();
-
-		stringToExternallyConvertibleConverterSpy = new StringToExternallyConvertibleConverterSpy();
-		converterFactorySpy = new ConverterFactorySpy();
-		converterFactorySpy.MRV.setDefaultReturnValuesSupplier(
-				"factorStringToExternallyConvertableConverter",
-				() -> stringToExternallyConvertibleConverterSpy);
-		ConverterProvider.setConverterFactory("xml", converterFactorySpy);
-
-		jsonToDataConverterFactorySpy = new JsonToDataConverterFactorySpy();
-		JsonToDataConverterProvider.setJsonToDataConverterFactory(jsonToDataConverterFactorySpy);
-
 		requestSpy = new HttpServletRequestSpy();
 		recordEndpoint = new RecordEndpointSearch(requestSpy);
-
-		setUpSpiesInRecordEndpoint();
 	}
 
 	@AfterMethod
 	public void afterMethod() {
 		TheRestInstanceProvider.onlyForTestResetTheRestInstanceFactory();
-	}
-
-	private void setupUrlHandler() {
-		instanceFactory = new TheRestInstanceFactorySpy();
-		TheRestInstanceProvider.onlyForTestSetTheRestInstanceFactory(instanceFactory);
-	}
-
-	private void setUpSpiesInRecordEndpoint() {
-		jsonParser = new JsonParserSpy();
-		recordEndpoint.setJsonParser(jsonParser);
-	}
-
-	@Test
-	public void testInit() {
-		recordEndpoint = new RecordEndpointSearch(requestSpy);
-		assertTrue(recordEndpoint.getJsonParser() instanceof OrgJsonParser);
 	}
 
 	@Test
@@ -182,7 +139,7 @@ public class RecordEndpointSearchTest {
 		response = recordEndpoint.searchRecordJson(AUTH_TOKEN, AUTH_TOKEN, "aSearchId",
 				defaultJson);
 
-		DataGroup searchData = assertConversionOfAndReturnSearchDataAsElementForJSON();
+		DataGroup searchData = assertConversionOfAndReturnSearchDataAsElement(defaultJson);
 		assertComponentsCalledCorrectlyForContentType(searchData,
 				APPLICATION_VND_CORA_RECORD_LIST_JSON, response);
 	}
@@ -191,7 +148,7 @@ public class RecordEndpointSearchTest {
 	public void testSearchRecordForJsonInXmlOut() {
 		response = recordEndpoint.searchRecordXml(AUTH_TOKEN, AUTH_TOKEN, "aSearchId", defaultJson);
 
-		DataGroup searchData = assertConversionOfAndReturnSearchDataAsElementForJSON();
+		DataGroup searchData = assertConversionOfAndReturnSearchDataAsElement(defaultJson);
 		assertComponentsCalledCorrectlyForContentType(searchData,
 				APPLICATION_VND_CORA_RECORD_LIST_XML, response);
 	}
@@ -200,7 +157,7 @@ public class RecordEndpointSearchTest {
 	public void testSearchRecordForXmlInXmlOut() {
 		response = recordEndpoint.searchRecordXml(AUTH_TOKEN, AUTH_TOKEN, "aSearchId", defaultXml);
 
-		DataGroup searchData = assertConversionOfAndReturnSearchDataAsElementForXML();
+		DataGroup searchData = assertConversionOfAndReturnSearchDataAsElement(defaultXml);
 		assertComponentsCalledCorrectlyForContentType(searchData,
 				APPLICATION_VND_CORA_RECORD_LIST_XML, response);
 	}
@@ -209,24 +166,17 @@ public class RecordEndpointSearchTest {
 	public void testSearchRecordForXmlInJsonOut() {
 		response = recordEndpoint.searchRecordJson(AUTH_TOKEN, AUTH_TOKEN, "aSearchId", defaultXml);
 
-		DataGroup searchData = assertConversionOfAndReturnSearchDataAsElementForXML();
+		DataGroup searchData = assertConversionOfAndReturnSearchDataAsElement(defaultXml);
 		assertComponentsCalledCorrectlyForContentType(searchData,
 				APPLICATION_VND_CORA_RECORD_LIST_JSON, response);
 	}
 
-	private DataGroup assertConversionOfAndReturnSearchDataAsElementForJSON() {
-		assertSame(jsonParser.jsonString, defaultJson);
-		assertSame(jsonToDataConverterFactorySpy.jsonValue, jsonParser.returnedJsonValue);
-		JsonToDataConverterSpy jsonToDataConverterSpy = jsonToDataConverterFactorySpy.jsonToDataConverterSpy;
-		return jsonToDataConverterSpy.dataPartToReturn;
-	}
+	private DataGroup assertConversionOfAndReturnSearchDataAsElement(String string) {
+		var endpointConverter = (EndpointIncomingConverterSpy) instanceFactory.MCR
+				.getReturnValue("factorEndpointIncomingConverter", 0);
+		return (DataGroup) endpointConverter.MCR
+				.assertCalledParametersReturn("convertStringToConvertible", string);
 
-	private DataGroup assertConversionOfAndReturnSearchDataAsElementForXML() {
-		var xmlToDataConverter = (StringToExternallyConvertibleConverterSpy) converterFactorySpy.MCR
-				.getReturnValue("factorStringToExternallyConvertableConverter", 0);
-
-		return (DataGroup) xmlToDataConverter.MCR.assertCalledParametersReturn("convert",
-				defaultXml);
 	}
 
 	private void assertComponentsCalledCorrectlyForContentType(DataGroup searchData,
@@ -251,8 +201,8 @@ public class RecordEndpointSearchTest {
 
 	private String assertConverterCalledAndReturn(String contentType, DataList dataRecordList,
 			APIUrls apiUrls) {
-		var endpointConverter = (EndpointConverterSpy) instanceFactory.MCR
-				.getReturnValue("factorEndpointConverter", 0);
+		var endpointConverter = (EndpointOutgoingConverterSpy) instanceFactory.MCR
+				.getReturnValue("factorEndpointOutgoingConverter", 0);
 		endpointConverter.MCR.assertParameters("convertConvertibleToString", 0, apiUrls,
 				contentType, dataRecordList);
 		return (String) endpointConverter.MCR.getReturnValue("convertConvertibleToString", 0);

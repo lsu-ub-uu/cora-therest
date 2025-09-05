@@ -19,7 +19,8 @@
 
 package se.uu.ub.cora.therest.dependency;
 
-import se.uu.ub.cora.therest.converter.EndpointConverter;
+import se.uu.ub.cora.therest.converter.EndpointIncomingConverter;
+import se.uu.ub.cora.therest.converter.EndpointOutgoingConverter;
 import se.uu.ub.cora.therest.error.ErrorHandler;
 import se.uu.ub.cora.therest.url.UrlHandler;
 
@@ -33,17 +34,24 @@ public interface TheRestInstanceFactory {
 	UrlHandler factorUrlHandler();
 
 	/**
-	 * factorEndpointConverter factors a new EndpointConverter
-	 * 
-	 * @return the newly created EndpointConverter
-	 */
-	EndpointConverter factorEndpointConverter();
-
-	/**
 	 * factorErrorHandler factors a new ErrorHandler
 	 * 
 	 * @return the newly created ErrorHandler
 	 */
 	ErrorHandler factorErrorHandler();
+
+	/**
+	 * factorEndpointOutgoingConverter factors a new EndpointConverter
+	 * 
+	 * @return the newly created EndpointConverter
+	 */
+	EndpointOutgoingConverter factorEndpointOutgoingConverter();
+
+	/**
+	 * factorEndpointIncomingConverter factors a new EndpointConverter
+	 * 
+	 * @return the newly created EndpointConverter
+	 */
+	EndpointIncomingConverter factorEndpointIncomingConverter();
 
 }
