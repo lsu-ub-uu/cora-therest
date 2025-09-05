@@ -71,11 +71,7 @@ public class RecordEndpointReadDecorated {
 		try {
 			return tryReadRecord(request, accept, authToken, type, id);
 		} catch (Exception error) {
-			String errorFromCaller = "Error reading decorated record with recordType: {0} and "
-					+ "recordId: {1}.";
-			ErrorHandler errorHandler = TheRestInstanceProvider.getErrorHandler();
-			return errorHandler.handleError(authToken, error,
-					MessageFormat.format(errorFromCaller, type, id));
+			return handleError(authToken, type, id, error);
 		}
 	}
 
@@ -105,4 +101,11 @@ public class RecordEndpointReadDecorated {
 				.entity(convertedDataRecord).build();
 	}
 
+	private Response handleError(String authToken, String type, String id, Exception error) {
+		String errorFromCaller = "Error reading decorated record with recordType: {0} and "
+				+ "recordId: {1}.";
+		ErrorHandler errorHandler = TheRestInstanceProvider.getErrorHandler();
+		return errorHandler.handleError(authToken, error,
+				MessageFormat.format(errorFromCaller, type, id));
+	}
 }
