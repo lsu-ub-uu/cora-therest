@@ -47,6 +47,11 @@ public class RecordEndpointSearchTest {
 	private static final String APPLICATION_VND_CORA_RECORD_LIST_XML = "application/vnd.cora.recordList+xml";
 	private static final String APPLICATION_VND_CORA_RECORD_LIST_JSON = "application/vnd.cora.recordList+json";
 	private static final String APPLICATION_VND_CORA_RECORD_LIST_JSON_QS09 = "application/vnd.cora.recordList+json;qs=0.9";
+
+	private static final String APPLICATION_VND_CORA_RECORD_LIST_DECORATED_XML = "application/vnd.cora.recordList-decorated+xml";
+	private static final String APPLICATION_VND_CORA_RECORD_LIST_DECORATED_JSON = "application/vnd.cora.recordList-decorated+json";
+	private static final String APPLICATION_VND_CORA_RECORD_LIST_DECORATED_JSON_QS09 = "application/vnd.cora.recordList-decorated+json;qs=0.9";
+
 	private static final String AUTH_TOKEN = "authToken";
 
 	private RecordEndpointSearch recordEndpoint;
@@ -104,6 +109,33 @@ public class RecordEndpointSearchTest {
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("GET", "searchResult/{searchId}");
 		annotationHelper.assertProducesAnnotation(APPLICATION_VND_CORA_RECORD_LIST_XML);
+		annotationHelper.assertAnnotationForAuthTokenParameters();
+		annotationHelper.assertPathParamAnnotationByNameAndPosition("searchId", 2);
+		annotationHelper.assertQueryParamAnnotationByNameAndPosition("searchData", 3);
+	}
+
+	@Test
+	public void testAnnotationsForSearchRecordDecoratedJson() throws Exception {
+		AnnotationTestHelper annotationHelper = AnnotationTestHelper
+				.createAnnotationTestHelperForClassMethodNameAndNumOfParameters(
+						recordEndpoint.getClass(), "searchRecordDecoratedJson", 4);
+
+		annotationHelper.assertHttpMethodAndPathAnnotation("GET", "searchResult/{searchId}");
+		annotationHelper
+				.assertProducesAnnotation(APPLICATION_VND_CORA_RECORD_LIST_DECORATED_JSON_QS09);
+		annotationHelper.assertAnnotationForAuthTokenParameters();
+		annotationHelper.assertPathParamAnnotationByNameAndPosition("searchId", 2);
+		annotationHelper.assertQueryParamAnnotationByNameAndPosition("searchData", 3);
+	}
+
+	@Test
+	public void testAnnotationsForSearchRecordDecoratedXml() throws Exception {
+		AnnotationTestHelper annotationHelper = AnnotationTestHelper
+				.createAnnotationTestHelperForClassMethodNameAndNumOfParameters(
+						recordEndpoint.getClass(), "searchRecordDecoratedXml", 4);
+
+		annotationHelper.assertHttpMethodAndPathAnnotation("GET", "searchResult/{searchId}");
+		annotationHelper.assertProducesAnnotation(APPLICATION_VND_CORA_RECORD_LIST_DECORATED_XML);
 		annotationHelper.assertAnnotationForAuthTokenParameters();
 		annotationHelper.assertPathParamAnnotationByNameAndPosition("searchId", 2);
 		annotationHelper.assertQueryParamAnnotationByNameAndPosition("searchData", 3);

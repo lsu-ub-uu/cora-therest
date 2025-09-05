@@ -46,6 +46,10 @@ public class RecordEndpointSearch {
 	private static final String APPLICATION_VND_CORA_RECORD_LIST_XML = "application/vnd.cora.recordList+xml";
 	private static final String APPLICATION_VND_CORA_RECORD_LIST_JSON = "application/vnd.cora.recordList+json";
 	private static final String APPLICATION_VND_CORA_RECORD_LIST_JSON_QS09 = "application/vnd.cora.recordList+json;qs=0.9";
+
+	private static final String APPLICATION_VND_CORA_RECORD_LIST_DECORATED_XML = "application/vnd.cora.recordList-decorated+xml";
+	private static final String APPLICATION_VND_CORA_RECORD_LIST_DECORATED_JSON_QS09 = "application/vnd.cora.recordList-decorated+json;qs=0.9";
+
 	HttpServletRequest request;
 
 	public RecordEndpointSearch(@Context HttpServletRequest req) {
@@ -70,6 +74,30 @@ public class RecordEndpointSearch {
 			@QueryParam("searchData") String searchDataAsString) {
 		return searchRecord(APPLICATION_VND_CORA_RECORD_LIST_XML, headerAuthToken, queryAuthToken,
 				searchId, searchDataAsString);
+	}
+
+	@GET
+	@Path("searchResult/{searchId}")
+	@Produces({ APPLICATION_VND_CORA_RECORD_LIST_DECORATED_JSON_QS09 })
+	public Response searchRecordDecoratedJson(@HeaderParam("authToken") String headerAuthToken,
+			@QueryParam("authToken") String queryAuthToken, @PathParam("searchId") String searchId,
+			@QueryParam("searchData") String searchDataAsString) {
+		// return searchRecord(APPLICATION_VND_CORA_RECORD_LIST_JSON, headerAuthToken,
+		// queryAuthToken,
+		// searchId, searchDataAsString);
+		return null;
+	}
+
+	@GET
+	@Path("searchResult/{searchId}")
+	@Produces({ APPLICATION_VND_CORA_RECORD_LIST_DECORATED_XML })
+	public Response searchRecordDecoratedXml(@HeaderParam("authToken") String headerAuthToken,
+			@QueryParam("authToken") String queryAuthToken, @PathParam("searchId") String searchId,
+			@QueryParam("searchData") String searchDataAsString) {
+		// return searchRecord(APPLICATION_VND_CORA_RECORD_LIST_JSON, headerAuthToken,
+		// queryAuthToken,
+		// searchId, searchDataAsString);
+		return null;
 	}
 
 	private Response searchRecord(String accept, String headerAuthToken, String queryAuthToken,
