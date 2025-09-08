@@ -33,6 +33,8 @@ import se.uu.ub.cora.therest.converter.EndpointOutgoingConverter;
 import se.uu.ub.cora.therest.converter.EndpointOutgoingConverterImp;
 import se.uu.ub.cora.therest.error.ErrorHandler;
 import se.uu.ub.cora.therest.error.ErrorHandlerImp;
+import se.uu.ub.cora.therest.record.EndpointSearch;
+import se.uu.ub.cora.therest.record.EndpointSearchImp;
 import se.uu.ub.cora.therest.url.UrlHandler;
 import se.uu.ub.cora.therest.url.UrlHandlerImp;
 
@@ -77,4 +79,10 @@ public class TheRestInstanceFactoryTest {
 				.onlyForTestGetJsonParser() instanceof OrgJsonParser);
 	}
 
+	@Test
+	public void testFactorEndpointSearch() {
+		EndpointSearch es = factory.factorEndpointSearch();
+
+		assertTrue(es instanceof EndpointSearchImp);
+	}
 }

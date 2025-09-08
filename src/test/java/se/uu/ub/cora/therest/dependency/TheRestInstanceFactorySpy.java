@@ -23,6 +23,8 @@ import se.uu.ub.cora.testutils.mrv.MethodReturnValues;
 import se.uu.ub.cora.therest.converter.EndpointIncomingConverter;
 import se.uu.ub.cora.therest.converter.EndpointOutgoingConverter;
 import se.uu.ub.cora.therest.error.ErrorHandler;
+import se.uu.ub.cora.therest.record.EndpointSearch;
+import se.uu.ub.cora.therest.record.EndpointSearchSpy;
 import se.uu.ub.cora.therest.spy.EndpointIncomingConverterSpy;
 import se.uu.ub.cora.therest.spy.EndpointOutgoingConverterSpy;
 import se.uu.ub.cora.therest.spy.ErrorHandlerSpy;
@@ -41,6 +43,7 @@ public class TheRestInstanceFactorySpy implements TheRestInstanceFactory {
 				EndpointOutgoingConverterSpy::new);
 		MRV.setDefaultReturnValuesSupplier("factorEndpointIncomingConverter",
 				EndpointIncomingConverterSpy::new);
+		MRV.setDefaultReturnValuesSupplier("factorEndpointSearch", EndpointSearchSpy::new);
 	}
 
 	@Override
@@ -61,6 +64,11 @@ public class TheRestInstanceFactorySpy implements TheRestInstanceFactory {
 	@Override
 	public EndpointIncomingConverter factorEndpointIncomingConverter() {
 		return (EndpointIncomingConverter) MCR.addCallAndReturnFromMRV();
+	}
+
+	@Override
+	public EndpointSearch factorEndpointSearch() {
+		return (EndpointSearch) MCR.addCallAndReturnFromMRV();
 	}
 
 }

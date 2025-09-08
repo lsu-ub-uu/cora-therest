@@ -22,6 +22,7 @@ package se.uu.ub.cora.therest.dependency;
 import se.uu.ub.cora.therest.converter.EndpointIncomingConverter;
 import se.uu.ub.cora.therest.converter.EndpointOutgoingConverter;
 import se.uu.ub.cora.therest.error.ErrorHandler;
+import se.uu.ub.cora.therest.record.EndpointSearch;
 import se.uu.ub.cora.therest.url.UrlHandler;
 
 public interface TheRestInstanceFactory {
@@ -53,5 +54,12 @@ public interface TheRestInstanceFactory {
 	 * @return the newly created EndpointConverter
 	 */
 	EndpointIncomingConverter factorEndpointIncomingConverter();
+
+	/**
+	 * factorEndpointSearch factors a new EndpointSearch
+	 * 
+	 * @return the newly created EndpointSearch
+	 */
+	EndpointSearch factorEndpointSearch();
 
 }

@@ -29,7 +29,7 @@ import org.testng.annotations.Test;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
-import se.uu.ub.cora.spider.spies.DecoratedRecordReaderSpy;
+import se.uu.ub.cora.spider.spies.RecordReaderDecoratedSpy;
 import se.uu.ub.cora.spider.spies.SpiderInstanceFactorySpy;
 import se.uu.ub.cora.therest.AnnotationTestHelper;
 import se.uu.ub.cora.therest.dependency.TheRestInstanceFactorySpy;
@@ -101,7 +101,7 @@ public class RecordEndpointReadDecoratedTest {
 	@Test
 	public void testReadAndDecorateRecord_goesWrong() {
 		RuntimeException thrownError = new RuntimeException();
-		spiderInstanceFactorySpy.MRV.setAlwaysThrowException("factorDecoratedRecordReader",
+		spiderInstanceFactorySpy.MRV.setAlwaysThrowException("factorRecordReaderDecorated",
 				thrownError);
 
 		Response response = recordEndpoint.readDecoratedRecordXml("someAuthToken", "someType",
@@ -128,8 +128,8 @@ public class RecordEndpointReadDecoratedTest {
 
 	private void assertComponentsCalledCorrectlyForContentType(String contentType,
 			Response response) {
-		var decoratedRecordReader = (DecoratedRecordReaderSpy) spiderInstanceFactorySpy.MCR
-				.assertCalledParametersReturn("factorDecoratedRecordReader");
+		var decoratedRecordReader = (RecordReaderDecoratedSpy) spiderInstanceFactorySpy.MCR
+				.assertCalledParametersReturn("factorRecordReaderDecorated");
 		var dataRecord = decoratedRecordReader.MCR.assertCalledParametersReturn(
 				"readDecoratedRecord", "someAuthToken", "someType", "someId");
 

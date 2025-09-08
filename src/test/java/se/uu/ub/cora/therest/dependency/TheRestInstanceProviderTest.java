@@ -32,6 +32,7 @@ import org.testng.annotations.Test;
 import se.uu.ub.cora.therest.converter.EndpointIncomingConverter;
 import se.uu.ub.cora.therest.converter.EndpointOutgoingConverter;
 import se.uu.ub.cora.therest.error.ErrorHandler;
+import se.uu.ub.cora.therest.record.EndpointSearch;
 import se.uu.ub.cora.therest.url.UrlHandler;
 
 public class TheRestInstanceProviderTest {
@@ -105,6 +106,14 @@ public class TheRestInstanceProviderTest {
 		EndpointIncomingConverter ec = TheRestInstanceProvider.getEndpointIncomingConverter();
 
 		factory.MCR.assertReturn("factorEndpointIncomingConverter", 0, ec);
+	}
+
+	@Test(dependsOnMethods = "testDefaultInstanceFactoryIsSet")
+	public void testGetRecordSearch() {
+		setSpyFactory();
+		EndpointSearch es = TheRestInstanceProvider.getEndpointSearch();
+
+		factory.MCR.assertReturn("factorEndpointSearch", 0, es);
 	}
 
 }
