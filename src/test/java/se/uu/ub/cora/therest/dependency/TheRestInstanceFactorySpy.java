@@ -44,6 +44,7 @@ public class TheRestInstanceFactorySpy implements TheRestInstanceFactory {
 		MRV.setDefaultReturnValuesSupplier("factorEndpointIncomingConverter",
 				EndpointIncomingConverterSpy::new);
 		MRV.setDefaultReturnValuesSupplier("factorEndpointSearch", EndpointSearchSpy::new);
+		MRV.setDefaultReturnValuesSupplier("factorEndpointSearchDecorated", EndpointSearchSpy::new);
 	}
 
 	@Override
@@ -68,6 +69,11 @@ public class TheRestInstanceFactorySpy implements TheRestInstanceFactory {
 
 	@Override
 	public EndpointSearch factorEndpointSearch() {
+		return (EndpointSearch) MCR.addCallAndReturnFromMRV();
+	}
+
+	@Override
+	public EndpointSearch factorEndpointSearchDecorated() {
 		return (EndpointSearch) MCR.addCallAndReturnFromMRV();
 	}
 

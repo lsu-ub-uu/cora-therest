@@ -20,6 +20,7 @@ package se.uu.ub.cora.therest.record;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertSame;
 
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -30,7 +31,7 @@ import jakarta.ws.rs.core.Response;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataList;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
-import se.uu.ub.cora.spider.spies.RecordSearcherDecoratedSpy;
+import se.uu.ub.cora.spider.record.RecordSearcher;
 import se.uu.ub.cora.spider.spies.RecordSearcherSpy;
 import se.uu.ub.cora.spider.spies.SpiderInstanceFactorySpy;
 import se.uu.ub.cora.therest.dependency.TheRestInstanceFactorySpy;
@@ -59,6 +60,7 @@ public class EndpointSearchTest {
 	String searchId = "";
 	String searchDataAsString = "";
 	private EndpointSearch endpointSearch;
+	private RecordSearcherSpy recordSearcher;
 
 	@BeforeMethod
 	private void beforeMethod() {
@@ -70,7 +72,8 @@ public class EndpointSearchTest {
 
 		requestSpy = new HttpServletRequestSpy();
 
-		endpointSearch = new EndpointSearchImp();
+		recordSearcher = new RecordSearcherSpy();
+		endpointSearch = new EndpointSearchImp(recordSearcher);
 	}
 
 	@AfterMethod
@@ -100,38 +103,8 @@ public class EndpointSearchTest {
 	}
 
 	private void assertAuthTokenSentToRecordSearch(String authToken) {
-		RecordSearcherSpy recordSearcherSpy = (RecordSearcherSpy) spiderInstanceFactorySpy.MCR
-				.getReturnValue("factorRecordSearcher", 0);
 		assertNotNull(authToken);
-		recordSearcherSpy.MCR.assertParameter("search", 0, "authToken", authToken);
-	}
-
-	@Test
-	public void testSearchRecorDecorateddRightTokenSentAsHeaderParam() {
-		response = endpointSearch.searchRecordDecorated(requestSpy, ACCEPT, HEADER_AUTH_TOKEN, null,
-				SEARCH_ID, SEARCH_DATA);
-		assertAuthTokenSentToRecordSearchDecorated(HEADER_AUTH_TOKEN);
-	}
-
-	@Test
-	public void testSearchRecordDecoratedRightTokenSentAsQueryParam() {
-		response = endpointSearch.searchRecordDecorated(requestSpy, ACCEPT, null, QUERY_AUTH_TOKEN,
-				SEARCH_ID, SEARCH_DATA);
-		assertAuthTokenSentToRecordSearchDecorated(QUERY_AUTH_TOKEN);
-	}
-
-	@Test
-	public void testSearchRecordDecoratedRightTokenSentAsBothHeaderAndQueryParam() {
-		response = endpointSearch.searchRecordDecorated(requestSpy, ACCEPT, HEADER_AUTH_TOKEN,
-				QUERY_AUTH_TOKEN, SEARCH_ID, SEARCH_DATA);
-		assertAuthTokenSentToRecordSearchDecorated(HEADER_AUTH_TOKEN);
-	}
-
-	private void assertAuthTokenSentToRecordSearchDecorated(String authToken) {
-		RecordSearcherDecoratedSpy recordSearcherSpy = (RecordSearcherDecoratedSpy) spiderInstanceFactorySpy.MCR
-				.getReturnValue("factorRecordSearcherDecorated", 0);
-		assertNotNull(authToken);
-		recordSearcherSpy.MCR.assertParameter("searchDecorated", 0, "authToken", authToken);
+		recordSearcher.MCR.assertParameter("search", 0, "authToken", authToken);
 	}
 
 	@Test
@@ -141,17 +114,6 @@ public class EndpointSearchTest {
 
 		DataGroup searchData = assertConversionOfAndReturnSearchDataAsElement(SEARCH_DATA);
 		DataList dataRecordList = assertSearchCalledAndReturnResult(searchData);
-		assertComponentsCalledCorrectlyForContentType(ACCEPT, response, dataRecordList);
-	}
-
-	@Test
-	public void testSearchRecordDecorated() {
-		response = endpointSearch.searchRecordDecorated(requestSpy, ACCEPT, HEADER_AUTH_TOKEN,
-				QUERY_AUTH_TOKEN, SEARCH_ID, SEARCH_DATA);
-
-		DataGroup searchDataAsDataGroup = assertConversionOfAndReturnSearchDataAsElement(
-				SEARCH_DATA);
-		DataList dataRecordList = assertSearchDecoratedCalledAndReturnResult(searchDataAsDataGroup);
 		assertComponentsCalledCorrectlyForContentType(ACCEPT, response, dataRecordList);
 	}
 
@@ -170,16 +132,7 @@ public class EndpointSearchTest {
 	}
 
 	private DataList assertSearchCalledAndReturnResult(DataGroup searchData) {
-		var recordSearcherSpy = (RecordSearcherSpy) spiderInstanceFactorySpy.MCR
-				.getReturnValue("factorRecordSearcher", 0);
-		return (DataList) recordSearcherSpy.MCR.assertCalledParametersReturn("search",
-				HEADER_AUTH_TOKEN, SEARCH_ID, searchData);
-	}
-
-	private DataList assertSearchDecoratedCalledAndReturnResult(DataGroup searchData) {
-		var recordSearcherSpy = (RecordSearcherDecoratedSpy) spiderInstanceFactorySpy.MCR
-				.getReturnValue("factorRecordSearcherDecorated", 0);
-		return (DataList) recordSearcherSpy.MCR.assertCalledParametersReturn("searchDecorated",
+		return (DataList) recordSearcher.MCR.assertCalledParametersReturn("search",
 				HEADER_AUTH_TOKEN, SEARCH_ID, searchData);
 	}
 
@@ -206,21 +159,9 @@ public class EndpointSearchTest {
 	@Test
 	public void testSearchRecord_goesWrong() {
 		RuntimeException thrownError = new RuntimeException();
-		spiderInstanceFactorySpy.MRV.setAlwaysThrowException("factorRecordSearcher", thrownError);
+		recordSearcher.MRV.setAlwaysThrowException("search", thrownError);
 
 		response = endpointSearch.searchRecord(requestSpy, ACCEPT, HEADER_AUTH_TOKEN,
-				QUERY_AUTH_TOKEN, SEARCH_ID, SEARCH_DATA);
-
-		assertErrorHandler(thrownError);
-	}
-
-	@Test
-	public void testSearchRecordDecorated_goesWrong() {
-		RuntimeException thrownError = new RuntimeException();
-		spiderInstanceFactorySpy.MRV.setAlwaysThrowException("factorRecordSearcherDecorated",
-				thrownError);
-
-		response = endpointSearch.searchRecordDecorated(requestSpy, ACCEPT, HEADER_AUTH_TOKEN,
 				QUERY_AUTH_TOKEN, SEARCH_ID, SEARCH_DATA);
 
 		assertErrorHandler(thrownError);
@@ -233,6 +174,13 @@ public class EndpointSearchTest {
 		errorHandler.MCR.assertParameters("handleError", 0, HEADER_AUTH_TOKEN, thrownError,
 				"Error searching record with searchId: aSearchId.");
 		errorHandler.MCR.assertReturn("handleError", 0, response);
+	}
+
+	@Test
+	public void testOnlyForTestGetRecordSearcher() {
+		RecordSearcher returnedRecordSearcher = ((EndpointSearchImp) endpointSearch)
+				.onlyForTestGetRecordSearcher();
+		assertSame(returnedRecordSearcher, recordSearcher);
 	}
 
 }

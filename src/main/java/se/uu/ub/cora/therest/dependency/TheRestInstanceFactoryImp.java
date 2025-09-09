@@ -21,6 +21,8 @@ package se.uu.ub.cora.therest.dependency;
 
 import se.uu.ub.cora.json.parser.JsonParser;
 import se.uu.ub.cora.json.parser.org.OrgJsonParser;
+import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
+import se.uu.ub.cora.spider.record.RecordSearcher;
 import se.uu.ub.cora.therest.converter.EndpointIncomingConverter;
 import se.uu.ub.cora.therest.converter.EndpointIncomingConverterImp;
 import se.uu.ub.cora.therest.converter.EndpointOutgoingConverter;
@@ -57,7 +59,14 @@ public final class TheRestInstanceFactoryImp implements TheRestInstanceFactory {
 
 	@Override
 	public EndpointSearch factorEndpointSearch() {
-		return new EndpointSearchImp();
+		RecordSearcher recordSearcher = SpiderInstanceProvider.getRecordSearcher();
+		return new EndpointSearchImp(recordSearcher);
+	}
+
+	@Override
+	public EndpointSearch factorEndpointSearchDecorated() {
+		RecordSearcher recordSearcher = SpiderInstanceProvider.getRecordSearcherDecorated();
+		return new EndpointSearchImp(recordSearcher);
 	}
 
 }

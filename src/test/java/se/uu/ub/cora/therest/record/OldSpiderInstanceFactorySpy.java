@@ -31,7 +31,6 @@ import se.uu.ub.cora.spider.record.RecordListReader;
 import se.uu.ub.cora.spider.record.RecordReader;
 import se.uu.ub.cora.spider.record.RecordReaderDecorated;
 import se.uu.ub.cora.spider.record.RecordSearcher;
-import se.uu.ub.cora.spider.record.RecordSearcherDecorated;
 import se.uu.ub.cora.spider.record.RecordUpdater;
 import se.uu.ub.cora.spider.record.RecordValidator;
 
@@ -137,7 +136,7 @@ public class OldSpiderInstanceFactorySpy implements SpiderInstanceFactory {
 	}
 
 	@Override
-	public RecordSearcherDecorated factorRecordSearcherDecorated() {
+	public RecordSearcher factorRecordSearcherDecorated() {
 		// TODO Auto-generated method stub
 		return null;
 	}

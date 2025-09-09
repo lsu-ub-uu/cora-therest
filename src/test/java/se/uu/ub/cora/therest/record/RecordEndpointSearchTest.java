@@ -112,7 +112,7 @@ public class RecordEndpointSearchTest {
 	public void testSearchRecordForJsonOut() {
 		response = recordEndpoint.searchRecordJson(HEADER_AUTH_TOKEN, QUERY_AUTH_TOKEN, SEARCH_ID,
 				SEARCH_DATA);
-		assertCallMethod("searchRecord", APPLICATION_VND_CORA_RECORD_LIST_JSON);
+		assertCallMethod("factorEndpointSearch", APPLICATION_VND_CORA_RECORD_LIST_JSON);
 	}
 
 	@Test
@@ -120,7 +120,7 @@ public class RecordEndpointSearchTest {
 		response = recordEndpoint.searchRecordXml(HEADER_AUTH_TOKEN, QUERY_AUTH_TOKEN, SEARCH_ID,
 				SEARCH_DATA);
 
-		assertCallMethod("searchRecord", APPLICATION_VND_CORA_RECORD_LIST_XML);
+		assertCallMethod("factorEndpointSearch", APPLICATION_VND_CORA_RECORD_LIST_XML);
 	}
 
 	@Test
@@ -128,7 +128,8 @@ public class RecordEndpointSearchTest {
 		response = recordEndpoint.searchRecordDecoratedJson(HEADER_AUTH_TOKEN, QUERY_AUTH_TOKEN,
 				SEARCH_ID, SEARCH_DATA);
 
-		assertCallMethod("searchRecordDecorated", APPLICATION_VND_CORA_RECORD_LIST_DECORATED_JSON);
+		assertCallMethod("factorEndpointSearchDecorated",
+				APPLICATION_VND_CORA_RECORD_LIST_DECORATED_JSON);
 	}
 
 	@Test
@@ -136,16 +137,17 @@ public class RecordEndpointSearchTest {
 		response = recordEndpoint.searchRecordDecoratedXml(HEADER_AUTH_TOKEN, QUERY_AUTH_TOKEN,
 				SEARCH_ID, SEARCH_DATA);
 
-		assertCallMethod("searchRecordDecorated", APPLICATION_VND_CORA_RECORD_LIST_DECORATED_XML);
+		assertCallMethod("factorEndpointSearchDecorated",
+				APPLICATION_VND_CORA_RECORD_LIST_DECORATED_XML);
 	}
 
-	private void assertCallMethod(String method, String contentTypeOut) {
+	private void assertCallMethod(String factorMethod, String contentTypeOut) {
 		EndpointSearchSpy endPointSearch = (EndpointSearchSpy) instanceFactory.MCR
-				.getReturnValue("factorEndpointSearch", 0);
+				.getReturnValue(factorMethod, 0);
 
-		endPointSearch.MCR.assertParameters(method, 0, requestSpy, contentTypeOut,
+		endPointSearch.MCR.assertParameters("searchRecord", 0, requestSpy, contentTypeOut,
 				HEADER_AUTH_TOKEN, QUERY_AUTH_TOKEN, SEARCH_ID, SEARCH_DATA);
-		endPointSearch.MCR.assertReturn(method, 0, response);
+		endPointSearch.MCR.assertReturn("searchRecord", 0, response);
 	}
 
 }

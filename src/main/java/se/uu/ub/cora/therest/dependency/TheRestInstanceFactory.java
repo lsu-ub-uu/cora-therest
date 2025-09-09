@@ -62,4 +62,11 @@ public interface TheRestInstanceFactory {
 	 */
 	EndpointSearch factorEndpointSearch();
 
+	/**
+	 * factorEndpointSearchDecorated factors a new EndpointSearch for decorated records
+	 * 
+	 * @return the newly created EndpointSearch
+	 */
+	EndpointSearch factorEndpointSearchDecorated();
+
 }

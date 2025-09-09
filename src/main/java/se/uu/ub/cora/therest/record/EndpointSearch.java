@@ -25,9 +25,4 @@ public interface EndpointSearch {
 
 	Response searchRecord(HttpServletRequest request, String contentTypeOut, String headerAuthToken,
 			String queryAuthToken, String searchId, String searchDataAsString);
-
-	Response searchRecordDecorated(HttpServletRequest request, String contentTypeOut,
-			String headerAuthToken, String queryAuthToken, String searchId,
-			String searchDataAsString);
-
 }

@@ -27,6 +27,9 @@ import org.testng.annotations.Test;
 import se.uu.ub.cora.json.parser.org.OrgJsonParser;
 import se.uu.ub.cora.logger.LoggerProvider;
 import se.uu.ub.cora.logger.spies.LoggerFactorySpy;
+import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
+import se.uu.ub.cora.spider.record.RecordSearcher;
+import se.uu.ub.cora.spider.spies.SpiderInstanceFactorySpy;
 import se.uu.ub.cora.therest.converter.EndpointIncomingConverter;
 import se.uu.ub.cora.therest.converter.EndpointIncomingConverterImp;
 import se.uu.ub.cora.therest.converter.EndpointOutgoingConverter;
@@ -40,12 +43,17 @@ import se.uu.ub.cora.therest.url.UrlHandlerImp;
 
 public class TheRestInstanceFactoryTest {
 	private LoggerFactorySpy loggerFactorySpy;
+	private SpiderInstanceFactorySpy spiderInstanceFactorySpy;
 	private TheRestInstanceFactory factory;
 
 	@BeforeMethod
 	public void setUp() {
 		loggerFactorySpy = new LoggerFactorySpy();
 		LoggerProvider.setLoggerFactory(loggerFactorySpy);
+
+		spiderInstanceFactorySpy = new SpiderInstanceFactorySpy();
+		SpiderInstanceProvider.setSpiderInstanceFactory(spiderInstanceFactorySpy);
+
 		factory = new TheRestInstanceFactoryImp();
 	}
 
@@ -83,6 +91,17 @@ public class TheRestInstanceFactoryTest {
 	public void testFactorEndpointSearch() {
 		EndpointSearch es = factory.factorEndpointSearch();
 
-		assertTrue(es instanceof EndpointSearchImp);
+		RecordSearcher recordSearcher = ((EndpointSearchImp) es).onlyForTestGetRecordSearcher();
+		spiderInstanceFactorySpy.MCR.assertReturn("factorRecordSearcher", 0, recordSearcher);
 	}
+
+	@Test
+	public void testFactorEndpointSearchDecorated() {
+		EndpointSearch es = factory.factorEndpointSearchDecorated();
+
+		RecordSearcher recordSearcher = ((EndpointSearchImp) es).onlyForTestGetRecordSearcher();
+		spiderInstanceFactorySpy.MCR.assertReturn("factorRecordSearcherDecorated", 0,
+				recordSearcher);
+	}
+
 }

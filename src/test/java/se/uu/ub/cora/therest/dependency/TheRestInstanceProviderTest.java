@@ -116,4 +116,12 @@ public class TheRestInstanceProviderTest {
 		factory.MCR.assertReturn("factorEndpointSearch", 0, es);
 	}
 
+	@Test(dependsOnMethods = "testDefaultInstanceFactoryIsSet")
+	public void testGetRecordSearchDecorated() {
+		setSpyFactory();
+		EndpointSearch es = TheRestInstanceProvider.getEndpointSearchDecorated();
+
+		factory.MCR.assertReturn("factorEndpointSearchDecorated", 0, es);
+	}
+
 }

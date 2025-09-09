@@ -52,6 +52,10 @@ public final class TheRestInstanceProvider {
 		return factory.factorEndpointSearch();
 	}
 
+	public static EndpointSearch getEndpointSearchDecorated() {
+		return factory.factorEndpointSearchDecorated();
+	}
+
 	public static void onlyForTestSetTheRestInstanceFactory(TheRestInstanceFactory factory) {
 		TheRestInstanceProvider.factory = factory;
 	}

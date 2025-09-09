@@ -78,10 +78,9 @@ public class RecordEndpointSearch {
 			@QueryParam("authToken") String queryAuthToken, @PathParam("searchId") String searchId,
 			@QueryParam("searchData") String searchDataAsString) {
 
-		EndpointSearch endpointSearch = TheRestInstanceProvider.getEndpointSearch();
-		return endpointSearch.searchRecordDecorated(request,
-				APPLICATION_VND_CORA_RECORD_LIST_DECORATED_JSON, headerAuthToken, queryAuthToken,
-				searchId, searchDataAsString);
+		EndpointSearch endpointSearch = TheRestInstanceProvider.getEndpointSearchDecorated();
+		return endpointSearch.searchRecord(request, APPLICATION_VND_CORA_RECORD_LIST_DECORATED_JSON,
+				headerAuthToken, queryAuthToken, searchId, searchDataAsString);
 	}
 
 	@GET
@@ -91,9 +90,8 @@ public class RecordEndpointSearch {
 			@QueryParam("authToken") String queryAuthToken, @PathParam("searchId") String searchId,
 			@QueryParam("searchData") String searchDataAsString) {
 
-		EndpointSearch endpointSearch = TheRestInstanceProvider.getEndpointSearch();
-		return endpointSearch.searchRecordDecorated(request,
-				APPLICATION_VND_CORA_RECORD_LIST_DECORATED_XML, headerAuthToken, queryAuthToken,
-				searchId, searchDataAsString);
+		EndpointSearch endpointSearch = TheRestInstanceProvider.getEndpointSearchDecorated();
+		return endpointSearch.searchRecord(request, APPLICATION_VND_CORA_RECORD_LIST_DECORATED_XML,
+				headerAuthToken, queryAuthToken, searchId, searchDataAsString);
 	}
 }

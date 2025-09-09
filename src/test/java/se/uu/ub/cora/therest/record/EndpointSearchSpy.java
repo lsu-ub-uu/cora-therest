@@ -31,20 +31,10 @@ public class EndpointSearchSpy implements EndpointSearch {
 	public EndpointSearchSpy() {
 		MCR.useMRV(MRV);
 		MRV.setDefaultReturnValuesSupplier("searchRecord", ResponseSpy::new);
-		MRV.setDefaultReturnValuesSupplier("searchRecordDecorated", ResponseSpy::new);
 	}
 
 	@Override
 	public Response searchRecord(HttpServletRequest request, String contentTypeOut,
-			String headerAuthToken, String queryAuthToken, String searchId,
-			String searchDataAsString) {
-		return (Response) MCR.addCallAndReturnFromMRV("request", request, "contentTypeOut",
-				contentTypeOut, "headerAuthToken", headerAuthToken, "queryAuthToken",
-				queryAuthToken, "searchId", searchId, "searchDataAsString", searchDataAsString);
-	}
-
-	@Override
-	public Response searchRecordDecorated(HttpServletRequest request, String contentTypeOut,
 			String headerAuthToken, String queryAuthToken, String searchId,
 			String searchDataAsString) {
 		return (Response) MCR.addCallAndReturnFromMRV("request", request, "contentTypeOut",
