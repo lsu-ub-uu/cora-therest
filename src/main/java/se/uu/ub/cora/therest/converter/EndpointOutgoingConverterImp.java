@@ -18,7 +18,6 @@
  */
 package se.uu.ub.cora.therest.converter;
 
-import jakarta.servlet.http.HttpServletRequest;
 import se.uu.ub.cora.converter.ConverterProvider;
 import se.uu.ub.cora.converter.ExternalUrls;
 import se.uu.ub.cora.converter.ExternallyConvertibleToStringConverter;
@@ -27,58 +26,58 @@ import se.uu.ub.cora.data.ExternallyConvertible;
 import se.uu.ub.cora.data.converter.DataToJsonConverter;
 import se.uu.ub.cora.data.converter.DataToJsonConverterFactory;
 import se.uu.ub.cora.data.converter.DataToJsonConverterProvider;
-import se.uu.ub.cora.therest.dependency.TheRestInstanceProvider;
-import se.uu.ub.cora.therest.url.UrlHandler;
+import se.uu.ub.cora.therest.url.APIUrls;
 
-public class EndpointConverterImp implements EndpointConverter {
-	private ExternalUrls externalUrls;
-	private se.uu.ub.cora.data.converter.ExternalUrls externalUrlsForJson;
+public class EndpointOutgoingConverterImp implements EndpointOutgoingConverter {
+	private String restUrl;
+	private String iiifUrl;
 
 	@Override
-	public String convertConvertibleToString(HttpServletRequest request, String accept,
+	public String convertConvertibleToString(APIUrls apiUrls, String accept,
 			ExternallyConvertible convertible) {
-		calculateUrls(request);
+		calculateUrls(apiUrls);
 		if (accept.endsWith("json")) {
 			return convertDataToJson(convertible);
 		}
 		return convertDataToXml(convertible);
 	}
 
-	public void calculateUrls(HttpServletRequest req) {
-		UrlHandler urlHandler = TheRestInstanceProvider.getUrlHandler();
-		String restUrl = urlHandler.getRestUrl(req);
-		String iiifUrl = urlHandler.getIiifUrl(req);
-
-		setExternalUrlsForJsonConverter(restUrl, iiifUrl);
-		setExternalUrlsForXmlConverter(restUrl, iiifUrl);
-	}
-
-	private void setExternalUrlsForJsonConverter(String baseUrl, String iiifUrl) {
-		externalUrlsForJson = new se.uu.ub.cora.data.converter.ExternalUrls();
-		externalUrlsForJson.setBaseUrl(baseUrl);
-		externalUrlsForJson.setIfffUrl(iiifUrl);
-	}
-
-	private void setExternalUrlsForXmlConverter(String baseUrl, String iiifUrl) {
-		externalUrls = new ExternalUrls();
-		externalUrls.setBaseUrl(baseUrl);
-		externalUrls.setIfffUrl(iiifUrl);
-	}
-
-	private String convertDataToXml(ExternallyConvertible convertible) {
-		ExternallyConvertibleToStringConverter convertibleToXmlConverter = ConverterProvider
-				.getExternallyConvertibleToStringConverter("xml");
-
-		return convertibleToXmlConverter.convertWithLinks(convertible, externalUrls);
+	public void calculateUrls(APIUrls apiUrls) {
+		restUrl = apiUrls.restUrl();
+		iiifUrl = apiUrls.iiifUrl();
 	}
 
 	private String convertDataToJson(ExternallyConvertible convertible) {
 		DataToJsonConverterFactory dataToJsonConverterFactory = DataToJsonConverterProvider
 				.createImplementingFactory();
+
+		se.uu.ub.cora.data.converter.ExternalUrls externalUrlsForJson = getExternalUrlsForJsonConverter();
+
 		DataToJsonConverter converter = dataToJsonConverterFactory
 				.factorUsingConvertibleAndExternalUrls((Convertible) convertible,
 						externalUrlsForJson);
 		return converter.toJsonCompactFormat();
+	}
+
+	private se.uu.ub.cora.data.converter.ExternalUrls getExternalUrlsForJsonConverter() {
+		se.uu.ub.cora.data.converter.ExternalUrls externalUrlsForJson = new se.uu.ub.cora.data.converter.ExternalUrls();
+		externalUrlsForJson.setBaseUrl(restUrl);
+		externalUrlsForJson.setIfffUrl(iiifUrl);
+		return externalUrlsForJson;
+	}
+
+	private String convertDataToXml(ExternallyConvertible convertible) {
+		ExternallyConvertibleToStringConverter convertibleToXmlConverter = ConverterProvider
+				.getExternallyConvertibleToStringConverter("xml");
+		ExternalUrls externalUrls = getExternalUrlsForXmlConverter();
+		return convertibleToXmlConverter.convertWithLinks(convertible, externalUrls);
+	}
+
+	private ExternalUrls getExternalUrlsForXmlConverter() {
+		ExternalUrls externalUrls = new ExternalUrls();
+		externalUrls.setBaseUrl(restUrl);
+		externalUrls.setIfffUrl(iiifUrl);
+		return externalUrls;
 	}
 
 }

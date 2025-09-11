@@ -19,10 +19,18 @@
 
 package se.uu.ub.cora.therest.dependency;
 
-import se.uu.ub.cora.therest.converter.EndpointConverterImp;
+import se.uu.ub.cora.json.parser.JsonParser;
+import se.uu.ub.cora.json.parser.org.OrgJsonParser;
+import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
+import se.uu.ub.cora.spider.record.RecordSearcher;
+import se.uu.ub.cora.therest.converter.EndpointIncomingConverter;
+import se.uu.ub.cora.therest.converter.EndpointIncomingConverterImp;
+import se.uu.ub.cora.therest.converter.EndpointOutgoingConverter;
+import se.uu.ub.cora.therest.converter.EndpointOutgoingConverterImp;
+import se.uu.ub.cora.therest.error.ErrorHandler;
 import se.uu.ub.cora.therest.error.ErrorHandlerImp;
-import se.uu.ub.cora.therest.record.EndpointDecoratedReader;
-import se.uu.ub.cora.therest.record.EndpointDecoratedReaderImp;
+import se.uu.ub.cora.therest.record.EndpointSearch;
+import se.uu.ub.cora.therest.record.EndpointSearchImp;
 import se.uu.ub.cora.therest.url.UrlHandler;
 import se.uu.ub.cora.therest.url.UrlHandlerImp;
 
@@ -34,8 +42,31 @@ public final class TheRestInstanceFactoryImp implements TheRestInstanceFactory {
 	}
 
 	@Override
-	public EndpointDecoratedReader createDecoratedReader() {
-		return new EndpointDecoratedReaderImp(new EndpointConverterImp(), new ErrorHandlerImp());
+	public ErrorHandler factorErrorHandler() {
+		return new ErrorHandlerImp();
+	}
+
+	@Override
+	public EndpointOutgoingConverter factorEndpointOutgoingConverter() {
+		return new EndpointOutgoingConverterImp();
+	}
+
+	@Override
+	public EndpointIncomingConverter factorEndpointIncomingConverter() {
+		JsonParser jsonParser = new OrgJsonParser();
+		return new EndpointIncomingConverterImp(jsonParser);
+	}
+
+	@Override
+	public EndpointSearch factorEndpointSearch() {
+		RecordSearcher recordSearcher = SpiderInstanceProvider.getRecordSearcher();
+		return new EndpointSearchImp(recordSearcher);
+	}
+
+	@Override
+	public EndpointSearch factorEndpointSearchDecorated() {
+		RecordSearcher recordSearcher = SpiderInstanceProvider.getRecordSearcherDecorated();
+		return new EndpointSearchImp(recordSearcher);
 	}
 
 }

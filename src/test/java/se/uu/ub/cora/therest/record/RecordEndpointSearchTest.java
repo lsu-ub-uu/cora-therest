@@ -20,104 +20,49 @@
 
 package se.uu.ub.cora.therest.record;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertSame;
-import static org.testng.Assert.assertTrue;
-
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.Response.Status;
-import se.uu.ub.cora.converter.ConverterProvider;
-import se.uu.ub.cora.converter.ExternalUrls;
-import se.uu.ub.cora.data.Convertible;
-import se.uu.ub.cora.data.DataGroup;
-import se.uu.ub.cora.data.DataList;
-import se.uu.ub.cora.data.DataProvider;
-import se.uu.ub.cora.data.converter.DataToJsonConverterProvider;
-import se.uu.ub.cora.data.converter.JsonToDataConverterProvider;
-import se.uu.ub.cora.data.spies.DataFactorySpy;
-import se.uu.ub.cora.json.parser.org.OrgJsonParser;
-import se.uu.ub.cora.logger.LoggerProvider;
-import se.uu.ub.cora.logger.spies.LoggerFactorySpy;
-import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
 import se.uu.ub.cora.therest.AnnotationTestHelper;
 import se.uu.ub.cora.therest.dependency.TheRestInstanceFactorySpy;
 import se.uu.ub.cora.therest.dependency.TheRestInstanceProvider;
-import se.uu.ub.cora.therest.url.UrlHandlerSpy;
+import se.uu.ub.cora.therest.url.HttpServletRequestSpy;
 
 public class RecordEndpointSearchTest {
 	private static final String APPLICATION_VND_CORA_RECORD_LIST_XML = "application/vnd.cora.recordList+xml";
 	private static final String APPLICATION_VND_CORA_RECORD_LIST_JSON = "application/vnd.cora.recordList+json";
 	private static final String APPLICATION_VND_CORA_RECORD_LIST_JSON_QS09 = "application/vnd.cora.recordList+json;qs=0.9";
-	private static final String DUMMY_NON_AUTHORIZED_TOKEN = "dummyNonAuthorizedToken";
-	private static final String AUTH_TOKEN = "authToken";
-	private JsonParserSpy jsonParser;
 
-	private JsonToDataConverterFactorySpy jsonToDataConverterFactorySpy = new JsonToDataConverterFactorySpy();
+	private static final String APPLICATION_VND_CORA_RECORD_LIST_DECORATED_XML_QS09 = "application/vnd.cora.recordList-decorated+xml;qs=0.9";
+	private static final String APPLICATION_VND_CORA_RECORD_LIST_DECORATED_JSON_QS09 = "application/vnd.cora.recordList-decorated+json;qs=0.9";
+	private static final String APPLICATION_VND_CORA_RECORD_LIST_DECORATED_XML = "application/vnd.cora.recordList-decorated+xml";
+	private static final String APPLICATION_VND_CORA_RECORD_LIST_DECORATED_JSON = "application/vnd.cora.recordList-decorated+json";
+
+	private static final String QUERY_AUTH_TOKEN = "queryAuthToken";
+	private static final String HEADER_AUTH_TOKEN = "headerAuthToken";
+	private static final String SEARCH_ID = "aSearchId";
+	private static final String SEARCH_DATA = "someSearchData";
 
 	private RecordEndpointSearch recordEndpoint;
-	private OldSpiderInstanceFactorySpy spiderInstanceFactorySpy;
 	private Response response;
-	private HttpServletRequestOldSpy requestSpy;
-	private LoggerFactorySpy loggerFactorySpy;
-	private DataFactorySpy dataFactorySpy;
+	private HttpServletRequestSpy requestSpy;
 
-	private String defaultJson = "{\"name\":\"someRecordType\",\"children\":[]}";
-	private String defaultXml = "<someXml></someXml>";
-	private DataToJsonConverterFactoryCreatorSpy converterFactoryCreatorSpy;
-	private ConverterFactorySpy converterFactorySpy;
-	private StringToExternallyConvertibleConverterSpy stringToExternallyConvertibleConverterSpy;
 	private TheRestInstanceFactorySpy instanceFactory;
 
 	@BeforeMethod
 	public void beforeMethod() {
-		loggerFactorySpy = new LoggerFactorySpy();
-		LoggerProvider.setLoggerFactory(loggerFactorySpy);
-		dataFactorySpy = new DataFactorySpy();
-		DataProvider.onlyForTestSetDataFactory(dataFactorySpy);
-		setupUrlHandler();
-
-		converterFactoryCreatorSpy = new DataToJsonConverterFactoryCreatorSpy();
-		DataToJsonConverterProvider
-				.setDataToJsonConverterFactoryCreator(converterFactoryCreatorSpy);
-
-		stringToExternallyConvertibleConverterSpy = new StringToExternallyConvertibleConverterSpy();
-		converterFactorySpy = new ConverterFactorySpy();
-		converterFactorySpy.MRV.setDefaultReturnValuesSupplier(
-				"factorStringToExternallyConvertableConverter",
-				() -> stringToExternallyConvertibleConverterSpy);
-		ConverterProvider.setConverterFactory("xml", converterFactorySpy);
-
-		jsonToDataConverterFactorySpy = new JsonToDataConverterFactorySpy();
-		JsonToDataConverterProvider.setJsonToDataConverterFactory(jsonToDataConverterFactorySpy);
-		spiderInstanceFactorySpy = new OldSpiderInstanceFactorySpy();
-		SpiderInstanceProvider.setSpiderInstanceFactory(spiderInstanceFactorySpy);
-
-		requestSpy = new HttpServletRequestOldSpy();
-		recordEndpoint = new RecordEndpointSearch(requestSpy);
-
-		setUpSpiesInRecordEndpoint();
-	}
-
-	private void setupUrlHandler() {
 		instanceFactory = new TheRestInstanceFactorySpy();
 		TheRestInstanceProvider.onlyForTestSetTheRestInstanceFactory(instanceFactory);
-	}
 
-	private void setUpSpiesInRecordEndpoint() {
-		jsonParser = new JsonParserSpy();
-
-		recordEndpoint.setJsonParser(jsonParser);
-	}
-
-	@Test
-	public void testInit() {
+		requestSpy = new HttpServletRequestSpy();
 		recordEndpoint = new RecordEndpointSearch(requestSpy);
-		assertTrue(recordEndpoint.getJsonParser() instanceof OrgJsonParser);
+	}
+
+	@AfterMethod
+	public void afterMethod() {
+		TheRestInstanceProvider.onlyForTestResetTheRestInstanceFactory();
 	}
 
 	@Test
@@ -129,251 +74,80 @@ public class RecordEndpointSearchTest {
 	}
 
 	@Test
-	public void testUrlsHandledByUrlHandler() {
-		response = recordEndpoint.searchRecordJson(AUTH_TOKEN, AUTH_TOKEN, "aSearchId",
-				defaultJson);
-
-		UrlHandlerSpy urlHandler = (UrlHandlerSpy) instanceFactory.MCR
-				.getReturnValue("factorUrlHandler", 0);
-
-		var restUrl = urlHandler.MCR.assertCalledParametersReturn("getRestUrl", requestSpy);
-		var iiifUrl = urlHandler.MCR.assertCalledParametersReturn("getIiifUrl", requestSpy);
-
-		assertEquals(restUrl, getRestUrlFromFactorUsingConvertibleAndExternalUrls());
-		assertEquals(iiifUrl, getIiifUrlFromFactorUsingConvertibleAndExternalUrls());
-	}
-
-	private String getRestUrlFromFactorUsingConvertibleAndExternalUrls() {
-		DataToJsonConverterFactorySpy converterFactory = (DataToJsonConverterFactorySpy) converterFactoryCreatorSpy.MCR
-				.getReturnValue("createFactory", 0);
-		se.uu.ub.cora.data.converter.ExternalUrls externalUrls = (se.uu.ub.cora.data.converter.ExternalUrls) converterFactory.MCR
-				.getParameterForMethodAndCallNumberAndParameter(
-						"factorUsingConvertibleAndExternalUrls", 0, "externalUrls");
-		return externalUrls.getBaseUrl();
-	}
-
-	private String getIiifUrlFromFactorUsingConvertibleAndExternalUrls() {
-		DataToJsonConverterFactorySpy converterFactory = (DataToJsonConverterFactorySpy) converterFactoryCreatorSpy.MCR
-				.getReturnValue("createFactory", 0);
-		se.uu.ub.cora.data.converter.ExternalUrls externalUrls = (se.uu.ub.cora.data.converter.ExternalUrls) converterFactory.MCR
-				.getParameterForMethodAndCallNumberAndParameter(
-						"factorUsingConvertibleAndExternalUrls", 0, "externalUrls");
-		return externalUrls.getIfffUrl();
-	}
-
-	private void assertEntityExists() {
-		assertNotNull(response.getEntity(), "An entity should be returned");
-	}
-
-	private void assertResponseStatusIs(Status responseStatus) {
-		assertEquals(response.getStatusInfo(), responseStatus);
-	}
-
-	private void assertResponseContentTypeIs(String expectedContentType) {
-		assertEquals(response.getHeaders().getFirst(HttpHeaders.CONTENT_TYPE), expectedContentType);
-	}
-
-	private void assertDataFromSpiderConvertedToJsonUsingConvertersFromProvider(
-			Convertible convertible) {
-		DataToJsonConverterFactorySpy converterFactory = (DataToJsonConverterFactorySpy) converterFactoryCreatorSpy.MCR
-				.getReturnValue("createFactory", 0);
-
-		se.uu.ub.cora.data.converter.ExternalUrls externalUrls = (se.uu.ub.cora.data.converter.ExternalUrls) converterFactory.MCR
-				.getParameterForMethodAndCallNumberAndParameter(
-						"factorUsingConvertibleAndExternalUrls", 0, "externalUrls");
-		converterFactory.MCR.assertParameters("factorUsingConvertibleAndExternalUrls", 0,
-				convertible, externalUrls);
-
-		DataToJsonConverterSpy converterSpy = (DataToJsonConverterSpy) converterFactory.MCR
-				.getReturnValue("factorUsingConvertibleAndExternalUrls", 0);
-
-		var entity = response.getEntity();
-		converterSpy.MCR.assertReturn("toJsonCompactFormat", 0, entity);
-	}
-
-	private void assertXmlConvertionOfResponse(Convertible convertible) {
-		ExternallyConvertibleToStringConverterSpy dataToXmlConverter = (ExternallyConvertibleToStringConverterSpy) converterFactorySpy.MCR
-				.getReturnValue("factorExternallyConvertableToStringConverter", 0);
-
-		ExternalUrls externalUrls = (ExternalUrls) dataToXmlConverter.MCR
-				.getParameterForMethodAndCallNumberAndParameter("convertWithLinks", 0,
-						"externalUrls");
-		dataToXmlConverter.MCR.assertParameters("convertWithLinks", 0, convertible, externalUrls);
-
-		var entity = response.getEntity();
-		dataToXmlConverter.MCR.assertReturn("convertWithLinks", 0, entity);
-	}
-
-	private Object assertParametersAndGetConvertedXmlDataElement() {
-		StringToExternallyConvertibleConverterSpy xmlToDataConverter = (StringToExternallyConvertibleConverterSpy) converterFactorySpy.MCR
-				.getReturnValue("factorStringToExternallyConvertableConverter", 0);
-		xmlToDataConverter.MCR.assertParameters("convert", 0, defaultXml);
-		var dataElement = xmlToDataConverter.MCR.getReturnValue("convert", 0);
-		return dataElement;
-	}
-
-	@Test
-	public void testSearchRecordInputsReachSpider() {
-		response = recordEndpoint.searchRecordJson(AUTH_TOKEN, AUTH_TOKEN, "aSearchId",
-				defaultJson);
-
-		SpiderRecordSearcherSpy spiderRecordSearcherSpy = spiderInstanceFactorySpy.spiderRecordSearcherSpy;
-		assertEquals(spiderRecordSearcherSpy.authToken, AUTH_TOKEN);
-		assertEquals(spiderRecordSearcherSpy.searchId, "aSearchId");
-
-		DataGroup searchSentOnToSpider = spiderInstanceFactorySpy.spiderRecordSearcherSpy.searchData;
-		assertJsonStringConvertedToGroupUsesCoraData(defaultJson, searchSentOnToSpider);
-	}
-
-	@Test
-	public void testSearchRecordUsesFactoriesCorrectly() {
-		response = recordEndpoint.searchRecordJson(AUTH_TOKEN, AUTH_TOKEN, "aSearchId",
-				defaultJson);
-
-		SpiderRecordSearcherSpy spiderRecordSearcherSpy = spiderInstanceFactorySpy.spiderRecordSearcherSpy;
-
-		DataGroup searchSentOnToSpider = spiderInstanceFactorySpy.spiderRecordSearcherSpy.searchData;
-		assertJsonStringConvertedToGroupUsesCoraData(defaultJson, searchSentOnToSpider);
-
-		DataList returnedDataListFromReader = spiderRecordSearcherSpy.searchResult;
-
-		assertDataFromSpiderConvertedToJsonUsingConvertersFromProvider(returnedDataListFromReader);
-	}
-
-	private void assertJsonStringConvertedToGroupUsesCoraData(String jsonSentToEndPoint,
-			DataGroup recordSentOnToSpider) {
-		assertSame(jsonParser.jsonString, jsonSentToEndPoint);
-		assertSame(jsonToDataConverterFactorySpy.jsonValue, jsonParser.returnedJsonValue);
-		JsonToDataConverterSpy jsonToDataConverterSpy = jsonToDataConverterFactorySpy.jsonToDataConverterSpy;
-		DataGroup returnedDataPart = jsonToDataConverterSpy.dataPartToReturn;
-
-		assertSame(recordSentOnToSpider, returnedDataPart);
-	}
-
-	@Test
-	public void testSearchRecordRightTokenInputsReachSpider() {
-		response = recordEndpoint.searchRecordJson(AUTH_TOKEN, null, "aSearchId", defaultJson);
-		SpiderRecordSearcherSpy spiderRecordSearcherSpy = spiderInstanceFactorySpy.spiderRecordSearcherSpy;
-		assertEquals(spiderRecordSearcherSpy.authToken, AUTH_TOKEN);
-	}
-
-	@Test
-	public void testSearchRecordRightTokenInputsReachSpider2() {
-		response = recordEndpoint.searchRecordJson(null, AUTH_TOKEN, "aSearchId", defaultJson);
-		SpiderRecordSearcherSpy spiderRecordSearcherSpy = spiderInstanceFactorySpy.spiderRecordSearcherSpy;
-		assertEquals(spiderRecordSearcherSpy.authToken, AUTH_TOKEN);
-	}
-
-	@Test
-	public void testSearchRecordRightTokenInputsReachSpider3() {
-		response = recordEndpoint.searchRecordJson(AUTH_TOKEN, "otherAuthToken", "aSearchId",
-				defaultJson);
-		SpiderRecordSearcherSpy spiderRecordSearcherSpy = spiderInstanceFactorySpy.spiderRecordSearcherSpy;
-		assertEquals(spiderRecordSearcherSpy.authToken, AUTH_TOKEN);
-	}
-
-	@Test
-	public void testSearchRecord() {
-		response = recordEndpoint.searchRecordJson(AUTH_TOKEN, AUTH_TOKEN, "aSearchId",
-				defaultJson);
-		assertEntityExists();
-		assertResponseStatusIs(Response.Status.OK);
-	}
-
-	@Test
-	public void testSearchRecordForXml() {
-		response = recordEndpoint.searchRecordXml(AUTH_TOKEN, AUTH_TOKEN, "aSearchId", defaultXml);
-
-		var dataElement = assertParametersAndGetConvertedXmlDataElement();
-
-		spiderInstanceFactorySpy.spiderRecordSearcherSpy.MCR.assertParameters("search", 0,
-				AUTH_TOKEN, "aSearchId", dataElement);
-
-		DataList searchRecord = (DataList) spiderInstanceFactorySpy.spiderRecordSearcherSpy.MCR
-				.getReturnValue("search", 0);
-
-		assertXmlConvertionOfResponse(searchRecord);
-		assertEntityExists();
-		assertResponseStatusIs(Response.Status.OK);
-		assertResponseContentTypeIs(APPLICATION_VND_CORA_RECORD_LIST_XML);
-	}
-
-	@Test
-	public void testSearchRecordSearchDataInXmlForJson() {
-		response = recordEndpoint.searchRecordJson(AUTH_TOKEN, AUTH_TOKEN, "aSearchId", defaultXml);
-
-		var dataElement = assertParametersAndGetConvertedXmlDataElement();
-
-		spiderInstanceFactorySpy.spiderRecordSearcherSpy.MCR.assertParameters("search", 0,
-				AUTH_TOKEN, "aSearchId", dataElement);
-
-		DataList searchRecord = (DataList) spiderInstanceFactorySpy.spiderRecordSearcherSpy.MCR
-				.getReturnValue("search", 0);
-
-		assertDataFromSpiderConvertedToJsonUsingConvertersFromProvider(searchRecord);
-		assertEntityExists();
-		assertResponseStatusIs(Response.Status.OK);
-		assertResponseContentTypeIs(APPLICATION_VND_CORA_RECORD_LIST_JSON);
-	}
-
-	@Test
 	public void testAnnotationsForSearchRecordJson() throws Exception {
-		AnnotationTestHelper annotationHelper = AnnotationTestHelper
-				.createAnnotationTestHelperForClassMethodNameAndNumOfParameters(
-						recordEndpoint.getClass(), "searchRecordJson", 4);
-
-		annotationHelper.assertHttpMethodAndPathAnnotation("GET", "searchResult/{searchId}");
-		annotationHelper.assertProducesAnnotation(APPLICATION_VND_CORA_RECORD_LIST_JSON_QS09);
-		annotationHelper.assertAnnotationForAuthTokenParameters();
-		annotationHelper.assertPathParamAnnotationByNameAndPosition("searchId", 2);
-		annotationHelper.assertQueryParamAnnotationByNameAndPosition("searchData", 3);
+		assertSearchAnnotations("searchRecordJson", APPLICATION_VND_CORA_RECORD_LIST_JSON_QS09);
 	}
 
 	@Test
 	public void testAnnotationsForSearchRecordXml() throws Exception {
+		assertSearchAnnotations("searchRecordXml", APPLICATION_VND_CORA_RECORD_LIST_XML);
+	}
+
+	@Test
+	public void testAnnotationsForSearchRecordDecoratedJson() throws Exception {
+		assertSearchAnnotations("searchRecordDecoratedJson",
+				APPLICATION_VND_CORA_RECORD_LIST_DECORATED_JSON_QS09);
+	}
+
+	@Test
+	public void testAnnotationsForSearchRecordDecoratedXml() throws Exception {
+		assertSearchAnnotations("searchRecordDecoratedXml",
+				APPLICATION_VND_CORA_RECORD_LIST_DECORATED_XML_QS09);
+	}
+
+	private void assertSearchAnnotations(String methodName, String accept)
+			throws NoSuchMethodException {
 		AnnotationTestHelper annotationHelper = AnnotationTestHelper
 				.createAnnotationTestHelperForClassMethodNameAndNumOfParameters(
-						recordEndpoint.getClass(), "searchRecordXml", 4);
+						recordEndpoint.getClass(), methodName, 4);
 
 		annotationHelper.assertHttpMethodAndPathAnnotation("GET", "searchResult/{searchId}");
-		annotationHelper.assertProducesAnnotation(APPLICATION_VND_CORA_RECORD_LIST_XML);
+		annotationHelper.assertProducesAnnotation(accept);
 		annotationHelper.assertAnnotationForAuthTokenParameters();
 		annotationHelper.assertPathParamAnnotationByNameAndPosition("searchId", 2);
 		annotationHelper.assertQueryParamAnnotationByNameAndPosition("searchData", 3);
 	}
 
 	@Test
-	public void testSearchRecordSearchIdNotFound() {
-		response = recordEndpoint.searchRecordJson(AUTH_TOKEN, AUTH_TOKEN, "aSearchId_NOT_FOUND",
-				defaultJson);
-		assertResponseStatusIs(Response.Status.NOT_FOUND);
-		assertEquals(response.getEntity(),
-				"Error searching record with searchId: aSearchId_NOT_FOUND. Record does not exist");
+	public void testSearchRecordForJsonOut() {
+		response = recordEndpoint.searchRecordJson(HEADER_AUTH_TOKEN, QUERY_AUTH_TOKEN, SEARCH_ID,
+				SEARCH_DATA);
+		assertCallMethod("factorEndpointSearch", APPLICATION_VND_CORA_RECORD_LIST_JSON);
 	}
 
 	@Test
-	public void testSearchRecordInvalidSearchData() {
-		response = recordEndpoint.searchRecordJson(AUTH_TOKEN, AUTH_TOKEN, "aSearchId_INVALID_DATA",
-				defaultJson);
-		assertResponseStatusIs(Response.Status.BAD_REQUEST);
-		assertEquals(response.getEntity(),
-				"Error searching record with searchId: aSearchId_INVALID_DATA. SearchData is invalid");
+	public void testSearchRecordForXmlOut() {
+		response = recordEndpoint.searchRecordXml(HEADER_AUTH_TOKEN, QUERY_AUTH_TOKEN, SEARCH_ID,
+				SEARCH_DATA);
+
+		assertCallMethod("factorEndpointSearch", APPLICATION_VND_CORA_RECORD_LIST_XML);
 	}
 
 	@Test
-	public void testSearchRecordUnauthorized() {
-		response = recordEndpoint.searchRecordJson(DUMMY_NON_AUTHORIZED_TOKEN,
-				DUMMY_NON_AUTHORIZED_TOKEN, "aSearchId", defaultJson);
-		assertResponseStatusIs(Response.Status.FORBIDDEN);
-		assertEquals(response.getEntity(), null);
+	public void testSearchRecordDecoratedForJsonOut() {
+		response = recordEndpoint.searchRecordDecoratedJson(HEADER_AUTH_TOKEN, QUERY_AUTH_TOKEN,
+				SEARCH_ID, SEARCH_DATA);
+
+		assertCallMethod("factorEndpointSearchDecorated",
+				APPLICATION_VND_CORA_RECORD_LIST_DECORATED_JSON);
 	}
 
 	@Test
-	public void testSearchRecordUnauthenticated() {
-		response = recordEndpoint.searchRecordJson("nonExistingToken", "nonExistingToken",
-				"aSearchId", defaultJson);
-		assertResponseStatusIs(Response.Status.UNAUTHORIZED);
-		assertEquals(response.getEntity(), null);
+	public void testSearchRecordDecoratedForXmlOut() {
+		response = recordEndpoint.searchRecordDecoratedXml(HEADER_AUTH_TOKEN, QUERY_AUTH_TOKEN,
+				SEARCH_ID, SEARCH_DATA);
+
+		assertCallMethod("factorEndpointSearchDecorated",
+				APPLICATION_VND_CORA_RECORD_LIST_DECORATED_XML);
+	}
+
+	private void assertCallMethod(String factorMethod, String contentTypeOut) {
+		EndpointSearchSpy endPointSearch = (EndpointSearchSpy) instanceFactory.MCR
+				.getReturnValue(factorMethod, 0);
+
+		endPointSearch.MCR.assertParameters("searchRecord", 0, requestSpy, contentTypeOut,
+				HEADER_AUTH_TOKEN, QUERY_AUTH_TOKEN, SEARCH_ID, SEARCH_DATA);
+		endPointSearch.MCR.assertReturn("searchRecord", 0, response);
 	}
 
 }

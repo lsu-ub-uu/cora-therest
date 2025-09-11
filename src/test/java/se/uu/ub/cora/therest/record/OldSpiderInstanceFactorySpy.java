@@ -23,13 +23,13 @@ import se.uu.ub.cora.spider.binary.Downloader;
 import se.uu.ub.cora.spider.binary.Uploader;
 import se.uu.ub.cora.spider.binary.iiif.IiifReader;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceFactory;
-import se.uu.ub.cora.spider.record.DecoratedRecordReader;
 import se.uu.ub.cora.spider.record.IncomingLinksReader;
 import se.uu.ub.cora.spider.record.RecordCreator;
 import se.uu.ub.cora.spider.record.RecordDeleter;
 import se.uu.ub.cora.spider.record.RecordListIndexer;
 import se.uu.ub.cora.spider.record.RecordListReader;
 import se.uu.ub.cora.spider.record.RecordReader;
+import se.uu.ub.cora.spider.record.RecordReaderDecorated;
 import se.uu.ub.cora.spider.record.RecordSearcher;
 import se.uu.ub.cora.spider.record.RecordUpdater;
 import se.uu.ub.cora.spider.record.RecordValidator;
@@ -130,7 +130,13 @@ public class OldSpiderInstanceFactorySpy implements SpiderInstanceFactory {
 	}
 
 	@Override
-	public DecoratedRecordReader factorDecoratedRecordReader() {
+	public RecordReaderDecorated factorRecordReaderDecorated() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public RecordSearcher factorRecordSearcherDecorated() {
 		// TODO Auto-generated method stub
 		return null;
 	}

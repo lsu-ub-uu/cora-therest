@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Olov McKie
+ * Copyright 2025 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -21,25 +21,8 @@ package se.uu.ub.cora.therest.record;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.core.Response;
 
-public interface EndpointDecoratedReader {
+public interface EndpointSearch {
 
-	/**
-	 * Reads a record from a REST endpoint and decorates it using the given parameters.
-	 * 
-	 * @param request
-	 *            is the HTTP request object passed from the Rest call.
-	 * @param accept
-	 *            The Accept header value to be used in the request.
-	 * @param authToken
-	 *            The authorization token to be included in the request.
-	 * @param type
-	 *            The type of the record to be read.
-	 * @param id
-	 *            The ID of the record to be read.
-	 *
-	 * @return A {@link Response} object containing the decorated record.
-	 */
-	Response readAndDecorateRecord(HttpServletRequest request, String accept, String authToken,
-			String type, String id);
-
+	Response searchRecord(HttpServletRequest request, String contentTypeOut, String headerAuthToken,
+			String queryAuthToken, String searchId, String searchDataAsString);
 }

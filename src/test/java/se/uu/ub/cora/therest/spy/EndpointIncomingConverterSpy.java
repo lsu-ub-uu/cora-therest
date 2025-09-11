@@ -18,24 +18,24 @@
  */
 package se.uu.ub.cora.therest.spy;
 
-import jakarta.ws.rs.core.Response;
+import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.spies.DataGroupSpy;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 import se.uu.ub.cora.testutils.mrv.MethodReturnValues;
-import se.uu.ub.cora.therest.error.ErrorHandler;
+import se.uu.ub.cora.therest.converter.EndpointIncomingConverter;
 
-public class ErrorHandlerSpy implements ErrorHandler {
+public class EndpointIncomingConverterSpy implements EndpointIncomingConverter {
 	public MethodCallRecorder MCR = new MethodCallRecorder();
 	public MethodReturnValues MRV = new MethodReturnValues();
 
-	public ErrorHandlerSpy() {
+	public EndpointIncomingConverterSpy() {
 		MCR.useMRV(MRV);
-		MRV.setDefaultReturnValuesSupplier("handleError",
-				() -> Response.status(Response.Status.INTERNAL_SERVER_ERROR).build());
+		MRV.setDefaultReturnValuesSupplier("convertStringToConvertible", DataGroupSpy::new);
 	}
 
 	@Override
-	public Response handleError(String authToken, Exception error, String errorFromCaller) {
-		return (Response) MCR.addCallAndReturnFromMRV("authToken", authToken, "error", error,
-				"errorFromCaller", errorFromCaller);
+	public DataGroup convertStringToConvertible(String data) {
+		return (DataGroup) MCR.addCallAndReturnFromMRV("data", data);
 	}
+
 }

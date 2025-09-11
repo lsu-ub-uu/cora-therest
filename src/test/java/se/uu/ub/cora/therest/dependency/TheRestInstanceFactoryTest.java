@@ -24,17 +24,36 @@ import static org.testng.Assert.assertTrue;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.therest.converter.EndpointConverterImp;
+import se.uu.ub.cora.json.parser.org.OrgJsonParser;
+import se.uu.ub.cora.logger.LoggerProvider;
+import se.uu.ub.cora.logger.spies.LoggerFactorySpy;
+import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
+import se.uu.ub.cora.spider.record.RecordSearcher;
+import se.uu.ub.cora.spider.spies.SpiderInstanceFactorySpy;
+import se.uu.ub.cora.therest.converter.EndpointIncomingConverter;
+import se.uu.ub.cora.therest.converter.EndpointIncomingConverterImp;
+import se.uu.ub.cora.therest.converter.EndpointOutgoingConverter;
+import se.uu.ub.cora.therest.converter.EndpointOutgoingConverterImp;
+import se.uu.ub.cora.therest.error.ErrorHandler;
 import se.uu.ub.cora.therest.error.ErrorHandlerImp;
-import se.uu.ub.cora.therest.record.EndpointDecoratedReaderImp;
+import se.uu.ub.cora.therest.record.EndpointSearch;
+import se.uu.ub.cora.therest.record.EndpointSearchImp;
 import se.uu.ub.cora.therest.url.UrlHandler;
 import se.uu.ub.cora.therest.url.UrlHandlerImp;
 
 public class TheRestInstanceFactoryTest {
+	private LoggerFactorySpy loggerFactorySpy;
+	private SpiderInstanceFactorySpy spiderInstanceFactorySpy;
 	private TheRestInstanceFactory factory;
 
 	@BeforeMethod
 	public void setUp() {
+		loggerFactorySpy = new LoggerFactorySpy();
+		LoggerProvider.setLoggerFactory(loggerFactorySpy);
+
+		spiderInstanceFactorySpy = new SpiderInstanceFactorySpy();
+		SpiderInstanceProvider.setSpiderInstanceFactory(spiderInstanceFactorySpy);
+
 		factory = new TheRestInstanceFactoryImp();
 	}
 
@@ -46,11 +65,43 @@ public class TheRestInstanceFactoryTest {
 	}
 
 	@Test
-	public void testFactorDecoratedReader() {
-		EndpointDecoratedReaderImp reader = (EndpointDecoratedReaderImp) factory
-				.createDecoratedReader();
+	public void testFactorErrorHandler() {
+		ErrorHandler eh = factory.factorErrorHandler();
 
-		assertTrue(reader.onlyForTestGetEndpointConverter() instanceof EndpointConverterImp);
-		assertTrue(reader.onlyForTestGetErrorHandler() instanceof ErrorHandlerImp);
+		assertTrue(eh instanceof ErrorHandlerImp);
 	}
+
+	@Test
+	public void testFactorEndpontOutgingConverter() {
+		EndpointOutgoingConverter ec = factory.factorEndpointOutgoingConverter();
+
+		assertTrue(ec instanceof EndpointOutgoingConverterImp);
+	}
+
+	@Test
+	public void testFactorEndpontIncomingConverter() {
+		EndpointIncomingConverter ec = factory.factorEndpointIncomingConverter();
+
+		assertTrue(ec instanceof EndpointIncomingConverterImp);
+		assertTrue(((EndpointIncomingConverterImp) ec)
+				.onlyForTestGetJsonParser() instanceof OrgJsonParser);
+	}
+
+	@Test
+	public void testFactorEndpointSearch() {
+		EndpointSearch es = factory.factorEndpointSearch();
+
+		RecordSearcher recordSearcher = ((EndpointSearchImp) es).onlyForTestGetRecordSearcher();
+		spiderInstanceFactorySpy.MCR.assertReturn("factorRecordSearcher", 0, recordSearcher);
+	}
+
+	@Test
+	public void testFactorEndpointSearchDecorated() {
+		EndpointSearch es = factory.factorEndpointSearchDecorated();
+
+		RecordSearcher recordSearcher = ((EndpointSearchImp) es).onlyForTestGetRecordSearcher();
+		spiderInstanceFactorySpy.MCR.assertReturn("factorRecordSearcherDecorated", 0,
+				recordSearcher);
+	}
+
 }

@@ -68,4 +68,14 @@ public class UrlHandlerImp implements UrlHandler {
 		return baseURL;
 	}
 
+	@Override
+	public APIUrls getAPIUrls(HttpServletRequest request) {
+		this.request = request;
+		String baseUrl = getBaseURLFromRequest();
+		String restUrl = getRestUrl(request);
+		String iiifUrl = getIiifUrl(request);
+
+		return new APIUrls(baseUrl, restUrl, iiifUrl);
+	}
+
 }

@@ -19,9 +19,6 @@
 
 package se.uu.ub.cora.therest.record;
 
-import java.net.URISyntaxException;
-import java.text.MessageFormat;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.HeaderParam;
@@ -30,192 +27,24 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.Response.Status;
-import se.uu.ub.cora.converter.ConverterException;
-import se.uu.ub.cora.converter.ConverterProvider;
-import se.uu.ub.cora.converter.ExternalUrls;
-import se.uu.ub.cora.converter.ExternallyConvertibleToStringConverter;
-import se.uu.ub.cora.converter.StringToExternallyConvertibleConverter;
-import se.uu.ub.cora.data.Convertible;
-import se.uu.ub.cora.data.DataGroup;
-import se.uu.ub.cora.data.DataList;
-import se.uu.ub.cora.data.ExternallyConvertible;
-import se.uu.ub.cora.data.converter.ConversionException;
-import se.uu.ub.cora.data.converter.DataToJsonConverter;
-import se.uu.ub.cora.data.converter.DataToJsonConverterFactory;
-import se.uu.ub.cora.data.converter.DataToJsonConverterProvider;
-import se.uu.ub.cora.data.converter.JsonToDataConverter;
-import se.uu.ub.cora.data.converter.JsonToDataConverterProvider;
-import se.uu.ub.cora.json.parser.JsonParseException;
-import se.uu.ub.cora.json.parser.JsonParser;
-import se.uu.ub.cora.json.parser.JsonValue;
-import se.uu.ub.cora.json.parser.org.OrgJsonParser;
-import se.uu.ub.cora.logger.Logger;
-import se.uu.ub.cora.logger.LoggerProvider;
-import se.uu.ub.cora.spider.authentication.AuthenticationException;
-import se.uu.ub.cora.spider.authorization.AuthorizationException;
-import se.uu.ub.cora.spider.binary.ArchiveDataIntergrityException;
-import se.uu.ub.cora.spider.data.DataMissingException;
-import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
-import se.uu.ub.cora.spider.record.ConflictException;
-import se.uu.ub.cora.spider.record.DataException;
-import se.uu.ub.cora.spider.record.MisuseException;
-import se.uu.ub.cora.spider.record.RecordNotFoundException;
-import se.uu.ub.cora.spider.record.ResourceNotFoundException;
-import se.uu.ub.cora.storage.RecordConflictException;
 import se.uu.ub.cora.therest.dependency.TheRestInstanceProvider;
-import se.uu.ub.cora.therest.url.UrlHandler;
 
 @Path("/")
 public class RecordEndpointSearch {
 	private static final String APPLICATION_VND_CORA_RECORD_LIST_XML = "application/vnd.cora.recordList+xml";
 	private static final String APPLICATION_VND_CORA_RECORD_LIST_JSON = "application/vnd.cora.recordList+json";
 	private static final String APPLICATION_VND_CORA_RECORD_LIST_JSON_QS09 = "application/vnd.cora.recordList+json;qs=0.9";
-	private static final String TEXT_PLAIN_CHARSET_UTF_8 = "text/plain; charset=utf-8";
-	HttpServletRequest request;
-	private Logger log = LoggerProvider.getLoggerForClass(RecordEndpointSearch.class);
 
-	private JsonParser jsonParser = new OrgJsonParser();
-	private ExternalUrls externalUrls;
-	private se.uu.ub.cora.data.converter.ExternalUrls externalUrlsForJson;
+	private static final String APPLICATION_VND_CORA_RECORD_LIST_DECORATED_XML_QS09 = "application/vnd.cora.recordList-decorated+xml;qs=0.9";
+	private static final String APPLICATION_VND_CORA_RECORD_LIST_DECORATED_JSON_QS09 = "application/vnd.cora.recordList-decorated+json;qs=0.9";
+	private static final String APPLICATION_VND_CORA_RECORD_LIST_DECORATED_XML = "application/vnd.cora.recordList-decorated+xml";
+	private static final String APPLICATION_VND_CORA_RECORD_LIST_DECORATED_JSON = "application/vnd.cora.recordList-decorated+json";
+
+	HttpServletRequest request;
 
 	public RecordEndpointSearch(@Context HttpServletRequest req) {
 		request = req;
-		UrlHandler urlHandler = TheRestInstanceProvider.getUrlHandler();
-		String restUrl = urlHandler.getRestUrl(req);
-		String iiifUrl = urlHandler.getIiifUrl(req);
-
-		setExternalUrlsForJsonConverter(restUrl, iiifUrl);
-		setExternalUrlsForXmlConverter(restUrl, iiifUrl);
-	}
-
-	private void setExternalUrlsForJsonConverter(String baseUrl, String iiifUrl) {
-		externalUrlsForJson = new se.uu.ub.cora.data.converter.ExternalUrls();
-		externalUrlsForJson.setBaseUrl(baseUrl);
-		externalUrlsForJson.setIfffUrl(iiifUrl);
-	}
-
-	private void setExternalUrlsForXmlConverter(String baseUrl, String iiifUrl) {
-		externalUrls = new ExternalUrls();
-		externalUrls.setBaseUrl(baseUrl);
-		externalUrls.setIfffUrl(iiifUrl);
-	}
-
-	private DataGroup convertStringToDataGroup(String accept, String input) {
-		if (accept.endsWith("+xml")) {
-			return convertXmlToDataElement(input);
-		} else {
-			return convertJsonStringToDataGroup(input);
-		}
-	}
-
-	private DataGroup convertXmlToDataElement(String input) {
-		StringToExternallyConvertibleConverter xmlToConvertibleConverter = ConverterProvider
-				.getStringToExternallyConvertibleConverter("xml");
-		return (DataGroup) xmlToConvertibleConverter.convert(input);
-	}
-
-	private DataGroup convertJsonStringToDataGroup(String jsonRecord) {
-		JsonValue jsonValue = jsonParser.parseString(jsonRecord);
-		JsonToDataConverter jsonToDataConverter = JsonToDataConverterProvider
-				.getConverterUsingJsonObject(jsonValue);
-		return (DataGroup) jsonToDataConverter.toInstance();
-	}
-
-	private String convertDataToJson(ExternallyConvertible convertible) {
-		DataToJsonConverterFactory dataToJsonConverterFactory = DataToJsonConverterProvider
-				.createImplementingFactory();
-		DataToJsonConverter converter = dataToJsonConverterFactory
-				.factorUsingConvertibleAndExternalUrls((Convertible) convertible,
-						externalUrlsForJson);
-		return converter.toJsonCompactFormat();
-	}
-
-	private Response handleError(String authToken, Exception error, String errorFromCaller) {
-		if (error instanceof ConflictException || error instanceof RecordConflictException) {
-			return buildResponseIncludingMessage(error, Response.Status.CONFLICT);
-		}
-
-		if (error instanceof MisuseException) {
-			return buildResponseIncludingMessage(error, Response.Status.METHOD_NOT_ALLOWED);
-		}
-
-		if (errorIsCausedByDataProblem(error)) {
-			return Response.status(Response.Status.BAD_REQUEST)
-					.entity(errorFromCaller + " " + error.getMessage())
-					.header(HttpHeaders.CONTENT_TYPE, TEXT_PLAIN_CHARSET_UTF_8).build();
-		}
-
-		if (error instanceof se.uu.ub.cora.storage.RecordNotFoundException
-				|| error instanceof RecordNotFoundException
-				|| error instanceof ResourceNotFoundException) {
-			return Response.status(Response.Status.NOT_FOUND)
-					.entity(errorFromCaller + " " + error.getMessage())
-					.header(HttpHeaders.CONTENT_TYPE, TEXT_PLAIN_CHARSET_UTF_8).build();
-		}
-
-		if (error instanceof URISyntaxException) {
-			return buildResponse(Response.Status.BAD_REQUEST);
-		}
-
-		if (error instanceof AuthorizationException) {
-			return handleAuthorizationException(authToken);
-		}
-
-		if (error instanceof AuthenticationException) {
-			return buildResponse(Response.Status.UNAUTHORIZED);
-		}
-		log.logErrorUsingMessageAndException("Error handling request: " + error.getMessage(),
-				error);
-		return buildResponseIncludingMessage(error, Response.Status.INTERNAL_SERVER_ERROR);
-	}
-
-	private boolean errorIsCausedByDataProblem(Exception error) {
-		return error instanceof ConverterException || errorDuringJsonConversion(error)
-				|| error instanceof DataException || error instanceof DataMissingException
-				|| error instanceof ArchiveDataIntergrityException;
-	}
-
-	private boolean errorDuringJsonConversion(Exception error) {
-		return error instanceof JsonParseException || error instanceof ConversionException;
-	}
-
-	private Response handleAuthorizationException(String authToken) {
-		if (authToken == null) {
-			return buildResponse(Response.Status.UNAUTHORIZED);
-		}
-		return buildResponse(Response.Status.FORBIDDEN);
-	}
-
-	private Response buildResponseIncludingMessage(Exception error, Status status) {
-		return Response.status(status).entity(error.getMessage())
-				.header(HttpHeaders.CONTENT_TYPE, TEXT_PLAIN_CHARSET_UTF_8).build();
-	}
-
-	private Response buildResponse(Status status) {
-		return Response.status(status).header(HttpHeaders.CONTENT_TYPE, TEXT_PLAIN_CHARSET_UTF_8)
-				.build();
-	}
-
-	private String convertConvertibleToString(String accept, ExternallyConvertible convertible) {
-		if (accept.endsWith("xml")) {
-			return convertDataToXml(convertible);
-		} else {
-			return convertDataToJson(convertible);
-		}
-	}
-
-	private String convertDataToXml(ExternallyConvertible convertible) {
-		ExternallyConvertibleToStringConverter convertibleToXmlConverter = ConverterProvider
-				.getExternallyConvertibleToStringConverter("xml");
-
-		return convertibleToXmlConverter.convertWithLinks(convertible, externalUrls);
-	}
-
-	private String getExistingTokenPreferHeader(String headerAuthToken, String queryAuthToken) {
-		return headerAuthToken != null ? headerAuthToken : queryAuthToken;
 	}
 
 	@GET
@@ -224,8 +53,10 @@ public class RecordEndpointSearch {
 	public Response searchRecordJson(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("searchId") String searchId,
 			@QueryParam("searchData") String searchDataAsString) {
-		return searchRecord(APPLICATION_VND_CORA_RECORD_LIST_JSON, headerAuthToken, queryAuthToken,
-				searchId, searchDataAsString);
+
+		EndpointSearch endpointSearch = TheRestInstanceProvider.getEndpointSearch();
+		return endpointSearch.searchRecord(request, APPLICATION_VND_CORA_RECORD_LIST_JSON,
+				headerAuthToken, queryAuthToken, searchId, searchDataAsString);
 	}
 
 	@GET
@@ -234,57 +65,33 @@ public class RecordEndpointSearch {
 	public Response searchRecordXml(@HeaderParam("authToken") String headerAuthToken,
 			@QueryParam("authToken") String queryAuthToken, @PathParam("searchId") String searchId,
 			@QueryParam("searchData") String searchDataAsString) {
-		return searchRecord(APPLICATION_VND_CORA_RECORD_LIST_XML, headerAuthToken, queryAuthToken,
-				searchId, searchDataAsString);
+
+		EndpointSearch endpointSearch = TheRestInstanceProvider.getEndpointSearch();
+		return endpointSearch.searchRecord(request, APPLICATION_VND_CORA_RECORD_LIST_XML,
+				headerAuthToken, queryAuthToken, searchId, searchDataAsString);
 	}
 
-	private Response searchRecord(String accept, String headerAuthToken, String queryAuthToken,
-			String searchId, String searchDataAsString) {
-		String usedToken = getExistingTokenPreferHeader(headerAuthToken, queryAuthToken);
-		return searchRecordUsingAuthTokenBySearchData(accept, usedToken, searchId,
-				searchDataAsString);
+	@GET
+	@Path("searchResult/{searchId}")
+	@Produces({ APPLICATION_VND_CORA_RECORD_LIST_DECORATED_JSON_QS09 })
+	public Response searchRecordDecoratedJson(@HeaderParam("authToken") String headerAuthToken,
+			@QueryParam("authToken") String queryAuthToken, @PathParam("searchId") String searchId,
+			@QueryParam("searchData") String searchDataAsString) {
+
+		EndpointSearch endpointSearch = TheRestInstanceProvider.getEndpointSearchDecorated();
+		return endpointSearch.searchRecord(request, APPLICATION_VND_CORA_RECORD_LIST_DECORATED_JSON,
+				headerAuthToken, queryAuthToken, searchId, searchDataAsString);
 	}
 
-	private Response searchRecordUsingAuthTokenBySearchData(String accept, String authToken,
-			String searchId, String searchDataAsString) {
-		try {
-			return trySearchRecord(accept, authToken, searchId, searchDataAsString);
-		} catch (Exception error) {
-			String errorFromCaller = "Error searching record with searchId: {0}.";
-			return handleError(authToken, error, MessageFormat.format(errorFromCaller, searchId));
-		}
-	}
+	@GET
+	@Path("searchResult/{searchId}")
+	@Produces({ APPLICATION_VND_CORA_RECORD_LIST_DECORATED_XML_QS09 })
+	public Response searchRecordDecoratedXml(@HeaderParam("authToken") String headerAuthToken,
+			@QueryParam("authToken") String queryAuthToken, @PathParam("searchId") String searchId,
+			@QueryParam("searchData") String searchDataAsString) {
 
-	private Response trySearchRecord(String accept, String authToken, String searchId,
-			String searchDataAsString) {
-		DataGroup searchData = convertSearchStringToData(searchDataAsString);
-
-		DataList searchRecordList = SpiderInstanceProvider.getRecordSearcher().search(authToken,
-				searchId, searchData);
-
-		String outputRecord = convertConvertibleToString(accept, searchRecordList);
-
-		return Response.status(Response.Status.OK).header(HttpHeaders.CONTENT_TYPE, accept)
-				.entity(outputRecord).build();
-	}
-
-	private DataGroup convertSearchStringToData(String searchDataAsString) {
-		String searchDataType = calculateSearchDataType(searchDataAsString);
-		return convertStringToDataGroup(searchDataType, searchDataAsString);
-	}
-
-	private String calculateSearchDataType(String searchDataAsString) {
-		if (searchDataAsString.startsWith("<")) {
-			return "+xml";
-		}
-		return "+json";
-	}
-
-	JsonParser getJsonParser() {
-		return jsonParser;
-	}
-
-	void setJsonParser(JsonParser jsonParser) {
-		this.jsonParser = jsonParser;
+		EndpointSearch endpointSearch = TheRestInstanceProvider.getEndpointSearchDecorated();
+		return endpointSearch.searchRecord(request, APPLICATION_VND_CORA_RECORD_LIST_DECORATED_XML,
+				headerAuthToken, queryAuthToken, searchId, searchDataAsString);
 	}
 }

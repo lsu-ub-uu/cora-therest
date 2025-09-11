@@ -23,22 +23,23 @@ import jakarta.ws.rs.core.Response;
 import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
 import se.uu.ub.cora.testutils.mrv.MethodReturnValues;
 
-public class EndpointDecoratedReaderSpy implements EndpointDecoratedReader {
+public class EndpointSearchSpy implements EndpointSearch {
 
 	public MethodCallRecorder MCR = new MethodCallRecorder();
 	public MethodReturnValues MRV = new MethodReturnValues();
 
-	public EndpointDecoratedReaderSpy() {
+	public EndpointSearchSpy() {
 		MCR.useMRV(MRV);
-		MRV.setDefaultReturnValuesSupplier("readAndDecorateRecord",
-				() -> Response.status(Response.Status.OK).build());
+		MRV.setDefaultReturnValuesSupplier("searchRecord", ResponseSpy::new);
 	}
 
 	@Override
-	public Response readAndDecorateRecord(HttpServletRequest request, String accept,
-			String authToken, String type, String id) {
-		return (Response) MCR.addCallAndReturnFromMRV("request", request, "accept", accept,
-				"authToken", authToken, "type", type, "id", id);
+	public Response searchRecord(HttpServletRequest request, String contentTypeOut,
+			String headerAuthToken, String queryAuthToken, String searchId,
+			String searchDataAsString) {
+		return (Response) MCR.addCallAndReturnFromMRV("request", request, "contentTypeOut",
+				contentTypeOut, "headerAuthToken", headerAuthToken, "queryAuthToken",
+				queryAuthToken, "searchId", searchId, "searchDataAsString", searchDataAsString);
 	}
 
 }

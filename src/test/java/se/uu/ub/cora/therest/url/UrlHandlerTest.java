@@ -60,11 +60,6 @@ public class UrlHandlerTest {
 	}
 
 	@Test
-	public void testx() throws Exception {
-
-	}
-
-	@Test
 	public void testGetBaseUrl() {
 		String baseUrl = urlHandler.getBaseUrl(requestSpy);
 
@@ -169,4 +164,46 @@ public class UrlHandlerTest {
 		assertEquals(baseUrl, standardIiifUrlHttps);
 	}
 
+	@Test
+	public void testGetAPIUrls() {
+		APIUrls apiUrls = urlHandler.getAPIUrls(requestSpy);
+
+		assertEquals(apiUrls.baseUrl(), standardBaseUrlHttp);
+		assertEquals(apiUrls.restUrl(), standardRestUrlHttp);
+		assertEquals(apiUrls.iiifUrl(), standardIiifUrlHttp);
+	}
+
+	@Test
+	public void testGetAPIUrlsXForwardedProtoHttps() {
+		requestSpy.MRV.setSpecificReturnValuesSupplier("getHeader", () -> "https",
+				"X-Forwarded-Proto");
+		APIUrls apiUrls = urlHandler.getAPIUrls(requestSpy);
+
+		assertEquals(apiUrls.baseUrl(), standardBaseUrlHttps);
+		assertEquals(apiUrls.restUrl(), standardRestUrlHttps);
+		assertEquals(apiUrls.iiifUrl(), standardIiifUrlHttps);
+	}
+
+	@Test
+	public void testGetAPIUrlsXForwardedProtoEmpty() {
+		requestSpy.MRV.setSpecificReturnValuesSupplier("getHeader", () -> "", "X-Forwarded-Proto");
+		APIUrls apiUrls = urlHandler.getAPIUrls(requestSpy);
+
+		assertEquals(apiUrls.baseUrl(), standardBaseUrlHttp);
+		assertEquals(apiUrls.restUrl(), standardRestUrlHttp);
+		assertEquals(apiUrls.iiifUrl(), standardIiifUrlHttp);
+	}
+
+	@Test
+	public void testGetAPIUrlsXForwardedProtoHttpsAlreadyHttps() {
+		requestSpy.MRV.setDefaultReturnValuesSupplier("getRequestURL",
+				() -> new StringBuffer("https://cora.epc.ub.uu.se/systemone/rest/record/text/"));
+		requestSpy.MRV.setSpecificReturnValuesSupplier("getHeader", () -> "https",
+				"X-Forwarded-Proto");
+		APIUrls apiUrls = urlHandler.getAPIUrls(requestSpy);
+
+		assertEquals(apiUrls.baseUrl(), standardBaseUrlHttps);
+		assertEquals(apiUrls.restUrl(), standardRestUrlHttps);
+		assertEquals(apiUrls.iiifUrl(), standardIiifUrlHttps);
+	}
 }

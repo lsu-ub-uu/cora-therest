@@ -56,6 +56,7 @@ import se.uu.ub.cora.spider.record.ConflictException;
 import se.uu.ub.cora.spider.record.DataException;
 import se.uu.ub.cora.spider.record.MisuseException;
 import se.uu.ub.cora.spider.record.RecordNotFoundException;
+import se.uu.ub.cora.spider.record.RecordReader;
 import se.uu.ub.cora.spider.record.ResourceNotFoundException;
 import se.uu.ub.cora.storage.RecordConflictException;
 import se.uu.ub.cora.therest.dependency.TheRestInstanceProvider;
@@ -220,13 +221,17 @@ public class RecordEndpointRead {
 	}
 
 	private Response tryReadRecord(String accept, String authToken, String type, String id) {
-		DataRecord dataRecord = SpiderInstanceProvider.getRecordReader().readRecord(authToken, type,
-				id);
+		DataRecord dataRecord = readRecordFromSpider(authToken, type, id);
 
 		String convertedDataRecord = convertConvertibleToString(accept, dataRecord);
 
 		return Response.status(Response.Status.OK).header(HttpHeaders.CONTENT_TYPE, accept)
 				.entity(convertedDataRecord).build();
+	}
+
+	private DataRecord readRecordFromSpider(String authToken, String type, String id) {
+		RecordReader recordReader = SpiderInstanceProvider.getRecordReader();
+		return recordReader.readRecord(authToken, type, id);
 	}
 
 	private String convertConvertibleToString(String accept, ExternallyConvertible convertible) {

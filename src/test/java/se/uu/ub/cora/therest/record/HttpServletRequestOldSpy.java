@@ -43,7 +43,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.HttpUpgradeHandler;
 import jakarta.servlet.http.Part;
+import se.uu.ub.cora.therest.url.HttpServletRequestSpy;
 
+/**
+ * @deprecated use {@link HttpServletRequestSpy} instead
+ */
+@Deprecated
 public class HttpServletRequestOldSpy implements HttpServletRequest {
 	public Map<String, String> headers = new HashMap<>();
 	public StringBuffer requestURL;

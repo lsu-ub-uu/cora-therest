@@ -16,7 +16,6 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.uu.ub.cora.therest.dependency;
 
 import static org.testng.Assert.assertTrue;
@@ -30,7 +29,10 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.therest.record.EndpointDecoratedReader;
+import se.uu.ub.cora.therest.converter.EndpointIncomingConverter;
+import se.uu.ub.cora.therest.converter.EndpointOutgoingConverter;
+import se.uu.ub.cora.therest.error.ErrorHandler;
+import se.uu.ub.cora.therest.record.EndpointSearch;
 import se.uu.ub.cora.therest.url.UrlHandler;
 
 public class TheRestInstanceProviderTest {
@@ -82,12 +84,44 @@ public class TheRestInstanceProviderTest {
 		factory.MCR.assertReturn("factorUrlHandler", 0, uh);
 	}
 
-	@Test
-	public void testGetDecoratedReaderUsesFactory() {
+	@Test(dependsOnMethods = "testDefaultInstanceFactoryIsSet")
+	public void testGetErrorHandler() {
 		setSpyFactory();
+		ErrorHandler eh = TheRestInstanceProvider.getErrorHandler();
 
-		EndpointDecoratedReader reader = TheRestInstanceProvider.getDecoratedReader();
-
-		factory.MCR.assertReturn("createDecoratedReader", 0, reader);
+		factory.MCR.assertReturn("factorErrorHandler", 0, eh);
 	}
+
+	@Test(dependsOnMethods = "testDefaultInstanceFactoryIsSet")
+	public void testGetEndpointOutgoingConverter() {
+		setSpyFactory();
+		EndpointOutgoingConverter ec = TheRestInstanceProvider.getEndpointOutgoingConverter();
+
+		factory.MCR.assertReturn("factorEndpointOutgoingConverter", 0, ec);
+	}
+
+	@Test(dependsOnMethods = "testDefaultInstanceFactoryIsSet")
+	public void testGetEndpointIncomingConverter() {
+		setSpyFactory();
+		EndpointIncomingConverter ec = TheRestInstanceProvider.getEndpointIncomingConverter();
+
+		factory.MCR.assertReturn("factorEndpointIncomingConverter", 0, ec);
+	}
+
+	@Test(dependsOnMethods = "testDefaultInstanceFactoryIsSet")
+	public void testGetRecordSearch() {
+		setSpyFactory();
+		EndpointSearch es = TheRestInstanceProvider.getEndpointSearch();
+
+		factory.MCR.assertReturn("factorEndpointSearch", 0, es);
+	}
+
+	@Test(dependsOnMethods = "testDefaultInstanceFactoryIsSet")
+	public void testGetRecordSearchDecorated() {
+		setSpyFactory();
+		EndpointSearch es = TheRestInstanceProvider.getEndpointSearchDecorated();
+
+		factory.MCR.assertReturn("factorEndpointSearchDecorated", 0, es);
+	}
+
 }

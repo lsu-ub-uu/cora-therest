@@ -16,24 +16,20 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.uu.ub.cora.therest.converter;
+package se.uu.ub.cora.therest.error;
 
-import jakarta.servlet.http.HttpServletRequest;
-import se.uu.ub.cora.data.ExternallyConvertible;
+import jakarta.ws.rs.core.Response;
 
-public interface EndpointConverter {
+public interface ErrorHandler {
 
 	/**
-	 * Converts a convertible object to a string representation based on the given accept header.
-	 *
-	 * @param request
-	 *            The HttpServletRequest that is making the current request.
-	 * @param accept
-	 *            The accept header value indicating the desired format.
-	 * @param convertible
-	 *            The convertible object to be converted.
-	 * @return A string representation of the convertible object in the specified format.
+	 * Handles errors and generate an apropiate response
+	 * 
+	 * @param authToken
+	 * @param error
+	 * @param errorFromCaller
+	 * @return
 	 */
-	public String convertConvertibleToString(HttpServletRequest request, String accept,
-			ExternallyConvertible convertible);
+	public Response handleError(String authToken, Exception error, String errorFromCaller);
+
 }
