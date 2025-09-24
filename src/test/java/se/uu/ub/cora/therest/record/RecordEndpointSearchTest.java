@@ -31,6 +31,8 @@ import se.uu.ub.cora.therest.dependency.TheRestInstanceProvider;
 import se.uu.ub.cora.therest.url.HttpServletRequestSpy;
 
 public class RecordEndpointSearchTest {
+	private static final String APPLICATION_XML = "application/xml";
+	private static final String APPLICATION_XML_QS01 = "application/xml;qs=0.1";
 	private static final String APPLICATION_VND_CORA_RECORD_LIST_XML = "application/vnd.cora.recordList+xml";
 	private static final String APPLICATION_VND_CORA_RECORD_LIST_JSON = "application/vnd.cora.recordList+json";
 	private static final String APPLICATION_VND_CORA_RECORD_LIST_JSON_QS09 = "application/vnd.cora.recordList+json;qs=0.9";
@@ -95,6 +97,11 @@ public class RecordEndpointSearchTest {
 				APPLICATION_VND_CORA_RECORD_LIST_DECORATED_XML_QS09);
 	}
 
+	@Test
+	public void testAnnotationsForSearchAApplicationXmlForBrowsers() throws Exception {
+		assertSearchAnnotations("searchRecordAsApplicationXmlForBrowsers", APPLICATION_XML_QS01);
+	}
+
 	private void assertSearchAnnotations(String methodName, String accept)
 			throws NoSuchMethodException {
 		AnnotationTestHelper annotationHelper = AnnotationTestHelper
@@ -139,6 +146,14 @@ public class RecordEndpointSearchTest {
 
 		assertCallMethod("factorEndpointSearchDecorated",
 				APPLICATION_VND_CORA_RECORD_LIST_DECORATED_XML);
+	}
+
+	@Test
+	public void testReadRecordAsApplicationXmlForBrowsers() {
+		response = recordEndpoint.searchRecordAsApplicationXmlForBrowsers(HEADER_AUTH_TOKEN,
+				QUERY_AUTH_TOKEN, SEARCH_ID, SEARCH_DATA);
+
+		assertCallMethod("factorEndpointSearch", APPLICATION_XML);
 	}
 
 	private void assertCallMethod(String factorMethod, String contentTypeOut) {

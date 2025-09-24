@@ -32,6 +32,8 @@ import se.uu.ub.cora.therest.dependency.TheRestInstanceProvider;
 
 @Path("/")
 public class RecordEndpointSearch {
+	private static final String APPLICATION_XML = "application/xml";
+	private static final String APPLICATION_XML_QS01 = "application/xml;qs=0.1";
 	private static final String APPLICATION_VND_CORA_RECORD_LIST_XML = "application/vnd.cora.recordList+xml";
 	private static final String APPLICATION_VND_CORA_RECORD_LIST_JSON = "application/vnd.cora.recordList+json";
 	private static final String APPLICATION_VND_CORA_RECORD_LIST_JSON_QS09 = "application/vnd.cora.recordList+json;qs=0.9";
@@ -93,5 +95,18 @@ public class RecordEndpointSearch {
 		EndpointSearch endpointSearch = TheRestInstanceProvider.getEndpointSearchDecorated();
 		return endpointSearch.searchRecord(request, APPLICATION_VND_CORA_RECORD_LIST_DECORATED_XML,
 				headerAuthToken, queryAuthToken, searchId, searchDataAsString);
+	}
+
+	@GET
+	@Path("searchResult/{searchId}")
+	@Produces(APPLICATION_XML_QS01)
+	public Response searchRecordAsApplicationXmlForBrowsers(
+			@HeaderParam("authToken") String headerAuthToken,
+			@QueryParam("authToken") String queryAuthToken, @PathParam("searchId") String searchId,
+			@QueryParam("searchData") String searchDataAsString) {
+
+		EndpointSearch endpointSearch = TheRestInstanceProvider.getEndpointSearch();
+		return endpointSearch.searchRecord(request, APPLICATION_XML, headerAuthToken,
+				queryAuthToken, searchId, searchDataAsString);
 	}
 }
