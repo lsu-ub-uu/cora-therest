@@ -40,7 +40,6 @@ import se.uu.ub.cora.logger.spies.LoggerSpy;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
 import se.uu.ub.cora.storage.StreamStorageProvider;
 import se.uu.ub.cora.storage.archive.RecordArchiveProvider;
-import se.uu.ub.cora.storage.idgenerator.RecordIdGeneratorProvider;
 
 public class TheRestModuleStarterTest {
 
@@ -68,13 +67,10 @@ public class TheRestModuleStarterTest {
 		recordArchiveProviders.add(new RecordArchiveProviderSpy());
 		providers.recordArchiveProviderImplementations = recordArchiveProviders;
 
-		List<RecordIdGeneratorProvider> recordIdGeneratorProviders = new ArrayList<>();
-		recordIdGeneratorProviders.add(new RecordIdGeneratorProviderSpy());
-		providers.recordIdGeneratorProviderImplementations = recordIdGeneratorProviders;
 	}
 
 	@Test
-	public void testDependencyProviderStartedAndAddedToSpiderInstanceProvider() throws Exception {
+	public void testDependencyProviderStartedAndAddedToSpiderInstanceProvider() {
 		startTheRestModuleStarter();
 		String dependencyProviderClassName = SpiderInstanceProvider
 				.getDependencyProviderClassName();
@@ -83,7 +79,7 @@ public class TheRestModuleStarterTest {
 
 	@Test(expectedExceptions = TheRestInitializationException.class, expectedExceptionsMessageRegExp = ""
 			+ "Error starting The Rest: se.uu.ub.cora.therest.initialize.NOTEXISTING")
-	public void testErrorIsThrownIfStartupOfDependencyProviderFails() throws Exception {
+	public void testErrorIsThrownIfStartupOfDependencyProviderFails() {
 		initInfo.put("dependencyProviderClassName", "se.uu.ub.cora.therest.initialize.NOTEXISTING");
 		startTheRestModuleStarter();
 		String dependencyProviderClassName = SpiderInstanceProvider
@@ -92,8 +88,7 @@ public class TheRestModuleStarterTest {
 	}
 
 	@Test
-	public void testErrorIsThrownIfStartupOfDependencyProviderFailsInitialExceptionIsSentAlong()
-			throws Exception {
+	public void testErrorIsThrownIfStartupOfDependencyProviderFailsInitialExceptionIsSentAlong() {
 		initInfo.put("dependencyProviderClassName", "se.uu.ub.cora.therest.initialize.NOTEXISTING");
 		try {
 			startTheRestModuleStarter();
@@ -108,7 +103,7 @@ public class TheRestModuleStarterTest {
 
 	// @Test
 	// public void testStartModuleInitInfoSentToRecordStorageProviderImplementation()
-	// throws Exception {
+	// {
 	// RecordStorageProviderSpy recordStorageProvider = (RecordStorageProviderSpy)
 	// providers.recordStorageProviderImplementations
 	// .iterator().next();
@@ -132,8 +127,7 @@ public class TheRestModuleStarterTest {
 	}
 
 	@Test
-	public void testStartModuleInitInfoSentToRecordArchiveProviderImplementation()
-			throws Exception {
+	public void testStartModuleInitInfoSentToRecordArchiveProviderImplementation() {
 		startTheRestModuleStarter();
 		RecordArchiveProviderSpy recordArchiveProvider = (RecordArchiveProviderSpy) providers.recordArchiveProviderImplementations
 				.iterator().next();
@@ -143,14 +137,13 @@ public class TheRestModuleStarterTest {
 
 	@Test(expectedExceptions = TheRestInitializationException.class, expectedExceptionsMessageRegExp = ""
 			+ "No implementations found for RecordArchiveProvider")
-	public void testStartModuleThrowsErrorIfNoRecordArchiveImplementations() throws Exception {
+	public void testStartModuleThrowsErrorIfNoRecordArchiveImplementations() {
 		providers.recordArchiveProviderImplementations = new ArrayList<>();
 		startTheRestModuleStarter();
 	}
 
 	@Test
-	public void testStartModuleLogsErrorIfNoRecordArchiveProviderImplementations()
-			throws Exception {
+	public void testStartModuleLogsErrorIfNoRecordArchiveProviderImplementations() {
 		providers.recordArchiveProviderImplementations = new ArrayList<>();
 		startTheRestMakeSureAnExceptionIsThrown();
 
@@ -161,8 +154,7 @@ public class TheRestModuleStarterTest {
 	}
 
 	@Test
-	public void testStartModuleLogsInfoIfMoreThanOneArchiveStorageProviderImplementations()
-			throws Exception {
+	public void testStartModuleLogsInfoIfMoreThanOneArchiveStorageProviderImplementations() {
 		List<RecordArchiveProvider> recordArchiveProviders = (List<RecordArchiveProvider>) providers.recordArchiveProviderImplementations;
 		RecordArchiveProviderSpy archiveProvider = new RecordArchiveProviderSpy();
 		archiveProvider.order = 13;
@@ -172,7 +164,7 @@ public class TheRestModuleStarterTest {
 		startTheRestModuleStarter();
 
 		LoggerSpy loggerSpy = (LoggerSpy) loggerFactorySpy.MCR.getReturnValue("factorForClass", 0);
-		loggerSpy.MCR.assertNumberOfCallsToMethod("logInfoUsingMessage", 8);
+		loggerSpy.MCR.assertNumberOfCallsToMethod("logInfoUsingMessage", 6);
 		loggerSpy.MCR.assertParameter("logInfoUsingMessage", 2, "message",
 				"Found se.uu.ub.cora.therest.initialize.RecordArchiveProviderSpy as "
 						+ "RecordArchiveProvider implementation with select order 0.");
@@ -187,8 +179,7 @@ public class TheRestModuleStarterTest {
 	}
 
 	@Test
-	public void testStartModuleLogsInfoAndStartsRecordArchiveProviderWithHigestSelectOrder()
-			throws Exception {
+	public void testStartModuleLogsInfoAndStartsRecordArchiveProviderWithHigestSelectOrder() {
 		List<RecordArchiveProvider> recordArchiveProviders = (List<RecordArchiveProvider>) providers.recordArchiveProviderImplementations;
 		RecordArchiveProviderSpy archiveProvider = new RecordArchiveProviderSpy();
 		archiveProvider.order = 13;
@@ -209,14 +200,14 @@ public class TheRestModuleStarterTest {
 		recordArchiveProvider3.MCR.assertMethodNotCalled("startUsingInitInfo");
 
 		LoggerSpy loggerSpy = (LoggerSpy) loggerFactorySpy.MCR.getReturnValue("factorForClass", 0);
-		loggerSpy.MCR.assertNumberOfCallsToMethod("logInfoUsingMessage", 8);
+		loggerSpy.MCR.assertNumberOfCallsToMethod("logInfoUsingMessage", 6);
 		loggerSpy.MCR.assertParameter("logInfoUsingMessage", 5, "message",
 				"Using se.uu.ub.cora.therest.initialize.RecordArchiveProviderSpy as "
 						+ "RecordArchiveProvider implementation.");
 	}
 
 	@Test
-	public void testChoosenRecordArchiveProviderIsUsedByDependencyProvider() throws Exception {
+	public void testChoosenRecordArchiveProviderIsUsedByDependencyProvider() {
 		startTheRestModuleStarter();
 		RecordArchiveProviderSpy recordArchiveProvider = (RecordArchiveProviderSpy) providers.recordArchiveProviderImplementations
 				.iterator().next();
@@ -226,8 +217,7 @@ public class TheRestModuleStarterTest {
 	}
 
 	@Test
-	public void testStartModuleInitInfoSentToStreamStorageProviderImplementation()
-			throws Exception {
+	public void testStartModuleInitInfoSentToStreamStorageProviderImplementation() {
 		StreamStorageProviderSpy streamStorageProvider = (StreamStorageProviderSpy) providers.streamStorageProviderImplementations
 				.iterator().next();
 		startTheRestModuleStarter();
@@ -236,14 +226,13 @@ public class TheRestModuleStarterTest {
 
 	@Test(expectedExceptions = TheRestInitializationException.class, expectedExceptionsMessageRegExp = ""
 			+ "No implementations found for StreamStorageProvider")
-	public void testStartModuleThrowsErrorIfNoStreamStorageImplementations() throws Exception {
+	public void testStartModuleThrowsErrorIfNoStreamStorageImplementations() {
 		providers.streamStorageProviderImplementations = new ArrayList<>();
 		startTheRestModuleStarter();
 	}
 
 	@Test
-	public void testStartModuleLogsErrorIfNoStreamStorageProviderImplementations()
-			throws Exception {
+	public void testStartModuleLogsErrorIfNoStreamStorageProviderImplementations() {
 		providers.streamStorageProviderImplementations = new ArrayList<>();
 		startTheRestMakeSureAnExceptionIsThrown();
 
@@ -254,15 +243,14 @@ public class TheRestModuleStarterTest {
 	}
 
 	@Test
-	public void testStartModuleLogsInfoIfMoreThanOneStreamStorageProviderImplementations()
-			throws Exception {
+	public void testStartModuleLogsInfoIfMoreThanOneStreamStorageProviderImplementations() {
 		List<StreamStorageProvider> streamStorageProviders = (List<StreamStorageProvider>) providers.streamStorageProviderImplementations;
 		streamStorageProviders.add(new StreamStorageProviderSpy2());
 		streamStorageProviders.add(new StreamStorageProviderSpy());
 		startTheRestModuleStarter();
 
 		LoggerSpy loggerSpy = (LoggerSpy) loggerFactorySpy.MCR.getReturnValue("factorForClass", 0);
-		loggerSpy.MCR.assertNumberOfCallsToMethod("logInfoUsingMessage", 8);
+		loggerSpy.MCR.assertNumberOfCallsToMethod("logInfoUsingMessage", 6);
 		loggerSpy.MCR.assertParameter("logInfoUsingMessage", 0, "message",
 				"Found se.uu.ub.cora.therest.initialize.StreamStorageProviderSpy as "
 						+ "StreamStorageProvider implementation with select order 0.");
@@ -275,8 +263,7 @@ public class TheRestModuleStarterTest {
 	}
 
 	@Test
-	public void testStartModuleLogsInfoAndStartsStreamStorageProviderWithHigestSelectOrder()
-			throws Exception {
+	public void testStartModuleLogsInfoAndStartsStreamStorageProviderWithHigestSelectOrder() {
 		List<StreamStorageProvider> streamStorageProviders = (List<StreamStorageProvider>) providers.streamStorageProviderImplementations;
 		streamStorageProviders.add(new StreamStorageProviderSpy2());
 		streamStorageProviders.add(new StreamStorageProviderSpy());
@@ -296,14 +283,14 @@ public class TheRestModuleStarterTest {
 		assertFalse(streamStorageProvider12.started);
 
 		LoggerSpy loggerSpy = (LoggerSpy) loggerFactorySpy.MCR.getReturnValue("factorForClass", 0);
-		loggerSpy.MCR.assertNumberOfCallsToMethod("logInfoUsingMessage", 8);
+		loggerSpy.MCR.assertNumberOfCallsToMethod("logInfoUsingMessage", 6);
 		loggerSpy.MCR.assertParameter("logInfoUsingMessage", 3, "message",
 				"Using se.uu.ub.cora.therest.initialize.StreamStorageProviderSpy2 as "
 						+ "StreamStorageProvider implementation.");
 	}
 
 	@Test
-	public void testChoosenStreamStorageProviderIsUsedByDependencyProvider() throws Exception {
+	public void testChoosenStreamStorageProviderIsUsedByDependencyProvider() {
 		startTheRestModuleStarter();
 		StreamStorageProviderSpy streamStorageProvider = (StreamStorageProviderSpy) providers.streamStorageProviderImplementations
 				.iterator().next();
@@ -313,95 +300,7 @@ public class TheRestModuleStarterTest {
 	}
 
 	@Test
-	public void testStartModuleInitInfoSentToRecordIdGeneratorProviderImplementation()
-			throws Exception {
-		RecordIdGeneratorProviderSpy recordIdGeneratorProvider = (RecordIdGeneratorProviderSpy) providers.recordIdGeneratorProviderImplementations
-				.iterator().next();
-		startTheRestModuleStarter();
-		assertSame(recordIdGeneratorProvider.initInfo, initInfo);
-	}
-
-	@Test(expectedExceptions = TheRestInitializationException.class, expectedExceptionsMessageRegExp = ""
-			+ "No implementations found for RecordIdGeneratorProvider")
-	public void testStartModuleThrowsErrorIfNoRecordIdGeneratorImplementations() throws Exception {
-		providers.recordIdGeneratorProviderImplementations = new ArrayList<>();
-		startTheRestModuleStarter();
-	}
-
-	@Test
-	public void testStartModuleLogsErrorIfNoRecordIdGeneratorProviderImplementations()
-			throws Exception {
-		providers.recordIdGeneratorProviderImplementations = new ArrayList<>();
-		startTheRestMakeSureAnExceptionIsThrown();
-
-		LoggerSpy loggerSpy = (LoggerSpy) loggerFactorySpy.MCR.getReturnValue("factorForClass", 0);
-		loggerSpy.MCR.assertNumberOfCallsToMethod("logFatalUsingMessage", 1);
-		loggerSpy.MCR.assertParameter("logFatalUsingMessage", 0, "message",
-				"No implementations found for RecordIdGeneratorProvider");
-	}
-
-	@Test
-	public void testStartModuleLogsInfoIfMoreThanOneRecordIdGeneratorProviderImplementations()
-			throws Exception {
-		List<RecordIdGeneratorProvider> recordIdGeneratorProviders = (List<RecordIdGeneratorProvider>) providers.recordIdGeneratorProviderImplementations;
-		recordIdGeneratorProviders.add(new RecordIdGeneratorProviderSpy2());
-		recordIdGeneratorProviders.add(new RecordIdGeneratorProviderSpy());
-		startTheRestModuleStarter();
-
-		LoggerSpy loggerSpy = (LoggerSpy) loggerFactorySpy.MCR.getReturnValue("factorForClass", 0);
-		loggerSpy.MCR.assertNumberOfCallsToMethod("logInfoUsingMessage", 8);
-		loggerSpy.MCR.assertParameter("logInfoUsingMessage", 4, "message",
-				"Found se.uu.ub.cora.therest.initialize.RecordIdGeneratorProviderSpy as "
-						+ "RecordIdGeneratorProvider implementation with select order 0.");
-		loggerSpy.MCR.assertParameter("logInfoUsingMessage", 5, "message",
-				"Found se.uu.ub.cora.therest.initialize.RecordIdGeneratorProviderSpy2 as "
-						+ "RecordIdGeneratorProvider implementation with select order 10.");
-		loggerSpy.MCR.assertParameter("logInfoUsingMessage", 6, "message",
-				"Found se.uu.ub.cora.therest.initialize.RecordIdGeneratorProviderSpy as "
-						+ "RecordIdGeneratorProvider implementation with select order 0.");
-	}
-
-	@Test
-	public void testStartModuleLogsInfoAndStartsRecordIdGeneratorProviderWithHigestSelectOrder()
-			throws Exception {
-		List<RecordIdGeneratorProvider> recordIdGeneratorProviders = (List<RecordIdGeneratorProvider>) providers.recordIdGeneratorProviderImplementations;
-		recordIdGeneratorProviders.add(new RecordIdGeneratorProviderSpy2());
-		recordIdGeneratorProviders.add(new RecordIdGeneratorProviderSpy());
-		startTheRestModuleStarter();
-
-		Iterator<RecordIdGeneratorProvider> recordIdGeneratorProviderIterator = providers.recordIdGeneratorProviderImplementations
-				.iterator();
-		RecordIdGeneratorProviderSpy recordIdGeneratorProvider = (RecordIdGeneratorProviderSpy) recordIdGeneratorProviderIterator
-				.next();
-		RecordIdGeneratorProviderSpy2 recordIdGeneratorProvider2 = (RecordIdGeneratorProviderSpy2) recordIdGeneratorProviderIterator
-				.next();
-		RecordIdGeneratorProviderSpy recordIdGeneratorProvider12 = (RecordIdGeneratorProviderSpy) recordIdGeneratorProviderIterator
-				.next();
-		assertSame(recordIdGeneratorProvider2.initInfo, initInfo);
-		assertFalse(recordIdGeneratorProvider.started);
-		assertTrue(recordIdGeneratorProvider2.started);
-		assertFalse(recordIdGeneratorProvider12.started);
-
-		LoggerSpy loggerSpy = (LoggerSpy) loggerFactorySpy.MCR.getReturnValue("factorForClass", 0);
-		loggerSpy.MCR.assertNumberOfCallsToMethod("logInfoUsingMessage", 8);
-		loggerSpy.MCR.assertParameter("logInfoUsingMessage", 7, "message",
-				"Using se.uu.ub.cora.therest.initialize.RecordIdGeneratorProviderSpy2 as "
-						+ "RecordIdGeneratorProvider implementation.");
-	}
-
-	@Test
-	public void testChoosenRecordIdGeneratorProviderIsUsedByDependencyProvider() throws Exception {
-		startTheRestModuleStarter();
-		RecordIdGeneratorProviderSpy recordIdGeneratorProvider = (RecordIdGeneratorProviderSpy) providers.recordIdGeneratorProviderImplementations
-				.iterator().next();
-		DependencyProviderSpy startedDependencyProvider = (DependencyProviderSpy) starter
-				.getStartedDependencyProvider();
-		assertSame(startedDependencyProvider.getRecordIdGeneratorProvider(),
-				recordIdGeneratorProvider);
-	}
-
-	@Test
-	public void testInitializeExtendedFunctionalityHasBeenCalled() throws Exception {
+	public void testInitializeExtendedFunctionalityHasBeenCalled() {
 		startTheRestModuleStarter();
 		DependencyProviderSpy startedDependencyProvider = (DependencyProviderSpy) starter
 				.getStartedDependencyProvider();

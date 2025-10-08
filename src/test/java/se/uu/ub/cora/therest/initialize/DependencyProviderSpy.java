@@ -31,7 +31,6 @@ import se.uu.ub.cora.spider.authorization.SpiderAuthorizator;
 import se.uu.ub.cora.spider.dependency.DependencyProviderAbstract;
 import se.uu.ub.cora.storage.StreamStorageProvider;
 import se.uu.ub.cora.storage.archive.RecordArchiveProvider;
-import se.uu.ub.cora.storage.idgenerator.RecordIdGeneratorProvider;
 
 public class DependencyProviderSpy extends DependencyProviderAbstract {
 
@@ -107,10 +106,6 @@ public class DependencyProviderSpy extends DependencyProviderAbstract {
 
 	public StreamStorageProvider getStreamStorageProvider() {
 		return streamStorageProvider;
-	}
-
-	public RecordIdGeneratorProvider getRecordIdGeneratorProvider() {
-		return recordIdGeneratorProvider;
 	}
 
 	@Override

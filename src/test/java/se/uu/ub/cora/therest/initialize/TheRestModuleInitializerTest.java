@@ -42,7 +42,6 @@ import se.uu.ub.cora.messaging.MessagingProvider;
 import se.uu.ub.cora.spider.cache.DataChangeMessageReceiver;
 import se.uu.ub.cora.storage.StreamStorageProvider;
 import se.uu.ub.cora.storage.archive.RecordArchiveProvider;
-import se.uu.ub.cora.storage.idgenerator.RecordIdGeneratorProvider;
 import se.uu.ub.cora.therest.cache.spies.MessageListenerSpy;
 import se.uu.ub.cora.therest.cache.spies.MessagingFactorySpy;
 
@@ -232,16 +231,6 @@ public class TheRestModuleInitializerTest {
 		Providers providers = getProviders(starter);
 
 		Iterable<RecordArchiveProvider> provider = providers.recordArchiveProviderImplementations;
-
-		assertTrue(provider instanceof ServiceLoader);
-	}
-
-	@Test
-	public void testRecordIdGeneratorProviderImplementationsArePassedOnToStarter() {
-		TheRestModuleStarterSpy starter = startTheRestModuleInitializerWithStarterSpy();
-
-		Providers providers = getProviders(starter);
-		Iterable<RecordIdGeneratorProvider> provider = providers.recordIdGeneratorProviderImplementations;
 
 		assertTrue(provider instanceof ServiceLoader);
 	}

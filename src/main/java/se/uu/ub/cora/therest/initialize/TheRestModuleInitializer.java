@@ -37,7 +37,6 @@ import se.uu.ub.cora.messaging.MessagingProvider;
 import se.uu.ub.cora.spider.cache.DataChangeMessageReceiver;
 import se.uu.ub.cora.storage.StreamStorageProvider;
 import se.uu.ub.cora.storage.archive.RecordArchiveProvider;
-import se.uu.ub.cora.storage.idgenerator.RecordIdGeneratorProvider;
 
 @WebListener
 public class TheRestModuleInitializer implements ServletContextListener {
@@ -105,8 +104,6 @@ public class TheRestModuleInitializer implements ServletContextListener {
 				.load(StreamStorageProvider.class);
 		providers.recordArchiveProviderImplementations = ServiceLoader
 				.load(RecordArchiveProvider.class);
-		providers.recordIdGeneratorProviderImplementations = ServiceLoader
-				.load(RecordIdGeneratorProvider.class);
 	}
 
 	private void startTheRestStarter() {
