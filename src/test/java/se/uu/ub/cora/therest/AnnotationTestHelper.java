@@ -42,8 +42,7 @@ public class AnnotationTestHelper {
 	private Annotation[][] parameterAnnotations;
 	private Annotation[] classAnnotations;
 
-	public static AnnotationTestHelper createAnnotationTestHelperForClass(Class<?> endpointClass)
-			throws NoSuchMethodException {
+	public static AnnotationTestHelper createAnnotationTestHelperForClass(Class<?> endpointClass) {
 		return new AnnotationTestHelper(endpointClass);
 	}
 
