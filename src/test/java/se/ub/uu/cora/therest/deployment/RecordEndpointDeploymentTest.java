@@ -152,6 +152,9 @@ public class RecordEndpointDeploymentTest {
 		assertEquals(response.getEntity(), """
 				{
 					"name": "SystemOne dev",
+					"family": "systemone",
+					"coraVersion": "dev",
+					"version": "dev",
 					"urls": {
 						"REST": "http://base.rest.url/rest/",
 						"appToken": "appToken",

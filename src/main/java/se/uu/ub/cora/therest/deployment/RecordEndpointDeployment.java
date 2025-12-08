@@ -58,28 +58,34 @@ public class RecordEndpointDeployment {
 	@Path("")
 	@Produces({ APPLICATION_VND_CORA_DEPLOYMENT_INFO_JSON + ";qs=0.1" })
 	public Response getDeploymentInfo() {
+		String deployment = """
+				{
+					"name": "SystemOne dev",
+					"family": "systemone",
+					"coraVersion": "dev",
+					"version": "dev",
+					"urls": {
+						"REST": "%s",
+						"appToken": "appToken",
+						"password": "password",
+						"records":"?",
+						"iiifUrl":"%s"
+					},
+					"demoUsers":[
+						{
+							"name": "systemoneAdmin",
+							"text": "appToken for systemoneAdmin",
+							"type": "appTokenLogin",
+							"loginId": "systemoneAdmin@system.cora.uu.se",
+							"appToken": "5d3f3ed4-4931-4924-9faa-8eaf5ac6457e"
+						}
+					]
+				}
+				""";
+		Object[] arguments = { restUrl, iiifUrl };
+
 		return Response.status(Response.Status.OK)
 				.header(HttpHeaders.CONTENT_TYPE, APPLICATION_VND_CORA_DEPLOYMENT_INFO_JSON)
-				.entity("""
-						{
-							"name": "SystemOne dev",
-							"urls": {
-								"REST": "%s",
-								"appToken": "appToken",
-								"password": "password",
-								"records":"?",
-								"iiifUrl":"%s"
-							},
-							"demoUsers":[
-								{
-									"name": "systemoneAdmin",
-									"text": "appToken for systemoneAdmin",
-									"type": "appTokenLogin",
-									"loginId": "systemoneAdmin@system.cora.uu.se",
-									"appToken": "5d3f3ed4-4931-4924-9faa-8eaf5ac6457e"
-								}
-							]
-						}
-						""".formatted(restUrl, iiifUrl)).build();
+				.entity(deployment.formatted(arguments)).build();
 	}
 }
