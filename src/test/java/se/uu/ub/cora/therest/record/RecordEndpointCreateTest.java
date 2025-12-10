@@ -128,7 +128,7 @@ public class RecordEndpointCreateTest {
 	}
 
 	@Test
-	public void testClassAnnotation() throws Exception {
+	public void testClassAnnotation() {
 		AnnotationTestHelper annotationHelper = AnnotationTestHelper
 				.createAnnotationTestHelperForClass(RecordEndpointCreate.class);
 
@@ -216,10 +216,8 @@ public class RecordEndpointCreateTest {
 		xmlToDataConverter.MCR.assertParameters("convert", 0, defaultXml);
 		DataGroup dataGroup = (DataGroup) xmlToDataConverter.MCR.getReturnValue("convert", 0);
 
-		DataRecordGroup convertedToRecord = (DataRecordGroup) dataFactorySpy.MCR
+		return (DataRecordGroup) dataFactorySpy.MCR
 				.assertCalledParametersReturn("factorRecordGroupFromDataGroup", dataGroup);
-
-		return convertedToRecord;
 	}
 
 	@Test

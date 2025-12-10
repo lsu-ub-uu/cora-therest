@@ -23,6 +23,9 @@ package se.ub.uu.cora.therest.deployment;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -30,6 +33,9 @@ import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
+import se.uu.ub.cora.initialize.SettingsProvider;
+import se.uu.ub.cora.logger.LoggerProvider;
+import se.uu.ub.cora.logger.spies.LoggerFactorySpy;
 import se.uu.ub.cora.therest.AnnotationTestHelper;
 import se.uu.ub.cora.therest.dependency.TheRestInstanceFactorySpy;
 import se.uu.ub.cora.therest.dependency.TheRestInstanceProvider;
@@ -54,8 +60,27 @@ public class RecordEndpointDeploymentTest {
 	public void beforeMethod() {
 		setupUrlHandler();
 
+		LoggerProvider.setLoggerFactory(new LoggerFactorySpy());
+		setUpSettingsProvider();
+
 		requestSpy = new HttpServletRequestSpy();
 		recordEndpoint = new RecordEndpointDeployment(requestSpy);
+	}
+
+	private void setUpSettingsProvider() {
+		SettingsProvider.setSettings(createSettings());
+		// SettingsProvider.onlyForTestSetLogger(new LoggerSpy());
+	}
+
+	private Map<String, String> createSettings() {
+		Map<String, String> settings = new HashMap<>();
+
+		settings.put("deploymentName", "someName");
+		settings.put("deploymentFamily", "someFamily");
+		settings.put("deploymentCoraVersion", "someCoraVersion");
+		settings.put("deploymentVersion", "someVersion");
+
+		return settings;
 	}
 
 	private void setupUrlHandler() {
@@ -76,43 +101,16 @@ public class RecordEndpointDeploymentTest {
 		annotationHelper.assertPathAnnotationForClass("/");
 	}
 
-	// @Test
-	// public void testUrlsHandledByUrlHandler() {
-	// recordEndpoint = new RecordEndpointDeployment(requestSpy);
-	//
-	// response = recordEndpoint.readRecordJson(AUTH_TOKEN, AUTH_TOKEN, PLACE, PLACE_0001);
-	//
-	// UrlHandlerSpy urlHandler = (UrlHandlerSpy) instanceFactory.MCR
-	// .getReturnValue("factorUrlHandler", 0);
-	//
-	// var restUrl = urlHandler.MCR.assertCalledParametersReturn("getRestUrl", requestSpy);
-	// var iiifUrl = urlHandler.MCR.assertCalledParametersReturn("getIiifUrl", requestSpy);
-	//
-	// assertEquals(restUrl, getRestUrlFromFactorUsingConvertibleAndExternalUrls());
-	// assertEquals(iiifUrl, getIiifUrlFromFactorUsingConvertibleAndExternalUrls());
-	// }
+	@Test
+	public void testAnnotationsForGetDeploymentInfoJson() throws Exception {
+		AnnotationTestHelper annotationHelper = AnnotationTestHelper
+				.createAnnotationTestHelperForClassMethodNameAndNumOfParameters(
+						recordEndpoint.getClass(), "getDeploymentInfoJson", 0);
 
-	// private String getRestUrlFromFactorUsingConvertibleAndExternalUrls() {
-	// DataToJsonConverterFactorySpy converterFactory = (DataToJsonConverterFactorySpy)
-	// converterFactoryCreatorSpy.MCR
-	// .getReturnValue("createFactory", 0);
-	// se.uu.ub.cora.data.converter.ExternalUrls externalUrls =
-	// (se.uu.ub.cora.data.converter.ExternalUrls) converterFactory.MCR
-	// .getParameterForMethodAndCallNumberAndParameter(
-	// "factorUsingConvertibleAndExternalUrls", 0, "externalUrls");
-	// return externalUrls.getBaseUrl();
-	// }
-	//
-	// private String getIiifUrlFromFactorUsingConvertibleAndExternalUrls() {
-	// DataToJsonConverterFactorySpy converterFactory = (DataToJsonConverterFactorySpy)
-	// converterFactoryCreatorSpy.MCR
-	// .getReturnValue("createFactory", 0);
-	// se.uu.ub.cora.data.converter.ExternalUrls externalUrls =
-	// (se.uu.ub.cora.data.converter.ExternalUrls) converterFactory.MCR
-	// .getParameterForMethodAndCallNumberAndParameter(
-	// "factorUsingConvertibleAndExternalUrls", 0, "externalUrls");
-	// return externalUrls.getIfffUrl();
-	// }
+		annotationHelper.assertHttpMethodAndPathAnnotation("GET", "");
+		annotationHelper
+				.assertProducesAnnotation(APPLICATION_VND_CORA_DEPLOYMENT_INFO_JSON + ";qs=0.1");
+	}
 
 	@Test
 	public void testAnnotationsForReadIndexHtml() throws Exception {
@@ -144,17 +142,56 @@ public class RecordEndpointDeploymentTest {
 	}
 
 	@Test
-	public void testReadDeploymentInfo() {
-		response = recordEndpoint.getDeploymentInfo();
+	public void testGetDeploymentInfoJson_NoDemoUsers() {
+		recordEndpoint = new RecordEndpointDeployment(requestSpy);
+
+		response = recordEndpoint.getDeploymentInfoJson();
+
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.OK);
 		assertResponseContentTypeIs(APPLICATION_VND_CORA_DEPLOYMENT_INFO_JSON);
 		assertEquals(response.getEntity(), """
 				{
-					"name": "SystemOne dev",
-					"family": "systemone",
-					"coraVersion": "dev",
-					"version": "dev",
+					"name": "someName",
+					"family": "someFamily",
+					"coraVersion": "someCoraVersion",
+					"version": "someVersion",
+					"urls": {
+						"REST": "http://base.rest.url/rest/",
+						"appToken": "appToken",
+						"password": "password",
+						"records":"?",
+						"login":"?",
+						"iiifUrl":"someIiifUrl"
+					},
+					"demoUsers":[
+						{
+							"name": "systemoneAdmin",
+							"text": "appToken for systemoneAdmin",
+							"type": "appTokenLogin",
+							"loginId": "systemoneAdmin@system.cora.uu.se",
+							"appToken": "5d3f3ed4-4931-4924-9faa-8eaf5ac6457e"
+						}
+					]
+				}
+				""");
+	}
+
+	@Test(enabled = false)
+	public void testGetDeploymentInfoJson_WithDemoUsers() {
+		recordEndpoint = new RecordEndpointDeployment(requestSpy);
+
+		response = recordEndpoint.getDeploymentInfoJson();
+
+		assertEntityExists();
+		assertResponseStatusIs(Response.Status.OK);
+		assertResponseContentTypeIs(APPLICATION_VND_CORA_DEPLOYMENT_INFO_JSON);
+		assertEquals(response.getEntity(), """
+				{
+					"name": "someName",
+					"family": "someFamily",
+					"coraVersion": "someCoraVersion",
+					"version": "someVersion",
 					"urls": {
 						"REST": "http://base.rest.url/rest/",
 						"appToken": "appToken",

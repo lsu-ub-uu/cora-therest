@@ -29,6 +29,7 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import se.uu.ub.cora.initialize.SettingsProvider;
 import se.uu.ub.cora.therest.dependency.TheRestInstanceProvider;
 import se.uu.ub.cora.therest.url.UrlHandler;
 
@@ -57,21 +58,26 @@ public class RecordEndpointDeployment {
 	@GET
 	@Path("")
 	@Produces({ APPLICATION_VND_CORA_DEPLOYMENT_INFO_JSON + ";qs=0.1" })
-	public Response getDeploymentInfo() {
+	public Response getDeploymentInfoJson() {
+		String name = SettingsProvider.getSetting("deploymentName");
+		String family = SettingsProvider.getSetting("deploymentFamily");
+		String coraVersion = SettingsProvider.getSetting("deploymentCoraVersion");
+		String version = SettingsProvider.getSetting("deploymentVersion");
+
 		String deployment = """
 				{
-					"name": "SystemOne dev",
-					"family": "systemone",
-					"coraVersion": "dev",
-					"version": "dev",
+					"name": "%s",
+					"family": "%s",
+					"coraVersion": "%s",
+					"version": "%s",
 					"urls": {
 						"REST": "%s",
-						"appToken": "appToken",
-						"password": "password",
-						"records":"?",
-						"iiifUrl":"%s"
+						"loginAppToken": "login/apptoken",
+						"loginPassword": "login/password",
+						"idpLogin": "password",
+						"records":"/record"
 					},
-					"demoUsers":[
+					"exampleUsers":[
 						{
 							"name": "systemoneAdmin",
 							"text": "appToken for systemoneAdmin",
@@ -82,7 +88,7 @@ public class RecordEndpointDeployment {
 					]
 				}
 				""";
-		Object[] arguments = { restUrl, iiifUrl };
+		Object[] arguments = { name, family, coraVersion, version, restUrl, iiifUrl };
 
 		return Response.status(Response.Status.OK)
 				.header(HttpHeaders.CONTENT_TYPE, APPLICATION_VND_CORA_DEPLOYMENT_INFO_JSON)
