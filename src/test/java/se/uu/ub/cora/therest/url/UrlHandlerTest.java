@@ -20,13 +20,9 @@ package se.uu.ub.cora.therest.url;
 
 import static org.testng.Assert.assertEquals;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import se.uu.ub.cora.initialize.SettingsProvider;
 import se.uu.ub.cora.logger.LoggerProvider;
 import se.uu.ub.cora.logger.spies.LoggerFactorySpy;
 
@@ -36,8 +32,10 @@ public class UrlHandlerTest {
 	private HttpServletRequestSpy requestSpy;
 	private String standardBaseUrlHttp = "http://cora.epc.ub.uu.se";
 	private String standardBaseUrlHttps = "https://cora.epc.ub.uu.se";
-	private String standardRestUrlHttp = "http://cora.epc.ub.uu.se/systemone/rest/record/";
-	private String standardRestUrlHttps = "https://cora.epc.ub.uu.se/systemone/rest/record/";
+	private String standardRestUrlHttp = "http://cora.epc.ub.uu.se/systemone/rest/";
+	private String standardRestUrlHttps = "https://cora.epc.ub.uu.se/systemone/rest/";
+	private String standardRestRecordUrlHttp = "http://cora.epc.ub.uu.se/systemone/rest/record/";
+	private String standardRestRecordUrlHttps = "https://cora.epc.ub.uu.se/systemone/rest/record/";
 	private String standardIiifUrlHttp = "http://cora.epc.ub.uu.se/systemone/iiif/";
 	private String standardIiifUrlHttps = "https://cora.epc.ub.uu.se/systemone/iiif/";
 
@@ -53,10 +51,10 @@ public class UrlHandlerTest {
 		requestSpy.MRV.setDefaultReturnValuesSupplier("getRequestURL",
 				() -> new StringBuffer("http://cora.epc.ub.uu.se/systemone/rest/record/text/"));
 
-		Map<String, String> settings = new HashMap<>();
-		settings.put("theRestPublicPathToSystem", "/systemone/rest/");
-		settings.put("iiifPublicPathToSystem", "/systemone/iiif/");
-		SettingsProvider.setSettings(settings);
+		// Map<String, String> settings = new HashMap<>();
+		// settings.put("theRestPublicPathToSystem", "/systemone/rest/");
+		// settings.put("iiifPublicPathToSystem", "/systemone/iiif/");
+		// SettingsProvider.setSettings(settings);
 	}
 
 	@Test
@@ -130,6 +128,41 @@ public class UrlHandlerTest {
 	}
 
 	@Test
+	public void testGetRestRecordUrl() {
+		String baseUrl = urlHandler.getRestRecordUrl(requestSpy);
+
+		assertEquals(baseUrl, standardRestRecordUrlHttp);
+	}
+
+	@Test
+	public void testGetRestRecordUrlXForwardedProtoHttps() {
+		requestSpy.MRV.setSpecificReturnValuesSupplier("getHeader", () -> "https",
+				"X-Forwarded-Proto");
+		String baseUrl = urlHandler.getRestRecordUrl(requestSpy);
+
+		assertEquals(baseUrl, standardRestRecordUrlHttps);
+	}
+
+	@Test
+	public void testGetRestUrlRecordXForwardedProtoEmpty() {
+		requestSpy.MRV.setSpecificReturnValuesSupplier("getHeader", () -> "", "X-Forwarded-Proto");
+		String baseUrl = urlHandler.getRestRecordUrl(requestSpy);
+
+		assertEquals(baseUrl, standardRestRecordUrlHttp);
+	}
+
+	@Test
+	public void testGetRestRecordXForwardedProtoHttpsAlreadyHttps() {
+		requestSpy.MRV.setDefaultReturnValuesSupplier("getRequestURL",
+				() -> new StringBuffer("https://cora.epc.ub.uu.se/systemone/rest/record/text/"));
+		requestSpy.MRV.setSpecificReturnValuesSupplier("getHeader", () -> "https",
+				"X-Forwarded-Proto");
+		String baseUrl = urlHandler.getRestRecordUrl(requestSpy);
+
+		assertEquals(baseUrl, standardRestRecordUrlHttps);
+	}
+
+	@Test
 	public void testGetIiiFUrl() {
 		String baseUrl = urlHandler.getIiifUrl(requestSpy);
 
@@ -169,7 +202,7 @@ public class UrlHandlerTest {
 		APIUrls apiUrls = urlHandler.getAPIUrls(requestSpy);
 
 		assertEquals(apiUrls.baseUrl(), standardBaseUrlHttp);
-		assertEquals(apiUrls.restUrl(), standardRestUrlHttp);
+		assertEquals(apiUrls.restRecordUrl(), standardRestRecordUrlHttp);
 		assertEquals(apiUrls.iiifUrl(), standardIiifUrlHttp);
 	}
 
@@ -180,7 +213,7 @@ public class UrlHandlerTest {
 		APIUrls apiUrls = urlHandler.getAPIUrls(requestSpy);
 
 		assertEquals(apiUrls.baseUrl(), standardBaseUrlHttps);
-		assertEquals(apiUrls.restUrl(), standardRestUrlHttps);
+		assertEquals(apiUrls.restRecordUrl(), standardRestRecordUrlHttps);
 		assertEquals(apiUrls.iiifUrl(), standardIiifUrlHttps);
 	}
 
@@ -190,7 +223,7 @@ public class UrlHandlerTest {
 		APIUrls apiUrls = urlHandler.getAPIUrls(requestSpy);
 
 		assertEquals(apiUrls.baseUrl(), standardBaseUrlHttp);
-		assertEquals(apiUrls.restUrl(), standardRestUrlHttp);
+		assertEquals(apiUrls.restRecordUrl(), standardRestRecordUrlHttp);
 		assertEquals(apiUrls.iiifUrl(), standardIiifUrlHttp);
 	}
 
@@ -203,7 +236,7 @@ public class UrlHandlerTest {
 		APIUrls apiUrls = urlHandler.getAPIUrls(requestSpy);
 
 		assertEquals(apiUrls.baseUrl(), standardBaseUrlHttps);
-		assertEquals(apiUrls.restUrl(), standardRestUrlHttps);
+		assertEquals(apiUrls.restRecordUrl(), standardRestRecordUrlHttps);
 		assertEquals(apiUrls.iiifUrl(), standardIiifUrlHttps);
 	}
 }

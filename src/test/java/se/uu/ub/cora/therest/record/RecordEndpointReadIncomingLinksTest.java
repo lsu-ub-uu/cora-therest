@@ -122,7 +122,7 @@ public class RecordEndpointReadIncomingLinksTest {
 		UrlHandlerSpy urlHandler = (UrlHandlerSpy) instanceFactory.MCR
 				.getReturnValue("factorUrlHandler", 0);
 
-		var restUrl = urlHandler.MCR.assertCalledParametersReturn("getRestUrl", requestSpy);
+		var restUrl = urlHandler.MCR.assertCalledParametersReturn("getRestRecordUrl", requestSpy);
 		var iiifUrl = urlHandler.MCR.assertCalledParametersReturn("getIiifUrl", requestSpy);
 
 		assertEquals(restUrl, getRestUrlFromFactorUsingConvertibleAndExternalUrls());

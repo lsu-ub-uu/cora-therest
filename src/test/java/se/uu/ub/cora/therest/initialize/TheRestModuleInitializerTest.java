@@ -4,18 +4,18 @@
  *
  * This file is part of Cora.
  *
- *     Cora is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
+ * Cora is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *     Cora is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
+ * Cora is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
  *
- *     You should have received a copy of the GNU General Public License
- *     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with Cora. If not, see <http://www.gnu.org/licenses/>.
  */
 package se.uu.ub.cora.therest.initialize;
 
@@ -82,7 +82,6 @@ public class TheRestModuleInitializerTest {
 	}
 
 	private void setNeededInitParameters() {
-		source.setInitParameter("theRestPublicPathToSystem", "/therest/rest/");
 		source.setInitParameter("dependencyProviderClassName",
 				"se.uu.ub.cora.therest.initialize.DependencyProviderSpy");
 		source.setInitParameter("initParam1", "initValue1");
@@ -113,46 +112,20 @@ public class TheRestModuleInitializerTest {
 				"TheRestModuleInitializer starting...");
 
 		loggerSettingsProvider.MCR.assertParameter("logInfoUsingMessage", 0, "message",
-				"Found: /therest/rest/ as: theRestPublicPathToSystem");
-		loggerSettingsProvider.MCR.assertParameter("logInfoUsingMessage", 1, "message",
 				"Found: se.uu.ub.cora.therest.initialize.DependencyProviderSpy as: "
 						+ "dependencyProviderClassName");
-		loggerSettingsProvider.MCR.assertParameter("logInfoUsingMessage", 2, "message",
+		loggerSettingsProvider.MCR.assertParameter("logInfoUsingMessage", 1, "message",
 				"Found: someHostname as: rabbitMqHostname");
-		loggerSettingsProvider.MCR.assertParameter("logInfoUsingMessage", 3, "message",
+		loggerSettingsProvider.MCR.assertParameter("logInfoUsingMessage", 2, "message",
 				"Found: 6666 as: rabbitMqPort");
-		loggerSettingsProvider.MCR.assertParameter("logInfoUsingMessage", 4, "message",
+		loggerSettingsProvider.MCR.assertParameter("logInfoUsingMessage", 3, "message",
 				"Found: someVirtualHost as: rabbitMqVirtualHost");
-		loggerSettingsProvider.MCR.assertParameter("logInfoUsingMessage", 5, "message",
+		loggerSettingsProvider.MCR.assertParameter("logInfoUsingMessage", 4, "message",
 				"Found: someExchange as: rabbitMqDataExchange");
-		loggerSettingsProvider.MCR.assertNumberOfCallsToMethod("logInfoUsingMessage", 6);
+		loggerSettingsProvider.MCR.assertNumberOfCallsToMethod("logInfoUsingMessage", 5);
 
 		loggerRestInit.MCR.assertParameter("logInfoUsingMessage", 1, "message",
 				"TheRestModuleInitializer started");
-	}
-
-	@Test(expectedExceptions = InitializationException.class, expectedExceptionsMessageRegExp = ""
-			+ "Setting name: theRestPublicPathToSystem not found in SettingsProvider.")
-	public void testErrorIsThrownIfMissingTheRestPublicPathToSystem() {
-		source = new ServletContextSpy();
-		context = new ServletContextEvent(source);
-		startTheRestModuleInitializerWithStarterSpy();
-	}
-
-	@Test
-	public void testErrorIsLoggedIfMissingTheRestPublicPathToSystem() {
-		source = new ServletContextSpy();
-		context = new ServletContextEvent(source);
-		try {
-			startTheRestModuleInitializerWithStarterSpy();
-			fail();
-		} catch (Exception e) {
-
-		}
-
-		loggerSettingsProvider.MCR.assertNumberOfCallsToMethod("logFatalUsingMessage", 1);
-		loggerSettingsProvider.MCR.assertParameter("logFatalUsingMessage", 0, "message",
-				"Setting name: theRestPublicPathToSystem not found in SettingsProvider.");
 	}
 
 	@Test(expectedExceptions = InitializationException.class, expectedExceptionsMessageRegExp = ""
@@ -167,24 +140,21 @@ public class TheRestModuleInitializerTest {
 	@Test
 	public void testErrorIsLoggedIfMissingDependencyProviderClassName() {
 		source = new ServletContextSpy();
-		source.setInitParameter("theRestPublicPathToSystem", "/therest/rest/");
 		context = new ServletContextEvent(source);
 		try {
 			startTheRestModuleInitializerWithStarterSpy();
-		} catch (Exception e) {
-
+			fail();
+		} catch (Exception _) {
+			loggerSettingsProvider.MCR.assertNumberOfCallsToMethod("logFatalUsingMessage", 1);
+			loggerSettingsProvider.MCR.assertParameter("logFatalUsingMessage", 0, "message",
+					"Setting name: dependencyProviderClassName not found in SettingsProvider.");
 		}
-
-		loggerSettingsProvider.MCR.assertNumberOfCallsToMethod("logFatalUsingMessage", 1);
-		loggerSettingsProvider.MCR.assertParameter("logFatalUsingMessage", 0, "message",
-				"Setting name: dependencyProviderClassName not found in SettingsProvider.");
 	}
 
 	@Test
 	public void testSettingsProviderIsInitialized() {
 		startTheRestModuleInitializerWithStarterSpy();
 
-		assertEquals(SettingsProvider.getSetting("theRestPublicPathToSystem"), "/therest/rest/");
 		assertEquals(SettingsProvider.getSetting("dependencyProviderClassName"),
 				"se.uu.ub.cora.therest.initialize.DependencyProviderSpy");
 		assertEquals(SettingsProvider.getSetting("initParam1"), "initValue1");
@@ -196,8 +166,7 @@ public class TheRestModuleInitializerTest {
 		TheRestModuleStarterSpy starter = startTheRestModuleInitializerWithStarterSpy();
 		Map<String, String> initInfo = getInitInfoFromStarterSpy(starter);
 
-		assertEquals(initInfo.size(), 8);
-		assertEquals(initInfo.get("theRestPublicPathToSystem"), "/therest/rest/");
+		assertEquals(initInfo.size(), 7);
 		assertEquals(initInfo.get("dependencyProviderClassName"),
 				"se.uu.ub.cora.therest.initialize.DependencyProviderSpy");
 		assertEquals(initInfo.get("initParam1"), "initValue1");

@@ -89,7 +89,7 @@ public class RecordEndpointUpdate {
 	public RecordEndpointUpdate(@Context HttpServletRequest req) {
 		request = req;
 		UrlHandler urlHandler = TheRestInstanceProvider.getUrlHandler();
-		String restUrl = urlHandler.getRestUrl(req);
+		String restUrl = urlHandler.getRestRecordUrl(req);
 		String iiifUrl = urlHandler.getIiifUrl(req);
 
 		setExternalUrlsForJsonConverter(restUrl, iiifUrl);

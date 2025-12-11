@@ -19,7 +19,6 @@
 package se.uu.ub.cora.therest.url;
 
 import jakarta.servlet.http.HttpServletRequest;
-import se.uu.ub.cora.initialize.SettingsProvider;
 
 public class UrlHandlerImp implements UrlHandler {
 	private HttpServletRequest request;
@@ -47,6 +46,13 @@ public class UrlHandlerImp implements UrlHandler {
 		return baseURI;
 	}
 
+	private final String getDeploymentURLFromRequest() {
+		String tempUrl = request.getRequestURL().toString();
+		int indexOfFirstSlashAfterHttp = tempUrl.indexOf("/rest");
+		String baseURL = tempUrl.substring(0, indexOfFirstSlashAfterHttp);
+		return changeHttpToHttpsIfHeaderSaysSo(baseURL);
+	}
+
 	private boolean ifForwardedProtocolExists(String forwardedProtocol) {
 		return null != forwardedProtocol && !"".equals(forwardedProtocol);
 	}
@@ -54,28 +60,33 @@ public class UrlHandlerImp implements UrlHandler {
 	@Override
 	public String getRestUrl(HttpServletRequest request) {
 		this.request = request;
-		String baseURL = getBaseURLFromRequest();
-		baseURL += SettingsProvider.getSetting("theRestPublicPathToSystem");
-		baseURL += "record/";
-		return baseURL;
+		return getDeploymentURLFromRequest() + "/rest/";
+	}
+
+	@Override
+	public String getRestRecordUrl(HttpServletRequest request) {
+		this.request = request;
+		return getDeploymentURLFromRequest() + "/rest/record/";
 	}
 
 	@Override
 	public String getIiifUrl(HttpServletRequest request) {
 		this.request = request;
-		String baseURL = getBaseURLFromRequest();
-		baseURL += SettingsProvider.getSetting("iiifPublicPathToSystem");
-		return baseURL;
+		// String baseURL = getBaseURLFromRequest();
+		// baseURL += SettingsProvider.getSetting("iiifPublicPathToSystem");
+		// return baseURL;
+		return getDeploymentURLFromRequest() + "/iiif/";
 	}
 
 	@Override
 	public APIUrls getAPIUrls(HttpServletRequest request) {
+		// TODO SPIKE, add tests, add restUrl
 		this.request = request;
 		String baseUrl = getBaseURLFromRequest();
-		String restUrl = getRestUrl(request);
+		String restRecordUrl = getRestRecordUrl(request);
 		String iiifUrl = getIiifUrl(request);
 
-		return new APIUrls(baseUrl, restUrl, iiifUrl);
+		return new APIUrls(baseUrl, restRecordUrl, iiifUrl);
 	}
 
 }

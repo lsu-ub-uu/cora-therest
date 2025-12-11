@@ -30,6 +30,7 @@ public class UrlHandlerSpy implements UrlHandler {
 		MCR.useMRV(MRV);
 		MRV.setDefaultReturnValuesSupplier("getBaseUrl", () -> "someBaseUrl");
 		MRV.setDefaultReturnValuesSupplier("getRestUrl", () -> "someRestUrl");
+		MRV.setDefaultReturnValuesSupplier("getRestRecordUrl", () -> "someRecordRestUrl");
 		MRV.setDefaultReturnValuesSupplier("getIiifUrl", () -> "someIiifUrl");
 		MRV.setDefaultReturnValuesSupplier("getAPIUrls",
 				() -> new APIUrls("someBaseUrl", "someRestUrl", "someIiifUrl"));
@@ -42,6 +43,11 @@ public class UrlHandlerSpy implements UrlHandler {
 
 	@Override
 	public String getRestUrl(HttpServletRequest request) {
+		return (String) MCR.addCallAndReturnFromMRV("request", request);
+	}
+
+	@Override
+	public String getRestRecordUrl(HttpServletRequest request) {
 		return (String) MCR.addCallAndReturnFromMRV("request", request);
 	}
 

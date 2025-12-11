@@ -20,6 +20,10 @@
 package se.uu.ub.cora.therest.deployment;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.GET;
@@ -29,7 +33,13 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import se.uu.ub.cora.data.Data;
+import se.uu.ub.cora.data.DataList;
+import se.uu.ub.cora.data.DataProvider;
+import se.uu.ub.cora.data.DataRecord;
+import se.uu.ub.cora.data.DataRecordGroup;
 import se.uu.ub.cora.initialize.SettingsProvider;
+import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
 import se.uu.ub.cora.therest.dependency.TheRestInstanceProvider;
 import se.uu.ub.cora.therest.url.UrlHandler;
 
@@ -37,15 +47,15 @@ import se.uu.ub.cora.therest.url.UrlHandler;
 public class RecordEndpointDeployment {
 	private static final String APPLICATION_VND_CORA_DEPLOYMENT_INFO_JSON = ""
 			+ "application/vnd.cora.deploymentInfo+json";
+	private static final String APPLICATION_VND_CORA_DEPLOYMENT_INFO_XML = ""
+			+ "application/vnd.cora.deploymentInfo+xml";
 	HttpServletRequest request;
 	private String restUrl;
-	private String iiifUrl;
 
 	public RecordEndpointDeployment(@Context HttpServletRequest req) {
 		request = req;
 		UrlHandler urlHandler = TheRestInstanceProvider.getUrlHandler();
 		restUrl = urlHandler.getRestUrl(req);
-		iiifUrl = urlHandler.getIiifUrl(req);
 	}
 
 	@GET
@@ -59,39 +69,168 @@ public class RecordEndpointDeployment {
 	@Path("")
 	@Produces({ APPLICATION_VND_CORA_DEPLOYMENT_INFO_JSON + ";qs=0.1" })
 	public Response getDeploymentInfoJson() {
-		String name = SettingsProvider.getSetting("deploymentName");
-		String family = SettingsProvider.getSetting("deploymentFamily");
-		String coraVersion = SettingsProvider.getSetting("deploymentCoraVersion");
-		String version = SettingsProvider.getSetting("deploymentVersion");
-
-		String deployment = """
-				{
-					"name": "%s",
-					"family": "%s",
-					"coraVersion": "%s",
-					"version": "%s",
-					"urls": {
-						"REST": "%s",
-						"loginAppToken": "login/apptoken",
-						"loginPassword": "login/password",
-						"idpLogin": "password",
-						"records":"/record"
-					},
-					"exampleUsers":[
-						{
-							"name": "systemoneAdmin",
-							"text": "appToken for systemoneAdmin",
-							"type": "appTokenLogin",
-							"loginId": "systemoneAdmin@system.cora.uu.se",
-							"appToken": "5d3f3ed4-4931-4924-9faa-8eaf5ac6457e"
-						}
-					]
-				}
-				""";
-		Object[] arguments = { name, family, coraVersion, version, restUrl, iiifUrl };
+		DeploymentInfo deploymentInfo = new DeploymentInfo(request);
 
 		return Response.status(Response.Status.OK)
 				.header(HttpHeaders.CONTENT_TYPE, APPLICATION_VND_CORA_DEPLOYMENT_INFO_JSON)
-				.entity(deployment.formatted(arguments)).build();
+				.entity(deploymentInfo.toJson()).build();
+	}
+
+	@GET
+	@Path("")
+	@Produces({ APPLICATION_VND_CORA_DEPLOYMENT_INFO_XML + ";qs=0.1" })
+	public Response getDeploymentInfoXml() {
+		DeploymentInfo deploymentInfo = new DeploymentInfo(request);
+
+		return Response.status(Response.Status.OK)
+				.header(HttpHeaders.CONTENT_TYPE, APPLICATION_VND_CORA_DEPLOYMENT_INFO_XML)
+				.entity(deploymentInfo.toXml()).build();
+	}
+
+	private static class DeploymentInfo {
+		private final String applicationName;
+		private final String deploymentName;
+		private final String coraVersion;
+		private final String applicationVersion;
+		private final String loginRestUrl;
+		private final String restUrl;
+		private final String restRecordUrl;
+		private final String iiifUrl;
+
+		record ExampleUser(String name, String text, String type, String loginId, String apptoken) {
+		}
+
+		private final Set<ExampleUser> exampleUserList;
+		private String exampleUsers;
+
+		DeploymentInfo(@Context HttpServletRequest req) {
+			UrlHandler urlHandler = TheRestInstanceProvider.getUrlHandler();
+			this.restUrl = urlHandler.getRestUrl(req);
+			this.restRecordUrl = urlHandler.getRestRecordUrl(req);
+			this.iiifUrl = urlHandler.getIiifUrl(req);
+
+			this.applicationName = SettingsProvider.getSetting("deploymentInfoApplicationName");
+			this.deploymentName = SettingsProvider.getSetting("deploymentInfoDeploymentName");
+			this.coraVersion = SettingsProvider.getSetting("deploymentInfoCoraVersion");
+			this.applicationVersion = SettingsProvider
+					.getSetting("deploymentInfoApplicationVersion");
+			this.loginRestUrl = SettingsProvider.getSetting("deploymentInfoLoginRestUrl");
+			exampleUserList = readAllExampleUsersFromStorage();
+		}
+
+		private Set<ExampleUser> readAllExampleUsersFromStorage() {
+			Set<ExampleUser> set = new HashSet<>();
+			for (Data exampleUser : readExampleUsersFromStorage()) {
+				set.add(readExtractAndConvertToRecord(exampleUser));
+			}
+			return set;
+		}
+
+		private ExampleUser readExtractAndConvertToRecord(Data exampleUser) {
+			DataRecord exampleUserAsRecord = (DataRecord) exampleUser;
+			DataRecordGroup dataRecordGroup = exampleUserAsRecord.getDataRecordGroup();
+			String name = dataRecordGroup.getFirstAtomicValueWithNameInData("name");
+			String text = dataRecordGroup.getFirstAtomicValueWithNameInData("text");
+			String type = dataRecordGroup.getFirstAtomicValueWithNameInData("type");
+			String loginId = dataRecordGroup.getFirstAtomicValueWithNameInData("loginId");
+			String apptoken = dataRecordGroup.getFirstAtomicValueWithNameInData("apptoken");
+			return new ExampleUser(name, text, type, loginId, apptoken);
+		}
+
+		private List<Data> readExampleUsersFromStorage() {
+			DataList exampleUsersDataList = SpiderInstanceProvider.getRecordListReader()
+					.readRecordList(null, "exampleUser",
+							DataProvider.createGroupUsingNameInData("filter"));
+			return exampleUsersDataList.getDataList();
+		}
+
+		String toJson() {
+			String deploymentInfoJsonTemplate = """
+					{
+						"applicationName": "%s",
+						"deploymentName": "%s",
+						"coraVersion": "%s",
+						"applicationVersion": "%s",
+						"urls": {
+							"REST": "%s",
+							"appTokenLogin": "%sapptoken",
+							"passwordLogin": "%spassword",
+							"record": "%s",
+							"iiif": "%s"
+						},
+						"exampleUsers": [%s]
+					}""";
+
+			String exampleUsersJsonTemplate = """
+					{
+						"name": "%s",
+						"text": "%s",
+						"type": "%s",
+						"loginId": "%s",
+						"appToken": "%s"
+					}""";
+
+			formatExampleUserJson(exampleUsersJsonTemplate);
+			return formatDeploymenInfoUsingTemplate(deploymentInfoJsonTemplate);
+		}
+
+		private void formatExampleUserJson(String template) {
+			exampleUsers = String.join(",", formatExampleUserUsingTemplate(template));
+		}
+
+		private List<String> formatExampleUserUsingTemplate(String template) {
+			List<String> exampleUsersStringList = new ArrayList<>();
+			for (ExampleUser exampleUser : exampleUserList) {
+				exampleUsersStringList.add(template.formatted(exampleUser.name, exampleUser.text,
+						exampleUser.type, exampleUser.loginId, exampleUser.apptoken));
+
+			}
+			return exampleUsersStringList;
+		}
+
+		private String formatDeploymenInfoUsingTemplate(String xmlTemplate) {
+			return xmlTemplate.formatted(applicationName, deploymentName, coraVersion,
+					applicationVersion, restUrl, loginRestUrl, loginRestUrl, restRecordUrl, iiifUrl,
+					exampleUsers);
+		}
+
+		String toXml() {
+			exampleUsers = getXmlExampleUser("""
+					<exampleUser>
+							<name>%s</name>
+							<text>%s</text>
+							<type>%s</type>
+							<loginId>%s</loginId>
+							<appToken>%s</appToken>
+						</exampleUser>""");
+
+			return formatDeploymenInfoUsingTemplate("""
+					<deploymentInfo>
+						<applicationName>%s</applicationName>
+						<deploymentName>%s</deploymentName>
+						<coraVersion>%s</coraVersion>
+						<applicationVersion>%s</applicationVersion>
+						<urls>
+							<REST>%s</REST>
+							<appTokenLogin>%sapptoken</appTokenLogin>
+							<passwordLogin>%spassword</passwordLogin>
+							<record>%s</record>
+							<iiif>%s</iiif>
+						</urls>
+						%s
+					</deploymentInfo>""");
+		}
+
+		private String getXmlExampleUser(String exampleUserXmlTemplate) {
+			if (exampleUserList.isEmpty()) {
+				return "<exampleUsers/>";
+			}
+			return "<exampleUsers>" + formatExampleUserXml(exampleUserXmlTemplate)
+					+ "</exampleUsers>";
+		}
+
+		private String formatExampleUserXml(String template) {
+			return String.join("", formatExampleUserUsingTemplate(template));
+		}
 	}
 }

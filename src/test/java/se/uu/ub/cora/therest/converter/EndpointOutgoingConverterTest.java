@@ -120,7 +120,7 @@ public class EndpointOutgoingConverterTest {
 		se.uu.ub.cora.data.converter.ExternalUrls externalUrls = (se.uu.ub.cora.data.converter.ExternalUrls) converterFactory.MCR
 				.getParameterForMethodAndCallNumberAndParameter(
 						"factorUsingConvertibleAndExternalUrls", 0, "externalUrls");
-		assertEquals(apiUrls.restUrl(), externalUrls.getBaseUrl());
+		assertEquals(apiUrls.restRecordUrl(), externalUrls.getBaseUrl());
 		assertEquals(apiUrls.iiifUrl(), externalUrls.getIfffUrl());
 	}
 
@@ -143,7 +143,7 @@ public class EndpointOutgoingConverterTest {
 				.getParameterForMethodAndCallNumberAndParameter("convertWithLinks", 0,
 						"externalUrls");
 
-		assertEquals(apiUrls.restUrl(), externalUrls.getBaseUrl());
+		assertEquals(apiUrls.restRecordUrl(), externalUrls.getBaseUrl());
 		assertEquals(apiUrls.iiifUrl(), externalUrls.getIfffUrl());
 	}
 
