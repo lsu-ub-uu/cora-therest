@@ -242,6 +242,7 @@ public class RecordEndpointDeploymentTest {
 						"appTokenLogin": "http://login.rest.url/login/rest/apptoken",
 						"passwordLogin": "http://login.rest.url/login/rest/password",
 						"record": "http://base.rest.url/rest/record/",
+						"recordType": "http://base.rest.url/rest/record/recordType",
 						"iiif": "http://base.rest.url/iiif/"
 					},
 					"exampleUsers": []
@@ -279,6 +280,7 @@ public class RecordEndpointDeploymentTest {
 						"appTokenLogin": "http://login.rest.url/login/rest/apptoken",
 						"passwordLogin": "http://login.rest.url/login/rest/password",
 						"record": "http://base.rest.url/rest/record/",
+						"recordType": "http://base.rest.url/rest/record/recordType",
 						"iiif": "http://base.rest.url/iiif/"
 					},
 					"exampleUsers": [
@@ -328,6 +330,7 @@ public class RecordEndpointDeploymentTest {
 						<appTokenLogin>http://login.rest.url/login/rest/apptoken</appTokenLogin>
 						<passwordLogin>http://login.rest.url/login/rest/password</passwordLogin>
 						<record>http://base.rest.url/rest/record/</record>
+						<recordType>http://base.rest.url/rest/record/recordType</recordType>
 						<iiif>http://base.rest.url/iiif/</iiif>
 					</urls>
 					<exampleUsers/>
@@ -365,6 +368,7 @@ public class RecordEndpointDeploymentTest {
 						<appTokenLogin>http://login.rest.url/login/rest/apptoken</appTokenLogin>
 						<passwordLogin>http://login.rest.url/login/rest/password</passwordLogin>
 						<record>http://base.rest.url/rest/record/</record>
+						<recordType>http://base.rest.url/rest/record/recordType</recordType>
 						<iiif>http://base.rest.url/iiif/</iiif>
 					</urls>
 					<exampleUsers>

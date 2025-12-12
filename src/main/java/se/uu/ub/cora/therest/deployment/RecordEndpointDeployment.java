@@ -92,9 +92,11 @@ public class RecordEndpointDeployment {
 		private final String deploymentName;
 		private final String coraVersion;
 		private final String applicationVersion;
-		private final String loginRestUrl;
+		private final String loginRestApptokenUrl;
+		private final String loginRestPasswordUrl;
 		private final String restUrl;
 		private final String restRecordUrl;
+		private final String restRecordTypeUrl;
 		private final String iiifUrl;
 
 		record ExampleUser(String name, String text, String type, String loginId, String apptoken) {
@@ -107,6 +109,7 @@ public class RecordEndpointDeployment {
 			UrlHandler urlHandler = TheRestInstanceProvider.getUrlHandler();
 			this.restUrl = urlHandler.getRestUrl(req);
 			this.restRecordUrl = urlHandler.getRestRecordUrl(req);
+			this.restRecordTypeUrl = restRecordUrl + "recordType";
 			this.iiifUrl = urlHandler.getIiifUrl(req);
 
 			this.applicationName = SettingsProvider.getSetting("deploymentInfoApplicationName");
@@ -114,7 +117,10 @@ public class RecordEndpointDeployment {
 			this.coraVersion = SettingsProvider.getSetting("deploymentInfoCoraVersion");
 			this.applicationVersion = SettingsProvider
 					.getSetting("deploymentInfoApplicationVersion");
-			this.loginRestUrl = SettingsProvider.getSetting("deploymentInfoLoginRestUrl");
+			String loginRestUrl = SettingsProvider.getSetting("deploymentInfoLoginRestUrl");
+			this.loginRestApptokenUrl = loginRestUrl + "apptoken";
+			this.loginRestPasswordUrl = loginRestUrl + "password";
+
 			exampleUserList = readAllExampleUsersFromStorage();
 		}
 
@@ -153,9 +159,10 @@ public class RecordEndpointDeployment {
 						"applicationVersion": "%s",
 						"urls": {
 							"REST": "%s",
-							"appTokenLogin": "%sapptoken",
-							"passwordLogin": "%spassword",
+							"appTokenLogin": "%s",
+							"passwordLogin": "%s",
 							"record": "%s",
+							"recordType": "%s",
 							"iiif": "%s"
 						},
 						"exampleUsers": [%s]
@@ -190,8 +197,8 @@ public class RecordEndpointDeployment {
 
 		private String formatDeploymenInfoUsingTemplate(String xmlTemplate) {
 			return xmlTemplate.formatted(applicationName, deploymentName, coraVersion,
-					applicationVersion, restUrl, loginRestUrl, loginRestUrl, restRecordUrl, iiifUrl,
-					exampleUsers);
+					applicationVersion, restUrl, loginRestApptokenUrl, loginRestPasswordUrl,
+					restRecordUrl, restRecordTypeUrl, iiifUrl, exampleUsers);
 		}
 
 		String toXml() {
@@ -212,9 +219,10 @@ public class RecordEndpointDeployment {
 						<applicationVersion>%s</applicationVersion>
 						<urls>
 							<REST>%s</REST>
-							<appTokenLogin>%sapptoken</appTokenLogin>
-							<passwordLogin>%spassword</passwordLogin>
+							<appTokenLogin>%s</appTokenLogin>
+							<passwordLogin>%s</passwordLogin>
 							<record>%s</record>
+							<recordType>%s</recordType>
 							<iiif>%s</iiif>
 						</urls>
 						%s
