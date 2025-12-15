@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Predicate;
 
 import jakarta.ws.rs.core.Cookie;
 import jakarta.ws.rs.core.HttpHeaders;
@@ -98,6 +99,13 @@ public class HttpHeadersSpy implements HttpHeaders {
 	public int getLength() {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	@Override
+	public boolean containsHeaderString(String name, String valueSeparatorRegex,
+			Predicate<String> valuePredicate) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }
