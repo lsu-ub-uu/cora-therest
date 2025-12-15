@@ -44,6 +44,15 @@ public interface UrlHandler {
 	String getRestUrl(HttpServletRequest request);
 
 	/**
+	 * getRecordRestUrl is the url where the REST API for records can be reached
+	 * 
+	 * @param request
+	 *            an HttpServlet request to read url info from
+	 * @return A String with the restUrl
+	 */
+	String getRestRecordUrl(HttpServletRequest request);
+
+	/**
 	 * getIifUrl is the url where the IIIF API of the system can be reached
 	 * 
 	 * @param request

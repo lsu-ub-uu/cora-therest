@@ -27,9 +27,9 @@ public record APIUrls(
 		 */
 		String baseUrl,
 		/**
-		 * restUrl is the url where the REST API of the system can be reached
+		 * restRecordUrl is the url where the REST API of the system can be reached
 		 */
-		String restUrl,
+		String restRecordUrl,
 		/**
 		 * iifUrl is the url where the IIIF API of the system can be reached
 		 */

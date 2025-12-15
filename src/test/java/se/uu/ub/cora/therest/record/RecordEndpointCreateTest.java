@@ -128,7 +128,7 @@ public class RecordEndpointCreateTest {
 	}
 
 	@Test
-	public void testClassAnnotation() throws Exception {
+	public void testClassAnnotation() {
 		AnnotationTestHelper annotationHelper = AnnotationTestHelper
 				.createAnnotationTestHelperForClass(RecordEndpointCreate.class);
 
@@ -142,7 +142,7 @@ public class RecordEndpointCreateTest {
 		UrlHandlerSpy urlHandler = (UrlHandlerSpy) instanceFactory.MCR
 				.getReturnValue("factorUrlHandler", 0);
 
-		var restUrl = urlHandler.MCR.assertCalledParametersReturn("getRestUrl", requestSpy);
+		var restUrl = urlHandler.MCR.assertCalledParametersReturn("getRestRecordUrl", requestSpy);
 		var iiifUrl = urlHandler.MCR.assertCalledParametersReturn("getIiifUrl", requestSpy);
 
 		assertEquals(restUrl, getRestUrlFromFactorUsingConvertibleAndExternalUrls());
@@ -216,10 +216,8 @@ public class RecordEndpointCreateTest {
 		xmlToDataConverter.MCR.assertParameters("convert", 0, defaultXml);
 		DataGroup dataGroup = (DataGroup) xmlToDataConverter.MCR.getReturnValue("convert", 0);
 
-		DataRecordGroup convertedToRecord = (DataRecordGroup) dataFactorySpy.MCR
+		return (DataRecordGroup) dataFactorySpy.MCR
 				.assertCalledParametersReturn("factorRecordGroupFromDataGroup", dataGroup);
-
-		return convertedToRecord;
 	}
 
 	@Test

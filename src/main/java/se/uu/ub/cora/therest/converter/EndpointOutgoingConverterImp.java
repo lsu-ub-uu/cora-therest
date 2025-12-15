@@ -43,7 +43,7 @@ public class EndpointOutgoingConverterImp implements EndpointOutgoingConverter {
 	}
 
 	public void calculateUrls(APIUrls apiUrls) {
-		restUrl = apiUrls.restUrl();
+		restUrl = apiUrls.restRecordUrl();
 		iiifUrl = apiUrls.iiifUrl();
 	}
 
