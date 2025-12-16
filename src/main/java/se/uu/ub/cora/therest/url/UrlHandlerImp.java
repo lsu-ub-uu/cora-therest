@@ -34,6 +34,9 @@ public class UrlHandlerImp implements UrlHandler {
 		String tempUrl = request.getRequestURL().toString();
 		int indexOfFirstSlashAfterHttp = tempUrl.indexOf('/', AFTERHTTP);
 		String baseURL = tempUrl.substring(0, indexOfFirstSlashAfterHttp);
+		System.err.println("X-Original-URI: " + request.getHeader("X-Original-URI"));
+		System.err.println("getRequestURI: " + request.getRequestURI());
+		System.err.println();
 		return changeHttpToHttpsIfHeaderSaysSo(baseURL);
 	}
 
@@ -47,6 +50,9 @@ public class UrlHandlerImp implements UrlHandler {
 	}
 
 	private final String getDeploymentURLFromRequest() {
+		System.err.println("X-Original-URI: " + request.getHeader("X-Original-URI"));
+		System.err.println("getRequestURI: " + request.getRequestURI());
+		System.err.println();
 		String tempUrl = request.getRequestURL().toString();
 		int indexOfFirstSlashAfterHttp = tempUrl.indexOf("/rest");
 		String baseURL = tempUrl.substring(0, indexOfFirstSlashAfterHttp);
@@ -72,15 +78,11 @@ public class UrlHandlerImp implements UrlHandler {
 	@Override
 	public String getIiifUrl(HttpServletRequest request) {
 		this.request = request;
-		// String baseURL = getBaseURLFromRequest();
-		// baseURL += SettingsProvider.getSetting("iiifPublicPathToSystem");
-		// return baseURL;
 		return getDeploymentURLFromRequest() + "/iiif/";
 	}
 
 	@Override
 	public APIUrls getAPIUrls(HttpServletRequest request) {
-		// TODO SPIKE, add tests, add restUrl
 		this.request = request;
 		String baseUrl = getBaseURLFromRequest();
 		String restRecordUrl = getRestRecordUrl(request);
