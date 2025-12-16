@@ -48,8 +48,8 @@ public class UrlHandlerImp implements UrlHandler {
 
 	private final String getDeploymentURLFromRequest() {
 		String tempUrl = request.getRequestURL().toString();
-		int indexOfFirstSlashAfterHttp = tempUrl.indexOf("/rest");
-		String baseURL = tempUrl.substring(0, indexOfFirstSlashAfterHttp);
+		int indexOfFirstSlashBeforeRest = tempUrl.indexOf("/rest");
+		String baseURL = tempUrl.substring(0, indexOfFirstSlashBeforeRest);
 		return changeHttpToHttpsIfHeaderSaysSo(baseURL);
 	}
 
@@ -61,7 +61,7 @@ public class UrlHandlerImp implements UrlHandler {
 	public String getRestUrl(HttpServletRequest request) {
 		this.request = request;
 		if (existsXOriginalUriHeader(request)) {
-			return getOriginalRequestUrlViaXOriginalUri(request);
+			return getOriginalRequestUrlViaXOriginalUri(request) + "/rest/";
 		}
 		return getDeploymentURLFromRequest() + "/rest/";
 	}
@@ -71,14 +71,17 @@ public class UrlHandlerImp implements UrlHandler {
 	}
 
 	private String getOriginalRequestUrlViaXOriginalUri(HttpServletRequest request) {
-		return this.getBaseURLFromRequest() + request.getHeader("X-Original-URI");
+		String tempUrl = getBaseURLFromRequest() + request.getHeader("X-Original-URI");
+		int indexOfFirstSlashBeforeRest = tempUrl.indexOf("/rest");
+		String baseURL = tempUrl.substring(0, indexOfFirstSlashBeforeRest);
+		return changeHttpToHttpsIfHeaderSaysSo(baseURL);
 	}
 
 	@Override
 	public String getRestRecordUrl(HttpServletRequest request) {
 		this.request = request;
 		if (existsXOriginalUriHeader(request)) {
-			return getOriginalRequestUrlViaXOriginalUri(request);
+			return getOriginalRequestUrlViaXOriginalUri(request) + "/rest/record/";
 		}
 		return getDeploymentURLFromRequest() + "/rest/record/";
 	}
@@ -87,7 +90,7 @@ public class UrlHandlerImp implements UrlHandler {
 	public String getIiifUrl(HttpServletRequest request) {
 		this.request = request;
 		if (existsXOriginalUriHeader(request)) {
-			return getOriginalRequestUrlViaXOriginalUri(request);
+			return getOriginalRequestUrlViaXOriginalUri(request) + "/iiif/";
 		}
 		return getDeploymentURLFromRequest() + "/iiif/";
 	}
