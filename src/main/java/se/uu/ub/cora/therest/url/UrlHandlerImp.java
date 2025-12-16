@@ -34,50 +34,61 @@ public class UrlHandlerImp implements UrlHandler {
 		String tempUrl = request.getRequestURL().toString();
 		int indexOfFirstSlashAfterHttp = tempUrl.indexOf('/', AFTERHTTP);
 		String baseURL = tempUrl.substring(0, indexOfFirstSlashAfterHttp);
-		System.err.println("X-Original-URI: " + request.getHeader("X-Original-URI"));
-		System.err.println("getRequestURI: " + request.getRequestURI());
-		System.err.println();
 		return changeHttpToHttpsIfHeaderSaysSo(baseURL);
 	}
 
 	private String changeHttpToHttpsIfHeaderSaysSo(String baseURI) {
 		String forwardedProtocol = request.getHeader("X-Forwarded-Proto");
 
-		if (ifForwardedProtocolExists(forwardedProtocol)) {
+		if (headerExists(forwardedProtocol)) {
 			return baseURI.replace("http:", forwardedProtocol + ":");
 		}
 		return baseURI;
 	}
 
 	private final String getDeploymentURLFromRequest() {
-		System.err.println("X-Original-URI: " + request.getHeader("X-Original-URI"));
-		System.err.println("getRequestURI: " + request.getRequestURI());
-		System.err.println();
 		String tempUrl = request.getRequestURL().toString();
 		int indexOfFirstSlashAfterHttp = tempUrl.indexOf("/rest");
 		String baseURL = tempUrl.substring(0, indexOfFirstSlashAfterHttp);
 		return changeHttpToHttpsIfHeaderSaysSo(baseURL);
 	}
 
-	private boolean ifForwardedProtocolExists(String forwardedProtocol) {
+	private boolean headerExists(String forwardedProtocol) {
 		return null != forwardedProtocol && !"".equals(forwardedProtocol);
 	}
 
 	@Override
 	public String getRestUrl(HttpServletRequest request) {
 		this.request = request;
+		if (existsXOriginalUriHeader(request)) {
+			return getOriginalRequestUrlViaXOriginalUri(request);
+		}
 		return getDeploymentURLFromRequest() + "/rest/";
+	}
+
+	private boolean existsXOriginalUriHeader(HttpServletRequest request) {
+		return headerExists(request.getHeader("X-Original-URI"));
+	}
+
+	private String getOriginalRequestUrlViaXOriginalUri(HttpServletRequest request) {
+		return this.getBaseURLFromRequest() + request.getHeader("X-Original-URI");
 	}
 
 	@Override
 	public String getRestRecordUrl(HttpServletRequest request) {
 		this.request = request;
+		if (existsXOriginalUriHeader(request)) {
+			return getOriginalRequestUrlViaXOriginalUri(request);
+		}
 		return getDeploymentURLFromRequest() + "/rest/record/";
 	}
 
 	@Override
 	public String getIiifUrl(HttpServletRequest request) {
 		this.request = request;
+		if (existsXOriginalUriHeader(request)) {
+			return getOriginalRequestUrlViaXOriginalUri(request);
+		}
 		return getDeploymentURLFromRequest() + "/iiif/";
 	}
 

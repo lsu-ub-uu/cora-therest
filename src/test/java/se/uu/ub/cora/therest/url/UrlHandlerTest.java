@@ -46,15 +46,11 @@ public class UrlHandlerTest {
 		requestSpy = new HttpServletRequestSpy();
 		urlHandler = new UrlHandlerImp();
 
+		requestSpy.MRV.setSpecificReturnValuesSupplier("getHeader", () -> null, "X-Original-URI");
 		requestSpy.MRV.setDefaultReturnValuesSupplier("getServerName", () -> "cora.epc.ub.uu.se");
 		requestSpy.MRV.setDefaultReturnValuesSupplier("getPathInfo", () -> "/record/text/");
 		requestSpy.MRV.setDefaultReturnValuesSupplier("getRequestURL",
 				() -> new StringBuffer("http://cora.epc.ub.uu.se/systemone/rest/record/text/"));
-
-		// Map<String, String> settings = new HashMap<>();
-		// settings.put("theRestPublicPathToSystem", "/systemone/rest/");
-		// settings.put("iiifPublicPathToSystem", "/systemone/iiif/");
-		// SettingsProvider.setSettings(settings);
 	}
 
 	@Test
@@ -96,7 +92,19 @@ public class UrlHandlerTest {
 	public void testGetRestUrl() {
 		String baseUrl = urlHandler.getRestUrl(requestSpy);
 
+		requestSpy.MCR.assertParameters("getHeader", 0, "X-Original-URI");
 		assertEquals(baseUrl, standardRestUrlHttp);
+	}
+
+	@Test
+	public void testGetRestUrl_When_XOriginalURI_isSet() {
+		requestSpy.MRV.setSpecificReturnValuesSupplier("getHeader", () -> "/somethingElse/rest/",
+				"X-Original-URI");
+
+		String baseUrl = urlHandler.getRestUrl(requestSpy);
+
+		requestSpy.MCR.assertParameters("getHeader", 0, "X-Original-URI");
+		assertEquals(baseUrl, "http://cora.epc.ub.uu.se/somethingElse/rest/");
 	}
 
 	@Test
@@ -106,6 +114,18 @@ public class UrlHandlerTest {
 		String baseUrl = urlHandler.getRestUrl(requestSpy);
 
 		assertEquals(baseUrl, standardRestUrlHttps);
+	}
+
+	@Test
+	public void testGetRestUrlXForwardedProtoHttps_When_XOriginalURI_isSet() {
+		requestSpy.MRV.setSpecificReturnValuesSupplier("getHeader", () -> "/somethingElse/rest/",
+				"X-Original-URI");
+		requestSpy.MRV.setSpecificReturnValuesSupplier("getHeader", () -> "https",
+				"X-Forwarded-Proto");
+
+		String baseUrl = urlHandler.getRestUrl(requestSpy);
+
+		assertEquals(baseUrl, "https://cora.epc.ub.uu.se/somethingElse/rest/");
 	}
 
 	@Test
@@ -135,12 +155,34 @@ public class UrlHandlerTest {
 	}
 
 	@Test
+	public void testGetRestRecordUrl_When_XOriginalURI_isSet() {
+		requestSpy.MRV.setSpecificReturnValuesSupplier("getHeader",
+				() -> "/somethingElse/rest/record/", "X-Original-URI");
+
+		String baseUrl = urlHandler.getRestRecordUrl(requestSpy);
+
+		assertEquals(baseUrl, "http://cora.epc.ub.uu.se/somethingElse/rest/record/");
+	}
+
+	@Test
 	public void testGetRestRecordUrlXForwardedProtoHttps() {
 		requestSpy.MRV.setSpecificReturnValuesSupplier("getHeader", () -> "https",
 				"X-Forwarded-Proto");
 		String baseUrl = urlHandler.getRestRecordUrl(requestSpy);
 
 		assertEquals(baseUrl, standardRestRecordUrlHttps);
+	}
+
+	@Test
+	public void testGetRestRecordUrlXForwardedProtoHttps_When_XOriginalURI_isSet() {
+		requestSpy.MRV.setSpecificReturnValuesSupplier("getHeader",
+				() -> "/somethingElse/rest/record/", "X-Original-URI");
+		requestSpy.MRV.setSpecificReturnValuesSupplier("getHeader", () -> "https",
+				"X-Forwarded-Proto");
+
+		String baseUrl = urlHandler.getRestRecordUrl(requestSpy);
+
+		assertEquals(baseUrl, "https://cora.epc.ub.uu.se/somethingElse/rest/record/");
 	}
 
 	@Test
@@ -170,12 +212,34 @@ public class UrlHandlerTest {
 	}
 
 	@Test
+	public void testGetIiiFUrl_When_XOriginalURI_isSet() {
+		requestSpy.MRV.setSpecificReturnValuesSupplier("getHeader", () -> "/somethingElse/iiif/",
+				"X-Original-URI");
+
+		String baseUrl = urlHandler.getIiifUrl(requestSpy);
+
+		assertEquals(baseUrl, "http://cora.epc.ub.uu.se/somethingElse/iiif/");
+	}
+
+	@Test
 	public void testGetIiiFUrlXForwardedProtoHttps() {
 		requestSpy.MRV.setSpecificReturnValuesSupplier("getHeader", () -> "https",
 				"X-Forwarded-Proto");
 		String baseUrl = urlHandler.getIiifUrl(requestSpy);
 
 		assertEquals(baseUrl, standardIiifUrlHttps);
+	}
+
+	@Test
+	public void testGetIiiFUrlXForwardedProtoHttps_When_XOriginalURI_isSet() {
+		requestSpy.MRV.setSpecificReturnValuesSupplier("getHeader", () -> "https",
+				"X-Forwarded-Proto");
+		requestSpy.MRV.setSpecificReturnValuesSupplier("getHeader", () -> "/somethingElse/iiif/",
+				"X-Original-URI");
+
+		String baseUrl = urlHandler.getIiifUrl(requestSpy);
+
+		assertEquals(baseUrl, "https://cora.epc.ub.uu.se/somethingElse/iiif/");
 	}
 
 	@Test
