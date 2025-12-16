@@ -213,12 +213,12 @@ public class UrlHandlerTest {
 
 	@Test
 	public void testGetIiiFUrl_When_XOriginalURI_isSet() {
-		requestSpy.MRV.setSpecificReturnValuesSupplier("getHeader", () -> "/somethingElse/iiif/",
-				"X-Original-URI");
+		requestSpy.MRV.setSpecificReturnValuesSupplier("getHeader",
+				() -> "/something/else/rest/record", "X-Original-URI");
 
 		String baseUrl = urlHandler.getIiifUrl(requestSpy);
 
-		assertEquals(baseUrl, "http://cora.epc.ub.uu.se/somethingElse/iiif/");
+		assertEquals(baseUrl, "http://cora.epc.ub.uu.se/something/else/iiif/");
 	}
 
 	@Test
@@ -234,7 +234,7 @@ public class UrlHandlerTest {
 	public void testGetIiiFUrlXForwardedProtoHttps_When_XOriginalURI_isSet() {
 		requestSpy.MRV.setSpecificReturnValuesSupplier("getHeader", () -> "https",
 				"X-Forwarded-Proto");
-		requestSpy.MRV.setSpecificReturnValuesSupplier("getHeader", () -> "/somethingElse/iiif/",
+		requestSpy.MRV.setSpecificReturnValuesSupplier("getHeader", () -> "/somethingElse/rest/",
 				"X-Original-URI");
 
 		String baseUrl = urlHandler.getIiifUrl(requestSpy);
