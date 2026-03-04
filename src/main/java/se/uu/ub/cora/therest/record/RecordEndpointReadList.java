@@ -41,6 +41,7 @@ import se.uu.ub.cora.converter.StringToExternallyConvertibleConverter;
 import se.uu.ub.cora.data.Convertible;
 import se.uu.ub.cora.data.DataGroup;
 import se.uu.ub.cora.data.DataList;
+import se.uu.ub.cora.data.DataProvider;
 import se.uu.ub.cora.data.ExternallyConvertible;
 import se.uu.ub.cora.data.converter.ConversionException;
 import se.uu.ub.cora.data.converter.DataToJsonConverter;
@@ -234,16 +235,7 @@ public class RecordEndpointReadList {
 	private Response readRecordList(String accept, String headerAuthToken, String queryAuthToken,
 			String type, String filterAsJson) {
 		String usedToken = getExistingTokenPreferHeader(headerAuthToken, queryAuthToken);
-		String filter = createEmptyFilterIfParameterDoesNotExist(filterAsJson);
-		return readRecordListUsingAuthTokenByType(accept, usedToken, type, filter);
-	}
-
-	private String createEmptyFilterIfParameterDoesNotExist(String filterAsJson) {
-		String filter = filterAsJson;
-		if (filterAsJson == null || filterAsJson.isEmpty()) {
-			filter = "{\"name\":\"filter\",\"children\":[]}";
-		}
-		return filter;
+		return readRecordListUsingAuthTokenByType(accept, usedToken, type, filterAsJson);
 	}
 
 	private Response readRecordListUsingAuthTokenByType(String accept, String authToken,
@@ -258,17 +250,34 @@ public class RecordEndpointReadList {
 
 	private Response tryReadRecordList(String accept, String authToken, String type,
 			String filterAsString) {
-		DataGroup filter = convertFilterStringToData(filterAsString);
-		DataList readRecordList = SpiderInstanceProvider.getRecordListReader()
-				.readRecordList(authToken, type, filter);
+		var filter = convertFilterStringToData(filterAsString);
+
+		var dataList = SpiderInstanceProvider.getRecordListReader().readRecordList(authToken, type,
+				filter);
+
+		return createResponse(accept, dataList);
+	}
+
+	private Response createResponse(String accept, DataList readRecordList) {
 		String outputRecord = convertConvertibleToString(accept, readRecordList);
 		return Response.status(Response.Status.OK).header(HttpHeaders.CONTENT_TYPE, accept)
 				.entity(outputRecord).build();
 	}
 
 	private DataGroup convertFilterStringToData(String filterAsString) {
+		if (filterDoesNotExists(filterAsString)) {
+			return createEmptyFilterAsDataGroup();
+		}
 		String filterDataType = calculateSearchDataType(filterAsString);
 		return convertStringToDataGroup(filterDataType, filterAsString);
+	}
+
+	private DataGroup createEmptyFilterAsDataGroup() {
+		return DataProvider.createGroupUsingNameInData("filter");
+	}
+
+	private boolean filterDoesNotExists(String filterAsString) {
+		return filterAsString == null || filterAsString.isEmpty();
 	}
 
 	private String convertConvertibleToString(String accept, ExternallyConvertible convertible) {

@@ -43,9 +43,13 @@ import se.uu.ub.cora.data.spies.DataFactorySpy;
 import se.uu.ub.cora.json.parser.org.OrgJsonParser;
 import se.uu.ub.cora.logger.LoggerProvider;
 import se.uu.ub.cora.logger.spies.LoggerFactorySpy;
+import se.uu.ub.cora.spider.authentication.AuthenticationException;
+import se.uu.ub.cora.spider.authorization.AuthorizationException;
 import se.uu.ub.cora.spider.dependency.SpiderInstanceProvider;
+import se.uu.ub.cora.spider.record.RecordNotFoundException;
+import se.uu.ub.cora.spider.spies.RecordListReaderSpy;
+import se.uu.ub.cora.spider.spies.SpiderInstanceFactorySpy;
 import se.uu.ub.cora.therest.AnnotationTestHelper;
-import se.uu.ub.cora.therest.coradata.DataListSpy;
 import se.uu.ub.cora.therest.dependency.TheRestInstanceFactorySpy;
 import se.uu.ub.cora.therest.dependency.TheRestInstanceProvider;
 import se.uu.ub.cora.therest.url.UrlHandlerSpy;
@@ -63,7 +67,7 @@ public class RecordEndpointReadListTest {
 	private JsonToDataConverterFactorySpy jsonToDataConverterFactorySpy = new JsonToDataConverterFactorySpy();
 
 	private RecordEndpointReadList recordEndpoint;
-	private OldSpiderInstanceFactorySpy spiderInstanceFactorySpy;
+	private SpiderInstanceFactorySpy spiderInstanceFactorySpy;
 	private Response response;
 	private HttpServletRequestOldSpy requestSpy;
 	private LoggerFactorySpy loggerFactorySpy;
@@ -97,7 +101,7 @@ public class RecordEndpointReadListTest {
 
 		jsonToDataConverterFactorySpy = new JsonToDataConverterFactorySpy();
 		JsonToDataConverterProvider.setJsonToDataConverterFactory(jsonToDataConverterFactorySpy);
-		spiderInstanceFactorySpy = new OldSpiderInstanceFactorySpy();
+		spiderInstanceFactorySpy = new SpiderInstanceFactorySpy();
 		SpiderInstanceProvider.setSpiderInstanceFactory(spiderInstanceFactorySpy);
 
 		requestSpy = new HttpServletRequestOldSpy();
@@ -165,53 +169,37 @@ public class RecordEndpointReadListTest {
 
 	@Test
 	public void testPreferredTokenForReadList() {
-		expectTokenForReadListToPrefereblyBeHeaderThanQuery(null, AUTH_TOKEN, AUTH_TOKEN);
-		expectTokenForReadListToPrefereblyBeHeaderThanQuery(AUTH_TOKEN, null, AUTH_TOKEN);
-		expectTokenForReadListToPrefereblyBeHeaderThanQuery(null, null, null);
+		expectTokenForReadListToPrefereblyBeHeaderThanQuery(0, null, AUTH_TOKEN, AUTH_TOKEN);
+		expectTokenForReadListToPrefereblyBeHeaderThanQuery(1, AUTH_TOKEN, null, AUTH_TOKEN);
+		expectTokenForReadListToPrefereblyBeHeaderThanQuery(2, null, null, null);
 	}
 
-	private void expectTokenForReadListToPrefereblyBeHeaderThanQuery(String headerAuthToken,
-			String queryAuthToken, String authTokenExpected) {
-		String jsonFilter = "{\"name\":\"filter\",\"children\":[]}";
-		response = recordEndpoint.readRecordListJson(headerAuthToken, queryAuthToken, PLACE,
-				jsonFilter);
+	private void expectTokenForReadListToPrefereblyBeHeaderThanQuery(int callNo,
+			String headerAuthToken, String queryAuthToken, String authTokenExpected) {
 
-		SpiderRecordListReaderSpy spiderListReaderSpy = spiderInstanceFactorySpy.spiderRecordListReaderSpy;
-		assertEquals(spiderListReaderSpy.authToken, authTokenExpected);
+		response = recordEndpoint.readRecordListJson(headerAuthToken, queryAuthToken, PLACE,
+				"someFilter");
+
+		RecordListReaderSpy spiderListReaderSpy = (RecordListReaderSpy) spiderInstanceFactorySpy.MCR
+				.getReturnValue("factorRecordListReader", callNo);
+		spiderListReaderSpy.MCR.assertParameter("readRecordList", 0, "authToken",
+				authTokenExpected);
 	}
 
 	@Test
 	public void testReadRecordListWithFilter() {
 		response = recordEndpoint.readRecordListJson(AUTH_TOKEN, AUTH_TOKEN, PLACE, jsonFilterData);
 
-		SpiderRecordListReaderSpy spiderListReaderSpy = spiderInstanceFactorySpy.spiderRecordListReaderSpy;
-
-		DataGroup filterSentOnToSpider = spiderInstanceFactorySpy.spiderRecordListReaderSpy.filter;
+		RecordListReaderSpy spiderListReaderSpy = (RecordListReaderSpy) spiderInstanceFactorySpy.MCR
+				.getReturnValue("factorRecordListReader", 0);
+		var filterSentOnToSpider = (DataGroup) spiderListReaderSpy.MCR
+				.getParameterForMethodAndCallNumberAndParameter("readRecordList", 0, "filter");
 		assertJsonStringConvertedToGroupUsesCoraData(jsonFilterData, filterSentOnToSpider);
 
-		DataListSpy returnedDataListFromReader = spiderListReaderSpy.returnedDataList;
+		DataList dataList = (DataList) spiderListReaderSpy.MCR.getReturnValue("readRecordList", 0);
 
-		assertDataFromSpiderConvertedToJsonUsingConvertersFromProvider(returnedDataListFromReader);
-
+		assertDataFromSpiderConvertedToJsonUsingConvertersFromProvider(dataList);
 		assertResponseStatusIs(Response.Status.OK);
-	}
-
-	@Test
-	public void testReadRecordListWithNullAsFilter() {
-		response = recordEndpoint.readRecordListJson(AUTH_TOKEN, AUTH_TOKEN, PLACE, null);
-		assertEntityExists();
-		assertResponseStatusIs(Response.Status.OK);
-
-		assertEquals(jsonParser.jsonString, "{\"name\":\"filter\",\"children\":[]}");
-	}
-
-	@Test
-	public void testReadRecordListWithEmptyFilter() {
-		response = recordEndpoint.readRecordListJson(AUTH_TOKEN, AUTH_TOKEN, PLACE, "");
-		assertEntityExists();
-		assertResponseStatusIs(Response.Status.OK);
-
-		assertEquals(jsonParser.jsonString, "{\"name\":\"filter\",\"children\":[]}");
 	}
 
 	private void assertEntityExists() {
@@ -228,11 +216,12 @@ public class RecordEndpointReadListTest {
 
 		var filterElement = assertParametersAndGetConvertedXmlDataElement();
 
-		spiderInstanceFactorySpy.spiderRecordListReaderSpy.MCR.assertParameters("readRecordList", 0,
-				AUTH_TOKEN, "place", filterElement);
+		RecordListReaderSpy spiderListReaderSpy = (RecordListReaderSpy) spiderInstanceFactorySpy.MCR
+				.getReturnValue("factorRecordListReader", 0);
+		spiderListReaderSpy.MCR.assertParameters("readRecordList", 0, AUTH_TOKEN, "place",
+				filterElement);
 
-		DataList dataList = (DataList) spiderInstanceFactorySpy.spiderRecordListReaderSpy.MCR
-				.getReturnValue("readRecordList", 0);
+		DataList dataList = (DataList) spiderListReaderSpy.MCR.getReturnValue("readRecordList", 0);
 
 		assertXmlConvertionOfResponse(dataList);
 		assertEntityExists();
@@ -247,11 +236,12 @@ public class RecordEndpointReadListTest {
 
 		var filterElement = assertParametersAndGetConvertedXmlDataElement();
 
-		spiderInstanceFactorySpy.spiderRecordListReaderSpy.MCR.assertParameters("readRecordList", 0,
-				AUTH_TOKEN, "place", filterElement);
+		RecordListReaderSpy spiderListReaderSpy = (RecordListReaderSpy) spiderInstanceFactorySpy.MCR
+				.getReturnValue("factorRecordListReader", 0);
+		spiderListReaderSpy.MCR.assertParameters("readRecordList", 0, AUTH_TOKEN, "place",
+				filterElement);
 
-		DataList dataList = (DataList) spiderInstanceFactorySpy.spiderRecordListReaderSpy.MCR
-				.getReturnValue("readRecordList", 0);
+		DataList dataList = (DataList) spiderListReaderSpy.MCR.getReturnValue("readRecordList", 0);
 
 		assertXmlConvertionOfResponse(dataList);
 		assertEntityExists();
@@ -261,18 +251,18 @@ public class RecordEndpointReadListTest {
 
 	@Test
 	public void testReadRecordListWithNullFilterForXml() {
+		SpiderInstanceFactorySpy factory = new SpiderInstanceFactorySpy();
+		SpiderInstanceProvider.setSpiderInstanceFactory(factory);
+
 		response = recordEndpoint.readRecordListXml(AUTH_TOKEN, AUTH_TOKEN, "place", null);
 
-		var filterSentOnToSpider = spiderInstanceFactorySpy.spiderRecordListReaderSpy.filter;
+		var emptyFilterGroup = dataFactorySpy.MCR
+				.assertCalledParametersReturn("factorGroupUsingNameInData", "filter");
 
-		String defaultFilter = "{\"name\":\"filter\",\"children\":[]}";
-		assertJsonStringConvertedToGroupUsesCoraData(defaultFilter, filterSentOnToSpider);
+		var spiderRecordListReaderSpy = getRecordListReader(factory);
 
-		spiderInstanceFactorySpy.spiderRecordListReaderSpy.MCR.assertParameters("readRecordList", 0,
-				AUTH_TOKEN, "place", filterSentOnToSpider);
-
-		DataList dataList = (DataList) spiderInstanceFactorySpy.spiderRecordListReaderSpy.MCR
-				.getReturnValue("readRecordList", 0);
+		DataList dataList = (DataList) spiderRecordListReaderSpy.MCR.assertCalledParametersReturn(
+				"readRecordList", AUTH_TOKEN, "place", emptyFilterGroup);
 
 		assertXmlConvertionOfResponse(dataList);
 		assertEntityExists();
@@ -282,24 +272,29 @@ public class RecordEndpointReadListTest {
 
 	@Test
 	public void testReadRecordListWithNullFilterAsApplicationXmlForBrowsers() {
+		SpiderInstanceFactorySpy factory = new SpiderInstanceFactorySpy();
+		SpiderInstanceProvider.setSpiderInstanceFactory(factory);
+
 		response = recordEndpoint.readRecordListAsApplicationXmlForBrowsers(AUTH_TOKEN, AUTH_TOKEN,
 				"place", null);
 
-		var filterSentOnToSpider = spiderInstanceFactorySpy.spiderRecordListReaderSpy.filter;
+		var emptyFilterGroup = dataFactorySpy.MCR
+				.assertCalledParametersReturn("factorGroupUsingNameInData", "filter");
 
-		String defaultFilter = "{\"name\":\"filter\",\"children\":[]}";
-		assertJsonStringConvertedToGroupUsesCoraData(defaultFilter, filterSentOnToSpider);
+		var spiderRecordListReaderSpy = getRecordListReader(factory);
 
-		spiderInstanceFactorySpy.spiderRecordListReaderSpy.MCR.assertParameters("readRecordList", 0,
-				AUTH_TOKEN, "place", filterSentOnToSpider);
-
-		DataList dataList = (DataList) spiderInstanceFactorySpy.spiderRecordListReaderSpy.MCR
-				.getReturnValue("readRecordList", 0);
+		DataList dataList = (DataList) spiderRecordListReaderSpy.MCR.assertCalledParametersReturn(
+				"readRecordList", AUTH_TOKEN, "place", emptyFilterGroup);
 
 		assertXmlConvertionOfResponse(dataList);
 		assertEntityExists();
 		assertResponseStatusIs(Response.Status.OK);
 		assertResponseContentTypeIs(APPLICATION_XML);
+	}
+
+	private RecordListReaderSpy getRecordListReader(SpiderInstanceFactorySpy factory) {
+		return (RecordListReaderSpy) factory.MCR
+				.assertCalledParametersReturn("factorRecordListReader");
 	}
 
 	@Test
@@ -340,26 +335,34 @@ public class RecordEndpointReadListTest {
 
 	@Test
 	public void testReadRecordListNotFound() {
-		String jsonFilter = "{\"name\":\"filter\",\"children\":[]}";
+		spiderInstanceFactorySpy.MRV.setAlwaysThrowException("factorRecordListReader",
+				RecordNotFoundException.withMessage("SomeException"));
+
 		response = recordEndpoint.readRecordListJson(AUTH_TOKEN, AUTH_TOKEN, "place_NOT_FOUND",
-				jsonFilter);
+				"someFilter");
+
 		assertResponseStatusIs(Response.Status.NOT_FOUND);
 		assertEquals(response.getEntity(),
-				"Error reading records with recordType: place_NOT_FOUND. Record not found");
+				"Error reading records with recordType: place_NOT_FOUND. SomeException");
 	}
 
 	@Test
 	public void testReadRecordListUnauthorized() {
-		String jsonFilter = "{\"name\":\"filter\",\"children\":[]}";
+		spiderInstanceFactorySpy.MRV.setAlwaysThrowException("factorRecordListReader",
+				new AuthorizationException("SomeException"));
+
 		response = recordEndpoint.readRecordListJson(DUMMY_NON_AUTHORIZED_TOKEN, AUTH_TOKEN, PLACE,
-				jsonFilter);
+				"someException");
+
 		assertResponseStatusIs(Response.Status.FORBIDDEN);
 	}
 
 	@Test
 	public void testReadRecordListNoTokenAndUnauthorized() {
-		String jsonFilter = "{\"name\":\"filter\",\"children\":[]}";
-		response = recordEndpoint.readRecordListJson(null, null, PLACE, jsonFilter);
+		spiderInstanceFactorySpy.MRV.setAlwaysThrowException("factorRecordListReader",
+				new AuthenticationException("SomeException"));
+
+		response = recordEndpoint.readRecordListJson(null, null, PLACE, "someFilter");
 		assertResponseStatusIs(Response.Status.UNAUTHORIZED);
 	}
 

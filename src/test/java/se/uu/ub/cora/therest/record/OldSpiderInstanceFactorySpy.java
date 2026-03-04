@@ -33,6 +33,8 @@ import se.uu.ub.cora.spider.record.RecordReaderDecorated;
 import se.uu.ub.cora.spider.record.RecordSearcher;
 import se.uu.ub.cora.spider.record.RecordUpdater;
 import se.uu.ub.cora.spider.record.RecordValidator;
+import se.uu.ub.cora.testutils.mcr.MethodCallRecorder;
+import se.uu.ub.cora.testutils.mrv.MethodReturnValues;
 
 public class OldSpiderInstanceFactorySpy implements SpiderInstanceFactory {
 
@@ -51,6 +53,15 @@ public class OldSpiderInstanceFactorySpy implements SpiderInstanceFactory {
 	public boolean throwRecordNotFoundException = false;
 	public boolean throwDataException = false;
 
+	public MethodCallRecorder MCR = new MethodCallRecorder();
+	public MethodReturnValues MRV = new MethodReturnValues();
+
+	public OldSpiderInstanceFactorySpy() {
+		MCR.useMRV(MRV);
+		MRV.setDefaultReturnValuesSupplier("factorRecordListReader",
+				() -> spiderRecordListReaderSpy);
+	}
+
 	@Override
 	public RecordReader factorRecordReader() {
 		spiderRecordReaderSpy = new SpiderRecordReaderSpy();
@@ -60,7 +71,7 @@ public class OldSpiderInstanceFactorySpy implements SpiderInstanceFactory {
 	@Override
 	public RecordListReader factorRecordListReader() {
 		spiderRecordListReaderSpy = new SpiderRecordListReaderSpy();
-		return spiderRecordListReaderSpy;
+		return (RecordListReader) MCR.addCallAndReturnFromMRV();
 	}
 
 	@Override
