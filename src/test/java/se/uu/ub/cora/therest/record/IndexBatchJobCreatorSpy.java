@@ -32,17 +32,17 @@ public class IndexBatchJobCreatorSpy implements RecordListIndexer {
 
 	public String authToken;
 	public String type;
-	public DataGroup filter;
+	public DataGroup indexSetting;
 	public DataRecordSpy recordToReturn;
 	MethodCallRecorder MCR = new MethodCallRecorder();
 
 	@Override
-	public DataRecord indexRecordList(String authToken, String type, DataGroup filter) {
-		MCR.addCall("authToken", authToken, "type", type, "filter", filter);
+	public DataRecord indexRecordList(String authToken, String type, DataGroup indexSettings) {
+		MCR.addCall("authToken", authToken, "type", type, "indexSettings", indexSettings);
 		this.authToken = authToken;
 
 		this.type = type;
-		this.filter = filter;
+		this.indexSetting = indexSettings;
 		possiblyThrowException(authToken, type);
 		DataGroupSpy indexBatchJob = new DataGroupSpy("indexBatchJob");
 		DataGroupSpy recordInfo = new DataGroupSpy("recordInfo");

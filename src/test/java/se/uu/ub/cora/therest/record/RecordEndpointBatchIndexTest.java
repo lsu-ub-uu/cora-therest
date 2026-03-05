@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2016, 2018, 2021, 2022, 2024, 2025 Uppsala University Library
+ * Copyright 2015, 2016, 2018, 2021, 2022, 2024, 2025, 2026 Uppsala University Library
  * Copyright 2016 Olov McKie
  *
  * This file is part of Cora.
@@ -126,7 +126,7 @@ public class RecordEndpointBatchIndexTest {
 	}
 
 	@Test
-	public void testClassAnnotation() throws Exception {
+	public void testClassAnnotation() {
 		AnnotationTestHelper annotationHelper = AnnotationTestHelper
 				.createAnnotationTestHelperForClass(RecordEndpointUpdate.class);
 
@@ -212,8 +212,7 @@ public class RecordEndpointBatchIndexTest {
 		StringToExternallyConvertibleConverterSpy xmlToDataConverter = (StringToExternallyConvertibleConverterSpy) converterFactorySpy.MCR
 				.getReturnValue("factorStringToExternallyConvertableConverter", 0);
 		xmlToDataConverter.MCR.assertParameters("convert", 0, defaultXml);
-		var dataElement = xmlToDataConverter.MCR.getReturnValue("convert", 0);
-		return dataElement;
+		return xmlToDataConverter.MCR.getReturnValue("convert", 0);
 	}
 
 	private void assertJsonStringConvertedToGroupUsesCoraData(String jsonSentToEndPoint,
@@ -251,7 +250,7 @@ public class RecordEndpointBatchIndexTest {
 
 		IndexBatchJobCreatorSpy indexBatchJobCreator = spiderInstanceFactorySpy.spiderRecordListIndexerSpy;
 
-		DataGroup filterSentOnToSpider = spiderInstanceFactorySpy.spiderRecordListIndexerSpy.filter;
+		DataGroup filterSentOnToSpider = spiderInstanceFactorySpy.spiderRecordListIndexerSpy.indexSetting;
 		assertJsonStringConvertedToGroupUsesCoraData(jsonIndexData, filterSentOnToSpider);
 
 		assertEquals(indexBatchJobCreator.type, PLACE);
@@ -271,7 +270,7 @@ public class RecordEndpointBatchIndexTest {
 		assertResponseStatusIs(Response.Status.CREATED);
 		assertEquals(response.getLocation().toString(), "indexBatchJob/someCreatedBatchJobId");
 
-		assertEquals(jsonParser.jsonString, "{\"name\":\"indexSettings\",\"children\":[]}");
+		assertNewIndexSettingsSentOn();
 	}
 
 	@Test
@@ -281,7 +280,16 @@ public class RecordEndpointBatchIndexTest {
 		assertResponseStatusIs(Response.Status.CREATED);
 		assertEquals(response.getLocation().toString(), "indexBatchJob/someCreatedBatchJobId");
 
-		assertEquals(jsonParser.jsonString, "{\"name\":\"indexSettings\",\"children\":[]}");
+		assertNewIndexSettingsSentOn();
+
+	}
+
+	private void assertNewIndexSettingsSentOn() {
+		IndexBatchJobCreatorSpy indexBatchJobSpy = spiderInstanceFactorySpy.spiderRecordListIndexerSpy;
+		var createdEmptyFilter = dataFactorySpy.MCR
+				.assertCalledParametersReturn("factorGroupUsingNameInData", "indexSetting");
+		indexBatchJobSpy.MCR.assertCalledParameters("indexRecordList", AUTH_TOKEN, PLACE,
+				createdEmptyFilter);
 	}
 
 	@Test
@@ -324,7 +332,7 @@ public class RecordEndpointBatchIndexTest {
 	public void testIndexRecordListWithFilterAsJsonAndResponseXml() {
 		response = recordEndpoint.batchIndexJsonXml(AUTH_TOKEN, AUTH_TOKEN, PLACE, jsonIndexData);
 
-		DataGroup filterSentOnToSpider = spiderInstanceFactorySpy.spiderRecordListIndexerSpy.filter;
+		DataGroup filterSentOnToSpider = spiderInstanceFactorySpy.spiderRecordListIndexerSpy.indexSetting;
 		assertJsonStringConvertedToGroupUsesCoraData(jsonIndexData, filterSentOnToSpider);
 
 		spiderInstanceFactorySpy.spiderRecordListIndexerSpy.MCR.assertParameters("indexRecordList",
@@ -360,12 +368,7 @@ public class RecordEndpointBatchIndexTest {
 	public void testIndexRecordListWithNullFilterAsXmlAndResponseXml() {
 		response = recordEndpoint.batchIndexXmlXml(AUTH_TOKEN, AUTH_TOKEN, PLACE, null);
 
-		DataGroup filterSentOnToSpider = spiderInstanceFactorySpy.spiderRecordListIndexerSpy.filter;
-		assertJsonStringConvertedToGroupUsesCoraData("{\"name\":\"indexSettings\",\"children\":[]}",
-				filterSentOnToSpider);
-
-		spiderInstanceFactorySpy.spiderRecordListIndexerSpy.MCR.assertParameters("indexRecordList",
-				0, AUTH_TOKEN, "place", filterSentOnToSpider);
+		assertNewIndexSettingsSentOn();
 
 		DataRecord dataList = (DataRecord) spiderInstanceFactorySpy.spiderRecordListIndexerSpy.MCR
 				.getReturnValue("indexRecordList", 0);

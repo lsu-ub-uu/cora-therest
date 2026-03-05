@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, 2016, 2018, 2021, 2024, 2025 Uppsala University Library
+ * Copyright 2015, 2016, 2018, 2021, 2024, 2025, 2026 Uppsala University Library
  *
  * This file is part of Cora.
  *
@@ -42,6 +42,7 @@ import se.uu.ub.cora.converter.ExternallyConvertibleToStringConverter;
 import se.uu.ub.cora.converter.StringToExternallyConvertibleConverter;
 import se.uu.ub.cora.data.Convertible;
 import se.uu.ub.cora.data.DataGroup;
+import se.uu.ub.cora.data.DataProvider;
 import se.uu.ub.cora.data.DataRecord;
 import se.uu.ub.cora.data.ExternallyConvertible;
 import se.uu.ub.cora.data.converter.ConversionException;
@@ -267,35 +268,25 @@ public class RecordEndpointBatchIndex {
 	}
 
 	private Response batchIndex(String contentType, String accept, String headerAuthToken,
-			String queryAuthToken, String type, String indexSettingsAsJson) {
+			String queryAuthToken, String type, String indexSettingsAsString) {
 		String usedToken = getExistingTokenPreferHeader(headerAuthToken, queryAuthToken);
 
-		String resolvedContentType = calculateContentTypeToUse(contentType, indexSettingsAsJson);
-		String jsonIndexSettings = createEmptyIndexSettingIfParameterDoesNotExist(
-				indexSettingsAsJson);
-
+		String resolvedContentType = calculateContentTypeToUse(contentType, indexSettingsAsString);
 		return indexRecordListUsingAuthTokenByType(resolvedContentType, accept, usedToken, type,
-				jsonIndexSettings);
+				indexSettingsAsString);
 	}
 
-	private String calculateContentTypeToUse(String contentType, String indexSettingsAsJson) {
-		if (indexSettingsAsJson == null || indexSettingsAsJson.isEmpty()) {
+	private String calculateContentTypeToUse(String contentType, String indexSettingsAsString) {
+		if (indexSettingsAsString == null || indexSettingsAsString.isEmpty()) {
 			return APPLICATION_VND_CORA_RECORD_JSON;
 		}
 		return contentType;
 	}
 
-	private String createEmptyIndexSettingIfParameterDoesNotExist(String indexSettingsAsJson) {
-		if (indexSettingsAsJson == null || indexSettingsAsJson.isEmpty()) {
-			return "{\"name\":\"indexSettings\",\"children\":[]}";
-		}
-		return indexSettingsAsJson;
-	}
-
 	private Response indexRecordListUsingAuthTokenByType(String contentType, String accept,
-			String authToken, String type, String filterAsJson) {
+			String authToken, String type, String indexSettingsAsString) {
 		try {
-			return tryIndexRecordList(contentType, accept, authToken, type, filterAsJson);
+			return tryIndexRecordList(contentType, accept, authToken, type, indexSettingsAsString);
 
 		} catch (Exception error) {
 			String errorFromCaller = "Error indexing records with recordType: {0}.";
@@ -304,8 +295,9 @@ public class RecordEndpointBatchIndex {
 	}
 
 	private Response tryIndexRecordList(String contentType, String accept, String authToken,
-			String type, String jsonIndexSettings) throws URISyntaxException {
-		DataGroup indexSettings = convertStringToDataGroup(contentType, jsonIndexSettings);
+			String type, String indexSettingsAsString) throws URISyntaxException {
+		DataGroup indexSettings = convertIndexSettingStringToData(contentType,
+				indexSettingsAsString);
 
 		RecordListIndexer indexBatchJobCreator = SpiderInstanceProvider.getRecordListIndexer();
 		DataRecord indexBatchJob = indexBatchJobCreator.indexRecordList(authToken, type,
@@ -318,6 +310,14 @@ public class RecordEndpointBatchIndex {
 		URI uri = new URI("indexBatchJob" + URL_DELIMITER + createdId);
 		return Response.created(uri).header(HttpHeaders.CONTENT_TYPE, accept).entity(outputRecord)
 				.build();
+	}
+
+	private DataGroup convertIndexSettingStringToData(String contentType,
+			String indexSettingsAsString) {
+		if (indexSettingsAsString == null || indexSettingsAsString.isEmpty()) {
+			return DataProvider.createGroupUsingNameInData("indexSetting");
+		}
+		return convertStringToDataGroup(contentType, indexSettingsAsString);
 	}
 
 	JsonParser getJsonParser() {
