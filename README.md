@@ -18,9 +18,38 @@ Cora TheRest provides a comprehensive REST API for:
 
 The complete API specification is available in OpenAPI 3.0 format:
 - **OpenAPI Specification**: [openapi.yaml](openapi.yaml)
+- **Swagger UI**: [docs/swagger-ui.html](docs/swagger-ui.html) - Interactive API explorer
 
-You can view and interact with the API documentation using tools like:
-- [Swagger UI](https://swagger.io/tools/swagger-ui/)
+### Viewing with Swagger UI
+
+#### Option 1: Local HTML File (Recommended)
+Open the included Swagger UI page locally:
+1. Clone this repository
+2. Start a local web server in the repository root:
+   ```bash
+   # Python 3
+   python -m http.server 8000
+   
+   # Node.js
+   npx serve .
+   
+   # PHP
+   php -S localhost:8000
+   ```
+3. Open `http://localhost:8000/docs/swagger-ui.html` in your browser
+
+#### Option 2: Online Swagger Editor
+1. Go to [Swagger Editor](https://editor.swagger.io/)
+2. Click **File** → **Import URL**
+3. Enter: `https://raw.githubusercontent.com/lsu-ub-uu/cora-therest/master/openapi.yaml`
+
+#### Option 3: Docker
+```bash
+docker run -p 8080:8080 -e SWAGGER_JSON_URL=https://raw.githubusercontent.com/lsu-ub-uu/cora-therest/master/openapi.yaml swaggerapi/swagger-ui
+```
+Then open `http://localhost:8080`
+
+### Other API Documentation Tools
 - [Redoc](https://redocly.github.io/redoc/)
 - [Stoplight Studio](https://stoplight.io/studio/)
 
