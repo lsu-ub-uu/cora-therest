@@ -1,0 +1,892 @@
+openapi: 3.0.3
+info:
+  title: Cora TheRest API
+  description: |
+    RESTful API for managing records in the Cora system. This API is part of the Uppsala University Library's Cora project and provides comprehensive support for CRUD operations, search, validation, and binary resource management.
+    
+    ## Authentication
+    
+    Most endpoints require authentication using an auth token. The token can be provided either:
+    - As a header parameter: `authToken`
+    - As a query parameter: `authToken`
+    
+    When both are provided, the header parameter takes precedence.
+    
+    ## Content Types
+    
+    The API supports both JSON and XML formats using custom MIME types:
+    - JSON: `application/vnd.cora.record+json`, `application/vnd.cora.recordgroup+json`, etc.
+    - XML: `application/vnd.cora.record+xml`, `application/vnd.cora.recordgroup+xml`, etc.
+    
+    ## Error Responses
+    
+    The API returns standard HTTP status codes:
+    - `200 OK`: Successful request
+    - `201 Created`: Resource created successfully
+    - `400 Bad Request`: Invalid request data
+    - `401 Unauthorized`: Missing or invalid authentication
+    - `403 Forbidden`: Insufficient permissions
+    - `404 Not Found`: Resource not found
+    - `405 Method Not Allowed`: Operation not permitted
+    - `409 Conflict`: Resource conflict
+    - `500 Internal Server Error`: Server error
+    
+  version: 13.5-SNAPSHOT
+  license:
+    name: GNU General Public License v3.0+
+    url: https://www.gnu.org/licenses/gpl-3.0.html
+  contact:
+    name: Uppsala University Library
+    url: https://github.com/lsu-ub-uu/cora-therest
+
+servers:
+  - url: /rest/record
+    description: Record API base URL
+
+tags:
+  - name: Records
+    description: CRUD operations for records
+  - name: Search
+    description: Search and query operations
+  - name: Validation
+    description: Record validation
+  - name: Resources
+    description: Binary resource upload and download
+  - name: Index
+    description: Batch indexing operations
+  - name: Links
+    description: Incoming link operations
+  - name: IIIF
+    description: International Image Interoperability Framework endpoints
+  - name: Deployment
+    description: Deployment information
+
+paths:
+  /:
+    get:
+      tags:
+        - Deployment
+      summary: Get deployment information
+      description: |
+        Returns metadata about the deployment including application version, URLs, and example users.
+        When requesting HTML, redirects to the documentation page.
+      operationId: getDeploymentInfo
+      responses:
+        '200':
+          description: Deployment information
+          content:
+            application/vnd.cora.deploymentInfo+json:
+              schema:
+                $ref: '#/components/schemas/DeploymentInfo'
+              example:
+                applicationName: "Cora"
+                deploymentName: "Production"
+                coraVersion: "13.5"
+                applicationVersion: "1.0.0"
+                urls:
+                  REST: "https://example.com/rest/"
+                  appTokenLogin: "https://example.com/login/apptoken"
+                  passwordLogin: "https://example.com/login/password"
+                  record: "https://example.com/rest/record/"
+                  recordType: "https://example.com/rest/record/recordType"
+                  iiif: "https://example.com/iiif/"
+                exampleUsers: []
+            application/vnd.cora.deploymentInfo+xml:
+              schema:
+                type: string
+            text/html:
+              schema:
+                type: string
+        '302':
+          description: Redirect to HTML documentation
+
+  /{type}:
+    get:
+      tags:
+        - Records
+      summary: Read record list
+      description: |
+        Retrieves a paginated list of records of the specified type.
+        Optional filter parameter allows filtering the results.
+      operationId: readRecordList
+      parameters:
+        - $ref: '#/components/parameters/AuthTokenHeader'
+        - $ref: '#/components/parameters/AuthTokenQuery'
+        - $ref: '#/components/parameters/RecordType'
+        - name: filter
+          in: query
+          description: Filter criteria in JSON or XML format
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of records
+          content:
+            application/vnd.cora.recordList+json:
+              schema:
+                $ref: '#/components/schemas/RecordList'
+            application/vnd.cora.recordList+xml:
+              schema:
+                type: string
+            application/xml:
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      tags:
+        - Records
+      summary: Create a new record
+      description: |
+        Creates a new record of the specified type.
+        The record data must be provided in the request body.
+      operationId: createRecord
+      parameters:
+        - $ref: '#/components/parameters/AuthTokenHeader'
+        - $ref: '#/components/parameters/AuthTokenQuery'
+        - $ref: '#/components/parameters/RecordType'
+      requestBody:
+        description: Record data to create
+        required: true
+        content:
+          application/vnd.cora.recordgroup+json:
+            schema:
+              $ref: '#/components/schemas/RecordGroup'
+          application/vnd.cora.recordgroup+xml:
+            schema:
+              type: string
+      responses:
+        '201':
+          description: Record created successfully
+          headers:
+            Location:
+              description: URL of the created record
+              schema:
+                type: string
+          content:
+            application/vnd.cora.record+json:
+              schema:
+                $ref: '#/components/schemas/Record'
+            application/vnd.cora.record+xml:
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /{type}/{id}:
+    get:
+      tags:
+        - Records
+      summary: Read a record
+      description: |
+        Retrieves a specific record by type and ID.
+        Supports both standard and decorated record formats.
+      operationId: readRecord
+      parameters:
+        - $ref: '#/components/parameters/AuthTokenHeader'
+        - $ref: '#/components/parameters/AuthTokenQuery'
+        - $ref: '#/components/parameters/RecordType'
+        - $ref: '#/components/parameters/RecordId'
+      responses:
+        '200':
+          description: Record data
+          content:
+            application/vnd.cora.record+json:
+              schema:
+                $ref: '#/components/schemas/Record'
+            application/vnd.cora.record+xml:
+              schema:
+                type: string
+            application/vnd.cora.record-decorated+json:
+              schema:
+                $ref: '#/components/schemas/DecoratedRecord'
+            application/vnd.cora.record-decorated+xml:
+              schema:
+                type: string
+            application/xml:
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      tags:
+        - Records
+      summary: Update a record
+      description: |
+        Updates an existing record identified by type and ID.
+        The complete updated record data must be provided in the request body.
+      operationId: updateRecord
+      parameters:
+        - $ref: '#/components/parameters/AuthTokenHeader'
+        - $ref: '#/components/parameters/AuthTokenQuery'
+        - $ref: '#/components/parameters/RecordType'
+        - $ref: '#/components/parameters/RecordId'
+      requestBody:
+        description: Updated record data
+        required: true
+        content:
+          application/vnd.cora.recordgroup+json:
+            schema:
+              $ref: '#/components/schemas/RecordGroup'
+          application/vnd.cora.recordgroup+xml:
+            schema:
+              type: string
+      responses:
+        '200':
+          description: Record updated successfully
+          content:
+            application/vnd.cora.record+json:
+              schema:
+                $ref: '#/components/schemas/Record'
+            application/vnd.cora.record+xml:
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      tags:
+        - Records
+      summary: Delete a record
+      description: |
+        Deletes a record identified by type and ID.
+      operationId: deleteRecord
+      parameters:
+        - $ref: '#/components/parameters/AuthTokenHeader'
+        - $ref: '#/components/parameters/AuthTokenQuery'
+        - $ref: '#/components/parameters/RecordType'
+        - $ref: '#/components/parameters/RecordId'
+      responses:
+        '200':
+          description: Record deleted successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /{type}/{id}/incomingLinks:
+    get:
+      tags:
+        - Links
+      summary: Read incoming record links
+      description: |
+        Retrieves a list of records that link to the specified record.
+      operationId: readIncomingRecordLinks
+      parameters:
+        - $ref: '#/components/parameters/AuthTokenHeader'
+        - $ref: '#/components/parameters/AuthTokenQuery'
+        - $ref: '#/components/parameters/RecordType'
+        - $ref: '#/components/parameters/RecordId'
+      responses:
+        '200':
+          description: List of incoming record links
+          content:
+            application/vnd.cora.recordList+json:
+              schema:
+                $ref: '#/components/schemas/RecordList'
+            application/vnd.cora.recordList+xml:
+              schema:
+                type: string
+            application/xml:
+              schema:
+                type: string
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /{type}/{id}/{resourceType}:
+    get:
+      tags:
+        - Resources
+      summary: Download a binary resource
+      description: |
+        Downloads a binary resource (e.g., file attachment) associated with a record.
+      operationId: downloadResource
+      parameters:
+        - $ref: '#/components/parameters/AuthTokenHeader'
+        - $ref: '#/components/parameters/AuthTokenQuery'
+        - $ref: '#/components/parameters/RecordType'
+        - $ref: '#/components/parameters/RecordId'
+        - $ref: '#/components/parameters/ResourceType'
+      responses:
+        '200':
+          description: Binary resource content
+          headers:
+            Content-Disposition:
+              description: Attachment filename
+              schema:
+                type: string
+            Content-Length:
+              description: Size of the resource in bytes
+              schema:
+                type: integer
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: binary
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      tags:
+        - Resources
+      summary: Upload a binary resource
+      description: |
+        Uploads a binary resource (e.g., file) to be associated with a record.
+      operationId: uploadResource
+      parameters:
+        - $ref: '#/components/parameters/AuthTokenHeader'
+        - $ref: '#/components/parameters/AuthTokenQuery'
+        - $ref: '#/components/parameters/RecordType'
+        - $ref: '#/components/parameters/RecordId'
+        - $ref: '#/components/parameters/ResourceType'
+      requestBody:
+        description: File to upload
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: The file to upload
+              required:
+                - file
+      responses:
+        '200':
+          description: Resource uploaded successfully
+          content:
+            application/vnd.cora.record+json:
+              schema:
+                $ref: '#/components/schemas/Record'
+            application/vnd.cora.record+xml:
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /searchResult/{searchId}:
+    get:
+      tags:
+        - Search
+      summary: Execute a search
+      description: |
+        Executes a saved search by its ID and returns the results.
+        Supports both standard and decorated result formats.
+      operationId: searchRecord
+      parameters:
+        - $ref: '#/components/parameters/AuthTokenHeader'
+        - $ref: '#/components/parameters/AuthTokenQuery'
+        - name: searchId
+          in: path
+          description: ID of the saved search to execute
+          required: true
+          schema:
+            type: string
+        - name: searchData
+          in: query
+          description: Search parameters in JSON or XML format
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/vnd.cora.recordList+json:
+              schema:
+                $ref: '#/components/schemas/RecordList'
+            application/vnd.cora.recordList+xml:
+              schema:
+                type: string
+            application/vnd.cora.recordList-decorated+json:
+              schema:
+                $ref: '#/components/schemas/RecordList'
+            application/vnd.cora.recordList-decorated+xml:
+              schema:
+                type: string
+            application/xml:
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /index/{type}:
+    post:
+      tags:
+        - Index
+      summary: Batch index records
+      description: |
+        Initiates a batch indexing job for records of the specified type.
+        Returns an index batch job record that can be used to track progress.
+      operationId: batchIndex
+      parameters:
+        - $ref: '#/components/parameters/AuthTokenHeader'
+        - $ref: '#/components/parameters/AuthTokenQuery'
+        - $ref: '#/components/parameters/RecordType'
+      requestBody:
+        description: Index settings (optional)
+        required: false
+        content:
+          application/vnd.cora.record+json:
+            schema:
+              $ref: '#/components/schemas/IndexSettings'
+          application/vnd.cora.record+xml:
+            schema:
+              type: string
+      responses:
+        '201':
+          description: Index batch job created
+          headers:
+            Location:
+              description: URL of the created index batch job
+              schema:
+                type: string
+          content:
+            application/vnd.cora.record+json:
+              schema:
+                $ref: '#/components/schemas/Record'
+            application/vnd.cora.record+xml:
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /validationOrder:
+    post:
+      tags:
+        - Validation
+      summary: Validate a record
+      description: |
+        Validates a record against its metadata schema without storing it.
+        Requires a work order containing both the validation order and the record to validate.
+      operationId: validateRecord
+      parameters:
+        - $ref: '#/components/parameters/AuthTokenHeader'
+        - $ref: '#/components/parameters/AuthTokenQuery'
+      requestBody:
+        description: |
+          Work order containing:
+          - `order`: Validation order configuration
+          - `record`: The record to validate
+        required: true
+        content:
+          application/vnd.cora.workorder+json:
+            schema:
+              $ref: '#/components/schemas/ValidationWorkOrder'
+          application/vnd.cora.workorder+xml:
+            schema:
+              type: string
+      responses:
+        '200':
+          description: Validation result
+          content:
+            application/vnd.cora.record+json:
+              schema:
+                $ref: '#/components/schemas/ValidationResult'
+            application/vnd.cora.record+xml:
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /{identifier}/{requestedUri}:
+    get:
+      tags:
+        - IIIF
+      summary: IIIF Image request
+      description: |
+        Handles IIIF (International Image Interoperability Framework) requests.
+        Proxies requests to the IIIF image server.
+      operationId: readIiif
+      parameters:
+        - name: identifier
+          in: path
+          description: IIIF image identifier
+          required: true
+          schema:
+            type: string
+        - name: requestedUri
+          in: path
+          description: IIIF request path (region/size/rotation/quality.format)
+          required: true
+          schema:
+            type: string
+        - name: authtoken
+          in: header
+          description: Authentication token
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: IIIF response
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: binary
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  parameters:
+    AuthTokenHeader:
+      name: authToken
+      in: header
+      description: Authentication token (takes precedence over query parameter)
+      required: false
+      schema:
+        type: string
+
+    AuthTokenQuery:
+      name: authToken
+      in: query
+      description: Authentication token (used if header is not provided)
+      required: false
+      schema:
+        type: string
+
+    RecordType:
+      name: type
+      in: path
+      description: The record type (e.g., 'person', 'organisation', 'text')
+      required: true
+      schema:
+        type: string
+
+    RecordId:
+      name: id
+      in: path
+      description: The unique identifier of the record
+      required: true
+      schema:
+        type: string
+
+    ResourceType:
+      name: resourceType
+      in: path
+      description: The type of resource (e.g., 'master', 'thumbnail')
+      required: true
+      schema:
+        type: string
+
+  schemas:
+    Record:
+      type: object
+      description: A Cora data record
+      properties:
+        data:
+          type: object
+          description: Record data group
+        actionLinks:
+          type: object
+          description: Available actions for this record
+        permissions:
+          type: object
+          description: User permissions for this record
+
+    RecordGroup:
+      type: object
+      description: A Cora data group used as input for create/update operations
+      properties:
+        name:
+          type: string
+          description: Name of the data group
+        children:
+          type: array
+          description: Child elements of the data group
+          items:
+            type: object
+
+    DecoratedRecord:
+      type: object
+      description: A record with additional decoration/metadata
+      allOf:
+        - $ref: '#/components/schemas/Record'
+        - type: object
+          properties:
+            decoration:
+              type: object
+              description: Additional decoration data
+
+    RecordList:
+      type: object
+      description: A list of records with pagination information
+      properties:
+        fromNo:
+          type: string
+          description: Starting position in the result set
+        toNo:
+          type: string
+          description: Ending position in the result set
+        totalNo:
+          type: string
+          description: Total number of matching records
+        containDataOfType:
+          type: string
+          description: The type of records contained in the list
+        data:
+          type: array
+          description: Array of records
+          items:
+            $ref: '#/components/schemas/Record'
+
+    DeploymentInfo:
+      type: object
+      description: Information about the deployment
+      properties:
+        applicationName:
+          type: string
+          description: Name of the application
+        deploymentName:
+          type: string
+          description: Name of this deployment
+        coraVersion:
+          type: string
+          description: Version of the Cora framework
+        applicationVersion:
+          type: string
+          description: Version of the application
+        urls:
+          type: object
+          description: Available URLs
+          properties:
+            REST:
+              type: string
+              description: Base REST URL
+            appTokenLogin:
+              type: string
+              description: App token login URL
+            passwordLogin:
+              type: string
+              description: Password login URL
+            record:
+              type: string
+              description: Record API URL
+            recordType:
+              type: string
+              description: Record type URL
+            iiif:
+              type: string
+              description: IIIF server URL
+        exampleUsers:
+          type: array
+          description: Example users for testing
+          items:
+            $ref: '#/components/schemas/ExampleUser'
+
+    ExampleUser:
+      type: object
+      description: An example user for testing
+      properties:
+        name:
+          type: string
+          description: User name
+        text:
+          type: string
+          description: User description
+        type:
+          type: string
+          description: User type
+        loginId:
+          type: string
+          description: Login ID
+        appToken:
+          type: string
+          description: Application token
+
+    ValidationWorkOrder:
+      type: object
+      description: Work order for record validation
+      properties:
+        order:
+          type: object
+          description: Validation order configuration
+        record:
+          type: object
+          description: The record to validate
+
+    ValidationResult:
+      type: object
+      description: Result of record validation
+      properties:
+        valid:
+          type: boolean
+          description: Whether the record is valid
+        errors:
+          type: array
+          description: List of validation errors (if any)
+          items:
+            type: object
+
+    IndexSettings:
+      type: object
+      description: Settings for batch indexing
+      properties:
+        filterAsJson:
+          type: string
+          description: Optional filter for selecting records to index
+
+    Error:
+      type: object
+      description: Error response
+      properties:
+        message:
+          type: string
+          description: Error message
+
+  responses:
+    BadRequest:
+      description: Invalid request data
+      content:
+        text/plain:
+          schema:
+            type: string
+
+    Unauthorized:
+      description: Missing or invalid authentication
+      content:
+        text/plain:
+          schema:
+            type: string
+
+    Forbidden:
+      description: Insufficient permissions
+      content:
+        text/plain:
+          schema:
+            type: string
+
+    NotFound:
+      description: Resource not found
+      content:
+        text/plain:
+          schema:
+            type: string
+
+    Conflict:
+      description: Resource conflict
+      content:
+        text/plain:
+          schema:
+            type: string
+
+    MethodNotAllowed:
+      description: Operation not permitted
+      content:
+        text/plain:
+          schema:
+            type: string
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        text/plain:
+          schema:
+            type: string
+
+  securitySchemes:
+    authToken:
+      type: apiKey
+      name: authToken
+      in: header
+      description: Authentication token obtained from the login service
+
+security:
+  - authToken: []
