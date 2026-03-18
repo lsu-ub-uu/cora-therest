@@ -1,0 +1,544 @@
+<!--
+  ~ Copyright 2015, 2021, 2026 Uppsala University Library
+  ~
+  ~ This file is part of Cora.
+  ~
+  ~     Cora is free software: you can redistribute it and/or modify
+  ~     it under the terms of the GNU General Public License as published by
+  ~     the Free Software Foundation, either version 3 of the License, or
+  ~     (at your option) any later version.
+  ~
+  ~     Cora is distributed in the hope that it will be useful,
+  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~     GNU General Public License for more details.
+  ~
+  ~     You should have received a copy of the GNU General Public License
+  ~     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<!--
+  ============================================================================
+  API DATA FORMAT DOCUMENTATION TEMPLATE
+  ============================================================================
+  
+  This template contains sections to be added to the API documentation pages
+  in systemone, alvin-cora, and diva-cora projects.
+  
+  HOW TO USE:
+  1. Open src/main/webapp/rest/index.html in the target project
+  2. Add navigation items to both English and Swedish sidebars
+  3. Add English content section to the English div
+  4. Add Swedish content section to the Swedish div
+  
+  FILES TO MODIFY:
+  - lsu-ub-uu/systemone/src/main/webapp/rest/index.html
+  - lsu-ub-uu/alvin-cora/src/main/webapp/rest/index.html
+  - lsu-ub-uu/diva-cora/src/main/webapp/rest/index.html
+  ============================================================================
+-->
+
+<!-- ==========================================================================
+     SIDEBAR NAVIGATION - ENGLISH
+     Add this item to the <ul class="english-nav"> section after existing items
+========================================================================== -->
+<li><a href="#data-format">Data Format</a></li>
+
+<!-- ==========================================================================
+     SIDEBAR NAVIGATION - SWEDISH
+     Add this item to the <ul class="swedish-nav"> section after existing items
+========================================================================== -->
+<li><a href="#dataformat">Dataformat</a></li>
+
+<!-- ==========================================================================
+     ENGLISH CONTENT SECTION
+     Add this section inside the <div id="english"> container, 
+     preferably after the "description" section
+========================================================================== -->
+
+<section id="data-format">
+    <h2>Data Format</h2>
+    <p>
+        The Cora API uses a hierarchical data model for all records. Understanding this format is
+        essential for working with the API. This section describes the core data types and their
+        JSON/XML representations.
+    </p>
+    
+    <h3>Core Data Types</h3>
+    
+    <h4>1. DataGroup</h4>
+    <p>
+        A container for related data elements (children). DataGroups are the primary structural
+        element in Cora's data model. They can contain DataAtomic values, other DataGroups,
+        DataRecordLinks, and DataResourceLinks.
+    </p>
+    <h5>Properties:</h5>
+    <ul>
+        <li><strong>name</strong> (required) – The name identifying this group</li>
+        <li><strong>children</strong> (optional) – Array of child elements</li>
+        <li><strong>attributes</strong> (optional) – Key-value pairs providing metadata</li>
+        <li><strong>repeatId</strong> (optional) – Identifier for repeating elements</li>
+    </ul>
+    <h5>JSON Example:</h5>
+    <pre>{
+  "name": "person",
+  "children": [
+    {"name": "firstName", "value": "John"},
+    {"name": "lastName", "value": "Doe"}
+  ],
+  "attributes": {
+    "type": "individual"
+  }
+}</pre>
+    <h5>XML Example:</h5>
+    <pre>&lt;person type="individual"&gt;
+  &lt;firstName&gt;John&lt;/firstName&gt;
+  &lt;lastName&gt;Doe&lt;/lastName&gt;
+&lt;/person&gt;</pre>
+
+    <h4>2. DataAtomic</h4>
+    <p>
+        A leaf element containing a single value. Atomic values are the basic building blocks
+        of all data in Cora.
+    </p>
+    <h5>Properties:</h5>
+    <ul>
+        <li><strong>name</strong> (required) – The name identifying this atomic value</li>
+        <li><strong>value</strong> (required) – The actual string value</li>
+        <li><strong>repeatId</strong> (optional) – Identifier for repeating elements</li>
+    </ul>
+    <h5>JSON Example:</h5>
+    <pre>{
+  "name": "firstName",
+  "value": "John",
+  "repeatId": "0"
+}</pre>
+
+    <h4>3. DataRecordLink</h4>
+    <p>
+        A link to another record in the system. Record links establish relationships between
+        records and are essential for Cora's linked data model.
+    </p>
+    <h5>Properties:</h5>
+    <ul>
+        <li><strong>name</strong> (required) – The name identifying this link</li>
+        <li><strong>children</strong> – Contains linkedRecordType and linkedRecordId</li>
+    </ul>
+    <h5>JSON Example:</h5>
+    <pre>{
+  "name": "createdBy",
+  "children": [
+    {"name": "linkedRecordType", "value": "user"},
+    {"name": "linkedRecordId", "value": "coraUser:111111111111111"}
+  ]
+}</pre>
+    <h5>XML Example:</h5>
+    <pre>&lt;createdBy&gt;
+  &lt;linkedRecordType&gt;user&lt;/linkedRecordType&gt;
+  &lt;linkedRecordId&gt;coraUser:111111111111111&lt;/linkedRecordId&gt;
+&lt;/createdBy&gt;</pre>
+
+    <h4>4. DataResourceLink</h4>
+    <p>
+        A link to a binary resource (file) associated with a record. Used for attachments,
+        images, and other binary content.
+    </p>
+    <h5>Properties:</h5>
+    <ul>
+        <li><strong>name</strong> (required) – The name identifying this resource link</li>
+        <li><strong>mimeType</strong> – MIME type of the linked resource</li>
+    </ul>
+    <h5>JSON Example:</h5>
+    <pre>{
+  "name": "master",
+  "mimeType": "image/jpeg"
+}</pre>
+
+    <h3>Record Structure</h3>
+    <p>
+        A complete record returned by the API contains the data along with metadata about
+        available actions and permissions.
+    </p>
+    
+    <h4>Record Components:</h4>
+    <ul>
+        <li><strong>data</strong> – The DataRecordGroup containing all record data</li>
+        <li><strong>actionLinks</strong> – Available actions (read, update, delete, etc.)</li>
+        <li><strong>permissions</strong> – Read and write permissions</li>
+    </ul>
+    
+    <h5>Complete Record Example (JSON):</h5>
+    <pre>{
+  "record": {
+    "data": {
+      "name": "person",
+      "children": [
+        {
+          "name": "recordInfo",
+          "children": [
+            {"name": "id", "value": "person:001"},
+            {
+              "name": "type",
+              "children": [
+                {"name": "linkedRecordType", "value": "recordType"},
+                {"name": "linkedRecordId", "value": "person"}
+              ]
+            },
+            {
+              "name": "dataDivider",
+              "children": [
+                {"name": "linkedRecordType", "value": "system"},
+                {"name": "linkedRecordId", "value": "cora"}
+              ]
+            },
+            {
+              "name": "createdBy",
+              "children": [
+                {"name": "linkedRecordType", "value": "user"},
+                {"name": "linkedRecordId", "value": "coraUser:111111111111111"}
+              ]
+            },
+            {"name": "tsCreated", "value": "2024-01-15T10:30:00.000000Z"}
+          ]
+        },
+        {
+          "name": "authorisedName",
+          "children": [
+            {"name": "familyName", "value": "Doe"},
+            {"name": "givenName", "value": "John"}
+          ]
+        }
+      ]
+    },
+    "actionLinks": {
+      "read": {
+        "requestMethod": "GET",
+        "rel": "read",
+        "url": "https://example.com/rest/record/person/person:001",
+        "accept": "application/vnd.cora.record+json"
+      },
+      "update": {
+        "requestMethod": "POST",
+        "rel": "update",
+        "url": "https://example.com/rest/record/person/person:001",
+        "contentType": "application/vnd.cora.recordgroup+json"
+      },
+      "delete": {
+        "requestMethod": "DELETE",
+        "rel": "delete",
+        "url": "https://example.com/rest/record/person/person:001"
+      }
+    },
+    "permissions": {
+      "read": ["authorisedName", "biography"],
+      "write": ["authorisedName"]
+    }
+  }
+}</pre>
+
+    <h3>recordInfo Structure</h3>
+    <p>
+        Every record contains a <code>recordInfo</code> group with metadata about the record:
+    </p>
+    <ul>
+        <li><strong>id</strong> – Unique record identifier</li>
+        <li><strong>type</strong> – Link to the record type</li>
+        <li><strong>dataDivider</strong> – Link to the system/data partition</li>
+        <li><strong>validationType</strong> – Link to the validation type</li>
+        <li><strong>createdBy</strong> – Link to the user who created the record</li>
+        <li><strong>tsCreated</strong> – Timestamp of creation (ISO-8601 format)</li>
+        <li><strong>updated</strong> – Array of update entries with updatedBy and tsUpdated</li>
+    </ul>
+
+    <h3>Record List Structure</h3>
+    <p>
+        When retrieving multiple records, the API returns a paginated list:
+    </p>
+    <h5>JSON Example:</h5>
+    <pre>{
+  "dataList": {
+    "fromNo": "1",
+    "toNo": "10",
+    "totalNo": "42",
+    "containDataOfType": "person",
+    "data": [
+      {"record": {...}},
+      {"record": {...}}
+    ]
+  }
+}</pre>
+
+    <h3>Action Links</h3>
+    <p>
+        Records include action links indicating available operations based on user permissions:
+    </p>
+    <table>
+        <tr><th>Action</th><th>HTTP Method</th><th>Description</th></tr>
+        <tr><td>read</td><td>GET</td><td>Read the record</td></tr>
+        <tr><td>update</td><td>POST</td><td>Update the record</td></tr>
+        <tr><td>delete</td><td>DELETE</td><td>Delete the record</td></tr>
+        <tr><td>read_incoming_links</td><td>GET</td><td>Get records linking to this one</td></tr>
+        <tr><td>index</td><td>POST</td><td>Index the record for search</td></tr>
+        <tr><td>upload</td><td>POST</td><td>Upload a binary resource</td></tr>
+        <tr><td>search</td><td>GET</td><td>Execute a search (for search records)</td></tr>
+        <tr><td>create</td><td>POST</td><td>Create new records (for recordType records)</td></tr>
+        <tr><td>list</td><td>GET</td><td>List all records of a type</td></tr>
+    </table>
+
+    <h3>Related Projects</h3>
+    <p>
+        For more details about the data model, see these related Cora projects:
+    </p>
+    <ul>
+        <li><a href="https://github.com/lsu-ub-uu/cora-data">cora-data</a> – Core data interfaces</li>
+        <li><a href="https://github.com/lsu-ub-uu/cora-basicdata">cora-basicdata</a> – Data implementations</li>
+        <li><a href="https://github.com/lsu-ub-uu/cora-therest">cora-therest</a> – REST API (OpenAPI spec)</li>
+    </ul>
+</section>
+
+<!-- ==========================================================================
+     SWEDISH CONTENT SECTION
+     Add this section inside the <div id="swedish"> container,
+     preferably after the "beskrivning" section
+========================================================================== -->
+
+<section id="dataformat">
+    <h2>Dataformat</h2>
+    <p>
+        Cora API använder en hierarkisk datamodell för alla poster. Att förstå detta format är
+        viktigt för att arbeta med API:et. Detta avsnitt beskriver de grundläggande datatyperna
+        och deras JSON/XML-representation.
+    </p>
+    
+    <h3>Grundläggande datatyper</h3>
+    
+    <h4>1. DataGroup (Datagrupp)</h4>
+    <p>
+        En behållare för relaterade dataelement (barn). DataGroups är det primära strukturella
+        elementet i Coras datamodell. De kan innehålla DataAtomic-värden, andra DataGroups,
+        DataRecordLinks och DataResourceLinks.
+    </p>
+    <h5>Egenskaper:</h5>
+    <ul>
+        <li><strong>name</strong> (obligatorisk) – Namnet som identifierar denna grupp</li>
+        <li><strong>children</strong> (valfri) – Array av barnelement</li>
+        <li><strong>attributes</strong> (valfri) – Nyckel-värde-par som ger metadata</li>
+        <li><strong>repeatId</strong> (valfri) – Identifierare för upprepande element</li>
+    </ul>
+    <h5>JSON-exempel:</h5>
+    <pre>{
+  "name": "person",
+  "children": [
+    {"name": "firstName", "value": "Johan"},
+    {"name": "lastName", "value": "Andersson"}
+  ],
+  "attributes": {
+    "type": "individual"
+  }
+}</pre>
+    <h5>XML-exempel:</h5>
+    <pre>&lt;person type="individual"&gt;
+  &lt;firstName&gt;Johan&lt;/firstName&gt;
+  &lt;lastName&gt;Andersson&lt;/lastName&gt;
+&lt;/person&gt;</pre>
+
+    <h4>2. DataAtomic (Atomär data)</h4>
+    <p>
+        Ett lövelement som innehåller ett enda värde. Atomära värden är de grundläggande
+        byggstenarna för all data i Cora.
+    </p>
+    <h5>Egenskaper:</h5>
+    <ul>
+        <li><strong>name</strong> (obligatorisk) – Namnet som identifierar detta atomära värde</li>
+        <li><strong>value</strong> (obligatorisk) – Det faktiska strängvärdet</li>
+        <li><strong>repeatId</strong> (valfri) – Identifierare för upprepande element</li>
+    </ul>
+    <h5>JSON-exempel:</h5>
+    <pre>{
+  "name": "firstName",
+  "value": "Johan",
+  "repeatId": "0"
+}</pre>
+
+    <h4>3. DataRecordLink (Postlänk)</h4>
+    <p>
+        En länk till en annan post i systemet. Postlänkar etablerar relationer mellan
+        poster och är väsentliga för Coras länkade datamodell.
+    </p>
+    <h5>Egenskaper:</h5>
+    <ul>
+        <li><strong>name</strong> (obligatorisk) – Namnet som identifierar denna länk</li>
+        <li><strong>children</strong> – Innehåller linkedRecordType och linkedRecordId</li>
+    </ul>
+    <h5>JSON-exempel:</h5>
+    <pre>{
+  "name": "createdBy",
+  "children": [
+    {"name": "linkedRecordType", "value": "user"},
+    {"name": "linkedRecordId", "value": "coraUser:111111111111111"}
+  ]
+}</pre>
+    <h5>XML-exempel:</h5>
+    <pre>&lt;createdBy&gt;
+  &lt;linkedRecordType&gt;user&lt;/linkedRecordType&gt;
+  &lt;linkedRecordId&gt;coraUser:111111111111111&lt;/linkedRecordId&gt;
+&lt;/createdBy&gt;</pre>
+
+    <h4>4. DataResourceLink (Resurslänk)</h4>
+    <p>
+        En länk till en binär resurs (fil) associerad med en post. Används för bilagor,
+        bilder och annat binärt innehåll.
+    </p>
+    <h5>Egenskaper:</h5>
+    <ul>
+        <li><strong>name</strong> (obligatorisk) – Namnet som identifierar denna resurslänk</li>
+        <li><strong>mimeType</strong> – MIME-typ för den länkade resursen</li>
+    </ul>
+    <h5>JSON-exempel:</h5>
+    <pre>{
+  "name": "master",
+  "mimeType": "image/jpeg"
+}</pre>
+
+    <h3>Poststruktur</h3>
+    <p>
+        En komplett post som returneras av API:et innehåller data tillsammans med metadata
+        om tillgängliga åtgärder och behörigheter.
+    </p>
+    
+    <h4>Postkomponenter:</h4>
+    <ul>
+        <li><strong>data</strong> – DataRecordGroup som innehåller all postdata</li>
+        <li><strong>actionLinks</strong> – Tillgängliga åtgärder (läsa, uppdatera, ta bort, etc.)</li>
+        <li><strong>permissions</strong> – Läs- och skrivbehörigheter</li>
+    </ul>
+    
+    <h5>Komplett postexempel (JSON):</h5>
+    <pre>{
+  "record": {
+    "data": {
+      "name": "person",
+      "children": [
+        {
+          "name": "recordInfo",
+          "children": [
+            {"name": "id", "value": "person:001"},
+            {
+              "name": "type",
+              "children": [
+                {"name": "linkedRecordType", "value": "recordType"},
+                {"name": "linkedRecordId", "value": "person"}
+              ]
+            },
+            {
+              "name": "dataDivider",
+              "children": [
+                {"name": "linkedRecordType", "value": "system"},
+                {"name": "linkedRecordId", "value": "cora"}
+              ]
+            },
+            {
+              "name": "createdBy",
+              "children": [
+                {"name": "linkedRecordType", "value": "user"},
+                {"name": "linkedRecordId", "value": "coraUser:111111111111111"}
+              ]
+            },
+            {"name": "tsCreated", "value": "2024-01-15T10:30:00.000000Z"}
+          ]
+        },
+        {
+          "name": "authorisedName",
+          "children": [
+            {"name": "familyName", "value": "Andersson"},
+            {"name": "givenName", "value": "Johan"}
+          ]
+        }
+      ]
+    },
+    "actionLinks": {
+      "read": {
+        "requestMethod": "GET",
+        "rel": "read",
+        "url": "https://example.com/rest/record/person/person:001",
+        "accept": "application/vnd.cora.record+json"
+      },
+      "update": {
+        "requestMethod": "POST",
+        "rel": "update",
+        "url": "https://example.com/rest/record/person/person:001",
+        "contentType": "application/vnd.cora.recordgroup+json"
+      },
+      "delete": {
+        "requestMethod": "DELETE",
+        "rel": "delete",
+        "url": "https://example.com/rest/record/person/person:001"
+      }
+    },
+    "permissions": {
+      "read": ["authorisedName", "biography"],
+      "write": ["authorisedName"]
+    }
+  }
+}</pre>
+
+    <h3>recordInfo-struktur</h3>
+    <p>
+        Varje post innehåller en <code>recordInfo</code>-grupp med metadata om posten:
+    </p>
+    <ul>
+        <li><strong>id</strong> – Unik postidentifierare</li>
+        <li><strong>type</strong> – Länk till posttypen</li>
+        <li><strong>dataDivider</strong> – Länk till systemet/datapartitionen</li>
+        <li><strong>validationType</strong> – Länk till valideringstypen</li>
+        <li><strong>createdBy</strong> – Länk till användaren som skapade posten</li>
+        <li><strong>tsCreated</strong> – Tidsstämpel för skapande (ISO-8601-format)</li>
+        <li><strong>updated</strong> – Array av uppdateringsposter med updatedBy och tsUpdated</li>
+    </ul>
+
+    <h3>Postlistestruktur</h3>
+    <p>
+        Vid hämtning av flera poster returnerar API:et en paginerad lista:
+    </p>
+    <h5>JSON-exempel:</h5>
+    <pre>{
+  "dataList": {
+    "fromNo": "1",
+    "toNo": "10",
+    "totalNo": "42",
+    "containDataOfType": "person",
+    "data": [
+      {"record": {...}},
+      {"record": {...}}
+    ]
+  }
+}</pre>
+
+    <h3>Åtgärdslänkar</h3>
+    <p>
+        Poster inkluderar åtgärdslänkar som indikerar tillgängliga operationer baserat på
+        användarens behörigheter:
+    </p>
+    <table>
+        <tr><th>Åtgärd</th><th>HTTP-metod</th><th>Beskrivning</th></tr>
+        <tr><td>read</td><td>GET</td><td>Läs posten</td></tr>
+        <tr><td>update</td><td>POST</td><td>Uppdatera posten</td></tr>
+        <tr><td>delete</td><td>DELETE</td><td>Ta bort posten</td></tr>
+        <tr><td>read_incoming_links</td><td>GET</td><td>Hämta poster som länkar till denna</td></tr>
+        <tr><td>index</td><td>POST</td><td>Indexera posten för sökning</td></tr>
+        <tr><td>upload</td><td>POST</td><td>Ladda upp en binär resurs</td></tr>
+        <tr><td>search</td><td>GET</td><td>Utför en sökning (för sökposter)</td></tr>
+        <tr><td>create</td><td>POST</td><td>Skapa nya poster (för recordType-poster)</td></tr>
+        <tr><td>list</td><td>GET</td><td>Lista alla poster av en typ</td></tr>
+    </table>
+
+    <h3>Relaterade projekt</h3>
+    <p>
+        För mer information om datamodellen, se dessa relaterade Cora-projekt:
+    </p>
+    <ul>
+        <li><a href="https://github.com/lsu-ub-uu/cora-data">cora-data</a> – Grundläggande datagränssnitt</li>
+        <li><a href="https://github.com/lsu-ub-uu/cora-basicdata">cora-basicdata</a> – Dataimplementationer</li>
+        <li><a href="https://github.com/lsu-ub-uu/cora-therest">cora-therest</a> – REST API (OpenAPI-specifikation)</li>
+    </ul>
+</section>
