@@ -137,6 +137,10 @@ public class RecordEndpointReadList {
 	}
 
 	private Response handleError(String authToken, Exception error, String errorFromCaller) {
+
+		log.logErrorUsingMessageAndException("Temp Error logning from Rest: " + error.getMessage(),
+				error);
+
 		if (error instanceof ConflictException || error instanceof RecordConflictException) {
 			return buildResponseIncludingMessage(error, Response.Status.CONFLICT);
 		}
