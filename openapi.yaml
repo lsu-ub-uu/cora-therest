@@ -1,0 +1,1534 @@
+openapi: 3.0.3
+info:
+  title: Cora TheRest API
+  description: |
+    RESTful API for managing records in the Cora system. This API is part of the Uppsala University Library's Cora project and provides comprehensive support for CRUD operations, search, validation, and binary resource management.
+    
+    ## Authentication
+    
+    Most endpoints require authentication using an auth token. The token can be provided either:
+    - As a header parameter: `authToken`
+    - As a query parameter: `authToken`
+    
+    When both are provided, the header parameter takes precedence.
+    
+    ## Content Types
+    
+    The API supports both JSON and XML formats using custom MIME types:
+    - JSON: `application/vnd.cora.record+json`, `application/vnd.cora.recordgroup+json`, etc.
+    - XML: `application/vnd.cora.record+xml`, `application/vnd.cora.recordgroup+xml`, etc.
+    
+    ## Data Model Overview
+    
+    The Cora data model is hierarchical and consists of the following core types:
+    
+    ### DataGroup
+    A container for related data elements (children). Each DataGroup has:
+    - `name`: The name identifying this group
+    - `children`: Array of child elements (DataAtomic, DataGroup, DataRecordLink, or DataResourceLink)
+    - `attributes` (optional): Key-value pairs providing metadata
+    - `repeatId` (optional): Identifier for repeating elements
+    
+    ### DataAtomic
+    A leaf element containing a single value:
+    - `name`: The name identifying this atomic value
+    - `value`: The actual string value
+    - `repeatId` (optional): Identifier for repeating elements
+    
+    ### DataRecordLink
+    A link to another record:
+    - `name`: The name identifying this link
+    - `children`: Contains linkedRecordType and linkedRecordId as DataAtomic children
+    
+    ### DataResourceLink
+    A link to a binary resource:
+    - `name`: The name identifying this resource link
+    - `mimeType`: MIME type of the linked resource
+    
+    ### DataRecord
+    A complete record containing:
+    - `data`: The DataRecordGroup with all record data
+    - `actionLinks` (optional): Available actions (read, update, delete, etc.)
+    - `permissions` (optional): Read and write permissions
+    
+    ## Error Responses
+    
+    The API returns standard HTTP status codes:
+    - `200 OK`: Successful request
+    - `201 Created`: Resource created successfully
+    - `400 Bad Request`: Invalid request data
+    - `401 Unauthorized`: Missing or invalid authentication
+    - `403 Forbidden`: Insufficient permissions
+    - `404 Not Found`: Resource not found
+    - `405 Method Not Allowed`: Operation not permitted
+    - `409 Conflict`: Resource conflict
+    - `500 Internal Server Error`: Server error
+    
+    ## Related Projects
+    
+    This API is part of the Cora ecosystem. Key related projects:
+    - [cora-data](https://github.com/lsu-ub-uu/cora-data) - Core data interfaces
+    - [cora-basicdata](https://github.com/lsu-ub-uu/cora-basicdata) - Data implementations
+    - [cora-spider](https://github.com/lsu-ub-uu/cora-spider) - Business logic
+    - [cora-gatekeeper](https://github.com/lsu-ub-uu/cora-gatekeeper) - Authentication
+    - [cora-clientdata](https://github.com/lsu-ub-uu/cora-clientdata) - Client data structures
+    
+  version: 13.5-SNAPSHOT
+  license:
+    name: GNU General Public License v3.0+
+    url: https://www.gnu.org/licenses/gpl-3.0.html
+  contact:
+    name: Uppsala University Library
+    url: https://github.com/lsu-ub-uu/cora-therest
+
+servers:
+  - url: /rest/record
+    description: Record API base URL
+
+tags:
+  - name: Records
+    description: CRUD operations for records
+  - name: Search
+    description: Search and query operations
+  - name: Validation
+    description: Record validation
+  - name: Resources
+    description: Binary resource upload and download
+  - name: Index
+    description: Batch indexing operations
+  - name: Links
+    description: Incoming link operations
+  - name: IIIF
+    description: International Image Interoperability Framework endpoints
+  - name: Deployment
+    description: Deployment information
+
+paths:
+  /:
+    get:
+      tags:
+        - Deployment
+      summary: Get deployment information
+      description: |
+        Returns metadata about the deployment including application version, URLs, and example users.
+        When requesting HTML, redirects to the documentation page.
+      operationId: getDeploymentInfo
+      responses:
+        '200':
+          description: Deployment information
+          content:
+            application/vnd.cora.deploymentInfo+json:
+              schema:
+                $ref: '#/components/schemas/DeploymentInfo'
+              example:
+                applicationName: "Cora"
+                deploymentName: "Production"
+                coraVersion: "13.5"
+                applicationVersion: "1.0.0"
+                urls:
+                  REST: "https://example.com/rest/"
+                  appTokenLogin: "https://example.com/login/apptoken"
+                  passwordLogin: "https://example.com/login/password"
+                  record: "https://example.com/rest/record/"
+                  recordType: "https://example.com/rest/record/recordType"
+                  iiif: "https://example.com/iiif/"
+                exampleUsers: []
+            application/vnd.cora.deploymentInfo+xml:
+              schema:
+                type: string
+            text/html:
+              schema:
+                type: string
+        '302':
+          description: Redirect to HTML documentation
+
+  /{type}:
+    get:
+      tags:
+        - Records
+      summary: Read record list
+      description: |
+        Retrieves a paginated list of records of the specified type.
+        Optional filter parameter allows filtering the results.
+      operationId: readRecordList
+      parameters:
+        - $ref: '#/components/parameters/AuthTokenHeader'
+        - $ref: '#/components/parameters/AuthTokenQuery'
+        - $ref: '#/components/parameters/RecordType'
+        - name: filter
+          in: query
+          description: Filter criteria in JSON or XML format
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of records
+          content:
+            application/vnd.cora.recordList+json:
+              schema:
+                $ref: '#/components/schemas/RecordList'
+            application/vnd.cora.recordList+xml:
+              schema:
+                type: string
+            application/xml:
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      tags:
+        - Records
+      summary: Create a new record
+      description: |
+        Creates a new record of the specified type.
+        The record data must be provided in the request body.
+      operationId: createRecord
+      parameters:
+        - $ref: '#/components/parameters/AuthTokenHeader'
+        - $ref: '#/components/parameters/AuthTokenQuery'
+        - $ref: '#/components/parameters/RecordType'
+      requestBody:
+        description: Record data to create
+        required: true
+        content:
+          application/vnd.cora.recordgroup+json:
+            schema:
+              $ref: '#/components/schemas/RecordGroup'
+          application/vnd.cora.recordgroup+xml:
+            schema:
+              type: string
+      responses:
+        '201':
+          description: Record created successfully
+          headers:
+            Location:
+              description: URL of the created record
+              schema:
+                type: string
+          content:
+            application/vnd.cora.record+json:
+              schema:
+                $ref: '#/components/schemas/Record'
+            application/vnd.cora.record+xml:
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /{type}/{id}:
+    get:
+      tags:
+        - Records
+      summary: Read a record
+      description: |
+        Retrieves a specific record by type and ID.
+        Supports both standard and decorated record formats.
+      operationId: readRecord
+      parameters:
+        - $ref: '#/components/parameters/AuthTokenHeader'
+        - $ref: '#/components/parameters/AuthTokenQuery'
+        - $ref: '#/components/parameters/RecordType'
+        - $ref: '#/components/parameters/RecordId'
+      responses:
+        '200':
+          description: Record data
+          content:
+            application/vnd.cora.record+json:
+              schema:
+                $ref: '#/components/schemas/Record'
+            application/vnd.cora.record+xml:
+              schema:
+                type: string
+            application/vnd.cora.record-decorated+json:
+              schema:
+                $ref: '#/components/schemas/DecoratedRecord'
+            application/vnd.cora.record-decorated+xml:
+              schema:
+                type: string
+            application/xml:
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      tags:
+        - Records
+      summary: Update a record
+      description: |
+        Updates an existing record identified by type and ID.
+        The complete updated record data must be provided in the request body.
+      operationId: updateRecord
+      parameters:
+        - $ref: '#/components/parameters/AuthTokenHeader'
+        - $ref: '#/components/parameters/AuthTokenQuery'
+        - $ref: '#/components/parameters/RecordType'
+        - $ref: '#/components/parameters/RecordId'
+      requestBody:
+        description: Updated record data
+        required: true
+        content:
+          application/vnd.cora.recordgroup+json:
+            schema:
+              $ref: '#/components/schemas/RecordGroup'
+          application/vnd.cora.recordgroup+xml:
+            schema:
+              type: string
+      responses:
+        '200':
+          description: Record updated successfully
+          content:
+            application/vnd.cora.record+json:
+              schema:
+                $ref: '#/components/schemas/Record'
+            application/vnd.cora.record+xml:
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      tags:
+        - Records
+      summary: Delete a record
+      description: |
+        Deletes a record identified by type and ID.
+      operationId: deleteRecord
+      parameters:
+        - $ref: '#/components/parameters/AuthTokenHeader'
+        - $ref: '#/components/parameters/AuthTokenQuery'
+        - $ref: '#/components/parameters/RecordType'
+        - $ref: '#/components/parameters/RecordId'
+      responses:
+        '200':
+          description: Record deleted successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /{type}/{id}/incomingLinks:
+    get:
+      tags:
+        - Links
+      summary: Read incoming record links
+      description: |
+        Retrieves a list of records that link to the specified record.
+      operationId: readIncomingRecordLinks
+      parameters:
+        - $ref: '#/components/parameters/AuthTokenHeader'
+        - $ref: '#/components/parameters/AuthTokenQuery'
+        - $ref: '#/components/parameters/RecordType'
+        - $ref: '#/components/parameters/RecordId'
+      responses:
+        '200':
+          description: List of incoming record links
+          content:
+            application/vnd.cora.recordList+json:
+              schema:
+                $ref: '#/components/schemas/RecordList'
+            application/vnd.cora.recordList+xml:
+              schema:
+                type: string
+            application/xml:
+              schema:
+                type: string
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /{type}/{id}/{resourceType}:
+    get:
+      tags:
+        - Resources
+      summary: Download a binary resource
+      description: |
+        Downloads a binary resource (e.g., file attachment) associated with a record.
+      operationId: downloadResource
+      parameters:
+        - $ref: '#/components/parameters/AuthTokenHeader'
+        - $ref: '#/components/parameters/AuthTokenQuery'
+        - $ref: '#/components/parameters/RecordType'
+        - $ref: '#/components/parameters/RecordId'
+        - $ref: '#/components/parameters/ResourceType'
+      responses:
+        '200':
+          description: Binary resource content
+          headers:
+            Content-Disposition:
+              description: Attachment filename
+              schema:
+                type: string
+            Content-Length:
+              description: Size of the resource in bytes
+              schema:
+                type: integer
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: binary
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      tags:
+        - Resources
+      summary: Upload a binary resource
+      description: |
+        Uploads a binary resource (e.g., file) to be associated with a record.
+      operationId: uploadResource
+      parameters:
+        - $ref: '#/components/parameters/AuthTokenHeader'
+        - $ref: '#/components/parameters/AuthTokenQuery'
+        - $ref: '#/components/parameters/RecordType'
+        - $ref: '#/components/parameters/RecordId'
+        - $ref: '#/components/parameters/ResourceType'
+      requestBody:
+        description: File to upload
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: The file to upload
+              required:
+                - file
+      responses:
+        '200':
+          description: Resource uploaded successfully
+          content:
+            application/vnd.cora.record+json:
+              schema:
+                $ref: '#/components/schemas/Record'
+            application/vnd.cora.record+xml:
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /searchResult/{searchId}:
+    get:
+      tags:
+        - Search
+      summary: Execute a search
+      description: |
+        Executes a saved search by its ID and returns the results.
+        Supports both standard and decorated result formats.
+      operationId: searchRecord
+      parameters:
+        - $ref: '#/components/parameters/AuthTokenHeader'
+        - $ref: '#/components/parameters/AuthTokenQuery'
+        - name: searchId
+          in: path
+          description: ID of the saved search to execute
+          required: true
+          schema:
+            type: string
+        - name: searchData
+          in: query
+          description: Search parameters in JSON or XML format
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/vnd.cora.recordList+json:
+              schema:
+                $ref: '#/components/schemas/RecordList'
+            application/vnd.cora.recordList+xml:
+              schema:
+                type: string
+            application/vnd.cora.recordList-decorated+json:
+              schema:
+                $ref: '#/components/schemas/RecordList'
+            application/vnd.cora.recordList-decorated+xml:
+              schema:
+                type: string
+            application/xml:
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /index/{type}:
+    post:
+      tags:
+        - Index
+      summary: Batch index records
+      description: |
+        Initiates a batch indexing job for records of the specified type.
+        Returns an index batch job record that can be used to track progress.
+      operationId: batchIndex
+      parameters:
+        - $ref: '#/components/parameters/AuthTokenHeader'
+        - $ref: '#/components/parameters/AuthTokenQuery'
+        - $ref: '#/components/parameters/RecordType'
+      requestBody:
+        description: Index settings (optional)
+        required: false
+        content:
+          application/vnd.cora.record+json:
+            schema:
+              $ref: '#/components/schemas/IndexSettings'
+          application/vnd.cora.record+xml:
+            schema:
+              type: string
+      responses:
+        '201':
+          description: Index batch job created
+          headers:
+            Location:
+              description: URL of the created index batch job
+              schema:
+                type: string
+          content:
+            application/vnd.cora.record+json:
+              schema:
+                $ref: '#/components/schemas/Record'
+            application/vnd.cora.record+xml:
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /validationOrder:
+    post:
+      tags:
+        - Validation
+      summary: Validate a record
+      description: |
+        Validates a record against its metadata schema without storing it.
+        Requires a work order containing both the validation order and the record to validate.
+      operationId: validateRecord
+      parameters:
+        - $ref: '#/components/parameters/AuthTokenHeader'
+        - $ref: '#/components/parameters/AuthTokenQuery'
+      requestBody:
+        description: |
+          Work order containing:
+          - `order`: Validation order configuration
+          - `record`: The record to validate
+        required: true
+        content:
+          application/vnd.cora.workorder+json:
+            schema:
+              $ref: '#/components/schemas/ValidationWorkOrder'
+          application/vnd.cora.workorder+xml:
+            schema:
+              type: string
+      responses:
+        '200':
+          description: Validation result
+          content:
+            application/vnd.cora.record+json:
+              schema:
+                $ref: '#/components/schemas/ValidationResult'
+            application/vnd.cora.record+xml:
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /{identifier}/{requestedUri}:
+    get:
+      tags:
+        - IIIF
+      summary: IIIF Image request
+      description: |
+        Handles IIIF (International Image Interoperability Framework) requests.
+        Proxies requests to the IIIF image server.
+      operationId: readIiif
+      parameters:
+        - name: identifier
+          in: path
+          description: IIIF image identifier
+          required: true
+          schema:
+            type: string
+        - name: requestedUri
+          in: path
+          description: IIIF request path (region/size/rotation/quality.format)
+          required: true
+          schema:
+            type: string
+        - name: authtoken
+          in: header
+          description: Authentication token
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: IIIF response
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: binary
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  parameters:
+    AuthTokenHeader:
+      name: authToken
+      in: header
+      description: Authentication token (takes precedence over query parameter)
+      required: false
+      schema:
+        type: string
+
+    AuthTokenQuery:
+      name: authToken
+      in: query
+      description: Authentication token (used if header is not provided)
+      required: false
+      schema:
+        type: string
+
+    RecordType:
+      name: type
+      in: path
+      description: The record type (e.g., 'person', 'organisation', 'text')
+      required: true
+      schema:
+        type: string
+
+    RecordId:
+      name: id
+      in: path
+      description: The unique identifier of the record
+      required: true
+      schema:
+        type: string
+
+    ResourceType:
+      name: resourceType
+      in: path
+      description: The type of resource (e.g., 'master', 'thumbnail')
+      required: true
+      schema:
+        type: string
+
+  schemas:
+    # ==========================================
+    # Core Data Elements (from cora-data project)
+    # ==========================================
+    
+    DataAtomic:
+      type: object
+      description: |
+        A leaf element containing a single value. Atomic values are the basic building blocks 
+        of all data in Cora. They have a name and a value, and optionally a repeatId for 
+        elements that can occur multiple times.
+      required:
+        - name
+        - value
+      properties:
+        name:
+          type: string
+          description: The name identifying this atomic value
+          example: "firstName"
+        value:
+          type: string
+          description: The actual string value
+          example: "John"
+        repeatId:
+          type: string
+          description: Identifier for repeating elements (used when multiple instances exist)
+          example: "0"
+      example:
+        name: "id"
+        value: "person:001"
+
+    DataAttribute:
+      type: object
+      description: |
+        An attribute providing metadata about a DataGroup. Attributes are key-value pairs 
+        that qualify or categorize the data group they belong to.
+      additionalProperties:
+        type: string
+      example:
+        type: "person"
+        lang: "en"
+
+    DataGroup:
+      type: object
+      description: |
+        A container for related data elements (children). DataGroups are the primary 
+        structural element in Cora's data model. They can contain DataAtomic values, 
+        other DataGroups, DataRecordLinks, and DataResourceLinks.
+        
+        The structure is hierarchical - DataGroups can be nested to any depth.
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: The name identifying this data group
+          example: "person"
+        repeatId:
+          type: string
+          description: Identifier for repeating elements
+          example: "0"
+        attributes:
+          $ref: '#/components/schemas/DataAttribute'
+        children:
+          type: array
+          description: |
+            Array of child elements. Each child can be a DataAtomic, DataGroup, 
+            DataRecordLink, or DataResourceLink.
+          items:
+            oneOf:
+              - $ref: '#/components/schemas/DataAtomic'
+              - $ref: '#/components/schemas/DataGroup'
+              - $ref: '#/components/schemas/DataRecordLink'
+              - $ref: '#/components/schemas/DataResourceLink'
+      example:
+        name: "recordInfo"
+        children:
+          - name: "id"
+            value: "person:001"
+          - name: "type"
+            children:
+              - name: "linkedRecordType"
+                value: "recordType"
+              - name: "linkedRecordId"
+                value: "person"
+          - name: "dataDivider"
+            children:
+              - name: "linkedRecordType"
+                value: "system"
+              - name: "linkedRecordId"
+                value: "cora"
+
+    DataRecordLink:
+      type: object
+      description: |
+        A link to another record in the system. Record links establish relationships 
+        between records and are essential for Cora's linked data model.
+        
+        The link contains the type and ID of the linked record as child elements.
+      required:
+        - name
+        - children
+      properties:
+        name:
+          type: string
+          description: The name identifying this link (e.g., 'type', 'dataDivider', 'createdBy')
+          example: "dataDivider"
+        repeatId:
+          type: string
+          description: Identifier for repeating links
+        children:
+          type: array
+          description: Contains linkedRecordType and linkedRecordId
+          items:
+            $ref: '#/components/schemas/DataAtomic'
+          minItems: 2
+          maxItems: 2
+        actionLinks:
+          type: object
+          description: Available actions for the linked record (added when user has read permission)
+          properties:
+            read:
+              $ref: '#/components/schemas/ActionLink'
+      example:
+        name: "createdBy"
+        children:
+          - name: "linkedRecordType"
+            value: "user"
+          - name: "linkedRecordId"
+            value: "coraUser:111111111111111"
+
+    DataResourceLink:
+      type: object
+      description: |
+        A link to a binary resource (file) associated with a record. Resource links 
+        are used for attachments, images, and other binary content.
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: The name identifying this resource link
+          example: "master"
+        mimeType:
+          type: string
+          description: MIME type of the linked resource
+          example: "application/pdf"
+        actionLinks:
+          type: object
+          description: Available actions for the resource
+          properties:
+            read:
+              $ref: '#/components/schemas/ActionLink'
+      example:
+        name: "master"
+        mimeType: "image/jpeg"
+
+    # ==========================================
+    # Record Structures
+    # ==========================================
+
+    RecordInfo:
+      type: object
+      description: |
+        Metadata about a record. All records contain a recordInfo group with 
+        information about the record's identity, ownership, and history.
+      properties:
+        name:
+          type: string
+          enum: ["recordInfo"]
+        children:
+          type: array
+          items:
+            oneOf:
+              - $ref: '#/components/schemas/DataAtomic'
+              - $ref: '#/components/schemas/DataRecordLink'
+              - $ref: '#/components/schemas/DataGroup'
+      example:
+        name: "recordInfo"
+        children:
+          - name: "id"
+            value: "person:001"
+          - name: "type"
+            children:
+              - name: "linkedRecordType"
+                value: "recordType"
+              - name: "linkedRecordId"
+                value: "person"
+          - name: "validationType"
+            children:
+              - name: "linkedRecordType"
+                value: "validationType"
+              - name: "linkedRecordId"
+                value: "person"
+          - name: "dataDivider"
+            children:
+              - name: "linkedRecordType"
+                value: "system"
+              - name: "linkedRecordId"
+                value: "cora"
+          - name: "createdBy"
+            children:
+              - name: "linkedRecordType"
+                value: "user"
+              - name: "linkedRecordId"
+                value: "coraUser:111111111111111"
+          - name: "tsCreated"
+            value: "2024-01-15T10:30:00.000000Z"
+          - name: "updated"
+            repeatId: "0"
+            children:
+              - name: "updatedBy"
+                children:
+                  - name: "linkedRecordType"
+                    value: "user"
+                  - name: "linkedRecordId"
+                    value: "coraUser:111111111111111"
+              - name: "tsUpdated"
+                value: "2024-01-15T10:30:00.000000Z"
+
+    RecordGroup:
+      type: object
+      description: |
+        A Cora data group used as input for create/update operations.
+        This is the top-level structure sent to the API when creating or updating records.
+        
+        The RecordGroup must always contain a `recordInfo` child with metadata about the record.
+        Additional children depend on the record type being created/updated.
+      required:
+        - name
+        - children
+      properties:
+        name:
+          type: string
+          description: The name of the record type (e.g., 'person', 'text', 'organisation')
+          example: "person"
+        attributes:
+          $ref: '#/components/schemas/DataAttribute'
+        children:
+          type: array
+          description: |
+            Child elements including recordInfo and type-specific data.
+            The first child should typically be the recordInfo group.
+          items:
+            oneOf:
+              - $ref: '#/components/schemas/DataAtomic'
+              - $ref: '#/components/schemas/DataGroup'
+              - $ref: '#/components/schemas/DataRecordLink'
+              - $ref: '#/components/schemas/DataResourceLink'
+      example:
+        name: "person"
+        children:
+          - name: "recordInfo"
+            children:
+              - name: "dataDivider"
+                children:
+                  - name: "linkedRecordType"
+                    value: "system"
+                  - name: "linkedRecordId"
+                    value: "cora"
+          - name: "authorisedName"
+            children:
+              - name: "familyName"
+                value: "Doe"
+              - name: "givenName"
+                value: "John"
+
+    ActionLink:
+      type: object
+      description: |
+        Represents an available action that can be performed on a record.
+        Action links provide HATEOAS-style navigation for the API.
+      properties:
+        requestMethod:
+          type: string
+          description: HTTP method for the action
+          enum: [GET, POST, PUT, DELETE]
+          example: "GET"
+        rel:
+          type: string
+          description: The relationship type (action name)
+          enum: [read, update, delete, create, list, search, upload, index, validate, batch_index, read_incoming_links, publish, unpublish]
+          example: "read"
+        url:
+          type: string
+          description: URL to perform the action
+          example: "https://example.com/rest/record/person/person:001"
+        accept:
+          type: string
+          description: Content type to request
+          example: "application/vnd.cora.record+json"
+        contentType:
+          type: string
+          description: Content type of request body (for POST/PUT)
+          example: "application/vnd.cora.recordgroup+json"
+      example:
+        requestMethod: "GET"
+        rel: "read"
+        url: "https://example.com/rest/record/person/person:001"
+        accept: "application/vnd.cora.record+json"
+
+    ActionLinks:
+      type: object
+      description: |
+        Collection of available actions for a record. Actions depend on the user's 
+        permissions and the record's current state.
+        
+        Possible actions include:
+        - `read`: Read the record
+        - `update`: Update the record
+        - `delete`: Delete the record  
+        - `read_incoming_links`: Get records that link to this one
+        - `index`: Index the record for search
+        - `upload`: Upload a binary resource
+        - `search`: Execute a search (for search records)
+        - `create`: Create new records (for recordType records)
+        - `list`: List all records of a type
+      properties:
+        read:
+          $ref: '#/components/schemas/ActionLink'
+        update:
+          $ref: '#/components/schemas/ActionLink'
+        delete:
+          $ref: '#/components/schemas/ActionLink'
+        read_incoming_links:
+          $ref: '#/components/schemas/ActionLink'
+        index:
+          $ref: '#/components/schemas/ActionLink'
+        upload:
+          $ref: '#/components/schemas/ActionLink'
+        search:
+          $ref: '#/components/schemas/ActionLink'
+        create:
+          $ref: '#/components/schemas/ActionLink'
+        list:
+          $ref: '#/components/schemas/ActionLink'
+
+    Permissions:
+      type: object
+      description: |
+        User permissions for a record. Permissions are divided into read and write 
+        permissions for different parts of the record.
+      properties:
+        read:
+          type: array
+          description: List of record parts the user can read
+          items:
+            type: string
+          example: ["authorisedName", "biography"]
+        write:
+          type: array
+          description: List of record parts the user can write
+          items:
+            type: string
+          example: ["authorisedName"]
+
+    Record:
+      type: object
+      description: |
+        A complete Cora data record as returned by the API. The record wraps the 
+        actual data with metadata about available actions and permissions.
+        
+        The structure follows HATEOAS principles - action links tell the client 
+        what operations are available based on the user's permissions.
+      required:
+        - data
+      properties:
+        data:
+          $ref: '#/components/schemas/DataGroup'
+        actionLinks:
+          $ref: '#/components/schemas/ActionLinks'
+        permissions:
+          $ref: '#/components/schemas/Permissions'
+        otherProtocols:
+          type: object
+          description: Links to other protocols (e.g., IIIF for images)
+          properties:
+            iiif:
+              type: object
+              properties:
+                server:
+                  type: string
+                  description: IIIF server URL
+                identifier:
+                  type: string
+                  description: IIIF image identifier
+      example:
+        data:
+          name: "person"
+          children:
+            - name: "recordInfo"
+              children:
+                - name: "id"
+                  value: "person:001"
+                - name: "type"
+                  children:
+                    - name: "linkedRecordType"
+                      value: "recordType"
+                    - name: "linkedRecordId"
+                      value: "person"
+            - name: "authorisedName"
+              children:
+                - name: "familyName"
+                  value: "Doe"
+                - name: "givenName"
+                  value: "John"
+        actionLinks:
+          read:
+            requestMethod: "GET"
+            rel: "read"
+            url: "https://example.com/rest/record/person/person:001"
+            accept: "application/vnd.cora.record+json"
+          update:
+            requestMethod: "POST"
+            rel: "update"
+            url: "https://example.com/rest/record/person/person:001"
+            accept: "application/vnd.cora.record+json"
+            contentType: "application/vnd.cora.recordgroup+json"
+          delete:
+            requestMethod: "DELETE"
+            rel: "delete"
+            url: "https://example.com/rest/record/person/person:001"
+
+    DecoratedRecord:
+      type: object
+      description: |
+        A record with additional decoration/metadata. Decorated records include 
+        extra information for presentation purposes.
+      allOf:
+        - $ref: '#/components/schemas/Record'
+        - type: object
+          properties:
+            decoration:
+              type: object
+              description: Additional decoration data for presentation
+
+    # ==========================================
+    # List Structures
+    # ==========================================
+
+    RecordList:
+      type: object
+      description: |
+        A paginated list of records. Lists include metadata about the total 
+        result set and the current page of results.
+        
+        Pagination uses `fromNo` and `toNo` to indicate the current range,
+        with `totalNo` showing the total number of matching records.
+      required:
+        - dataList
+      properties:
+        dataList:
+          type: object
+          required:
+            - containDataOfType
+            - data
+          properties:
+            fromNo:
+              type: string
+              description: Starting position in the result set (1-indexed)
+              example: "1"
+            toNo:
+              type: string
+              description: Ending position in the result set
+              example: "10"
+            totalNo:
+              type: string
+              description: Total number of matching records
+              example: "42"
+            containDataOfType:
+              type: string
+              description: The type of records contained in the list
+              example: "person"
+            data:
+              type: array
+              description: Array of records
+              items:
+                $ref: '#/components/schemas/Record'
+      example:
+        dataList:
+          fromNo: "1"
+          toNo: "10"
+          totalNo: "42"
+          containDataOfType: "person"
+          data:
+            - data:
+                name: "person"
+                children:
+                  - name: "recordInfo"
+                    children:
+                      - name: "id"
+                        value: "person:001"
+                  - name: "authorisedName"
+                    children:
+                      - name: "familyName"
+                        value: "Doe"
+              actionLinks:
+                read:
+                  requestMethod: "GET"
+                  rel: "read"
+                  url: "https://example.com/rest/record/person/person:001"
+
+    # ==========================================
+    # Deployment and System Information
+    # ==========================================
+
+    DeploymentInfo:
+      type: object
+      description: |
+        Information about the current deployment. Includes version information, 
+        available URLs, and example users for testing.
+      properties:
+        applicationName:
+          type: string
+          description: Name of the application
+          example: "Cora"
+        deploymentName:
+          type: string
+          description: Name of this deployment environment
+          example: "Production"
+        coraVersion:
+          type: string
+          description: Version of the Cora framework
+          example: "13.5"
+        applicationVersion:
+          type: string
+          description: Version of the application
+          example: "1.0.0"
+        urls:
+          type: object
+          description: Available API and service URLs
+          properties:
+            REST:
+              type: string
+              description: Base REST URL
+              example: "https://example.com/rest/"
+            appTokenLogin:
+              type: string
+              description: App token login URL
+              example: "https://example.com/login/apptoken"
+            passwordLogin:
+              type: string
+              description: Password login URL
+              example: "https://example.com/login/password"
+            record:
+              type: string
+              description: Record API URL
+              example: "https://example.com/rest/record/"
+            recordType:
+              type: string
+              description: Record type listing URL
+              example: "https://example.com/rest/record/recordType"
+            iiif:
+              type: string
+              description: IIIF image server URL
+              example: "https://example.com/iiif/"
+        exampleUsers:
+          type: array
+          description: Example users available for testing
+          items:
+            $ref: '#/components/schemas/ExampleUser'
+
+    ExampleUser:
+      type: object
+      description: An example user for testing and demonstration
+      properties:
+        name:
+          type: string
+          description: Display name of the user
+          example: "Test User"
+        text:
+          type: string
+          description: Description of the user's role
+          example: "A test user with basic permissions"
+        type:
+          type: string
+          description: User type classification
+          example: "standard"
+        loginId:
+          type: string
+          description: Login identifier
+          example: "testUser@example.com"
+        appToken:
+          type: string
+          description: Application token for authentication
+          example: "49ce00f4-a9de-477d-a59f-8b4e9e29784b"
+
+    # ==========================================
+    # Validation Structures
+    # ==========================================
+
+    ValidationWorkOrder:
+      type: object
+      description: |
+        Work order for record validation. Contains both the validation configuration 
+        and the record to be validated.
+        
+        The work order format allows validating a record without storing it,
+        useful for checking data before submission.
+      required:
+        - order
+        - record
+      properties:
+        order:
+          type: object
+          description: |
+            Validation order configuration. Specifies how validation should be performed.
+          properties:
+            name:
+              type: string
+              enum: ["validationOrder"]
+            children:
+              type: array
+              items:
+                $ref: '#/components/schemas/DataAtomic'
+          example:
+            name: "validationOrder"
+            children:
+              - name: "recordType"
+                children:
+                  - name: "linkedRecordType"
+                    value: "recordType"
+                  - name: "linkedRecordId"
+                    value: "person"
+              - name: "validateLinks"
+                value: "true"
+              - name: "metadataToValidate"
+                value: "new"
+        record:
+          $ref: '#/components/schemas/RecordGroup'
+      example:
+        order:
+          name: "validationOrder"
+          children:
+            - name: "recordType"
+              children:
+                - name: "linkedRecordType"
+                  value: "recordType"
+                - name: "linkedRecordId"
+                  value: "person"
+            - name: "validateLinks"
+              value: "true"
+            - name: "metadataToValidate"
+              value: "new"
+        record:
+          name: "person"
+          children:
+            - name: "recordInfo"
+              children:
+                - name: "dataDivider"
+                  children:
+                    - name: "linkedRecordType"
+                      value: "system"
+                    - name: "linkedRecordId"
+                      value: "cora"
+            - name: "authorisedName"
+              children:
+                - name: "familyName"
+                  value: "Doe"
+
+    ValidationResult:
+      type: object
+      description: |
+        Result of record validation. Indicates whether the record is valid 
+        and provides details about any validation errors.
+      properties:
+        data:
+          type: object
+          properties:
+            name:
+              type: string
+              enum: ["validationResult"]
+            children:
+              type: array
+              items:
+                oneOf:
+                  - $ref: '#/components/schemas/DataAtomic'
+                  - $ref: '#/components/schemas/DataGroup'
+      example:
+        data:
+          name: "validationResult"
+          children:
+            - name: "valid"
+              value: "false"
+            - name: "errorMessages"
+              children:
+                - name: "errorMessage"
+                  value: "Required field 'givenName' is missing"
+                  repeatId: "0"
+
+    # ==========================================
+    # Index Settings
+    # ==========================================
+
+    IndexSettings:
+      type: object
+      description: |
+        Settings for batch indexing operations. Allows filtering which records 
+        should be indexed.
+      properties:
+        name:
+          type: string
+          enum: ["indexSettings"]
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/DataGroup'
+      example:
+        name: "indexSettings"
+        children:
+          - name: "filter"
+            children:
+              - name: "part"
+                children:
+                  - name: "key"
+                    value: "id"
+                  - name: "value"
+                    value: "person:*"
+                repeatId: "0"
+
+    # ==========================================
+    # Filter Structure
+    # ==========================================
+
+    Filter:
+      type: object
+      description: |
+        Filter for querying records. Used to narrow down results when listing 
+        or searching records.
+      properties:
+        name:
+          type: string
+          enum: ["filter"]
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/DataGroup'
+      example:
+        name: "filter"
+        children:
+          - name: "start"
+            value: "0"
+          - name: "rows"
+            value: "10"
+          - name: "part"
+            repeatId: "0"
+            children:
+              - name: "key"
+                value: "familyName"
+              - name: "value"
+                value: "Doe"
+
+    # ==========================================
+    # Error Response
+    # ==========================================
+
+    Error:
+      type: object
+      description: Error response with message details
+      properties:
+        message:
+          type: string
+          description: Error message describing what went wrong
+          example: "Record not found: person:001"
+
+  responses:
+    BadRequest:
+      description: Invalid request data
+      content:
+        text/plain:
+          schema:
+            type: string
+
+    Unauthorized:
+      description: Missing or invalid authentication
+      content:
+        text/plain:
+          schema:
+            type: string
+
+    Forbidden:
+      description: Insufficient permissions
+      content:
+        text/plain:
+          schema:
+            type: string
+
+    NotFound:
+      description: Resource not found
+      content:
+        text/plain:
+          schema:
+            type: string
+
+    Conflict:
+      description: Resource conflict
+      content:
+        text/plain:
+          schema:
+            type: string
+
+    MethodNotAllowed:
+      description: Operation not permitted
+      content:
+        text/plain:
+          schema:
+            type: string
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        text/plain:
+          schema:
+            type: string
+
+  securitySchemes:
+    authToken:
+      type: apiKey
+      name: authToken
+      in: header
+      description: Authentication token obtained from the login service
+
+security:
+  - authToken: []

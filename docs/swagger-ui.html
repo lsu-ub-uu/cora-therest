@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<!--
+  ~ Copyright 2015, 2021, 2026 Uppsala University Library
+  ~
+  ~ This file is part of Cora.
+  ~
+  ~     Cora is free software: you can redistribute it and/or modify
+  ~     it under the terms of the GNU General Public License as published by
+  ~     the Free Software Foundation, either version 3 of the License, or
+  ~     (at your option) any later version.
+  ~
+  ~     Cora is distributed in the hope that it will be useful,
+  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~     GNU General Public License for more details.
+  ~
+  ~     You should have received a copy of the GNU General Public License
+  ~     along with Cora.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cora REST API - Swagger UI</title>
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css">
+    <style>
+        html {
+            box-sizing: border-box;
+            overflow-y: scroll;
+        }
+        *, *:before, *:after {
+            box-sizing: inherit;
+        }
+        body {
+            margin: 0;
+            background: #fafafa;
+        }
+        .swagger-ui .topbar {
+            background-color: #1a365d;
+        }
+        .swagger-ui .topbar .download-url-wrapper .select-label {
+            color: white;
+        }
+        .header-banner {
+            background-color: #1a365d;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .header-banner h1 {
+            margin: 0;
+            font-family: sans-serif;
+        }
+        .header-banner p {
+            margin: 10px 0 0 0;
+            font-family: sans-serif;
+            opacity: 0.8;
+        }
+        .language-toggle {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+        }
+        .language-toggle button {
+            background-color: #2a4a7f;
+            color: white;
+            border: 1px solid #4a6a9f;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            border-radius: 4px;
+            margin-left: 5px;
+        }
+        .language-toggle button:hover {
+            background-color: #3a5a8f;
+        }
+        .language-toggle button.active {
+            background-color: #4a7abf;
+        }
+        .info-banner {
+            background-color: #e8f4f8;
+            border-left: 4px solid #3182ce;
+            padding: 15px 20px;
+            margin: 20px;
+            font-family: sans-serif;
+        }
+        .info-banner.swedish {
+            display: none;
+        }
+        .info-banner h3 {
+            margin: 0 0 10px 0;
+            color: #2c5282;
+        }
+        .info-banner p {
+            margin: 5px 0;
+            color: #4a5568;
+        }
+        .info-banner a {
+            color: #3182ce;
+        }
+    </style>
+</head>
+<body>
+    <div class="header-banner">
+        <div class="language-toggle">
+            <button id="btn-en" class="active" onclick="showEnglish()">English</button>
+            <button id="btn-sv" onclick="showSwedish()">Svenska</button>
+        </div>
+        <h1 id="title-en">Cora REST API Documentation</h1>
+        <h1 id="title-sv" style="display:none;">Cora REST API Dokumentation</h1>
+        <p id="subtitle-en">Interactive API explorer powered by Swagger UI</p>
+        <p id="subtitle-sv" style="display:none;">Interaktiv API-utforskare med Swagger UI</p>
+    </div>
+    
+    <div class="info-banner english" id="info-en">
+        <h3>Getting Started</h3>
+        <p><strong>Authentication:</strong> Most endpoints require an <code>authToken</code> header or query parameter.</p>
+        <p><strong>Base URL:</strong> Replace <code>{server}</code> with your Cora instance URL.</p>
+        <p><strong>Data Format:</strong> The API uses hierarchical data structures. See the <a href="api-data-format-template.html">Data Format Guide</a> for details.</p>
+        <p><strong>Related:</strong> <a href="https://github.com/lsu-ub-uu/cora-data">cora-data</a> | <a href="https://github.com/lsu-ub-uu/cora-basicdata">cora-basicdata</a></p>
+    </div>
+    
+    <div class="info-banner swedish" id="info-sv">
+        <h3>Kom igång</h3>
+        <p><strong>Autentisering:</strong> De flesta ändpunkter kräver en <code>authToken</code>-header eller fråge-parameter.</p>
+        <p><strong>Bas-URL:</strong> Ersätt <code>{server}</code> med din Cora-instans URL.</p>
+        <p><strong>Dataformat:</strong> API:et använder hierarkiska datastrukturer. Se <a href="api-data-format-template.html">Dataformatguiden</a> för detaljer.</p>
+        <p><strong>Relaterat:</strong> <a href="https://github.com/lsu-ub-uu/cora-data">cora-data</a> | <a href="https://github.com/lsu-ub-uu/cora-basicdata">cora-basicdata</a></p>
+    </div>
+
+    <div id="swagger-ui"></div>
+
+    <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+    <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-standalone-preset.js"></script>
+    <script>
+        window.onload = function() {
+            window.ui = SwaggerUIBundle({
+                url: "../openapi.yaml",
+                dom_id: '#swagger-ui',
+                deepLinking: true,
+                presets: [
+                    SwaggerUIBundle.presets.apis,
+                    SwaggerUIStandalonePreset
+                ],
+                plugins: [
+                    SwaggerUIBundle.plugins.DownloadUrl
+                ],
+                layout: "StandaloneLayout",
+                defaultModelsExpandDepth: 2,
+                defaultModelExpandDepth: 2,
+                docExpansion: "list",
+                filter: true,
+                showExtensions: true,
+                showCommonExtensions: true
+            });
+        };
+
+        function showEnglish() {
+            document.getElementById('title-en').style.display = 'block';
+            document.getElementById('title-sv').style.display = 'none';
+            document.getElementById('subtitle-en').style.display = 'block';
+            document.getElementById('subtitle-sv').style.display = 'none';
+            document.getElementById('info-en').style.display = 'block';
+            document.getElementById('info-sv').style.display = 'none';
+            document.getElementById('btn-en').classList.add('active');
+            document.getElementById('btn-sv').classList.remove('active');
+        }
+
+        function showSwedish() {
+            document.getElementById('title-en').style.display = 'none';
+            document.getElementById('title-sv').style.display = 'block';
+            document.getElementById('subtitle-en').style.display = 'none';
+            document.getElementById('subtitle-sv').style.display = 'block';
+            document.getElementById('info-en').style.display = 'none';
+            document.getElementById('info-sv').style.display = 'block';
+            document.getElementById('btn-en').classList.remove('active');
+            document.getElementById('btn-sv').classList.add('active');
+        }
+    </script>
+</body>
+</html>
