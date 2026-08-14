@@ -155,6 +155,7 @@ public class RecordEndpointDeploymentTest {
 		Map<String, String> settings = new HashMap<>();
 
 		settings.put("deploymentInfoApplicationName", "someApplicationName");
+		settings.put("deploymentInfoHelmCahrtVersion", "someHelmChartVersion");
 		settings.put("deploymentInfoDeploymentName", "someDeploymentName");
 		settings.put("deploymentInfoCoraVersion", "someCoraVersion");
 		settings.put("deploymentInfoApplicationVersion", "someApplicationVersion");
@@ -236,6 +237,7 @@ public class RecordEndpointDeploymentTest {
 					"applicationName": "someApplicationName",
 					"deploymentName": "someDeploymentName",
 					"coraVersion": "someCoraVersion",
+					"helmChartVersion": "someHelmChartVersion",
 					"applicationVersion": "someApplicationVersion",
 					"urls": {
 						"REST": "http://base.rest.url/rest/",
@@ -274,6 +276,7 @@ public class RecordEndpointDeploymentTest {
 					"applicationName": "someApplicationName",
 					"deploymentName": "someDeploymentName",
 					"coraVersion": "someCoraVersion",
+					"helmChartVersion": "someHelmChartVersion",
 					"applicationVersion": "someApplicationVersion",
 					"urls": {
 						"REST": "http://base.rest.url/rest/",
@@ -324,6 +327,7 @@ public class RecordEndpointDeploymentTest {
 					<applicationName>someApplicationName</applicationName>
 					<deploymentName>someDeploymentName</deploymentName>
 					<coraVersion>someCoraVersion</coraVersion>
+					<helmChartVersion>someHelmChartVersion</helmChartVersion>
 					<applicationVersion>someApplicationVersion</applicationVersion>
 					<urls>
 						<REST>http://base.rest.url/rest/</REST>
@@ -362,6 +366,7 @@ public class RecordEndpointDeploymentTest {
 					<applicationName>someApplicationName</applicationName>
 					<deploymentName>someDeploymentName</deploymentName>
 					<coraVersion>someCoraVersion</coraVersion>
+					<helmChartVersion>someHelmChartVersion</helmChartVersion>
 					<applicationVersion>someApplicationVersion</applicationVersion>
 					<urls>
 						<REST>http://base.rest.url/rest/</REST>

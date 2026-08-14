@@ -92,6 +92,7 @@ public class RecordEndpointDeployment {
 		private final String deploymentName;
 		private final String coraVersion;
 		private final String applicationVersion;
+		private final String helmChartVersion;
 		private final String loginRestApptokenUrl;
 		private final String loginRestPasswordUrl;
 		private final String restUrl;
@@ -117,6 +118,7 @@ public class RecordEndpointDeployment {
 			this.coraVersion = SettingsProvider.getSetting("deploymentInfoCoraVersion");
 			this.applicationVersion = SettingsProvider
 					.getSetting("deploymentInfoApplicationVersion");
+			this.helmChartVersion = SettingsProvider.getSetting("deploymentInfoHelmCahrtVersion");
 			String loginRestUrl = SettingsProvider.getSetting("deploymentInfoLoginRestUrl");
 			this.loginRestApptokenUrl = loginRestUrl + "apptoken";
 			this.loginRestPasswordUrl = loginRestUrl + "password";
@@ -156,6 +158,7 @@ public class RecordEndpointDeployment {
 						"applicationName": "%s",
 						"deploymentName": "%s",
 						"coraVersion": "%s",
+						"helmChartVersion": "%s",
 						"applicationVersion": "%s",
 						"urls": {
 							"REST": "%s",
@@ -197,8 +200,8 @@ public class RecordEndpointDeployment {
 
 		private String formatDeploymenInfoUsingTemplate(String xmlTemplate) {
 			return xmlTemplate.formatted(applicationName, deploymentName, coraVersion,
-					applicationVersion, restUrl, loginRestApptokenUrl, loginRestPasswordUrl,
-					restRecordUrl, restRecordTypeUrl, iiifUrl, exampleUsers);
+					helmChartVersion, applicationVersion, restUrl, loginRestApptokenUrl,
+					loginRestPasswordUrl, restRecordUrl, restRecordTypeUrl, iiifUrl, exampleUsers);
 		}
 
 		String toXml() {
@@ -216,6 +219,7 @@ public class RecordEndpointDeployment {
 						<applicationName>%s</applicationName>
 						<deploymentName>%s</deploymentName>
 						<coraVersion>%s</coraVersion>
+						<helmChartVersion>%s</helmChartVersion>
 						<applicationVersion>%s</applicationVersion>
 						<urls>
 							<REST>%s</REST>
