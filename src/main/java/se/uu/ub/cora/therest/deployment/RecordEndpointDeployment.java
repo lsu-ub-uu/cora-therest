@@ -118,7 +118,7 @@ public class RecordEndpointDeployment {
 			this.coraVersion = SettingsProvider.getSetting("deploymentInfoCoraVersion");
 			this.applicationVersion = SettingsProvider
 					.getSetting("deploymentInfoApplicationVersion");
-			this.helmChartVersion = SettingsProvider.getSetting("deploymentInfoHelmCahrtVersion");
+			this.helmChartVersion = SettingsProvider.getSetting("deploymentInfoHelmChartVersion");
 			String loginRestUrl = SettingsProvider.getSetting("deploymentInfoLoginRestUrl");
 			this.loginRestApptokenUrl = loginRestUrl + "apptoken";
 			this.loginRestPasswordUrl = loginRestUrl + "password";

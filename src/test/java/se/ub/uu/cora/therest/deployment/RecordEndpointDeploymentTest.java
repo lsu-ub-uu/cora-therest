@@ -155,7 +155,7 @@ public class RecordEndpointDeploymentTest {
 		Map<String, String> settings = new HashMap<>();
 
 		settings.put("deploymentInfoApplicationName", "someApplicationName");
-		settings.put("deploymentInfoHelmCahrtVersion", "someHelmChartVersion");
+		settings.put("deploymentInfoHelmChartVersion", "someHelmChartVersion");
 		settings.put("deploymentInfoDeploymentName", "someDeploymentName");
 		settings.put("deploymentInfoCoraVersion", "someCoraVersion");
 		settings.put("deploymentInfoApplicationVersion", "someApplicationVersion");
