@@ -121,13 +121,19 @@ public class RecordEndpointUpdateTest {
 	}
 
 	@Test
+	public void testLogger() {
+		loggerFactorySpy.MCR.assertParameterAsEqual("factorForClass", 2, "javaClass",
+				RecordEndpointUpdate.class);
+	}
+
+	@Test
 	public void testInit() {
 		recordEndpoint = new RecordEndpointUpdate(requestSpy);
 		assertTrue(recordEndpoint.getJsonParser() instanceof OrgJsonParser);
 	}
 
 	@Test
-	public void testClassAnnotation() throws Exception {
+	public void testClassAnnotation() {
 		AnnotationTestHelper annotationHelper = AnnotationTestHelper
 				.createAnnotationTestHelperForClass(RecordEndpointUpdate.class);
 

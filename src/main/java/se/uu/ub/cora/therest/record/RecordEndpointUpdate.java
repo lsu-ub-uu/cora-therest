@@ -80,7 +80,7 @@ public class RecordEndpointUpdate {
 	private static final String APPLICATION_VND_CORA_RECORD_JSON_QS09 = "application/vnd.cora.record+json;qs=0.9";
 	private static final String TEXT_PLAIN_CHARSET_UTF_8 = "text/plain; charset=utf-8";
 	HttpServletRequest request;
-	private Logger log = LoggerProvider.getLoggerForClass(RecordEndpointUpload.class);
+	private Logger log = LoggerProvider.getLoggerForClass(RecordEndpointUpdate.class);
 
 	private JsonParser jsonParser = new OrgJsonParser();
 	private ExternalUrls externalUrls;
