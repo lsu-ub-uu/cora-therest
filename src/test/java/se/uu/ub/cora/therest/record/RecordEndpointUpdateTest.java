@@ -122,8 +122,7 @@ public class RecordEndpointUpdateTest {
 
 	@Test
 	public void testLogger() {
-		loggerFactorySpy.MCR.assertParameterAsEqual("factorForClass", 2, "javaClass",
-				RecordEndpointUpdate.class);
+		loggerFactorySpy.MCR.assertCalledParameters("factorForClass", RecordEndpointUpdate.class);
 	}
 
 	@Test
